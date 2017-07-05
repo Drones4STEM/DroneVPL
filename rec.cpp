@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:rec.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include <QtGui>
 
 #include "node.h"
@@ -25,6 +32,13 @@ Rec::~Rec()
     delete item;
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF Rec::outlineRect() const
 {
     QRectF rect(0,0,400,400);
@@ -32,12 +46,22 @@ QRectF Rec::outlineRect() const
     return rect;
 }
 
+/*******************************************************************
+ * Function name: boundingRect()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 QRectF Rec::boundingRect() const
 {
     const int Margin = 6;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
+/*******************************************************************
+ * Function name: shape()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 QPainterPath Rec::shape() const
 {
     QRectF rect = outlineRect();
@@ -48,6 +72,11 @@ QPainterPath Rec::shape() const
     return path;
 }
 
+/*******************************************************************
+ * Function name: paint()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+******************************************************************/
 void Rec::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
                  QWidget * /* widget */)
@@ -65,6 +94,11 @@ void Rec::paint(QPainter *painter,
                            roundness(rect.height()));
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+******************************************************************/
 QVariant Rec::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
@@ -80,6 +114,12 @@ QVariant Rec::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
+/*******************************************************************
+ * Function name: showYuan()
+ * Description: This function show Yuan according to the logic
+ *     function you choose. If you choose "if" or "while", Yuan will
+ *     be shown, but if you choose "else", Yuan will not be shown.
+******************************************************************/
 void Rec::showYuan()
 {
     int i=box->currentIndex();

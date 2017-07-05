@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:node.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include <QtGui>
 
 #include "link.h"
@@ -70,12 +77,22 @@ QColor Node::backgroundColor() const
     return myBackgroundColor;
 }
 
+/*******************************************************************
+ * Function name: boundingRect()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 QRectF Node::boundingRect() const
 {
     const int Margin = 6;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
+/*******************************************************************
+ * Function name: shape()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 QPainterPath Node::shape() const
 {
     QRectF rect = outlineRect();
@@ -86,6 +103,11 @@ QPainterPath Node::shape() const
     return path;
 }
 
+/*******************************************************************
+ * Function name: paint()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+******************************************************************/
 void Node::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
                  QWidget * /* widget */)
@@ -106,6 +128,11 @@ void Node::paint(QPainter *painter,
     painter->drawText(rect, Qt::AlignCenter, myText);
 }
 
+/*******************************************************************
+ * Function name: mouseDoubleClickEvent()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QString text = QInputDialog::getText(event->widget(),
@@ -115,6 +142,11 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         setText(text);
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+******************************************************************/
 QVariant Node::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
@@ -127,7 +159,13 @@ QVariant Node::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
-
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF Node::outlineRect() const
 {
     const int Padding = 8;
@@ -138,6 +176,11 @@ QRectF Node::outlineRect() const
     return rect;
 }
 
+/*******************************************************************
+ * Function name: roundness()
+ * Description: You can see the details of this function in
+ *     newnode.cpp
+******************************************************************/
 int Node::roundness(double size) const
 {
     const int Diameter = 12;

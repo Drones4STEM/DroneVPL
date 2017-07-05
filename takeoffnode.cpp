@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:takeoffnode.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include<QObject>
 
 #include "takeoffnode.h"

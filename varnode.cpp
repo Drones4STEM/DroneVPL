@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:varnode.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include "varnode.h"
 #include "diagramwindow.h"
 #include "colordlg.h"
@@ -22,6 +29,13 @@ VarNode::~VarNode()
         delete array[i];
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QPolygonF VarNode::outlineRect() const
 {
     QPolygonF poly;

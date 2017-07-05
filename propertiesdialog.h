@@ -6,6 +6,12 @@
 class Node;
 class NewNode;
 
+/*******************************************************************
+ * Class name: PropertiesDialog
+ * Base class: QDialog, Ui::PropertiesDialog
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class PropertiesDialog : public QDialog, private Ui::PropertiesDialog
 {
     Q_OBJECT
