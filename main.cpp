@@ -1,3 +1,9 @@
+/*******************************************************************
+ * File:main.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
 #include <QApplication>
 
 #include "diagramwindow.h"

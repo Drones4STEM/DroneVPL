@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:newnode.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include <QtGui>
 
 #include "link.h"
@@ -73,12 +80,22 @@ QColor NewNode::backgroundColor() const
     return myBackgroundColor;
 }
 
+/*******************************************************************
+ * Function name: boundingRect()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 QRectF NewNode::boundingRect() const
 {
     const int Margin = 4;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
+/*******************************************************************
+ * Function name: shape()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 QPainterPath NewNode::shape() const
 {
     QRectF rect = outlineRect();
@@ -89,6 +106,11 @@ QPainterPath NewNode::shape() const
     return path;
 }
 
+/*******************************************************************
+ * Function name: paint()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+******************************************************************/
 void NewNode::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
                  QWidget * /* widget */)
@@ -109,6 +131,11 @@ void NewNode::paint(QPainter *painter,
     painter->drawText(rect, Qt::AlignCenter, myText);
 }
 
+/*******************************************************************
+ * Function name: mouseDoubleClickEvent()
+ * Description: You can see the details of this function in
+ *     ionode.cpp
+******************************************************************/
 void NewNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QString text = QInputDialog::getText(event->widget(),
@@ -118,6 +145,11 @@ void NewNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         setText(text);
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+******************************************************************/
 QVariant NewNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
@@ -135,7 +167,13 @@ QVariant NewNode::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
-
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF NewNode::outlineRect() const
 {
     const int Padding = 8;
@@ -146,6 +184,14 @@ QRectF NewNode::outlineRect() const
     return rect;
 }
 
+/*******************************************************************
+ * Function name: roundness()
+ * Description: return a fit roundness according to the width and
+ *     height of a rectangle.
+ * Callee:
+ * Inputs: double size - size of a rectangle
+ * Outputs:int roundness
+******************************************************************/
 int NewNode::roundness(double size) const
 {
     const int Diameter = 12;

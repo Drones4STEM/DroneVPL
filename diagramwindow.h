@@ -18,6 +18,12 @@ class Yuan;
 class Rec;
 class TakeoffNode;
 
+/*******************************************************************
+ * Class name: DiagramWindow
+ * Base class: QMainWindow
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class DiagramWindow : public QMainWindow
 {
     Q_OBJECT

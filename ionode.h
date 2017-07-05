@@ -13,6 +13,12 @@
 
 class IoSmallNode;
 
+/*******************************************************************
+ * Class name: IoNode
+ * Base class: NewNode
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class IoNode:public NewNode
 {
     Q_OBJECT

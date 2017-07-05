@@ -7,6 +7,12 @@
 class Node;
 class Yuan;
 
+/*******************************************************************
+ * Class name: Link
+ * Base class: QGraphicsLineItem
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class Link : public QGraphicsLineItem
 {
 public:

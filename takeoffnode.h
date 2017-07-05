@@ -7,6 +7,12 @@
 #include "QObject"
 #include "itemtypes.h"
 
+/*******************************************************************
+ * Class name: TakeoffNode
+ * Base class: Node
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class TakeoffNode:public Node
 {
 public:
@@ -21,13 +27,18 @@ public:
     double myTime();
 
 protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);                        
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 };
 
 QDataStream &operator <<(QDataStream &out,const TakeoffNode &node);
 QDataStream &operator >>(QDataStream &in,TakeoffNode &node);
 
-
+/*******************************************************************
+ * Class name: LandonNode
+ * Base class: NewNode
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class LandonNode:public NewNode
 {
 public:
@@ -48,6 +59,12 @@ protected:
                         const QVariant &value);
 };
 
+/*******************************************************************
+ * Class name: TranslationNode
+ * Base class: NewNode
+ * Desciption:This is a class for developers, and determines some
+ *     to follow. This class represents some motions of translation.
+******************************************************************/
 class TranslationNode:public NewNode
 {
     Q_OBJECT
@@ -81,6 +98,13 @@ private slots:
     void setNewIdentifier();
 };
 
+/*******************************************************************
+ * Class name: SomeNode
+ * Base class: NewNode
+ * Desciption:This is a class for developers, and determines some
+ *     to follow. This class represents some actions including
+ *     turnleft, turnright, hang and delay(hover).
+******************************************************************/
 class SomeNode:public NewNode
 {
     Q_OBJECT

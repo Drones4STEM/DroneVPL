@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:computenode.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include "node.h"
 #include "yuan.h"
 #include "link.h"
@@ -12,6 +19,13 @@ int ComputeNode::ComputeNodeTanNum=0;  int ComputeNode::ComputeNodeLogNum=0;
 int ComputeNode::ComputeNodeENum=0;    int ComputeNode::ComputeNodeEqualNum=0;
 int ComputeNode::ComputeNodeMoreNum=0; int ComputeNode::ComputeNodeLessNum=0;
 
+/*******************************************************************
+ * Function name: ComputeNode()
+ * Description: This is a constructor of ComputeNode class
+ * Callee: triYuan::triYuan(), Yuan::Yuan(), Yuan::setInout()
+ * Inputs:
+ * Outputs:
+******************************************************************/
 ComputeNode::ComputeNode()
 {
     yuan = new triYuan(this);
@@ -24,6 +38,13 @@ ComputeNode::ComputeNode()
     identifier="ComputeNodeAdd";
 }
 
+/*******************************************************************
+ * Function name: ~ComputeNode()
+ * Description: This is a destructor of ComputeNode class
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 ComputeNode::~ComputeNode()
 {
     delete yuan2;
@@ -31,12 +52,29 @@ ComputeNode::~ComputeNode()
     delete box;
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee: QRectF::rect()
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF ComputeNode::outlineRect() const
 {
     QRectF rect(-20,-20,40,40);
     return rect;
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: This function is to notify custom items that some
+ *     part of the item's state changes.
+ * Callee: Yuan::setPos(), Link::trackYuans(), setPos()
+ * Inputs: GraphicsItemChange change - the parameter of the item
+ *             that is changing
+ *         QVariant &value - new value
+ * Outputs:
+******************************************************************/
 QVariant ComputeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged) {
@@ -61,6 +99,22 @@ QVariant ComputeNode::itemChange(GraphicsItemChange change, const QVariant &valu
     return QGraphicsItem::itemChange(change, value);
 }
 
+/*******************************************************************
+ * Function name: paint()
+ * Description: This function  paints the contents of an item in
+ *     local coordinates.
+ * Callee: QPen::pen(), QPainter::setPen(), QPainter::setBrush()
+ *         QPainter::drowRoundRect(), QPainter::drawText()
+ * Inputs: QPainter paint
+ *         QStyleOptionGraphicsItem *option - provides style options
+ *             for the item, such as its state, exposed area and
+ *             its level-of-detail hints.
+ *         QWidget *widget - The widget argument is optional. If
+ *             provided, it points to the widget that is being painted
+ *             on; otherwise, it is 0. For cached painting, widget is
+ *             always 0.
+ * Outputs:
+******************************************************************/
 void ComputeNode::paint(QPainter *painter,
                         const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
@@ -81,6 +135,14 @@ void ComputeNode::paint(QPainter *painter,
     painter->drawText(rect, Qt::AlignCenter, myText);
 }
 
+/*******************************************************************
+ * Function name: setNewIdentifier()
+ * Description: This function  changes the identifier and controlsId
+ *     of the item, it also add the computenodenum.
+ * Callee: QBox::currentIndex()
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void ComputeNode::setNewIdentifier()
 {
     int index=box->currentIndex();

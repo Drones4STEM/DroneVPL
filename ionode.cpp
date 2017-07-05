@@ -1,7 +1,21 @@
+/*******************************************************************
+ * File:ionode.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include "ionode.h"
 #include "yuan.h"
 #include "link.h"
 
+/*******************************************************************
+ * Function name: IoNode()
+ * Description: This is a constructor of IoNode class.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 IoNode::IoNode()
 {
     box=new QComboBox;
@@ -12,6 +26,13 @@ IoNode::IoNode()
     identifier="IoNode";
 }
 
+/*******************************************************************
+ * Function name: ~IoNode()
+ * Description: This is a destructor of IoNode class
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 IoNode::~IoNode()
 {
     delete box;
@@ -20,6 +41,13 @@ IoNode::~IoNode()
     delete node3;
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF IoNode::outlineRect() const
 {
     QRectF rect(0,0,60,60);
@@ -27,12 +55,32 @@ QRectF IoNode::outlineRect() const
     return rect;
 }
 
+/*******************************************************************
+ * Function name: boundingRect()
+ * Description: This function defines the outer bounds of the item
+ *     as a rectangle; all painting must be restricted to inside an
+ *     item's bounding rect. IoNode uses this to determine
+ *     whether the item requires redrawing.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF IoNode::boundingRect() const
 {
     const int Margin = 6;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
+/*******************************************************************
+ * Function name: shape()
+ * Description: This function returns the shape of this item as a
+ *     QPainterPath in local coordinates. The shape is used for many
+ *     things, including collision detection, hit tests, and for the
+ *     QGraphicsScene::items() functions.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QPainterPath IoNode::shape() const
 {
     QRectF rect = outlineRect();
@@ -43,6 +91,14 @@ QPainterPath IoNode::shape() const
     return path;
 }
 
+/*******************************************************************
+ * Function name: paint()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void IoNode::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
                  QWidget * /* widget */)
@@ -64,6 +120,14 @@ void IoNode::paint(QPainter *painter,
     painter->drawText(rect, Qt::AlignCenter, myText);
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 QVariant IoNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged) {
@@ -93,6 +157,13 @@ QVariant IoNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
 // ////////////////////////////////////////////////////////////////////////
 
+/*******************************************************************
+ * Function name: IoSmallNode()
+ * Description: This is a constructor of IoNode class.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 IoSmallNode::IoSmallNode()
 {
     setFlag(ItemIsMovable,false);
@@ -103,22 +174,27 @@ void IoSmallNode::setIoType(QString &type)
 {
     myIoType = type;
 }
-
 QString IoSmallNode::ioType()
 {
     return myIoType;
 }
-
 void IoSmallNode::setVar(QString &var)
 {
     myVar=var;
 }
-
 QString IoSmallNode::var()
 {
     return myVar;
 }
 
+/*******************************************************************
+ * Function name: mouseDoubleClickEvent()
+ * Description: This function receives mouse doubleclick events for
+ *     this item.
+ * Callee:
+ * Inputs: QGraphicsSceneMouseEvent *event
+ * Outputs:
+******************************************************************/
 void IoSmallNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QString type = QInputDialog::getText(event->widget(),
@@ -137,6 +213,14 @@ void IoSmallNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     setText(tr("%1 %2").arg(myIoType).arg(v));
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 QVariant IoSmallNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged) {

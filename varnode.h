@@ -6,6 +6,12 @@
 #include "vardefnode.h"
 #include <QtGui>
 
+/*******************************************************************
+ * Class name: VarNode
+ * Base class: Node
+ * Desciption:This is a class for developers, and determines some
+ *     to follow. It defines variable.
+******************************************************************/
 class VarNode:public Node
 {
 public:
