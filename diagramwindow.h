@@ -75,6 +75,9 @@ private slots:
     void sendToBack();
     void properties();
     void updateActions();
+    void showEditToolBar();
+    void showToolBar();
+    void showStatusBar();
 
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
@@ -105,6 +108,7 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *viewMenu;
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QAction *fileNewAction;
@@ -147,6 +151,9 @@ private:
     QAction *bringToFrontAction;
     QAction *sendToBackAction;
     QAction *propertiesAction;
+    QAction *showEditToolBarAction;
+    QAction *showToolBarAction;
+    QAction *showStatusBarAction;
 
     QPrinter *printer;
     QGraphicsScene *scene;

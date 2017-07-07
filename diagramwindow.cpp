@@ -798,6 +798,23 @@ void DiagramWindow::updateActions()
     }
 }
 
+void DiagramWindow::showEditToolBar()
+{
+    if(showEditToolBarAction->isChecked()) {
+       editToolBar->show();
+    }
+}
+
+void DiagramWindow::showToolBar()
+{
+
+}
+
+void DiagramWindow::showStatusBar()
+{
+
+}
+
 void DiagramWindow::createActions()
 {
     fileNewAction = new QAction(tr("New"),this);
@@ -915,6 +932,25 @@ void DiagramWindow::createActions()
     propertiesAction = new QAction(tr("P&roperties..."), this);
     connect(propertiesAction, SIGNAL(triggered()),
             this, SLOT(properties()));
+
+    showEditToolBarAction = new QAction(tr("EditToolBar"), this);
+    showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
+    showEditToolBarAction->setCheckable(true);
+    connect(showEditToolBarAction, SIGNAL(triggered()),
+            this, SLOT(showEditToolBar()));
+
+    showToolBarAction = new QAction(tr("ToolBar"), this);
+    showToolBarAction->setStatusTip(tr("show or hide the toolbar"));
+    showToolBarAction->setCheckable(true);
+    connect(showToolBarAction, SIGNAL(triggered()),
+            this, SLOT(showToolBar()));
+
+    showStatusBarAction = new QAction(tr("StatusBar"), this);
+    showStatusBarAction->setStatusTip(tr("show or hide the status bar"));
+   showStatusBarAction->setCheckable(true);
+    connect(showStatusBarAction, SIGNAL(triggered()),
+            this, SLOT(showStatusBar()));
+
 }
 
 void DiagramWindow::createMenus()
@@ -968,6 +1004,11 @@ void DiagramWindow::createMenus()
     editMenu->addAction(sendToBackAction);
     editMenu->addSeparator();
     editMenu->addAction(propertiesAction);
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
+    viewMenu = menuBar()->addMenu(tr("&View"));
+    viewMenu->addAction(showEditToolBarAction);
+    viewMenu->addAction(showToolBarAction);
+    viewMenu->addAction(showStatusBarAction);
 }
 
 void DiagramWindow::createToolBars()
