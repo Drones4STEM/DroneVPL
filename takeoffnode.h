@@ -10,8 +10,8 @@
 /*******************************************************************
  * Class name: TakeoffNode
  * Base class: Node
- * Desciption:This is a class for developers, and determines some
- *     to follow.
+ * Description: This is the declaration of class TakeoffNode.
+ *       TakeoffNode is an action node stands for takeoff.
 ******************************************************************/
 class TakeoffNode:public Node
 {
@@ -36,8 +36,8 @@ QDataStream &operator >>(QDataStream &in,TakeoffNode &node);
 /*******************************************************************
  * Class name: LandonNode
  * Base class: NewNode
- * Desciption:This is a class for developers, and determines some
- *     to follow.
+ * Description: This is the declaration of class LandNode.
+ *       LandNode is an action node stands for takeoff.
 ******************************************************************/
 class LandonNode:public NewNode
 {
@@ -62,8 +62,8 @@ protected:
 /*******************************************************************
  * Class name: TranslationNode
  * Base class: NewNode
- * Desciption:This is a class for developers, and determines some
- *     to follow. This class represents some motions of translation.
+ * Description: This is the declaration of class TranslationNode.
+ *     TranslateionNode represents some motions of translation.
 ******************************************************************/
 class TranslationNode:public NewNode
 {
@@ -101,7 +101,7 @@ private slots:
 /*******************************************************************
  * Class name: SomeNode
  * Base class: NewNode
- * Desciption:This is a class for developers, and determines some
+ * Description: This is a class for developers, and determines some
  *     to follow. This class represents some actions including
  *     turnleft, turnright, hang and delay(hover).
 ******************************************************************/

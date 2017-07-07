@@ -1,9 +1,10 @@
 /*******************************************************************
  * File:yuan.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        Yuan and triYuan. They are "in"/"out" nodes in DroneVPL
 ******************************************************************/
+
 
 #include <QtGui>
 

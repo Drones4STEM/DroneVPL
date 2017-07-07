@@ -9,8 +9,8 @@
 /*******************************************************************
  * Class name: VarNode
  * Base class: Node
- * Desciption:This is a class for developers, and determines some
- *     to follow. It defines variable.
+ * Description: This is the declaration of class VarNode. VarNode
+ *       represents variables read and written by other actions.
 ******************************************************************/
 class VarNode:public Node
 {

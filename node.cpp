@@ -1,8 +1,9 @@
 /*******************************************************************
  * File:node.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class Node.
+ *        Node is the parent class of ComputeNode, TakeoffNode, 
+ *        VarNode.
 ******************************************************************/
 
 #include <QtGui>
@@ -11,6 +12,13 @@
 #include "node.h"
 #include "yuan.h"
 
+/*******************************************************************
+ * Function name: Node()
+ * Description: This is a constructor of Node class.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 Node::Node()
 {
     myTextColor = Qt::darkGreen;
@@ -27,6 +35,13 @@ Node::Node()
     identifier="Node";
 }
 
+/*******************************************************************
+ * Function name: ~Node()
+ * Description: This is a destructor of Node class
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 Node::~Node()
 {
     delete yuan;
@@ -79,8 +94,13 @@ QColor Node::backgroundColor() const
 
 /*******************************************************************
  * Function name: boundingRect()
- * Description: You can see the details of this function in
- *     ionode.cpp
+ * Description: This function defines the outer bounds of the item
+ *     as a rectangle; all painting must be restricted to inside an
+ *     item's bounding rect. This function overwrites
+ *     IoNode::boundingRect()
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
 ******************************************************************/
 QRectF Node::boundingRect() const
 {
@@ -90,8 +110,13 @@ QRectF Node::boundingRect() const
 
 /*******************************************************************
  * Function name: shape()
- * Description: You can see the details of this function in
- *     ionode.cpp
+ * Description: This function returns the shape of this item as a
+ *     QPainterPath in local coordinates. The shape is used for many
+ *     things, including collision detection, hit tests, and for the
+ *     QGraphicsScene::items() functions.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
 ******************************************************************/
 QPainterPath Node::shape() const
 {
@@ -105,8 +130,19 @@ QPainterPath Node::shape() const
 
 /*******************************************************************
  * Function name: paint()
- * Description: You can see the details of this function in
- *     computenode.cpp
+ * Description: This function  paints the contents of an item in
+ *     local coordinates.
+ * Callee: QPen::pen(), QPainter::setPen(), QPainter::setBrush()
+ *         QPainter::drowRoundRect(), QPainter::drawText()
+ * Inputs: QPainter paint
+ *         QStyleOptionGraphicsItem *option - provides style options
+ *             for the item, such as its state, exposed area and
+ *             its level-of-detail hints.
+ *         QWidget *widget - The widget argument is optional. If
+ *             provided, it points to the widget that is being painted
+ *             on; otherwise, it is 0. For cached painting, widget is
+ *             always 0.
+ * Outputs:
 ******************************************************************/
 void Node::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
@@ -130,8 +166,11 @@ void Node::paint(QPainter *painter,
 
 /*******************************************************************
  * Function name: mouseDoubleClickEvent()
- * Description: You can see the details of this function in
- *     ionode.cpp
+ * Description: This function receives mouse doubleclick events for
+ *     this item.
+ * Callee:
+ * Inputs: QGraphicsSceneMouseEvent *event
+ * Outputs:
 ******************************************************************/
 void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -144,9 +183,14 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 /*******************************************************************
  * Function name: itemChange()
- * Description: You can see the details of this function in
- *     computenode.cpp
-******************************************************************/
+ * Description: This function is to notify custom items that some
+ *     part of the item's state changes.
+ * Callee: Yuan::setPos(), Link::trackYuans(), setPos()
+ * Inputs: GraphicsItemChange change - the parameter of the item
+ *             that is changing
+ *         QVariant &value - new value
+ * Outputs:
+ ******************************************************************/
 QVariant Node::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
@@ -178,8 +222,11 @@ QRectF Node::outlineRect() const
 
 /*******************************************************************
  * Function name: roundness()
- * Description: You can see the details of this function in
- *     newnode.cpp
+ * Description: return a fit roundness according to the width and
+ *     height of a rectangle.
+ * Callee:
+ * Inputs: double size - size of a rectangle
+ * Outputs:int roundness
 ******************************************************************/
 int Node::roundness(double size) const
 {

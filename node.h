@@ -13,9 +13,8 @@ class triYuan;
 /*******************************************************************
  * Class name: Node
  * Base class: QGraphicsObject
- * Desciption:This is a class for developers, and determines some
- *     to follow. This class is the parent class of ComputeNode,
- *     TakeoffNode, VarNode.
+ * Description: This is the declaration of class Node. Node is the
+ *       parent class of ComputeNode, TakeoffNode, VarNode.
 ******************************************************************/
 class Node : public QGraphicsObject
 {
