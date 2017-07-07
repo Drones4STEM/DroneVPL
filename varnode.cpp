@@ -1,9 +1,11 @@
 /*******************************************************************
  * File:varnode.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        VarNode. VarNode represents variables read and written 
+ *        by other actions.
 ******************************************************************/
+
 
 #include "varnode.h"
 #include "diagramwindow.h"

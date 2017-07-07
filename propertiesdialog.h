@@ -9,9 +9,10 @@ class NewNode;
 /*******************************************************************
  * Class name: PropertiesDialog
  * Base class: QDialog, Ui::PropertiesDialog
- * Desciption:This is a class for developers, and determines some
- *     to follow.
-******************************************************************/
+ * Description: This is the declaration of class PropertiesDialog.
+ *       PropertiesDialog is the dialog opened after double click on
+ *       widgets. (Double Clicking is currently disabled)
+ ******************************************************************/
 class PropertiesDialog : public QDialog, private Ui::PropertiesDialog
 {
     Q_OBJECT
