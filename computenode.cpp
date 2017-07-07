@@ -1,8 +1,9 @@
 /*******************************************************************
  * File:computenode.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        ComputeNode. ComputeNode is a node which connect two varnodes
+ *        (variables) and compute an outcome.
 ******************************************************************/
 
 #include "node.h"

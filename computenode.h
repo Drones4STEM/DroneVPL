@@ -11,9 +11,9 @@ class QGraphicsItem;
 /*******************************************************************
  * Class name: ComputeNode
  * Base class: Node
- * Desciption:This is a class for developers, and determines some
- *     to follow. ComputeNode is a node which connect two varnodes
- *     and compute an outcome.
+ * Description: This is the declaration of class ComputeNode.
+ *       ComputeNode is a node which connect two varnodes (variables)
+ *       and compute an outcome.
 ******************************************************************/
 class ComputeNode:public Node
 {

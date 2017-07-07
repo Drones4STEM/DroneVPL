@@ -13,8 +13,8 @@ class Node;
 /*******************************************************************
  * Class name: Yuan
  * Base class: QGraphicsObject
- * Desciption:This is a class for developers, and determines some
- *     to follow. It is an "out" node.
+ * Desciption: This is the declaration of class Yuan. Yuan is an
+ *       "out" node.
 ******************************************************************/
 class Yuan:public QGraphicsObject
 {
@@ -59,8 +59,8 @@ private:
 /*******************************************************************
  * Class name: triYuan
  * Base class: Yuan
- * Desciption:This is a class for developers, and determines some
- *     to follow. It is an "in" node.
+ * Description: This is the declaration of class triYuan. triYuan is
+ *       an "in" node.
 ******************************************************************/
 class triYuan:public Yuan
 {
