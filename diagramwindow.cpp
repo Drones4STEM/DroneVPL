@@ -803,11 +803,17 @@ void DiagramWindow::showEditToolBar()
     if(showEditToolBarAction->isChecked()) {
        editToolBar->show();
     }
+    else
+    {editToolBar->hide();}
 }
 
 void DiagramWindow::showToolBar()
 {
-
+    if(showToolBarAction->isChecked()) {
+       aToolBar->show();
+    }
+    else
+    {aToolBar->hide();}
 }
 
 void DiagramWindow::showStatusBar()
@@ -1026,7 +1032,7 @@ void DiagramWindow::createToolBars()
     editToolBar->addAction(bringToFrontAction);
     editToolBar->addAction(sendToBackAction);
 
-    QToolBar* aToolBar = new QToolBar(tr("action"));
+    aToolBar = addToolBar(tr("action"));
     aToolBar->addAction(addTakeoffNodeAction);
     aToolBar->addAction(addLandonNodeAction);
     aToolBar->addAction(addRiseNodeAction);

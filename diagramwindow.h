@@ -111,6 +111,7 @@ private:
     QMenu *viewMenu;
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
+    QToolBar *aToolBar;
     QAction *fileNewAction;
     QAction *fileOpenAction;
     QAction *fileSaveAction;
