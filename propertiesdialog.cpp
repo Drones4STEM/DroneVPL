@@ -1,8 +1,10 @@
 /*******************************************************************
  * File:propertiesdialog.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        PropertiesDialog. PropertiesDialog is the dialog opened 
+ *        after double click on widgets. (Double clicking is 
+ *        currently disabled)
 ******************************************************************/
 #include <QtGui>
 

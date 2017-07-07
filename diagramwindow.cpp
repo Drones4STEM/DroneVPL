@@ -1,8 +1,9 @@
 /*******************************************************************
  * File:diagramwindow.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        DiagramWindow. DiagramWindow is the main window of 
+ *        DroneVPL.
 ******************************************************************/
 
 #include <QtGui>
@@ -34,7 +35,7 @@ const QString MimeType = "application/vnd.qtrac.pagedesigner";
 const int OffsetIncrement = 5;
 
 /*******************************************************************
- * Function name: ComputeNode()
+ * Function name: DiagramWindow()
  * Description: This is a constructor of DiagramWindow class
  * Callee: creatActions(), createMenus(), createToolBars()
  * Inputs:

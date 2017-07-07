@@ -1,8 +1,8 @@
 /*******************************************************************
  * File:rec.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class Rec.
+ *        Rec acts as logic rectangle.
 ******************************************************************/
 
 #include <QtGui>
@@ -48,8 +48,13 @@ QRectF Rec::outlineRect() const
 
 /*******************************************************************
  * Function name: boundingRect()
- * Description: You can see the details of this function in
- *     ionode.cpp
+ * Description: This function defines the outer bounds of the item
+ *     as a rectangle; all painting must be restricted to inside an
+ *     item's bounding rect. IoNode uses this to determine
+ *     whether the item requires redrawing.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
 ******************************************************************/
 QRectF Rec::boundingRect() const
 {
@@ -59,8 +64,13 @@ QRectF Rec::boundingRect() const
 
 /*******************************************************************
  * Function name: shape()
- * Description: You can see the details of this function in
- *     ionode.cpp
+ * Description: This function returns the shape of this item as a
+ *     QPainterPath in local coordinates. The shape is used for many
+ *     things, including collision detection, hit tests, and for the
+ *     QGraphicsScene::items() functions.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
 ******************************************************************/
 QPainterPath Rec::shape() const
 {
@@ -71,11 +81,21 @@ QPainterPath Rec::shape() const
                       roundness(rect.height()));
     return path;
 }
-
 /*******************************************************************
  * Function name: paint()
- * Description: You can see the details of this function in
- *     computenode.cpp
+ * Description: This function  paints the contents of an item in
+ *     local coordinates.
+ * Callee: QPen::pen(), QPainter::setPen(), QPainter::setBrush()
+ *         QPainter::drowRoundRect(), QPainter::drawText()
+ * Inputs: QPainter paint
+ *         QStyleOptionGraphicsItem *option - provides style options
+ *             for the item, such as its state, exposed area and
+ *             its level-of-detail hints.
+ *         QWidget *widget - The widget argument is optional. If
+ *             provided, it points to the widget that is being painted
+ *             on; otherwise, it is 0. For cached painting, widget is
+ *             always 0.
+ * Outputs:
 ******************************************************************/
 void Rec::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
@@ -96,8 +116,13 @@ void Rec::paint(QPainter *painter,
 
 /*******************************************************************
  * Function name: itemChange()
- * Description: You can see the details of this function in
- *     computenode.cpp
+ * Description: This function is to notify custom items that some
+ *     part of the item's state changes.
+ * Callee: Yuan::setPos(), Link::trackYuans(), setPos()
+ * Inputs: GraphicsItemChange change - the parameter of the item
+ *             that is changing
+ *         QVariant &value - new value
+ * Outputs:
 ******************************************************************/
 QVariant Rec::itemChange(GraphicsItemChange change,
                     const QVariant &value)
