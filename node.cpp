@@ -18,7 +18,8 @@ Node::Node()
     myBackgroundColor = Qt::white;
 
     QGraphicsItem* p=dynamic_cast<QGraphicsItem*>(this);
-    yuan=new triYuan(p);
+    //yuan=new triYuan(p);
+    yuan=new triYuan();
 
     setFlags(ItemIsMovable | ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
