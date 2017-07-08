@@ -902,9 +902,6 @@ void DiagramWindow::addRec()
     scene->clearSelection();
     rec->setSelected(true);
 
-    scene->clearSelection();
-    rec->setSelected(true);
-
     rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
     scene->addItem(rec->yuan2);
@@ -932,50 +929,98 @@ void DiagramWindow::addRec()
 void DiagramWindow::del()
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> i(items);
-    while (i.hasNext()) {
-        Link *link = dynamic_cast<Link *>(i.next());
-        if (link) {
-            delete link;
-            i.remove();
-        }
-    }
-    i.toFront();
-
-    while (i.hasNext())
+    int itemsCount = items.count();
+    int i=0;
+    QList<Link*>itemLinks;
+    for(i=0;i<itemsCount;i++)
     {
-        NewNode*node = dynamic_cast<NewNode*>(i.next());
-        if(node)
-        {
-            delete node;
-            i.remove();
-        }
+        if(dynamic_cast<Link*>(items[i]))
+            itemLinks<<dynamic_cast<Link*>(items[i]);
     }
-    i.toFront();
-    int a=0;
-    while (i.hasNext())
+    QList<TakeoffNode*>itemTakeoffs;
+    for(i=0;i<itemsCount;i++)
     {
-        Node*node = dynamic_cast<Node*>(i.next());
-        if(node)
-        {
-            a++;
-            qDebug()<<a;
-            delete node;
-            i.remove();
-        }
+        if(dynamic_cast<TakeoffNode*>(items[i]))
+            itemTakeoffs<<dynamic_cast<TakeoffNode*>(items[i]);
     }
-
-    i.toFront();
-    while (i.hasNext())
+    QList<LandonNode*>itemLandons;
+    for(i=0;i<itemsCount;i++)
     {
-        Rec*node = dynamic_cast<Rec*>(i.next());
-        if(node)
-        {
-            delete node;
-            i.remove();
-        }
+        if(dynamic_cast<LandonNode*>(items[i]))
+            itemLandons<<dynamic_cast<LandonNode*>(items[i]);
     }
-
+    QList<ComputeNode*>itemComputes;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<ComputeNode*>(items[i]))
+            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
+    }
+    QList<IoNode*>itemIos;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<IoNode*>(items[i]))
+            itemIos<<dynamic_cast<IoNode*>(items[i]);
+    }
+    QList<Rec*>itemRecs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<Rec*>(items[i]))
+            itemRecs<<dynamic_cast<Rec*>(items[i]);
+    }
+    QList<TranslationNode*>itemTranslations;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TranslationNode*>(items[i]))
+            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
+    }
+    QList<SomeNode*>itemSomes;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<SomeNode*>(items[i]))
+            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
+    }
+    QList<VardefNode*>itemVardefs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VardefNode*>(items[i]))
+            itemVardefs<<dynamic_cast<VardefNode*>(items[i]);
+    }
+    QList<VarNode*>itemVars;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarNode*>(items[i]))
+            itemVars<<dynamic_cast<VarNode*>(items[i]);
+    }
+    foreach (Link* item, itemLinks) {
+        delete item;
+    }
+    foreach (TakeoffNode* item, itemTakeoffs) {
+        delete item;
+    }
+    foreach (LandonNode* item, itemLandons) {
+        delete item;
+    }
+    foreach (ComputeNode* item, itemComputes) {
+        delete item;
+    }
+    foreach (IoNode* item, itemIos) {
+        delete item;
+    }
+    foreach (Rec* item, itemRecs) {
+        delete item;
+    }
+    foreach (TranslationNode* item, itemTranslations) {
+        delete item;
+    }
+    foreach (SomeNode* item, itemSomes) {
+        delete item;
+    }
+    foreach (VardefNode* item, itemVardefs) {
+        delete item;
+    }
+    foreach (VarNode* item, itemVars) {
+        delete item;
+    }
 }
 
 
