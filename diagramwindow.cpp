@@ -926,38 +926,6 @@ void DiagramWindow::addRec()
  * Inputs:
  * Outputs:
 ******************************************************************/
-//void DiagramWindow::del()
-//{
-    //QList<QGraphicsItem *> items = scene->selectedItems();
-    //QMutableListIterator<QGraphicsItem *> i(items);
-   // qDebug()<<dynamic_cast<TakeoffNode *>(items[0]);
-   // qDebug()<<dynamic_cast<TakeoffNode *>(items[1]);
-    //qDebug()<<sizeof(triYuan);
-   // qDebug()<<sizeof(QGraphicsItem);
-   // int a=0;
-    //while (i.hasNext()) {
-    //    TakeoffNode *takeoffnode = dynamic_cast<TakeoffNode *>(i.next());
-    //    if(takeoffnode)
-    //    {
-    //        qDebug()<<b++;
-    //        qDebug()<<takeoffnode->controlsId;
-    //        delete takeoffnode;
-    //        i.remove();
-    //    }
-    //}
-
-    //while (i.hasNext())
-    //{
-    //    NewNode*node = dynamic_cast<NewNode*>(i.next());
-    //    if(node)
-    //    {
-    //        delete node;
-    //        i.remove();
-    //    }
-    //}
-    //i.toFront();
-//}
-
 void DiagramWindow::del()
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
