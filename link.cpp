@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:link.cpp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class Link.
+ *         Link creates a connection between two nodes.
+******************************************************************/
+
 #include <QtGui>
 
 #include "link.h"
@@ -9,7 +16,14 @@
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
 
-
+/*******************************************************************
+ * Function name: Link()
+ * Description: This is a constructor of Link class. It will paint
+ *     a link form formYuan to toYuan.
+ * Callee:
+ * Inputs: Yuan *fromYuan, Yuan *toYuan
+ * Outputs:
+******************************************************************/
 Link::Link(Yuan *fromYuan, Yuan *toYuan)
 {
     if(fromYuan->inout()==1)
@@ -64,11 +78,26 @@ QColor Link::color() const
     return pen().color();
 }
 
+/*******************************************************************
+ * Function name: trackYuans()
+ * Description: This function sets the ends of the Link.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void Link::trackYuans()
 {
     setLine(QLineF(myFromYuan->pos(),myToYuan->pos()));
 }
 
+/*******************************************************************
+ * Function name: paint()
+ * Description: You can see the details of this function in
+ *     computenode.cpp
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     QLineF line(myFromYuan->pos(), myToYuan->pos());
@@ -94,4 +123,4 @@ void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
     //painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);
     painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
 }
-//! [6]
+

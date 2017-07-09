@@ -10,6 +10,12 @@
 class Link;
 class Node;
 
+/*******************************************************************
+ * Class name: Yuan
+ * Base class: QGraphicsObject
+ * Desciption: This is the declaration of class Yuan. Yuan is an
+ *       "out" node.
+******************************************************************/
 class Yuan:public QGraphicsObject
 {
 public:
@@ -36,7 +42,7 @@ public:
     QGraphicsItem* myNode() const;
     QSet<Link *> myLinks;
 
-    //自定义属性。。。。。
+    //自定义属性
     int inout() const {return m_mode;}
     void setInout(int mode);
 
@@ -50,6 +56,12 @@ private:
     int m_mode;
 };
 
+/*******************************************************************
+ * Class name: triYuan
+ * Base class: Yuan
+ * Description: This is the declaration of class triYuan. triYuan is
+ *       an "in" node.
+******************************************************************/
 class triYuan:public Yuan
 {
 public:

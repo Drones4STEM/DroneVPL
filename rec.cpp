@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:rec.cpp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class Rec.
+ *        Rec acts as logic rectangle.
+******************************************************************/
+
 #include <QtGui>
 
 #include "node.h"
@@ -25,6 +32,13 @@ Rec::~Rec()
     delete item;
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF Rec::outlineRect() const
 {
     QRectF rect(0,0,400,400);
@@ -32,12 +46,32 @@ QRectF Rec::outlineRect() const
     return rect;
 }
 
+/*******************************************************************
+ * Function name: boundingRect()
+ * Description: This function defines the outer bounds of the item
+ *     as a rectangle; all painting must be restricted to inside an
+ *     item's bounding rect. IoNode uses this to determine
+ *     whether the item requires redrawing.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF Rec::boundingRect() const
 {
     const int Margin = 6;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
+/*******************************************************************
+ * Function name: shape()
+ * Description: This function returns the shape of this item as a
+ *     QPainterPath in local coordinates. The shape is used for many
+ *     things, including collision detection, hit tests, and for the
+ *     QGraphicsScene::items() functions.
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QPainterPath Rec::shape() const
 {
     QRectF rect = outlineRect();
@@ -47,7 +81,22 @@ QPainterPath Rec::shape() const
                       roundness(rect.height()));
     return path;
 }
-
+/*******************************************************************
+ * Function name: paint()
+ * Description: This function  paints the contents of an item in
+ *     local coordinates.
+ * Callee: QPen::pen(), QPainter::setPen(), QPainter::setBrush()
+ *         QPainter::drowRoundRect(), QPainter::drawText()
+ * Inputs: QPainter paint
+ *         QStyleOptionGraphicsItem *option - provides style options
+ *             for the item, such as its state, exposed area and
+ *             its level-of-detail hints.
+ *         QWidget *widget - The widget argument is optional. If
+ *             provided, it points to the widget that is being painted
+ *             on; otherwise, it is 0. For cached painting, widget is
+ *             always 0.
+ * Outputs:
+******************************************************************/
 void Rec::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
                  QWidget * /* widget */)
@@ -65,6 +114,16 @@ void Rec::paint(QPainter *painter,
                            roundness(rect.height()));
 }
 
+/*******************************************************************
+ * Function name: itemChange()
+ * Description: This function is to notify custom items that some
+ *     part of the item's state changes.
+ * Callee: Yuan::setPos(), Link::trackYuans(), setPos()
+ * Inputs: GraphicsItemChange change - the parameter of the item
+ *             that is changing
+ *         QVariant &value - new value
+ * Outputs:
+******************************************************************/
 QVariant Rec::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
@@ -80,6 +139,12 @@ QVariant Rec::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
+/*******************************************************************
+ * Function name: showYuan()
+ * Description: This function show Yuan according to the logic
+ *     function you choose. If you choose "if" or "while", Yuan will
+ *     be shown, but if you choose "else", Yuan will not be shown.
+******************************************************************/
 void Rec::showYuan()
 {
     int i=box->currentIndex();

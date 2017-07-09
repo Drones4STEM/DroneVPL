@@ -1,3 +1,8 @@
+/*******************************************************************
+ * File: main.cpp
+ * Author: Ryan Feng
+ * Description: This is the main entrance of DroneVPL.
+******************************************************************/
 #include <QApplication>
 
 #include "diagramwindow.h"

@@ -18,6 +18,12 @@ class Yuan;
 class Rec;
 class TakeoffNode;
 
+/*******************************************************************
+ * Class name: DiagramWindow
+ * Base class: QMainWindow
+ * Description: This is the declaration of class DiagramWindow.
+ *         DiagramWindow is the main window of DroneVPL.
+******************************************************************/
 class DiagramWindow : public QMainWindow
 {
     Q_OBJECT

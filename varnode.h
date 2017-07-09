@@ -6,6 +6,12 @@
 #include "vardefnode.h"
 #include <QtGui>
 
+/*******************************************************************
+ * Class name: VarNode
+ * Base class: Node
+ * Description: This is the declaration of class VarNode. VarNode
+ *       represents variables read and written by other actions.
+******************************************************************/
 class VarNode:public Node
 {
 public:

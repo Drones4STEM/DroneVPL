@@ -1,3 +1,11 @@
+/*******************************************************************
+ * File:yuan.cpp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        Yuan and triYuan. They are "in"/"out" nodes in DroneVPL
+******************************************************************/
+
+
 #include <QtGui>
 
 #include "link.h"
@@ -85,6 +93,13 @@ void Yuan::paint(QPainter *painter,
                            99);
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QRectF Yuan::outlineRect() const
 {
     QRectF rect(0,0,15,15);
@@ -103,6 +118,13 @@ QGraphicsItem* Yuan::myNode() const
     return node;
 }
 
+/*******************************************************************
+ * Function name: setInout()
+ * Description: This function set the inout mode of a Yuan.
+ * Callee:
+ * Inputs: int mode - 1:in ; 0:out
+ * Outputs:
+******************************************************************/
 void Yuan::setInout(int mode)
 {
     m_mode=mode;

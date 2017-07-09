@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:vardefnode.cpp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        VardefNode. VardefNode is a definition of variables.
+******************************************************************/
+
 #include "vardefnode.h"
 #include "diagramwindow.h"
 #include "varnode.h"

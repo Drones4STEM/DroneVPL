@@ -1,3 +1,12 @@
+/*******************************************************************
+ * File:varnode.cpp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        VarNode. VarNode represents variables read and written 
+ *        by other actions.
+******************************************************************/
+
+
 #include "varnode.h"
 #include "diagramwindow.h"
 #include "colordlg.h"
@@ -22,6 +31,13 @@ VarNode::~VarNode()
         delete array[i];
 }
 
+/*******************************************************************
+ * Function name: outlineRect()
+ * Description: return a rect
+ * Callee:
+ * Inputs:
+ * Outputs:QRectF
+******************************************************************/
 QPolygonF VarNode::outlineRect() const
 {
     QPolygonF poly;

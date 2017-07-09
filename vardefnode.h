@@ -8,6 +8,12 @@
 
 class VarNode;
 
+/*******************************************************************
+ * Class name: VardefNode
+ * Base class: NewNode
+ * Description: This is the declaration of class VardefNode. VardefNode
+ *       is a definition of variables.
+******************************************************************/
 class VardefNode:public NewNode
 {
 public:

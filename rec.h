@@ -15,6 +15,12 @@ class NewNode;
 class DiagramWindow;
 class Yuan;
 
+/*******************************************************************
+ * Class name: Rec
+ * Base class: NewNode
+ * Description: This is the declaration of class Rec. Rec acts as 
+ *        logic rectangle.
+******************************************************************/
 class Rec : public NewNode
 {
     Q_OBJECT
