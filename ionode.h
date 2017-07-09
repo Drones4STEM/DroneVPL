@@ -16,8 +16,8 @@ class IoSmallNode;
 /*******************************************************************
  * Class name: IoNode
  * Base class: NewNode
- * Desciption:This is a class for developers, and determines some
- *     to follow.
+ * Description: This is the declaration of class IoNode. IoNode is a
+ *       node which represents I/O operations.
 ******************************************************************/
 class IoNode:public NewNode
 {
