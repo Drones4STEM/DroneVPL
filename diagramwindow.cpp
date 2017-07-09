@@ -80,10 +80,10 @@ DiagramWindow::DiagramWindow()
 ******************************************************************/
 QSize DiagramWindow::sizeHint() const
 {
-    //QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
+   // QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
     //size.rwidth() += brushWidget->sizeHint().width();
     //return size.boundedTo(
-    //        QApplication::desktop()->availableGeometry().size());
+         //  QApplication::desktop()->availableGeometry().size());
 }
 
 /*******************************************************************
@@ -1194,9 +1194,24 @@ void DiagramWindow::showToolBar()
 ******************************************************************/
 void DiagramWindow::showStatusBar()
 {
-
+    //if(showStatusBar->isChecked()) {
+      // StatusBar->show();
+   // }
+   // else
+    //{StatusBar->hide();}
 }
 
+/*******************************************************************
+ * Function name:canvas()
+ * Description: This function is used to set the properties of the canvers.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::canvas()
+{
+
+}
 
 /*******************************************************************
  * Function name: createActions()
@@ -1321,10 +1336,6 @@ void DiagramWindow::createActions()
     connect(sendToBackAction, SIGNAL(triggered()),
             this, SLOT(sendToBack()));
 
-    propertiesAction = new QAction(tr("P&roperties..."), this);
-    connect(propertiesAction, SIGNAL(triggered()),
-            this, SLOT(properties()));
-
     showEditToolBarAction = new QAction(tr("EditToolBar"), this);
     showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
     showEditToolBarAction->setCheckable(true);
@@ -1342,6 +1353,14 @@ void DiagramWindow::createActions()
    showStatusBarAction->setCheckable(true);
     connect(showStatusBarAction, SIGNAL(triggered()),
             this, SLOT(showStatusBar()));
+
+    propertiesAction = new QAction(tr("P&roperties..."), this);
+    connect(propertiesAction, SIGNAL(triggered()),
+            this, SLOT(properties()));
+
+    canvasAction = new QAction(tr("canvas..."), this);
+    connect(canvasAction, SIGNAL(triggered()),
+            this, SLOT(canvas()));
 
 }
 
@@ -1366,7 +1385,6 @@ void DiagramWindow::createMenus()
     fileMenu->addAction(exitAction);
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
     editMenu = menuBar()->addMenu(tr("&Edit"));
-    editMenu->addAction(addLinkAction);
 
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
@@ -1402,12 +1420,15 @@ void DiagramWindow::createMenus()
     editMenu->addAction(bringToFrontAction);
     editMenu->addAction(sendToBackAction);
     editMenu->addSeparator();
-    editMenu->addAction(propertiesAction);
+
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
     viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(showEditToolBarAction);
     viewMenu->addAction(showToolBarAction);
     viewMenu->addAction(showStatusBarAction);
+    viewMenu->addAction(propertiesAction);
+    viewMenu->addSeparator();
+    viewMenu->addAction(canvasAction);
 }
 
 /*******************************************************************
