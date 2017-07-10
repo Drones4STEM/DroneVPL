@@ -25,6 +25,7 @@
 #include "yuan.h"
 #include "rec.h"
 #include "propertiesdialog.h"
+#include "canvasdialog.h"
 #include "itemtypes.h"
 
 const int StatusTimeout = AQP::MSecPerSecond * 30;
@@ -1210,7 +1211,8 @@ void DiagramWindow::showStatusBar()
 ******************************************************************/
 void DiagramWindow::canvas()
 {
-
+    CanvasDialog canvas(view,this);
+    canvas.exec();
 }
 
 /*******************************************************************
@@ -1474,7 +1476,7 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addIoNodeAction);
     aToolBar->addAction(addRecAction);
     aToolBar->addAction(addLinkAction);
-    addToolBar(Qt::LeftToolBarArea,aToolBar);
+    addToolBar(Qt::RightToolBarArea,aToolBar);
 }
 
 /*******************************************************************
