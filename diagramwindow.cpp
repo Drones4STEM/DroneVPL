@@ -49,6 +49,7 @@ DiagramWindow::DiagramWindow()
 
     view = new QGraphicsView;
     view->setScene(scene);
+
     view->setDragMode(QGraphicsView::RubberBandDrag);
     view->setRenderHints(QPainter::Antialiasing
                          | QPainter::TextAntialiasing);
@@ -66,9 +67,37 @@ DiagramWindow::DiagramWindow()
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
-
+    Yuan* newnewyuan=selectedYuan();
+    connect(newnewyuan,SIGNAL(signal()),this,SLOT(set_new_line()));
     setWindowTitle(tr("Diagram"));
     updateActions();
+}
+
+void DiagramWindow::set_new_line()
+{
+    /*Yuan* nnnyuan=selectedYuan();
+    Yuan* new_yuan=new Yuan;
+    if(!QEvent::MouseButtonPress)
+    {
+
+        new_yuan->setBackgroundColor(Qt::white);
+        new_yuan->setOutlineColor(Qt::white);
+        scene->addItem(new_yuan);
+        new_yuan->setPos(cursor().pos());
+        new_yuan->setSelected(true);
+        addLink();
+        update();
+    }
+    QList<QGraphicsItem *> near_yuan= scene->items (cursor().pos(), 1, 1, Qt::IntersectsItemShape,
+                                         Qt::AscendingOrder, QTransform()) ;
+   if(dynamic_cast<QGraphicsItem  *>(near_yuan.first())!=0)
+   {
+    delete new_yuan;
+     scene->clearSelection();
+     dynamic_cast<QGraphicsItem *>(near_yuan.first())->setSelected(true);
+    nnnyuan->setSelected(true);
+    addLink();
+   }*/
 }
 
 /*******************************************************************
@@ -399,10 +428,8 @@ void DiagramWindow::addTakeoffNode()
     node->yuan->setPos(QPointF((node->pos().x()),
                        (node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
     scene->addItem(node->yuan);
-
     takeoffNodeNum++;
     node->controlsId=takeoffNodeNum;
-
     setDirty(true);
 }
 

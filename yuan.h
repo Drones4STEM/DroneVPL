@@ -64,6 +64,8 @@ private:
 ******************************************************************/
 class triYuan:public Yuan
 {
+signals:
+    void signal();
 public:
     triYuan(QGraphicsItem *parent=0);
 

@@ -140,6 +140,7 @@ triYuan::triYuan(QGraphicsItem *parent)
 
     setFlags(ItemIsSelectable);
     setInout(0);
+ // connect(this,SIGNAL(signal()),this->parent(),SLOT(set_new_line()));
 }
 
 QPolygonF triYuan::outlineRect() const
@@ -169,6 +170,9 @@ void triYuan::paint(QPainter *painter,
     if (option->state & QStyle::State_Selected) {
         pen.setStyle(Qt::DotLine);
         pen.setWidth(2);
+
+        emit signal();
+
     }
     painter->setPen(pen);
     painter->setBrush(backgroundColor());
@@ -177,3 +181,9 @@ void triYuan::paint(QPainter *painter,
     painter->drawPolygon(poly);
 
 }
+
+void triYuan::signal()
+{
+
+}
+

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPair>
+#include <QEvent>
 
 class QAction;
 class QGraphicsItem;
@@ -36,9 +37,11 @@ public:
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
 
+
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
+    void set_new_line();
 
 private slots:
     void fileNew();
