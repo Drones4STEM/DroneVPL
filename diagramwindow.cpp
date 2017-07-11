@@ -67,15 +67,15 @@ DiagramWindow::DiagramWindow()
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
-    Yuan* newnewyuan=selectedYuan();
-    connect(newnewyuan,SIGNAL(signal()),this,SLOT(set_new_line()));
+    //Yuan* newnewyuan=selectedYuan();
+    //connect(newnewyuan,SIGNAL(signal()),this,SLOT(set_new_line()));
     setWindowTitle(tr("Diagram"));
     updateActions();
 }
 
-void DiagramWindow::set_new_line()
+ /*void DiagramWindow::set_new_line()
 {
-    /*Yuan* nnnyuan=selectedYuan();
+ Yuan* nnnyuan=selectedYuan();
     Yuan* new_yuan=new Yuan;
     if(!QEvent::MouseButtonPress)
     {
@@ -97,8 +97,8 @@ void DiagramWindow::set_new_line()
      dynamic_cast<QGraphicsItem *>(near_yuan.first())->setSelected(true);
     nnnyuan->setSelected(true);
     addLink();
-   }*/
-}
+   }
+}*/
 
 /*******************************************************************
  * Function name: sizeHint()

@@ -41,7 +41,7 @@ public:
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
-    void set_new_line();
+   // void set_new_line();
 
 private slots:
     void fileNew();
