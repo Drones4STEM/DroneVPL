@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>40</x>
@@ -73,7 +73,7 @@
       <item>
        <widget class="QSpinBox" name="wspinBox">
         <property name="maximum">
-         <number>1000</number>
+         <number>20000</number>
         </property>
        </widget>
       </item>
@@ -104,7 +104,7 @@
       <item>
        <widget class="QSpinBox" name="hspinBox">
         <property name="maximum">
-         <number>1000</number>
+         <number>20000</number>
         </property>
        </widget>
       </item>

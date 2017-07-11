@@ -15,7 +15,7 @@ CanvasDialog::CanvasDialog(QGraphicsView *aview,QWidget *parent):QDialog(parent)
     wspinBox->setValue(aview->width());
     hspinBox->setValue(aview->height());
     connect(buttonBox,SIGNAL(accepted()),this,SLOT(on_buttonBox_accepted()));
-
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 void CanvasDialog::on_buttonBox_accepted()
 {

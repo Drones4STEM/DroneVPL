@@ -85,6 +85,9 @@ private slots:
     void showToolBar();
     void showStatusBar();
     void canvas();
+    void checkup();
+    void compile();
+    void checkupAndCompile();
 
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
@@ -116,6 +119,8 @@ private:
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *viewMenu;
+    QMenu *compileMenu;
+    //QMenu *helpMenu;
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QToolBar *aToolBar;
@@ -163,6 +168,9 @@ private:
     QAction *showToolBarAction;
     QAction *showStatusBarAction;
     QAction *canvasAction;
+    QAction *checkupAction;
+    QAction *compileAction;
+    QAction *checkupAndCompileAction;
 
     QPrinter *printer;
     QGraphicsScene *scene;

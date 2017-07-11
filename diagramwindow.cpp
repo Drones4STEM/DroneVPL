@@ -117,7 +117,8 @@ void DiagramWindow::fileNew()
     del();
     setWindowFilePath(tr("Unnamed"));
     setDirty(false);
-
+    CanvasDialog canvas(view,this);
+    canvas.exec();//set the size of canvas when create a new file
 }
 
 /*******************************************************************
@@ -1216,6 +1217,28 @@ void DiagramWindow::canvas()
 }
 
 /*******************************************************************
+ * Function name: checkup()
+ * Description: This function discovers errors in the biock diagram before compile.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::checkup()
+{
+
+}
+
+void DiagramWindow::compile()
+{
+
+}
+
+void DiagramWindow::checkupAndCompile()
+{
+
+}
+
+/*******************************************************************
  * Function name: createActions()
  * Description: This function creates all the actions shown on the
  *     scene.
@@ -1227,14 +1250,17 @@ void DiagramWindow::canvas()
 void DiagramWindow::createActions()
 {
     fileNewAction = new QAction(tr("New"),this);
+    fileNewAction->setShortcut(QKeySequence::New);
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
     fileNewAction->setIcon(QIcon(":/images/filenew.png"));
 
     fileOpenAction = new QAction(tr("Open"),this);
+    fileOpenAction->setShortcut(QKeySequence::Open);
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
     fileOpenAction->setIcon(QIcon(":/images/fileopen.png"));
 
     fileSaveAction = new QAction(tr("Save"),this);
+    fileSaveAction->setShortcut(QKeySequence::Save);
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
     fileSaveAction->setIcon(QIcon(":/images/filesave.png"));
 
@@ -1364,6 +1390,16 @@ void DiagramWindow::createActions()
     connect(canvasAction, SIGNAL(triggered()),
             this, SLOT(canvas()));
 
+    checkupAction = new QAction(tr("check up"),this);
+    connect(checkupAction,SIGNAL(triggered()),
+            this, SLOT(checkup()));
+
+    compileAction = new QAction(tr("compile"),this);
+    connect(compileAction,SIGNAL(triggered()),this,SLOT(compile()));
+
+    checkupAndCompileAction = new QAction(tr("check up and compile"),this);
+    connect(checkupAndCompileAction,SIGNAL(triggered()),this,SLOT(checkupAndCompile()));
+
 }
 
 /*******************************************************************
@@ -1410,7 +1446,6 @@ void DiagramWindow::createMenus()
     editMenu->addAction(addVardefNodeAction);
     editMenu->addAction(addComputeNodeAction);
     editMenu->addAction(addIoNodeAction);
-    editMenu->addAction(addRecAction);
     editMenu->addSeparator();
 
     editMenu->addAction(deleteAction);
@@ -1428,9 +1463,14 @@ void DiagramWindow::createMenus()
     viewMenu->addAction(showEditToolBarAction);
     viewMenu->addAction(showToolBarAction);
     viewMenu->addAction(showStatusBarAction);
-    viewMenu->addAction(propertiesAction);
     viewMenu->addSeparator();
+    viewMenu->addAction(propertiesAction);
     viewMenu->addAction(canvasAction);
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
+    compileMenu=menuBar()->addMenu(tr("&Compile"));
+    compileMenu->addAction(checkupAction);
+    compileMenu->addAction(compileAction);
+    compileMenu->addAction(checkupAndCompileAction);
 }
 
 /*******************************************************************
