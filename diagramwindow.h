@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPair>
 #include <QEvent>
+#include <QMouseEvent>
 
 class QAction;
 class QGraphicsItem;
@@ -36,13 +37,13 @@ public:
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
-
+//protected:
+ //   void mouseDoubleClickEvent(QMouseEvent* zhc);
 
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
-   // void set_new_line();
-
+   void set_new_line();
 private slots:
     void fileNew();
     void fileOpen();

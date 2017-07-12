@@ -171,8 +171,6 @@ void triYuan::paint(QPainter *painter,
         pen.setStyle(Qt::DotLine);
         pen.setWidth(2);
 
-        emit signal();
-
     }
     painter->setPen(pen);
     painter->setBrush(backgroundColor());
@@ -182,8 +180,4 @@ void triYuan::paint(QPainter *painter,
 
 }
 
-void triYuan::signal()
-{
-
-}
 
