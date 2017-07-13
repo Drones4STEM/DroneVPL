@@ -10,6 +10,7 @@
 #include "varnode.h"
 #include "diagramwindow.h"
 #include "colordlg.h"
+#include "rec.h"
 
 VarNode::VarNode()
 {
@@ -80,23 +81,32 @@ void VarNode::paint(QPainter *painter,
 
 QVariant VarNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
-{
-    if (change & ItemPositionHasChanged) {
-        int a=0;
-        for(;a<6;a++)
-        {
-            if(flags[a])
+{ if (change & ItemPositionHasChanged){
+        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            int a=0;
+            for(;a<6;a++)
             {
-                int i=a%3;
-                int j;
-                if(a==0||a==2)j=-17;
-                else if(a==3||a==5)j=17;
-                else if(a==1)j=-35;
-                else j=35;
-                array[a]->setPos(pos().x() + (1-i)*30,
-                                 pos().y() + j);
+                if(flags[a])
+                {
+                    int i=a%3;
+                    int j;
+                    if(a==0||a==2)j=-17;
+                    else if(a==3||a==5)j=17;
+                    else if(a==1)j=-35;
+                    else j=35;
+                    array[a]->setPos(pos().x() + (1-i)*30,
+                                     pos().y() + j);
+                }
             }
-        }
-    }
+       }
+        else{
+            if(flags[0])
+            {
+                int i=0%3;
+                int j=-17;
+                setPos(array[0]->x()- (1-i)*30,array[0]->y()-j);
+            }
+        }}
     return QGraphicsItem::itemChange(change, value);
 }
