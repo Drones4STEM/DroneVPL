@@ -1,7 +1,16 @@
+/*******************************************************************
+ * File:diagramwindow.cpp
+ * Author:
+ * Desciption:This is a cpp file for developers, including many
+ *     circumstances you may encounter during development.
+******************************************************************/
+
 #include <QtGui>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QApplication>
+#include <QWidget>
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -19,6 +28,9 @@
 #include "propertiesdialog.h"
 #include "itemtypes.h"
 
+#include "ODocument.h"
+
+
 const int StatusTimeout = AQP::MSecPerSecond * 30;
 const QString MostRecentFile("MostRecentFile");
 const qint32 MagicNumber = 0x5A93DE5;
@@ -26,36 +38,50 @@ const qint16 VersionNumber = 1;
 const QString MimeType = "application/vnd.qtrac.pagedesigner";
 const int OffsetIncrement = 5;
 
+/*******************************************************************
+ * Function name: ComputeNode()
+ * Description: This is a constructor of DiagramWindow class
+ * Callee: creatActions(), createMenus(), createToolBars()
+ * Inputs:
+ * Outputs:
+******************************************************************/
 DiagramWindow::DiagramWindow()
 {
-    printer = new QPrinter(QPrinter::HighResolution);
-    scene = new QGraphicsScene(0, 0, 1000, 1000);
+    printer = new QPrinter(QPrinter::HighResolution);//画笔
+    scene = new QGraphicsScene(0, 0, 1000, 1000);//画布区域
     //scene = new QGraphicsScene;
 
-    view = new QGraphicsView;
+    view = new QGraphicsView;//图形视图
     view->setScene(scene);
-    view->setDragMode(QGraphicsView::RubberBandDrag);
+    view->setDragMode(QGraphicsView::RubberBandDrag);//默认动作
     view->setRenderHints(QPainter::Antialiasing
                          | QPainter::TextAntialiasing);
-    view->setContextMenuPolicy(Qt::ActionsContextMenu);
-    setCentralWidget(view);
+    view->setContextMenuPolicy(Qt::ActionsContextMenu);//显示文本菜单
+    setCentralWidget(view);//设置中心？默认？部件
 
     minZ = 0;
     maxZ = 0;
     seqNumber = 0;
     varNodeNum = 0;
 
-    createActions();
-    createMenus();
-    createToolBars();
+    createActions();//创建
+    createMenus();//创建菜单
+    createToolBars();//创建工具栏
 
     connect(scene, SIGNAL(selectionChanged()),
-            this, SLOT(updateActions()));
+            this, SLOT(updateActions()));//连接选择改变信号和更新槽
 
-    setWindowTitle(tr("Diagram"));
+    setWindowTitle(tr("Diagram"));//设置窗口名称
     updateActions();
 }
 
+/*******************************************************************
+ * Function name: sizeHint()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 QSize DiagramWindow::sizeHint() const
 {
     //QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
@@ -64,12 +90,28 @@ QSize DiagramWindow::sizeHint() const
     //        QApplication::desktop()->availableGeometry().size());
 }
 
+/*******************************************************************
+ * Function name: setDirty()
+ * Description: This function notify that the window has unsaved
+ *     changes and then updateActions.
+ * Callee: setWindowModified()
+ * Inputs: bool on
+ * Outputs:
+******************************************************************/
 void DiagramWindow::setDirty(bool on)
 {
     setWindowModified(on);
     updateActions();
 }
 
+/*******************************************************************
+ * Function name: fileNew()
+ * Description: This function creates a new file
+ * Callee: okToClearData(), selectAllItems(), del(), setDirty()
+ *         setWindowFilePath()
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::fileNew()
 {
     if (!okToClearData())
@@ -81,7 +123,15 @@ void DiagramWindow::fileNew()
 
 }
 
-bool DiagramWindow::okToClearData()
+/*******************************************************************
+ * Function name: okToClearData()
+ * Description: This function determines whether the data on the window
+ *     can be cleared.
+ * Callee: isWindowModified(), AQP::okToClearData()
+ * Inputs:
+ * Outputs: bool
+******************************************************************/
+bool DiagramWindow::okToClearData()  //tr？？
 {
     if (isWindowModified())
         return AQP::okToClearData(&DiagramWindow::fileSave, this,
@@ -89,27 +139,49 @@ bool DiagramWindow::okToClearData()
     return true;
 }
 
+/*******************************************************************
+ * Function name: selectAllItems()
+ * Description: This function select all Items on the scene.
+ * Callee: QGraphicsScene::clearSelection()
+ *         QGraphicsItem::setSelected()
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::selectAllItems()
 {
     scene->clearSelection();
     foreach (QGraphicsItem *item, scene->items())
-        item->setSelected(true);
+      item->setSelected(true);
 }
 
-
+/*******************************************************************
+ * Function name: fileOpen()
+ * Description: This function opens an exsiting file
+ * Callee: okToClearData(), QFileDialog::getOpenFileName()
+ *         QString::isEmpty(), loadFile()
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::fileOpen()
 {
     if (!okToClearData())
         return;
     const QString &filename = QFileDialog::getOpenFileName(this,
             tr("%1 - Open").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));
+            ".", tr("Page Designer (*.pd)"));  //？？？？？
     if (filename.isEmpty())
         return;
     setWindowFilePath(filename);
     loadFile();
 }
 
+/*******************************************************************
+ * Function name: loadFile()
+ * Description: This function loads the data of an existing file
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::loadFile()
 {
     QFile file(windowFilePath());
@@ -125,6 +197,13 @@ void DiagramWindow::loadFile()
     setDirty(false);
 }
 
+/*******************************************************************
+ * Function name: openPageDesignerFile()
+ * Description: This function loads the data of an existing file
+ * Callee:
+ * Inputs:QFile *file, QDataStream &in
+ * Outputs:bool - whether the file is loaded successfully or not
+******************************************************************/
 bool DiagramWindow::openPageDesignerFile(QFile *file, QDataStream &in)
 {
     if (!file->open(QIODevice::ReadOnly)) {
@@ -153,6 +232,13 @@ bool DiagramWindow::openPageDesignerFile(QFile *file, QDataStream &in)
     return true;
 }
 
+/*******************************************************************
+ * Function name: readItems()
+ * Description: This function reads the data of an existing file
+ * Callee:
+ * Inputs: QDataStream &in, int offset, bool select
+ * Outputs:
+******************************************************************/
 void DiagramWindow::readItems(QDataStream &in, int offset, bool select)
 {
     QSet<QGraphicsItem*>items;
@@ -193,6 +279,13 @@ void DiagramWindow::readItems(QDataStream &in, int offset, bool select)
 
 }
 
+/*******************************************************************
+ * Function name: selectItems()
+ * Description: This function set some items selected.
+ * Callee:
+ * Inputs: QSet<QGraphicsItem *> &items - the items you want to select
+ * Outputs:
+******************************************************************/
 void DiagramWindow::selectItems(const QSet<QGraphicsItem *> &items)
 {
     scene->clearSelection();
@@ -201,6 +294,13 @@ void DiagramWindow::selectItems(const QSet<QGraphicsItem *> &items)
     }
 }
 
+/*******************************************************************
+ * Function name: fileSave()
+ * Description: This function saves an existing file.
+ * Callee:
+ * Inputs:
+ * Outputs: bool - whether the file is saved successfully or not
+******************************************************************/
 bool DiagramWindow::fileSave()
 {
     const QString filename = windowFilePath();
@@ -218,6 +318,13 @@ bool DiagramWindow::fileSave()
     return true;
 }
 
+/*******************************************************************
+ * Function name: writeItems()
+ * Description: This function writes datas to a QDataStream.
+ * Callee:
+ * Inputs: QDataStream &out, const QList<QGraphicsItem *> &items
+ * Outputs:
+******************************************************************/
 void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &items)
 {
      foreach(QGraphicsItem*item,items)
@@ -237,6 +344,13 @@ void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &i
      }
 }
 
+/*******************************************************************
+ * Function name: fileSaveAs()
+ * Description: This function saves an unexisting file.
+ * Callee:
+ * Inputs:
+ * Outputs: bool - whether the file is saved successfully or not
+******************************************************************/
 bool DiagramWindow::fileSaveAs()
 {
     QString filename = QFileDialog::getSaveFileName(this,
@@ -250,16 +364,37 @@ bool DiagramWindow::fileSaveAs()
     return fileSave();
 }
 
+/*******************************************************************
+ * Function name: fileExport()
+ * Description: This function exports a graph of the window.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::fileExport()
 {
 
 }
 
+/*******************************************************************
+ * Function name: filePrint()
+ * Description: This function prints the window.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::filePrint()
 {
 
 }
 
+/*******************************************************************
+ * Function name: addTakeoffNode()
+ * Description: This function add a TakeoffNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addTakeoffNode()
 {
     TakeoffNode *node=new TakeoffNode;
@@ -275,6 +410,13 @@ void DiagramWindow::addTakeoffNode()
     setDirty(true);
 }
 
+/*******************************************************************
+ * Function name: addLandonNode()
+ * Description: This function add a LandonNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addLandonNode()
 {
     LandonNode *node=new LandonNode;
@@ -290,6 +432,13 @@ void DiagramWindow::addLandonNode()
     setDirty(true);
 }
 
+/*******************************************************************
+ * Function name: addTranslationNode()
+ * Description: This function add a TranslationNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addTranslationNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -297,6 +446,14 @@ void DiagramWindow::addTranslationNode()
 
     setDirty(true);
 }
+
+/*******************************************************************
+ * Function name: addTranslation()
+ * Description: This function add a TranslationNode on the scene.
+ * Callee:
+ * Inputs: TranslationNode *node
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addTranslation(TranslationNode *node)
 {
     node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
@@ -320,6 +477,14 @@ void DiagramWindow::addTranslation(TranslationNode *node)
     node->box->addItem(tr("right"));
     node->box->addItem(tr("left"));
 }
+
+/*******************************************************************
+ * Function name: addRiseNode()
+ * Description: This function add a RiseNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addRiseNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -328,6 +493,14 @@ void DiagramWindow::addRiseNode()
 
     setDirty(true);
 }
+
+/*******************************************************************
+ * Function name: addFallNode()
+ * Description: This function add a FallNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addFallNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -336,6 +509,14 @@ void DiagramWindow::addFallNode()
 
     setDirty();
 }
+
+/*******************************************************************
+ * Function name: addAdvanceNode()
+ * Description: This function add an AdvanceNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addAdvanceNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -344,6 +525,14 @@ void DiagramWindow::addAdvanceNode()
 
     setDirty();
 }
+
+/*******************************************************************
+ * Function name: addBackNode()
+ * Description: This function add a BackNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addBackNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -352,6 +541,14 @@ void DiagramWindow::addBackNode()
 
     setDirty();
 }
+
+/*******************************************************************
+ * Function name: addRightNode()
+ * Description: This function add a RightNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addRightNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -360,6 +557,14 @@ void DiagramWindow::addRightNode()
 
     setDirty();
 }
+
+/*******************************************************************
+ * Function name: addLeftNode()
+ * Description: This function add a LeftNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addLeftNode()
 {
     TranslationNode *node=new TranslationNode;
@@ -369,6 +574,13 @@ void DiagramWindow::addLeftNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addSomeNode()
+ * Description: This function add a SomeNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addSomeNode()
 {
     SomeNode *node=new SomeNode;
@@ -378,6 +590,13 @@ void DiagramWindow::addSomeNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addSome()
+ * Description: This function add a SomeNode on the scene.
+ * Callee:
+ * Inputs: SomeNode *node
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addSome(SomeNode *node)
 {
     node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
@@ -401,6 +620,13 @@ void DiagramWindow::addSome(SomeNode *node)
     node->box->addItem(tr("delay"));
 }
 
+/*******************************************************************
+ * Function name: addTurnLeftNode()
+ * Description: This function add a TurnLeftNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addTurnLeftNode()
 {
     SomeNode *node=new SomeNode;
@@ -410,6 +636,13 @@ void DiagramWindow::addTurnLeftNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addTurnRightNode()
+ * Description: This function add a TurnRightNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addTurnRightNode()
 {
     SomeNode *node=new SomeNode;
@@ -418,6 +651,14 @@ void DiagramWindow::addTurnRightNode()
 
     setDirty();
 }
+
+/*******************************************************************
+ * Function name: addHangingNode()
+ * Description: This function add a HangingNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addHangingNode()
 {
     SomeNode *node=new SomeNode;
@@ -426,6 +667,14 @@ void DiagramWindow::addHangingNode()
 
     setDirty();
 }
+
+/*******************************************************************
+ * Function name: addDelayNode()
+ * Description: This function add a DelayNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addDelayNode()
 {
     SomeNode *node=new SomeNode;
@@ -435,6 +684,13 @@ void DiagramWindow::addDelayNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addVarNode()
+ * Description: This function add a VarNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addVarNode()
 {
     VarNode* node=new VarNode;
@@ -447,6 +703,13 @@ void DiagramWindow::addVarNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addVardefNod()
+ * Description: This function add a VardefNod on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addVardefNode()
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -503,6 +766,13 @@ void DiagramWindow::addVardefNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addComputeNode()
+ * Description: This function add a ComputeNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addComputeNode()
 {
     ComputeNode *node=new ComputeNode;
@@ -542,6 +812,13 @@ void DiagramWindow::addComputeNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addIoNode()
+ * Description: This function add an IoNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addIoNode()
 {
     IoNode* node=new IoNode;
@@ -586,6 +863,13 @@ void DiagramWindow::addIoNode()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addLink()
+ * Description: This function add a Link on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addLink()
 {
     YuanPair yuans = selectedYuanPair();
@@ -606,6 +890,13 @@ void DiagramWindow::addLink()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: addRec()
+ * Description: This function add a Rec on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::addRec()
 {
     Rec *rec=new Rec;
@@ -636,6 +927,13 @@ void DiagramWindow::addRec()
     setDirty();
 }
 
+/*******************************************************************
+ * Function name: del()
+ * Description: This function delete the selected items.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::del()
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -685,6 +983,14 @@ void DiagramWindow::del()
 
 }
 
+
+/*******************************************************************
+ * Function name: copy()
+ * Description: This function copy the selected items.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::copy()
 {
     QList<QGraphicsItem*>items = scene->selectedItems();
@@ -695,6 +1001,13 @@ void DiagramWindow::copy()
     updateActions();
 }
 
+/*******************************************************************
+ * Function name: copyItems()
+ * Description: This function delete the selected items.
+ * Callee:
+ * Inputs:  QList<QGraphicsItem *> &items
+ * Outputs:
+******************************************************************/
 void DiagramWindow::copyItems(const QList<QGraphicsItem *> &items)
 {
     QByteArray copiedItems;
@@ -706,6 +1019,13 @@ void DiagramWindow::copyItems(const QList<QGraphicsItem *> &items)
     clipboard->setMimeData(mimeData);
 }
 
+/*******************************************************************
+ * Function name: paste()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::paste()
 {
     QClipboard*clipboard = QApplication::clipboard();
@@ -723,6 +1043,13 @@ void DiagramWindow::paste()
     setDirty(true);
 }
 
+/*******************************************************************
+ * Function name: cut()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::cut()
 {
     QList<QGraphicsItem*>items = scene->selectedItems();
@@ -738,18 +1065,39 @@ void DiagramWindow::cut()
     setDirty(true);
 }
 
+/*******************************************************************
+ * Function name: bringToFront()
+ * Description: This function changes the Z-coordinate of item.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::bringToFront()
 {
     ++maxZ;
     setZValue(maxZ);
 }
 
+/*******************************************************************
+ * Function name: bringToBack()
+ * Description: This function changes the Z-coordinate of item.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::sendToBack()
 {
     --minZ;
     setZValue(minZ);
 }
 
+/*******************************************************************
+ * Function name: properties()
+ * Description: This function show the property window.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::properties()
 {
     Node *node = selectedNode();
@@ -774,6 +1122,126 @@ void DiagramWindow::properties()
     }
 }
 
+/*******************************************************************
+ * Function name: startCompile()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::startCompile()
+{
+
+}
+
+/*******************************************************************
+ * Function name: convertCode()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::convertCode()
+{
+
+}
+/*******************************************************************
+ * Function name: toolBar()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::toolBar()
+{
+
+}
+
+/*******************************************************************
+ * Function name: controlBar()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::controlToolBar()
+{
+
+}
+
+/*******************************************************************
+ * Function name: statusBar()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::statusToolBar()
+{
+
+}
+
+/*******************************************************************
+ * Function name: canvas()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::canvas()
+{
+
+}
+
+/*******************************************************************
+ * Function name: openDocumentation()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::openDocumentation()
+{
+ //QApplication a(argc, argv);
+ //connect(this, SIGNAL(clicked()), this, SLOT(FileWidget()));
+ // FileWidget win;
+ // win.show();
+
+ //openBtn = new QPushButton("OPEN", this);
+ //connect(openBtn, SIGNAL(clicked()), this, SLOT(slotOpenFileDialog()));
+ //tipsLabel = new QLabel("help", this);
+ //Odocument();
+
+    aWindow *w;
+    w = new aWindow;
+    w->show();
+}
+
+
+
+
+/*******************************************************************
+ * Function name: systemInformation()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::systemInformation()
+{
+    
+}
+
+
+
+/*******************************************************************
+ * Function name: updateActions()
+ * Description: This function changes the state of actions according
+ *              to the selected items.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::updateActions()
 {
     bool isNode = (selectedNode() != 0||selectedNewNode()!=0);
@@ -794,10 +1262,18 @@ void DiagramWindow::updateActions()
 
     foreach (QAction *action, editMenu->actions()) {
         if (action->isEnabled())
-            view->addAction(action);
+        view->addAction(action);
     }
 }
 
+/*******************************************************************
+ * Function name: createActions()
+ * Description: This function creates all the actions shown on the
+ *     scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::createActions()
 {
     fileNewAction = new QAction(tr("New"),this);
@@ -915,8 +1391,42 @@ void DiagramWindow::createActions()
     propertiesAction = new QAction(tr("P&roperties..."), this);
     connect(propertiesAction, SIGNAL(triggered()),
             this, SLOT(properties()));
+
+    startCompileAction = new QAction(tr("&Start compile"),this);
+    connect(startCompileAction,SIGNAL(triggered()),this,SLOT(startCompile()));
+
+    convertCodeAction = new QAction(tr("&Convert code"),this);
+    connect(convertCodeAction,SIGNAL(triggered()),this,SLOT(convertCode()));
+
+    toolBarAction = new QAction(tr("&Tool bar"),this);
+    connect(toolBarAction,SIGNAL(triggered()),this,SLOT(toolBar()));
+
+    controlToolBarAction = new QAction(tr("&Controls tool bar"),this);
+    connect(controlToolBarAction,SIGNAL(triggered()),this,SLOT(controlToolBar()));
+
+    statusToolBarAction = new QAction(tr("&Status tool bar"),this);
+    connect(statusToolBarAction,SIGNAL(triggered()),this,SLOT(statusToolBar()));
+
+    canvasAction = new QAction(tr("Canvas"),this);
+    connect(canvasAction,SIGNAL(triggered()),this,SLOT(canvas()));
+
+    openDocumentationAction = new QAction(tr("&Open documentation"),this);
+    connect(openDocumentationAction,SIGNAL(triggered()),this,SLOT(openDocumentation()));
+
+    systemInformationAction = new QAction(tr("&System information"),this);
+    connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
+
+
+
 }
 
+/*******************************************************************
+ * Function name: createMenus()
+ * Description: This function creates menus.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
@@ -932,6 +1442,21 @@ void DiagramWindow::createMenus()
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(addLinkAction);
+
+    compileMenu = menuBar()->addMenu(tr("&Compile"));
+    compileMenu->addAction(startCompileAction);
+    compileMenu->addAction(convertCodeAction);
+
+    windowMenu = menuBar()->addMenu(tr("&Window"));
+    windowMenu->addAction(toolBarAction);
+    windowMenu->addAction(controlToolBarAction);
+    windowMenu->addAction(statusToolBarAction);
+    windowMenu->addAction(canvasAction);
+    windowMenu->addAction(propertiesAction);
+
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(openDocumentationAction);
+    helpMenu->addAction(systemInformationAction);
 
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
@@ -955,7 +1480,7 @@ void DiagramWindow::createMenus()
     editMenu->addAction(addVardefNodeAction);
     editMenu->addAction(addComputeNodeAction);
     editMenu->addAction(addIoNodeAction);
-    editMenu->addAction(addRecAction);
+    //editMenu->addAction(addRecAction);
     editMenu->addSeparator();
 
     editMenu->addAction(deleteAction);
@@ -967,9 +1492,16 @@ void DiagramWindow::createMenus()
     editMenu->addAction(bringToFrontAction);
     editMenu->addAction(sendToBackAction);
     editMenu->addSeparator();
-    editMenu->addAction(propertiesAction);
+    //editMenu->addAction(propertiesAction);
 }
 
+/*******************************************************************
+ * Function name: createToolBars()
+ * Description: This function creates toolbars.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
 void DiagramWindow::createToolBars()
 {
     editToolBar = addToolBar(tr("Edit"));
@@ -1009,6 +1541,13 @@ void DiagramWindow::createToolBars()
     addToolBar(Qt::LeftToolBarArea,aToolBar);
 }
 
+/*******************************************************************
+ * Function name: setZValue()
+ * Description: This function changes the Z-coordinate of item.
+ * Callee:
+ * Inputs: int z - the new value of Z-coordinate.
+ * Outputs:
+******************************************************************/
 void DiagramWindow::setZValue(int z)
 {
     Node *node = selectedNode();
@@ -1034,6 +1573,13 @@ void DiagramWindow::setZValue(int z)
         newnode->setZValue(z);}
 }
 
+/*******************************************************************
+ * Function name: setupNode()
+ * Description: This function add a Node on the scene.
+ * Callee:
+ * Inputs: Node *node
+ * Outputs:
+******************************************************************/
 void DiagramWindow::setupNode(Node *node)
 {
     //node->setPos(QPoint(80 + (100 * (seqNumber % 7)),
@@ -1047,6 +1593,13 @@ void DiagramWindow::setupNode(Node *node)
     bringToFront();
 }
 
+/*******************************************************************
+ * Function name: setupNewNode()
+ * Description: This function add a NewNode on the scene.
+ * Callee:
+ * Inputs: NewNode *newnode
+ * Outputs:
+******************************************************************/
 void DiagramWindow::setupNewNode(NewNode *newnode)
 {
     //newnode->setPos(QPoint(80 + (100 * (seqNumber % 7)),
@@ -1060,8 +1613,14 @@ void DiagramWindow::setupNewNode(NewNode *newnode)
     bringToFront();
 }
 
-
-
+/*******************************************************************
+ * Function name: selectedNode()
+ * Description: This function returns the pointer of a Node only when
+ *     one Node is selected.
+ * Callee:
+ * Inputs:
+ * Outputs: Node*
+******************************************************************/
 Node *DiagramWindow::selectedNode() const
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -1074,6 +1633,14 @@ Node *DiagramWindow::selectedNode() const
     }
 }
 
+/*******************************************************************
+ * Function name: selectedNewNode()
+ * Description: This function returns the pointer of a NewNode only
+ *     when one NewNode is selected.
+ * Callee:
+ * Inputs:
+ * Outputs: NewNode*
+******************************************************************/
 NewNode *DiagramWindow::selectedNewNode() const
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -1086,6 +1653,14 @@ NewNode *DiagramWindow::selectedNewNode() const
     }
 }
 
+/*******************************************************************
+ * Function name: selectedRec()
+ * Description: This function returns the pointer of a Rec only
+ *     when one Rec is selected.
+ * Callee:
+ * Inputs:
+ * Outputs: Rec*
+******************************************************************/
 Rec *DiagramWindow::selectedRec() const
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -1098,6 +1673,14 @@ Rec *DiagramWindow::selectedRec() const
     }
 }
 
+/*******************************************************************
+ * Function name: selectedLink()
+ * Description: This function returns the pointer of a Link only
+ *     when one Link is selected.
+ * Callee:
+ * Inputs:
+ * Outputs: Link*
+******************************************************************/
 Link *DiagramWindow::selectedLink() const
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -1108,6 +1691,14 @@ Link *DiagramWindow::selectedLink() const
     }
 }
 
+/*******************************************************************
+ * Function name: selectedYuan()
+ * Description: This function returns the pointer of a Yuan only
+ *     when one Yuan is selected.
+ * Callee:
+ * Inputs:
+ * Outputs: Yuan*
+******************************************************************/
 Yuan *DiagramWindow::selectedYuan() const
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
@@ -1118,6 +1709,14 @@ Yuan *DiagramWindow::selectedYuan() const
     }
 }
 
+/*******************************************************************
+ * Function name: selectedYuanPair()
+ * Description: This function returns YuanPair only when a pair of
+ *     Yuan are selected.
+ * Callee:
+ * Inputs:
+ * Outputs: YuanPair
+******************************************************************/
 DiagramWindow::YuanPair DiagramWindow::selectedYuanPair() const
 {
     QList<QGraphicsItem *> items = scene->selectedItems();

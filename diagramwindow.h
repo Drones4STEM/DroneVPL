@@ -3,6 +3,16 @@
 
 #include <QMainWindow>
 #include <QPair>
+//
+#include<qapplication.h>
+#include<qwidget.h>
+#include<qfile.h>
+#include<qtextstream.h>
+#include<qstring.h>
+//#include<qmultilineedit.h>
+#include "openDocumentation.h"
+
+
 
 class QAction;
 class QGraphicsItem;
@@ -18,6 +28,12 @@ class Yuan;
 class Rec;
 class TakeoffNode;
 
+/*******************************************************************
+ * Class name: DiagramWindow
+ * Base class: QMainWindow
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class DiagramWindow : public QMainWindow
 {
     Q_OBJECT
@@ -76,6 +92,15 @@ private slots:
     void properties();
     void updateActions();
 
+    void startCompile();
+    void convertCode();
+    void toolBar();
+    void controlToolBar();
+    void statusToolBar();
+    void canvas();
+    void openDocumentation();
+    void systemInformation();
+
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
 
@@ -98,6 +123,9 @@ private:
     void addTranslation(TranslationNode* node);//addTranslationNode()的帮助函数
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
 
+
+
+
     Link *selectedLink() const;
     Yuan *selectedYuan() const;
     YuanPair selectedYuanPair() const;
@@ -105,6 +133,10 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *compileMenu;
+    QMenu *windowMenu;
+    QMenu *helpMenu;
+
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QAction *fileNewAction;
@@ -147,6 +179,16 @@ private:
     QAction *bringToFrontAction;
     QAction *sendToBackAction;
     QAction *propertiesAction;
+
+    QAction *startCompileAction;
+    QAction *convertCodeAction;
+    QAction *toolBarAction;
+    QAction *controlToolBarAction;
+    QAction *statusToolBarAction;
+    QAction *canvasAction;
+    QAction *openDocumentationAction;
+    QAction *systemInformationAction;
+
 
     QPrinter *printer;
     QGraphicsScene *scene;
