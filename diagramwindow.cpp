@@ -29,6 +29,7 @@
 #include "itemtypes.h"
 
 #include "ODocument.h"
+#include "odescription.h"
 
 
 const int StatusTimeout = AQP::MSecPerSecond * 30;
@@ -1195,7 +1196,7 @@ void DiagramWindow::canvas()
 
 /*******************************************************************
  * Function name: openDocumentation()
- * Description:
+ * Description:This funciton open the help documentation.
  * Callee:
  * Inputs:
  * Outputs:
@@ -1230,6 +1231,9 @@ void DiagramWindow::openDocumentation()
 void DiagramWindow::systemInformation()
 {
     
+    ODescription *description;
+    description = new ODescription;
+    description->show();
 }
 
 
