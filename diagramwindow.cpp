@@ -44,10 +44,11 @@ const int OffsetIncrement = 5;
 DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
-    scene = new QGraphicsScene(0, 0, 1000, 1000);
-    //scene = new QGraphicsScene;
+   scene = new QGraphicsScene(0, 0, 1000, 1000);
+   // scene = new QGraphicsScene;
 
-    view = new QGraphicsView;
+     //   view = new QGraphicsView;
+  view = new newview;
     view->setScene(scene);
      setMouseTracking(true);
 
@@ -70,33 +71,40 @@ DiagramWindow::DiagramWindow()
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
     connect(scene, SIGNAL(selectionChanged()),
-          this, SLOT(set_new_line()));
+         this, SLOT(set_new_line()));
 
         setWindowTitle(tr("Diagram"));
         updateActions();
 }
-/*void DiagramWindow::mouseDoubleClickEvent(QMouseEvent *zhc)
-{if(scene->selectedItems().count()==1&&dynamic_cast<triYuan *>(scene->selectedItems().first())!=0)
 
-{Yuan* jkl=new Yuan;
- jkl->setPos(zhc->pos());
- scene->addItem(jkl);
-    }
-}*/
- void DiagramWindow::set_new_line()
+//void DiagramWindow::mouseMoveEvent(QMouseEvent *zhc)
+//{
+ //  close();
+//}
+  void DiagramWindow::set_new_line()
 {
-
-     if(scene->selectedItems().count()==1&&dynamic_cast<triYuan *>(scene->selectedItems().first())!=0)
-     {
-         Yuan* new_yuan=new Yuan;
-         new_yuan->setPos(cursor().pos());
+       /* if(scene->selectedItems().count()==1&&dynamic_cast<triYuan *>(scene->selectedItems().first())!=0)
+         { Yuan* new_yuan=new Yuan;
+         this->setMouseTracking(true);
+         QMouseEvent* e;
+         new_yuan->setPos(e->pos());
          Link* new_link=new Link(dynamic_cast<triYuan *>(scene->selectedItems().first()),new_yuan);
          new_link->setZValue(100);
          scene->addItem(new_link);
          scene->addItem(new_yuan);
          update();
-/*
-         if(!QEvent::MouseButtonPress)
+}
+
+
+
+
+         do
+             new_yuan->setPos(cursor().pos());
+         while(!scene->event(p));
+         }*/
+
+/*while(!QEvent::MouseButtonPress)
+
           {
              new_yuan->setBackgroundColor(Qt::white);
              new_yuan->setOutlineColor(Qt::white);
@@ -118,8 +126,9 @@ DiagramWindow::DiagramWindow()
             addLink();
          }*/
 
-     }
+   //delete new_yuan;
 }
+
 /*******************************************************************
  * Function name: sizeHint()
  * Description:

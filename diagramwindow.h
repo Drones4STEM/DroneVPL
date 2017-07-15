@@ -6,6 +6,8 @@
 #include <QEvent>
 #include <QMouseEvent>
 
+#include "view.h"
+
 class QAction;
 class QGraphicsItem;
 class QGraphicsScene;
@@ -38,7 +40,7 @@ public:
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
 //protected:
- //   void mouseDoubleClickEvent(QMouseEvent* zhc);
+  //  void mouseMoveEvent(QMouseEvent* event);
 
 public slots:
     void setDirty(bool on=true);
@@ -160,7 +162,8 @@ private:
 
     QPrinter *printer;
     QGraphicsScene *scene;
-    QGraphicsView *view;
+  //  QGraphicsView *view;
+    newview* view;
     int pasteOffset;
 
     int minZ;
@@ -174,6 +177,7 @@ private:
     int ioNodeNum;
     int recNodeNum;
     int linkNodeNum;
+    QMouseEvent *e;
 };
 
 #endif
