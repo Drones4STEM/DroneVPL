@@ -13,20 +13,27 @@ WidgetCondition::WidgetCondition(QWidget *parent) :
     y_axis->setBuddy(y_coordinate);
 
     widgetType = new QLabel(tr("Type:"));
-    chooseWidgetType = new QComboBox;
+    WidgetType = new QLabel(tr("WidgetType"));
+
+    parameters = new QLabel(tr("Something"));
 
     QHBoxLayout *topLayout = new QHBoxLayout;
-    topLayout->addWidget(x_axis);
-    topLayout->addWidget(x_coordinate);
-    topLayout->addWidget(y_axis);
-    topLayout->addWidget(y_coordinate);
+    topLayout->addWidget(widgetType);
+    topLayout->addWidget(WidgetType);
 
     QHBoxLayout *middleLayout = new QHBoxLayout;
-    middleLayout->addWidget(widgetType);
-    middleLayout->addWidget(chooseWidgetType);
+    middleLayout->addWidget(x_axis);
+    middleLayout->addWidget(x_coordinate);
+    middleLayout->addWidget(y_axis);
+    middleLayout->addWidget(y_coordinate);
+
+    QHBoxLayout *buttomLayout = new QHBoxLayout;
+    buttomLayout->addWidget(parameters);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(topLayout);
     mainLayout->addLayout(middleLayout);
+    mainLayout->addLayout(buttomLayout);
     setLayout(mainLayout);
+
 }
