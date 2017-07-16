@@ -70,63 +70,9 @@ DiagramWindow::DiagramWindow()
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
-    connect(scene, SIGNAL(selectionChanged()),
-         this, SLOT(set_new_line()));
 
         setWindowTitle(tr("Diagram"));
         updateActions();
-}
-
-//void DiagramWindow::mouseMoveEvent(QMouseEvent *zhc)
-//{
- //  close();
-//}
-  void DiagramWindow::set_new_line()
-{
-       /* if(scene->selectedItems().count()==1&&dynamic_cast<triYuan *>(scene->selectedItems().first())!=0)
-         { Yuan* new_yuan=new Yuan;
-         this->setMouseTracking(true);
-         QMouseEvent* e;
-         new_yuan->setPos(e->pos());
-         Link* new_link=new Link(dynamic_cast<triYuan *>(scene->selectedItems().first()),new_yuan);
-         new_link->setZValue(100);
-         scene->addItem(new_link);
-         scene->addItem(new_yuan);
-         update();
-}
-
-
-
-
-         do
-             new_yuan->setPos(cursor().pos());
-         while(!scene->event(p));
-         }*/
-
-/*while(!QEvent::MouseButtonPress)
-
-          {
-             new_yuan->setBackgroundColor(Qt::white);
-             new_yuan->setOutlineColor(Qt::white);
-
-
-             scene->addItem(new_yuan);
-             new_yuan->setSelected(true);
-             addLink();
-             update();
-          }
-        QList<QGraphicsItem *> near_yuan= scene->items (cursor().pos(), 1, 1, Qt::IntersectsItemShape,
-                                         Qt::AscendingOrder, QTransform()) ;
-        if(dynamic_cast<QGraphicsItem  *>(near_yuan.first())!=0)
-        {
-            delete new_yuan;
-            scene->clearSelection();
-            dynamic_cast<QGraphicsItem *>(near_yuan.first())->setSelected(true);
-            nnnyuan->setSelected(true);
-            addLink();
-         }*/
-
-   //delete new_yuan;
 }
 
 /*******************************************************************

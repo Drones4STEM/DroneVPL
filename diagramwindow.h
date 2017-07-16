@@ -39,13 +39,11 @@ public:
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
-//protected:
-  //  void mouseMoveEvent(QMouseEvent* event);
 
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
-   void set_new_line();
+
 private slots:
     void fileNew();
     void fileOpen();

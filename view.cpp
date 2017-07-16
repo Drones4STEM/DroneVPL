@@ -1,3 +1,8 @@
+/*******************************************************************
+ * File:view.cpp
+ * Author: Zhou Hengcheng
+ * Description: set a new directed line when a triYuan is being clicked
+******************************************************************/
 #include <QtGui>
 
 #include "view.h"
@@ -7,6 +12,9 @@
 newview::newview()
 {
     new_yuan=new Yuan;
+    new_yuan->setOutlineColor(Qt::white);
+    new_yuan->setBackgroundColor(Qt::white);
+
 }
 
 newview::~newview()
@@ -14,11 +22,11 @@ newview::~newview()
    delete new_yuan;
 }
 
-void newview::mouseMoveEvent(QMouseEvent *event_one)
+void newview::mouseMoveEvent(QMouseEvent *event)
 {
    if((this->scene()->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->scene()->selectedItems().first())!=0)
    {
-         new_yuan->setPos(event_one->pos());
+         new_yuan->setPos(event->x()-75,event->y());
 
          if(new_yuan->myLinks.size()>0)
          {
@@ -28,43 +36,35 @@ void newview::mouseMoveEvent(QMouseEvent *event_one)
         Link* new_link=new Link(dynamic_cast<triYuan *>(this->scene()->selectedItems(). first()),new_yuan);
         new_link->setZValue(100);
         this->scene()->addItem(new_link);
+        this->scene()->addItem(new_yuan);
    update();
    }
-    QGraphicsView::mouseMoveEvent(event_one);
+    QGraphicsView::mouseMoveEvent(event);
 }
 
-void newview::mouseReleaseEvent(QMouseEvent* event_two)
+void newview::mouseReleaseEvent(QMouseEvent* event)
 {
-  if(this->scene()->selectedItems().count()==1&&dynamic_cast<triYuan *>(this->scene()->selectedItems().first())!=0)
-   {
-//      QList<triYuan *> near_items=this->scene()->items (event_two->pos(),10, 10, Qt::IntersectsItemShape,Qt::AscendingOrder, );
-      if(near_items.count()==0)
-      {
-           delete dynamic_cast<Link *>(this->scene()->selectedItems().last());
-      }
-      else if(dynamic_cast<triYuan *>(near_items.first())!=0)
-      {
-           delete dynamic_cast<Link *>(this->scene()->selectedItems().last());
-           Link* new_link=new Link(dynamic_cast<triYuan *>(this->scene()->selectedItems().first()),
-                                    dynamic_cast<triYuan *>(near_items.first()));
-                 new_link->setZValue(100);
-                 this->scene()->addItem(new_link);
-      }
-   }
-/*
-if(dynamic_cast<QGraphicsItem  *>(near_yuan.first())!=0)
-{
-  delete new_yuan;
-  scene->clearSelection();
-  dynamic_cast<QGraphicsItem *>(near_yuan.first())->setSelected(true);
-  nnnyuan->setSelected(true);
-  addLink();*/
-    QGraphicsView::mouseMoveEvent(event_two);
+    if(new_yuan->myLinks.size()!=0)
+    {
+        foreach (Link* link,new_yuan->myLinks)
+         delete link;
+
+        if((this->scene()->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->scene()->selectedItems().first())!=0)
+        {
+           if(new_yuan->collidingItems().count()==1&&dynamic_cast<Yuan *>(new_yuan->collidingItems().first())!=0)
+           {
+               Link* new_link=new Link(dynamic_cast<triYuan *>(this->scene()->selectedItems(). first()),
+                                       dynamic_cast<Yuan *>(new_yuan->collidingItems().first()));
+               new_link->setZValue(100);
+               this->scene()->addItem(new_link);
+
+           }
+        }
+
+    }
+
+    QGraphicsView::mouseReleaseEvent(event);
 }
-
-
-
-
 
 
 

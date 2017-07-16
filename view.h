@@ -4,7 +4,10 @@
 #include <QGraphicsView>
 #include "yuan.h"
 
-
+/********************************************************************
+* Class name: newview
+* Description: provide a new view to do some mouse-events
+********************************************************************/
 class newview:public QGraphicsView
 {
     Q_OBJECT
@@ -14,8 +17,8 @@ public:
     Yuan* new_yuan;
     //Link* new_link;
 protected:
-    void mouseMoveEvent(QMouseEvent* event_one);
-    void mouseReleaseEvent(QMouseEvent* event_two);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 };
 
 #endif // VIEW_H
