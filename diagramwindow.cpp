@@ -74,6 +74,7 @@ DiagramWindow::DiagramWindow()
 
     setWindowTitle(tr("Diagram"));//设置窗口名称
     updateActions();
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 /*******************************************************************
@@ -117,10 +118,13 @@ void DiagramWindow::fileNew()
 {
     if (!okToClearData())
         return;
-    selectAllItems();
+ /*   selectAllItems();
     del();
     setWindowFilePath(tr("Unnamed"));
-    setDirty(false);
+   setDirty(false);
+*/
+   DiagramWindow *mainWin = new DiagramWindow;
+   mainWin->show();
 
 }
 
@@ -132,7 +136,7 @@ void DiagramWindow::fileNew()
  * Inputs:
  * Outputs: bool
 ******************************************************************/
-bool DiagramWindow::okToClearData()  //tr？？
+bool DiagramWindow::okToClearData()
 {
     if (isWindowModified())
         return AQP::okToClearData(&DiagramWindow::fileSave, this,
@@ -388,6 +392,8 @@ void DiagramWindow::filePrint()
 {
 
 }
+
+
 
 /*******************************************************************
  * Function name: addTakeoffNode()
@@ -1303,9 +1309,13 @@ void DiagramWindow::createActions()
     connect(filePrintAction, SIGNAL(triggered()), this, SLOT(filePrint()));
     filePrintAction->setIcon(QIcon(":/images/fileprint.png"));
 
+    closeAction = new QAction(tr("&Close"),this);
+    closeAction->setShortcut(tr("Ctrl+W"));
+    connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
+
     exitAction = new QAction(tr("E&xit"), this);
     exitAction->setShortcut(tr("Ctrl+Q"));
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
     addActionNodeAction = new QAction(tr("action"),this);
 
@@ -1402,19 +1412,19 @@ void DiagramWindow::createActions()
     convertCodeAction = new QAction(tr("&Convert code"),this);
     connect(convertCodeAction,SIGNAL(triggered()),this,SLOT(convertCode()));
 
-    toolBarAction = new QAction(tr("&Tool bar"),this);
+    toolBarAction = new QAction(tr("&Tool Bar"),this);
     connect(toolBarAction,SIGNAL(triggered()),this,SLOT(toolBar()));
 
-    controlToolBarAction = new QAction(tr("&Controls tool bar"),this);
+    controlToolBarAction = new QAction(tr("&Controls Bar"),this);
     connect(controlToolBarAction,SIGNAL(triggered()),this,SLOT(controlToolBar()));
 
-    statusToolBarAction = new QAction(tr("&Status tool bar"),this);
+    statusToolBarAction = new QAction(tr("&Status Bar"),this);
     connect(statusToolBarAction,SIGNAL(triggered()),this,SLOT(statusToolBar()));
 
     canvasAction = new QAction(tr("Canvas"),this);
     connect(canvasAction,SIGNAL(triggered()),this,SLOT(canvas()));
 
-    openDocumentationAction = new QAction(tr("&Open documentation"),this);
+    openDocumentationAction = new QAction(tr("&Documentation"),this);
     connect(openDocumentationAction,SIGNAL(triggered()),this,SLOT(openDocumentation()));
 
     systemInformationAction = new QAction(tr("&System information"),this);
@@ -1442,6 +1452,7 @@ void DiagramWindow::createMenus()
     fileMenu->addAction(fileExportAction);
     fileMenu->addAction(filePrintAction);
     fileMenu->addSeparator();
+    fileMenu->addAction(closeAction);
     fileMenu->addAction(exitAction);
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
     editMenu = menuBar()->addMenu(tr("&Edit"));

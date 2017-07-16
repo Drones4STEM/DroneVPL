@@ -38,6 +38,7 @@ class DiagramWindow : public QMainWindow
 {
     Q_OBJECT
 
+
 public:
     DiagramWindow();
 
@@ -58,6 +59,7 @@ private slots:
     void fileExport();
     void filePrint();
     void loadFile();
+
 
 
     void addTakeoffNode();
@@ -145,6 +147,7 @@ private:
     QAction *fileSaveAsAction;
     QAction *fileExportAction;
     QAction *filePrintAction;
+    QAction *closeAction;
     QAction *exitAction;
 
     QAction *addActionNodeAction;
@@ -206,6 +209,9 @@ private:
     int ioNodeNum;
     int recNodeNum;
     int linkNodeNum;
+
+
 };
+
 
 #endif

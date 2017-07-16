@@ -15,8 +15,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    DiagramWindow view;
-    view.show();
+    DiagramWindow *view;
+    view = new DiagramWindow;
+    view->show();
 
 
 
