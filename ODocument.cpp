@@ -3,6 +3,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include <QLayout>
+
 
 
 aWindow::aWindow(QWidget *parent) :
@@ -15,6 +17,10 @@ aWindow::aWindow(QWidget *parent) :
        //QDebug() << "Can not open";
     QTextStream WidM(&aFile);
  //   ui->textBrowser->append(WidM.readline());
+
+    QHBoxLayout *layout = new QHBoxLayout;
+       layout->addWidget(ui->textBrowser);
+       setLayout(layout);
 
 
 }
