@@ -26,6 +26,7 @@
 #include "rec.h"
 #include "propertiesdialog.h"
 #include "itemtypes.h"
+#include "widgetcondition.h"
 
 const int StatusTimeout = AQP::MSecPerSecond * 30;
 const QString MostRecentFile("MostRecentFile");
@@ -58,6 +59,12 @@ DiagramWindow::DiagramWindow()
                          | QPainter::TextAntialiasing);
     view->setContextMenuPolicy(Qt::ActionsContextMenu);
     setCentralWidget(view);
+
+    QDockWidget *rightside = new QDockWidget();
+    WidgetCondition *widgetCondition = new WidgetCondition();
+    rightside->setWidget(widgetCondition);
+    rightside->setAllowedAreas(Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, rightside);
 
     minZ = 0;
     maxZ = 0;
