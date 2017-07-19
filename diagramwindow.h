@@ -92,6 +92,7 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
+    void createWidgetConditionBar();
     void setZValue(int z);
     void setupNode(Node *node);
     void setupNewNode(NewNode *newnode);

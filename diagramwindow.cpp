@@ -59,12 +59,6 @@ DiagramWindow::DiagramWindow()
     view->setContextMenuPolicy(Qt::ActionsContextMenu);
     setCentralWidget(view);
 
-    QDockWidget *rightside = new QDockWidget();
-    WidgetCondition *widgetCondition = new WidgetCondition();
-    rightside->setWidget(widgetCondition);
-    rightside->setAllowedAreas(Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, rightside);
-
     minZ = 0;
     maxZ = 0;
     seqNumber = 0;
@@ -73,6 +67,7 @@ DiagramWindow::DiagramWindow()
     createActions();
     createMenus();
     createToolBars();
+    createWidgetConditionBar();
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
@@ -1480,6 +1475,28 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addRecAction);
     aToolBar->addAction(addLinkAction);
     addToolBar(Qt::LeftToolBarArea,aToolBar);
+}
+
+/*******************************************************************
+ * Function name: createToolBars()
+ * Description: This function creates toolbars.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::createWidgetConditionBar()
+{
+    setDockOptions(DiagramWindow::AnimatedDocks);
+
+    QDockWidget::DockWidgetFeatures features=
+            QDockWidget::DockWidgetClosable;
+
+    QDockWidget *rightside = new QDockWidget(this);
+    WidgetCondition *widgetCondition = new WidgetCondition();
+    rightside->setWidget(widgetCondition);
+    rightside->setFeatures(features);
+    rightside->setAllowedAreas(Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, rightside);
 }
 
 /*******************************************************************
