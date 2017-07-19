@@ -11,6 +11,8 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QWidget>
+#include <QMainWindow>
+
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -28,7 +30,7 @@
 #include "propertiesdialog.h"
 #include "itemtypes.h"
 
-#include "ODocument.h"
+#include "oDocument.h"
 #include "odescription.h"
 
 
@@ -124,6 +126,7 @@ void DiagramWindow::fileNew()
    setDirty(false);
 */
    DiagramWindow *mainWin = new DiagramWindow;
+   //mainWin->setGeography(0,0,200,120);
    mainWin->show();
 
 }
@@ -1219,8 +1222,8 @@ void DiagramWindow::openDocumentation()
  //tipsLabel = new QLabel("help", this);
  //Odocument();
 
-    aWindow *w;
-    w = new aWindow;
+    oDocument *w;
+    w = new oDocument;
     w->show();
 }
 
