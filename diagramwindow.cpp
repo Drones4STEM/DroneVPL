@@ -44,11 +44,12 @@ const int OffsetIncrement = 5;
 DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
-   scene = new QGraphicsScene(0, 0, 1000, 1000);
+     // scene = new QGraphicsScene(0, 0,1000,1000);
+     scene = new newscene;
    // scene = new QGraphicsScene;
 
-     //   view = new QGraphicsView;
-  view = new newview;
+       view = new QGraphicsView;
+  // view = new newview;
     view->setScene(scene);
      setMouseTracking(true);
 

@@ -15,7 +15,7 @@ HEADERS       = diagramwindow.h \
     aqp/alt_key.hpp \
     aqp/aqp.hpp \
     aqp/kuhn_munkres.hpp \
-    view.h
+    scene.h
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -32,7 +32,7 @@ SOURCES       = diagramwindow.cpp \
     aqp/alt_key.cpp \
     aqp/aqp.cpp \
     aqp/kuhn_munkres.cpp \
-    view.cpp
+    scene.cpp
 FORMS         = propertiesdialog.ui
 RESOURCES     = resources.qrc \
     aqp/aqp.qrc

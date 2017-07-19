@@ -6,7 +6,7 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-#include "view.h"
+#include "scene.h"
 
 class QAction;
 class QGraphicsItem;
@@ -159,9 +159,8 @@ private:
     QAction *propertiesAction;
 
     QPrinter *printer;
-    QGraphicsScene *scene;
-  //  QGraphicsView *view;
-    newview* view;
+   QGraphicsView *view;
+   newscene* scene;
     int pasteOffset;
 
     int minZ;

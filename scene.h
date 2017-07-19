@@ -2,23 +2,25 @@
 #define VIEW_H
 
 #include <QGraphicsView>
+#include <QGraphicsScene>
 #include "yuan.h"
 
 /********************************************************************
 * Class name: newview
 * Description: provide a new view to do some mouse-events
 ********************************************************************/
-class newview:public QGraphicsView
+class newscene:public QGraphicsScene
 {
     Q_OBJECT
 public:
-    newview();
-    ~newview();
-    Yuan* new_yuan;
-    //Link* new_link;
+    newscene();
+    ~newscene();
+    specialYuan* new_yuan;
+
 protected:
-    void mouseMoveEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
+
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 };
 
 #endif // VIEW_H
