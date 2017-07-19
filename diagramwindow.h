@@ -91,6 +91,7 @@ private slots:
     void compile();
     void checkupAndCompile();
 
+
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
 
@@ -116,6 +117,7 @@ private:
 
     void addTranslation(TranslationNode* node);//addTranslationNode()的帮助函数
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
+
 
     Link *selectedLink() const;
     Yuan *selectedYuan() const;

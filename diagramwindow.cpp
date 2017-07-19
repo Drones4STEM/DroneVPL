@@ -463,6 +463,11 @@ bool DiagramWindow::fileSaveAs()
 ******************************************************************/
 void DiagramWindow::fileExport()
 {
+    QPixmap pixmap;
+    pixmap=pixmap.grabWidget(this,0,0,scene->width(), scene->height());
+    QImage  image;
+    image=pixmap.toImage();
+    image.save("image.jpg","JPG");
 
 }
 
@@ -475,7 +480,20 @@ void DiagramWindow::fileExport()
 ******************************************************************/
 void DiagramWindow::filePrint()
 {
-
+    QPrinter printer(QPrinter::HighResolution);
+    QPrintDialog printdialog(&printer,this);
+    if(printdialog.exec())
+    {
+        QPainter painter(&printer);
+        QPixmap image;
+        image=image.grabWidget(this,0,0,scene->width(), scene->height());
+        QRect rect = painter.viewport();
+        QSize size = image.size();
+        size.scale(rect.size(), Qt::KeepAspectRatio);     //此处保证图片显示完整
+        painter.setViewport(rect.x(), rect.y(),size.width(), size.height());
+        painter.setWindow(image.rect());
+        painter.drawPixmap(0,0,image);
+}
 }
 
 /*******************************************************************
@@ -1619,7 +1637,7 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addIoNodeAction);
     aToolBar->addAction(addRecAction);
     aToolBar->addAction(addLinkAction);
-    addToolBar(Qt::RightToolBarArea,aToolBar);
+    addToolBar(Qt::LeftToolBarArea,aToolBar);
 }
 
 /*******************************************************************
