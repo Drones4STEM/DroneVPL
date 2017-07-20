@@ -6,8 +6,8 @@
 #include "yuan.h"
 
 /********************************************************************
-* Class name: newview
-* Description: provide a new view to do some mouse-events
+* Class name: newscene
+* Description: provide a new scene to do some mouse-events
 ********************************************************************/
 class newscene:public QGraphicsScene
 {
