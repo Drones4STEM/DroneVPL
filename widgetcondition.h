@@ -2,20 +2,22 @@
 #define WIDGETCONDITION_H
 
 #include <QWidget>
+#include "diagramwindow.h"
 
 class QLabel;
 class QLineEdit;
 class QComboBox;
-
+class QGraphicsItem;
 class WidgetCondition : public QWidget
 {
     Q_OBJECT
 
-//private slots:
-    //set
+public slots:
+    void setCondition(QGraphicsItem *item);
 
 public:
     WidgetCondition(QWidget *parent = 0);
+
     void updateConditon(){};
 
 private:
