@@ -14,6 +14,7 @@
 
 
 
+
 class QAction;
 class QGraphicsItem;
 class QGraphicsScene;
@@ -55,6 +56,7 @@ public slots:
 private slots:
     void fileNew();
     void fileOpen();
+    void openRecentFile();
     bool fileSave();
     bool fileSaveAs();
     void fileExport();
@@ -94,6 +96,14 @@ private slots:
     void sendToBack();
     void properties();
     void updateActions();
+    void showEditToolBar();
+    void showNodeBar();
+    void showNodeStatusBar();
+    void canvas();
+    void checkup();
+    void compile();
+    void checkupAndCompile();
+
 
     void startCompile();
     void convertCode();
@@ -110,22 +120,25 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
-    void setZValue(int z);
+    void setZValue(int Z);
     void setupNode(Node *node);
     void setupNewNode(NewNode *newnode);
 
-    void selectItems(const QSet<QGraphicsItem*>&items);
-    void copyItems(const QList<QGraphicsItem*>&items);
+    void selectItems( QSet<QGraphicsItem*>&items);
+    void copyItems( QList<QGraphicsItem*>&items);
 
-    void readItems(QDataStream &in, int offset=0, bool select=false);
+    void readItems(QDataStream &in,int offset,bool select);
     void writeItems(QDataStream &out,
-                    const QList<QGraphicsItem*> &items);
+                     const QList<QGraphicsItem*> &items);
     bool okToClearData();
     bool openPageDesignerFile(QFile *file, QDataStream &in);
 
+    void setCurrentFile(const QString &fileName);
+    void updateRecentFileActions();//update recent files
+    QString strippedName( QString &fullFileName);//updateRecentFileActions()的帮助函数
+
     void addTranslation(TranslationNode* node);//addTranslationNode()的帮助函数
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
-
 
 
 
@@ -136,14 +149,23 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
-    QMenu *compileMenu;
+    QMenu *viewMenu;
+    QMenu *compileMenu
     QMenu *windowMenu;
     QMenu *helpMenu;
 
+
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
+    QToolBar *aToolBar;
+
+
     QAction *fileNewAction;
     QAction *fileOpenAction;
+
+    enum { MaxRecentFiles = 5 };
+    QAction *recentFileActions[MaxRecentFiles];
+
     QAction *fileSaveAction;
     QAction *fileSaveAsAction;
     QAction *fileExportAction;
@@ -183,6 +205,13 @@ private:
     QAction *bringToFrontAction;
     QAction *sendToBackAction;
     QAction *propertiesAction;
+    QAction *showEditToolBarAction;
+    QAction *showNodeBarAction;
+    QAction *showNodeStatusBarAction;
+    QAction *canvasAction;
+    QAction *checkupAction;
+    QAction *compileAction;
+    QAction *checkupAndCompileAction;
 
     QAction *startCompileAction;
     QAction *convertCodeAction;
@@ -197,6 +226,8 @@ private:
     QPrinter *printer;
     QGraphicsScene *scene;
     QGraphicsView *view;
+    QStringList recentFiles;
+    QString curFile;
     int pasteOffset;
 
     int minZ;
