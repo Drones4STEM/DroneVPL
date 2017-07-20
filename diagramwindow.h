@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include <QPair>
-//
+
+
 #include<qapplication.h>
 #include<qwidget.h>
 #include<qfile.h>
@@ -13,6 +14,13 @@
 //#include "openDocumentation.h"
 
 
+
+
+#include <QEvent>
+#include <QMouseEvent>
+
+
+#include "scene.h"
 
 
 class QAction;
@@ -28,7 +36,7 @@ class SomeNode;
 class Yuan;
 class Rec;
 class TakeoffNode;
-
+class WidgetCondition;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindo
@@ -49,9 +57,30 @@ public:
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
 
+
+    int pasteOffset;
+
+    int minZ;
+    int maxZ;
+    int seqNumber;
+    int varNodeNum;  //计数varNode,命名每个varNode,下同
+    int takeoffNodeNum;
+    int landonNodeNum;
+    int vardefNodeNum;
+    int computeNodeNum;
+    int ioNodeNum;
+    int recNodeNum;
+    int linkNodeNum;
+    int need_to_set = 0;
+    int selected_Index=0;
+
+    WidgetCondition *widgetCondition;
+signals:
+    bool passWidget(QGraphicsItem *);
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
+    bool conditionChanged();
 
 private slots:
     void fileNew();
@@ -119,7 +148,10 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
-    void setZValue(int Z);
+
+    void createWidgetConditionBar(WidgetCondition *widgetCondition);
+    void setZValue(int z);
+
     void setupNode(Node *node);
     void setupNewNode(NewNode *newnode);
 
@@ -222,24 +254,13 @@ private:
 
 
     QPrinter *printer;
-    QGraphicsScene *scene;
-    QGraphicsView *view;
     QStringList recentFiles;
     QString curFile;
-    int pasteOffset;
 
-    int minZ;
-    int maxZ;
-    int seqNumber;
-    int varNodeNum;  //计数varNode,命名每个varNode,下同
-    int takeoffNodeNum;
-    int landonNodeNum;
-    int vardefNodeNum;
-    int computeNodeNum;
-    int ioNodeNum;
-    int recNodeNum;
-    int linkNodeNum;
+   QGraphicsView *view;
+   newscene* scene;
 
+    QMouseEvent *e;
 
 };
 

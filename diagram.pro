@@ -18,6 +18,9 @@ HEADERS       = diagramwindow.h \
     canvasdialog.h \
     odescription.h \
     odocument.h
+    scene.h \
+    widgetcondition.h
+
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -42,6 +45,9 @@ FORMS         = propertiesdialog.ui \
     awindow.ui \
     odescription.ui \
     odocument.ui
+    scene.cpp \
+    widgetcondition.cpp
+FORMS         = propertiesdialog.ui
 RESOURCES     = resources.qrc \
     aqp/aqp.qrc
 

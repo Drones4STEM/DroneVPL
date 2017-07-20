@@ -8,6 +8,7 @@
 #include "ionode.h"
 #include "yuan.h"
 #include "link.h"
+#include "rec.h"
 
 /*******************************************************************
  * Function name: IoNode()
@@ -137,27 +138,33 @@ void IoNode::paint(QPainter *painter,
 ******************************************************************/
 QVariant IoNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change & ItemPositionHasChanged) {
-        yuan->setPos(pos().x(),
-                     pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan->myLinks)
-        {link->trackYuans();update();}
+    if (change & ItemPositionHasChanged){
+        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            yuan->setPos(pos().x(),
+                         pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+            foreach (Link *link, yuan->myLinks)
+            {link->trackYuans();update();}
 
-        yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                     pos().y());
-        foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
+            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
+                         pos().y());
+            foreach (Link *link, yuan2->myLinks)
+            {link->trackYuans();update();}
 
-        item->setPos(pos().x() - outlineRect().width()/2,
-                     pos().y() - outlineRect().height()/2 - item->boundingRect().height());
+            item->setPos(pos().x() - outlineRect().width()/2,
+                         pos().y() - outlineRect().height()/2 - item->boundingRect().height());
 
-        node2->setPos(pos().x() + outlineRect().width()/2 + node2->outlineRect().width()/2,
-                      pos().y());
-        node1->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
-                      node2->pos().y() - node2->outlineRect().height());
-        node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
-                      node2->pos().y() + node2->outlineRect().height());
-    }
+            node2->setPos(pos().x() + outlineRect().width()/2 + node2->outlineRect().width()/2,
+                          pos().y());
+            node1->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
+                          node2->pos().y() - node2->outlineRect().height());
+            node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
+                          node2->pos().y() + node2->outlineRect().height());
+       }
+        else{
+            setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
+                   node2->y());
+        }}
     return QGraphicsItem::itemChange(change, value);
 }
 
