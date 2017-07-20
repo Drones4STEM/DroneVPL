@@ -40,6 +40,22 @@ public:
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
 
+    int pasteOffset;
+
+    int minZ;
+    int maxZ;
+    int seqNumber;
+    int varNodeNum;  //计数varNode,命名每个varNode,下同
+    int takeoffNodeNum;
+    int landonNodeNum;
+    int vardefNodeNum;
+    int computeNodeNum;
+    int ioNodeNum;
+    int recNodeNum;
+    int linkNodeNum;
+    int need_to_set = 0;
+    int selected_Index=0;
+
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
@@ -162,19 +178,7 @@ private:
     QPrinter *printer;
    QGraphicsView *view;
    newscene* scene;
-    int pasteOffset;
 
-    int minZ;
-    int maxZ;
-    int seqNumber;
-    int varNodeNum;  //计数varNode,命名每个varNode,下同
-    int takeoffNodeNum;
-    int landonNodeNum;
-    int vardefNodeNum;
-    int computeNodeNum;
-    int ioNodeNum;
-    int recNodeNum;
-    int linkNodeNum;
     QMouseEvent *e;
 };
 

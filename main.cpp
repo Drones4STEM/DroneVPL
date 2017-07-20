@@ -7,10 +7,14 @@
 
 #include "diagramwindow.h"
 
+DiagramWindow* view;
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    DiagramWindow view;
-    view.show();
+    DiagramWindow view1;
+    view = &view1;
+    view1.show();
+    view1.show();
     return app.exec();
 }
