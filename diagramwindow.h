@@ -5,7 +5,10 @@
 #include <QPair>
 #include <QEvent>
 #include <QMouseEvent>
-//#include "widgetcondition.h"
+
+
+#include "scene.h"
+
 class QAction;
 class QGraphicsItem;
 class QGraphicsScene;
@@ -37,6 +40,7 @@ public:
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
+
     WidgetCondition *widgetCondition;
 //protected:
  //   void mouseDoubleClickEvent(QMouseEvent* zhc);
@@ -45,8 +49,8 @@ signals:
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
-    void set_new_line();
     bool conditionChanged();
+
 private slots:
     void fileNew();
     void fileOpen();
@@ -163,8 +167,8 @@ private:
     QAction *propertiesAction;
 
     QPrinter *printer;
-    QGraphicsScene *scene;
-    QGraphicsView *view;
+   QGraphicsView *view;
+   newscene* scene;
     int pasteOffset;
 
     int minZ;
@@ -178,6 +182,7 @@ private:
     int ioNodeNum;
     int recNodeNum;
     int linkNodeNum;
+    QMouseEvent *e;
 };
 
 #endif

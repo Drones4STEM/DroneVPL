@@ -91,6 +91,13 @@ void Yuan::paint(QPainter *painter,
     QRectF rect = outlineRect();
     painter->drawRoundRect(rect, 99,
                            99);
+
+    if(this->collidingItems().count()>=1&&dynamic_cast<specialYuan *>(this->collidingItems().last())!=0)
+     {
+        painter->setBrush(Qt::yellow);
+        painter->drawRoundRect(rect);
+     }
+
 }
 
 /*******************************************************************
@@ -180,4 +187,49 @@ void triYuan::paint(QPainter *painter,
 
 }
 
+specialYuan::specialYuan(QGraphicsItem *parent)
+{
+    node=parent;
+    setOutlineColor(Qt::white);
+    setBackgroundColor(Qt::white);
 
+    setInout(0);
+}
+
+QRectF specialYuan::outlineRect() const
+{
+    QRectF rect(0,0,50,50);
+    rect.translate(-rect.center());
+    return rect;
+}
+
+QRectF specialYuan::boundingRect() const
+{
+    const int Margin=1;
+    return outlineRect().adjusted(-Margin,-Margin,Margin,Margin);}
+
+QPainterPath specialYuan::shape()  const
+{
+    QRectF rect = outlineRect();
+
+    QPainterPath path;
+    path.addRoundRect(rect, roundness(rect.width()),
+                      roundness(rect.height()));
+    return path;
+}
+
+void specialYuan::paint(QPainter *painter,
+                    const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QPen pen(myOutlineColor);
+    if (option->state &QStyle::State_Selected) {
+        pen.setStyle(Qt::DotLine);
+        pen.setWidth(2);
+    }
+    painter->setPen(pen);
+    painter->setBrush(myBackgroundColor);
+
+    QRectF rect = outlineRect();
+    painter->drawRoundRect(rect, 99,
+                           99);
+}

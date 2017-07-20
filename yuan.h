@@ -47,7 +47,7 @@ public:
     void setInout(int mode);
 
     QGraphicsItem *node;
-private:
+//private:
 
     int roundness(double size) const;
 
@@ -74,4 +74,20 @@ public:
     QPolygonF outlineRect() const;
 };
 
+/*******************************************************************
+ * Class name: specialYuan
+ * Base class: Yuan
+ * Description: this class is set for characteristic points
+******************************************************************/
+class specialYuan:public Yuan
+{
+public:
+    specialYuan(QGraphicsItem *parent=0);
+
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF outlineRect() const;
+};
 #endif // YUAN_H
