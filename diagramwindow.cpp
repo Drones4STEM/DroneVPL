@@ -463,11 +463,14 @@ bool DiagramWindow::fileSaveAs()
 ******************************************************************/
 void DiagramWindow::fileExport()
 {
-    QPixmap pixmap;
-    pixmap=pixmap.grabWidget(this,0,0,scene->width(), scene->height());
-    QImage  image;
-    image=pixmap.toImage();
-    image.save("image.jpg","JPG");
+    //QPixmap pixmap;
+    //pixmap=pixmap.grabWidget(this,0,0,scene->width(), scene->height());
+    //QImage  image;
+    //image=pixmap.toImage();
+    //pixmap.save("D:\qt\image.jpg","JPG");
+    QString filename = QFileDialog::getSaveFileName(this,
+            tr("%1 - Save As").arg(QApplication::applicationName()),
+            ".", tr("JPG (*.jpg)"));
 
 }
 
