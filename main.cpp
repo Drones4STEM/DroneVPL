@@ -1,8 +1,7 @@
-/*******************************************************************
- * File:main.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+/******************************************************************
+* File: main.cpp
+ * Author: Ryan Feng
+ * Description: This is the main entrance of DroneVPL
 ******************************************************************/
 #include <QApplication>
 

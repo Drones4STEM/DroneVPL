@@ -10,6 +10,12 @@ class Link;
 class Yuan;
 class triYuan;
 
+/*******************************************************************
+ * Class name: Node
+ * Base class: QGraphicsObject
+ * Description: This is the declaration of class Node. Node is the
+ *       parent class of ComputeNode, TakeoffNode, VarNode.
+******************************************************************/
 class Node : public QGraphicsObject
 {
     //Q_DECLARE_TR_FUNCTIONS(Node)

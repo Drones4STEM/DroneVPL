@@ -30,9 +30,10 @@ class TakeoffNode;
 
 /*******************************************************************
  * Class name: DiagramWindow
- * Base class: QMainWindow
- * Desciption:This is a class for developers, and determines some
- *     to follow.
+ * Base class: QMainWindo
+ * Description: This is the declaration of class DiagramWindow.
+ *         DiagramWindow is the main window of DroneVPL.
+
 ******************************************************************/
 class DiagramWindow : public QMainWindow
 {

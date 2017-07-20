@@ -8,6 +8,13 @@ class QGraphicsItem;
 #include "node.h"
 #include "itemtypes.h"
 
+/*******************************************************************
+ * Class name: ComputeNode
+ * Base class: Node
+ * Description: This is the declaration of class ComputeNode.
+ *       ComputeNode is a node which connect two varnodes (variables)
+ *       and compute an outcome.
+******************************************************************/
 class ComputeNode:public Node
 {
     Q_OBJECT;

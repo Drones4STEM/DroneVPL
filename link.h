@@ -7,6 +7,12 @@
 class Node;
 class Yuan;
 
+/*******************************************************************
+ * Class name: Link
+ * Base class: QGraphicsLineItem
+ * Description: This is the declaration of class Link. Link creates
+ *        a connection between two nodes.
+******************************************************************/
 class Link : public QGraphicsLineItem
 {
 public:

@@ -1,8 +1,9 @@
 /*******************************************************************
- * File:diagramwindow.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * File:diagramwindow.cp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        DiagramWindow. DiagramWindow is the main window of 
+ *        DroneVPL
 ******************************************************************/
 
 #include <QtGui>
@@ -42,7 +43,7 @@ const QString MimeType = "application/vnd.qtrac.pagedesigner";
 const int OffsetIncrement = 5;
 
 /*******************************************************************
- * Function name: ComputeNode()
+* Function name: DiagramWindow()
  * Description: This is a constructor of DiagramWindow class
  * Callee: creatActions(), createMenus(), createToolBars()
  * Inputs:
@@ -133,7 +134,7 @@ void DiagramWindow::fileNew()
 
 /*******************************************************************
  * Function name: okToClearData()
- * Description: This function determines whether the data on the window
+ * Description: This function determins whether the data on the window
  *     can be cleared.
  * Callee: isWindowModified(), AQP::okToClearData()
  * Inputs:
@@ -395,7 +396,6 @@ void DiagramWindow::filePrint()
 {
 
 }
-
 
 
 /*******************************************************************
@@ -1250,7 +1250,7 @@ void DiagramWindow::systemInformation()
 /*******************************************************************
  * Function name: updateActions()
  * Description: This function changes the state of actions according
- *              to the selected items.
+ *              to the selected items
  * Callee:
  * Inputs:
  * Outputs:

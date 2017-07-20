@@ -13,6 +13,12 @@
 
 class IoSmallNode;
 
+/*******************************************************************
+ * Class name: IoNode
+ * Base class: NewNode
+ * Description: This is the declaration of class IoNode. IoNode is a
+ *       node which represents I/O operations.
+******************************************************************/
 class IoNode:public NewNode
 {
     Q_OBJECT

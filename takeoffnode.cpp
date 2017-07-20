@@ -1,3 +1,10 @@
+/*******************************************************************
+ * File:takeoffnode.cpp
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        TakeoffNode, LandNode, TranslationNode and SomeNode.
+******************************************************************/
+
 #include<QObject>
 
 #include "takeoffnode.h"
