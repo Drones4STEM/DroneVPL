@@ -15,7 +15,9 @@ HEADERS       = diagramwindow.h \
     aqp/alt_key.hpp \
     aqp/aqp.hpp \
     aqp/kuhn_munkres.hpp \
-    canvasdialog.h
+    canvasdialog.h \
+    odescription.h \
+    odocument.h
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -32,9 +34,14 @@ SOURCES       = diagramwindow.cpp \
     aqp/alt_key.cpp \
     aqp/aqp.cpp \
     aqp/kuhn_munkres.cpp \
-    canvasdialog.cpp
+    canvasdialog.cpp \
+    odescription.cpp \
+    odocument.cpp
 FORMS         = propertiesdialog.ui \
-    canvasdialog.ui
+    canvasdialog.ui \
+    awindow.ui \
+    odescription.ui \
+    odocument.ui
 RESOURCES     = resources.qrc \
     aqp/aqp.qrc
 

@@ -81,7 +81,7 @@ DiagramWindow::DiagramWindow()
             this, SLOT(updateActions()));//连接选择改变信号和更新槽
 
     setCurrentFile("");
-    updateRecentFileActions()
+    updateRecentFileActions();
      
     setWindowTitle(tr("Diagram"));//设置窗口名
  
@@ -1308,17 +1308,6 @@ void DiagramWindow::statusToolBar()
 
 }
 
-/*******************************************************************
- * Function name: canvas()
- * Description:
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::canvas()
-{
-
-}
 
 /*******************************************************************
  * Function name: openDocumentation()

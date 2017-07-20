@@ -10,7 +10,7 @@
 #include<qtextstream.h>
 #include<qstring.h>
 //#include<qmultilineedit.h>
-#include "openDocumentation.h"
+//#include "openDocumentation.h"
 
 
 
@@ -110,7 +110,6 @@ private slots:
     void toolBar();
     void controlToolBar();
     void statusToolBar();
-    void canvas();
     void openDocumentation();
     void systemInformation();
 
@@ -150,7 +149,7 @@ private:
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *viewMenu;
-    QMenu *compileMenu
+    QMenu *compileMenu;
     QMenu *windowMenu;
     QMenu *helpMenu;
 
@@ -218,7 +217,6 @@ private:
     QAction *toolBarAction;
     QAction *controlToolBarAction;
     QAction *statusToolBarAction;
-    QAction *canvasAction;
     QAction *openDocumentationAction;
     QAction *systemInformationAction;
 
