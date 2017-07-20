@@ -5,7 +5,7 @@
 #include <QPair>
 #include <QEvent>
 #include <QMouseEvent>
-
+//#include "widgetcondition.h"
 class QAction;
 class QGraphicsItem;
 class QGraphicsScene;
@@ -19,7 +19,7 @@ class SomeNode;
 class Yuan;
 class Rec;
 class TakeoffNode;
-
+class WidgetCondition;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -37,13 +37,16 @@ public:
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
+    WidgetCondition *widgetCondition;
 //protected:
  //   void mouseDoubleClickEvent(QMouseEvent* zhc);
-
+signals:
+    bool passWidget(QGraphicsItem *);
 public slots:
     void setDirty(bool on=true);
     void selectAllItems();
-   void set_new_line();
+    void set_new_line();
+    bool conditionChanged();
 private slots:
     void fileNew();
     void fileOpen();
@@ -92,7 +95,7 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
-    void createWidgetConditionBar();
+    void createWidgetConditionBar(WidgetCondition *widgetCondition);
     void setZValue(int z);
     void setupNode(Node *node);
     void setupNewNode(NewNode *newnode);

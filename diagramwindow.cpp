@@ -46,6 +46,7 @@ DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
     scene = new QGraphicsScene(0, 0, 1000, 1000);
+    widgetCondition = new WidgetCondition();
     //scene = new QGraphicsScene;
 
     view = new QGraphicsView;
@@ -67,13 +68,18 @@ DiagramWindow::DiagramWindow()
     createActions();
     createMenus();
     createToolBars();
-    createWidgetConditionBar();
+    createWidgetConditionBar(widgetCondition);
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
     connect(scene, SIGNAL(selectionChanged()),
           this, SLOT(set_new_line()));
-
+    connect(scene, SIGNAL(selectionChanged()),
+          this, SLOT(conditionChanged()));
+    connect(this, SIGNAL(passWidget(QGraphicsItem *)),
+            widgetCondition, SLOT(setCondition(QGraphicsItem *)));
+    //connect(scene, SIGNAL(selectionChanged()),
+    //        widgetCondition, SLOT(setCondition(/*QGraphicsItem**/)));
         setWindowTitle(tr("Diagram"));
         updateActions();
 }
@@ -1478,13 +1484,13 @@ void DiagramWindow::createToolBars()
 }
 
 /*******************************************************************
- * Function name: createToolBars()
- * Description: This function creates toolbars.
+ * Function name: createWidgetConditionBar()
+ * Description: This function creates a widgetConditionBar.
  * Callee:
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::createWidgetConditionBar()
+void DiagramWindow::createWidgetConditionBar(WidgetCondition *widgetCondition)
 {
     setDockOptions(DiagramWindow::AnimatedDocks);
 
@@ -1492,7 +1498,7 @@ void DiagramWindow::createWidgetConditionBar()
             QDockWidget::DockWidgetClosable;
 
     QDockWidget *rightside = new QDockWidget(this);
-    WidgetCondition *widgetCondition = new WidgetCondition();
+    //WidgetCondition *widgetCondition = new WidgetCondition();
     rightside->setWidget(widgetCondition);
     rightside->setFeatures(features);
     rightside->setAllowedAreas(Qt::RightDockWidgetArea);
@@ -1685,4 +1691,13 @@ DiagramWindow::YuanPair DiagramWindow::selectedYuanPair() const
             return YuanPair(first, second);
     }
     return YuanPair();
+}
+
+bool DiagramWindow::conditionChanged(){
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    if (items.count() >= 1) {
+            QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(items.first());
+            //QGraphicsItem *item = 0;
+            emit passWidget(item);
+    }
 }
