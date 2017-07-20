@@ -9,7 +9,8 @@
 
 #include "varnode.h"
 #include "diagramwindow.h"
-#include "colordlg.h"
+//#include "colordlg.h"
+
 #include "rec.h"
 
 VarNode::VarNode()
