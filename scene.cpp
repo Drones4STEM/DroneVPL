@@ -53,7 +53,7 @@ void newscene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
    if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems().first())!=0)
    {
-         new_yuan->setPos(event->scenePos());//75/1000
+         new_yuan->setPos(event->scenePos());
 
          if(new_yuan->myLinks.size()>0)
          {
@@ -81,7 +81,7 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
            {
               for(int i=0;i<new_yuan->collidingItems().count();i++)
               {
-                  if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0)
+                  if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0&&dynamic_cast<triYuan *>(new_yuan->collidingItems()[i])==0)
                {
                 Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
                                         dynamic_cast<Yuan *>(new_yuan->collidingItems()[i]));

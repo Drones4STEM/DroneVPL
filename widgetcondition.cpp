@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "widgetcondition.h"
+#include "diagramwindow.h"
 
 WidgetCondition::WidgetCondition(QWidget *parent) :
     QWidget(parent)
@@ -35,5 +36,15 @@ WidgetCondition::WidgetCondition(QWidget *parent) :
     mainLayout->addLayout(middleLayout);
     mainLayout->addLayout(buttomLayout);
     setLayout(mainLayout);
+
+}
+
+void WidgetCondition::setCondition(QGraphicsItem *item){
+    qreal x=item->pos().x();
+    QString x1 = QString::number(x,'g',6);
+    this->x_coordinate->setText(x1);
+    qreal y=item->pos().y();
+    QString y1 = QString::number(y,'g',6);
+    this->y_coordinate->setText(y1);
 
 }
