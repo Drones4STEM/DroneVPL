@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ODescription</class>
+ <widget class="QDialog" name="ODescription">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>658</width>
+    <height>399</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>System Information</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <widget class="QTextBrowser" name="textBrowser">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>621</width>
+     <height>371</height>
+    </rect>
+   </property>
+   <property name="lineWrapMode">
+    <enum>QTextEdit::WidgetWidth</enum>
+   </property>
+   <property name="html">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图形化编程软件需求说明&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;前言:由于编写仓促,本说明书还存在很多未被发现的 bug,因此我会长期更新这份说明书, 每次更新的内容会写在最前面,文内也会做修改并指明位置。更新未涉及到的内容即 保持原样。考虑到效率问题,我可能会在积累一定的 bug 后发布新版本的说明书,因 此需求和实际工作会存在一定的延迟,且更新周期不定,但是重要更新会及时告知大 家,希望大家不要因为更新速度的问题减缓手中工作。另外,欢迎对说明书有疑问的 小伙伴向我指出问题。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1.2 版本更新说明:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、控件栏和控件状态栏功能移动。 1.1 版本:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;该版本的控件状态栏具有修改控件具体型号的选项(型号和种类的关系就像 takeoff 和 Action),而控件栏只能 供控件种类的选择,这在控件生成和编号上带来 了困扰:假如用户拖拽生成一个 IO 控件,将不能在生成的这一步指定控件的具体型号, 其型号只能由开发者事先确定;随后用户才能在控件状态栏修改其型号,增加了操作量。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1.2 版本: 该版本将控件状态栏的修改型号功能移动到控件栏,并采用列表枚举的方式。即点&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;击控件生成按钮,应当出现一个下级列表,列表中包括所有该种类的控件的具体型号, 每种型号都由一个按钮体现,点击该列表中的按钮时,在图形化操作区生成该型号的控 件。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;控件状态栏的图例 6 控件状态栏示例已修改。 修改位置:三、窗体结构要素-》4、控件栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;三、窗体结构要素-》5、控件状态栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、控件栏功能增加和按钮显示要求细化。 1.2 版本:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本栏的按钮,包含列表中的按钮,尽量以图标表示,不能用图标表示的则以文字代 替。需实现鼠标悬停按钮上可查看按钮名称,方便识别。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;修改位置:三、窗体结构要素-》4、控件栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;一、 概述&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本项目任务之一是实现一款基于 QT 的图形化操作编程的软件,主要分为图形化操 作和代码编译两个部分。本说明书主要对图形化操作做出说明。等无人机控制方面的代码完 成后,可能会完善代码编译部分。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图形化操作界面至少由菜单栏、工具栏、控件栏、图形化操作区构成,图形化操作对象 的单元称为控件。关于控件的最具体 述请参阅《widget_manual》。所有设计都以 《widget_manual》为标准。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QT 开发环境 供图形化操作界面开发的相关库,对窗体结构要素及事件触发机制进行 了包装,开发者主要任务是使用开发包实现具体的窗体结构和事件响应。QT 基于 C++语言。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;二、 软件设计思路&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、设计目的&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本软件的设计目的为 供对无人机自动化控制编程的支持,并降低其编程难度,以面向 中小学阶段的学生为主。本软件与无人机的对接依靠固定在无人机上的树莓派。 2、基础与核心&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本软件的设计思路为:以顺序结构的框图为基础,以图形化操作单元代表可被无人机上 位机执行的代码(块),通过组建程序框图,并将其翻译为 python 代码烧入上位机,从而实 现无人机自动化控制。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;该顺序结构的框图仅以节点和有向线段组成,在逻辑上通过先后顺序、串并结构与无人 机执行的操作一一对应。节点即为图形化操作单元,即控件,控件有 5 种分类,2 种与无人 机动作有关,3 中辅助编程,包括特定逻辑、变量生成、数值与布尔值计算等。关于框图示 例及控件具体功能、接口请参阅《widget_manual》。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;作为一种开发软件,本软件必须具备保存工程和还原工程的功能。保存工程要求将框图 转化为文本。采用 xml 格式保存文本,每个控件需要被保存的属性有:坐标位置,上下节点, 编号(含表示其功能的特征),功能参数(若该参数有具体名称则该名称也需要保存)。还原 工程时从该 xml 文件读取各个控件并依据属性来还原,还原结果和保存前一致。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本软件最终目的为生成 python 代码,因此必须具备编译框图的功能。编译按拓扑顺序 遍历所有框图中的控件,按每个控件对应生成代码块,组合成完整的程序。拓扑顺序遍历的 意义在于保证控件顺序在逻辑上的正确性。有一种不需要与其他节点连接的控件“VAR”,该 控件的代码块在程序第一行生成(由该控件的功能决定,具体参阅《widget_manual》)。目 前由于控制方面的 API 还未掌握,暂时无法 供每个控件对应的 python 代码(块),但是依 然需要做好基础代码,保证后期代码块 供的时候只需要补充文件流读写的代码即可完成编 译。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;三、 窗体结构要素&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  预计的软件界面分块情况如下:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; 图例 1 软件界面分块设计 该图无具体比例但实际各模块比例应当大致与该图相同。图形化操作区必须占据最大面&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;积。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  以下主要具体说明不同区块的组成。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1. 按钮&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;按钮是人机交互的主要工具之一,通常具有形状、大小、位置、图标等基本属性。有用 的按钮还需要关联响应事件,即当按钮被触发时,执行特定事件。本软件需要实现的按钮见 “2、菜单栏”、“3、工具栏”及“4、控件栏”。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、菜单栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;菜单栏位于窗体最上方,由文字按钮组成,至少实现“文件、编辑、编译、窗口、帮助”五 个按钮,每个按钮的触发事件都是打开下级列表,下级列表包含更多的按钮,以一行一个的形式 排列,下级列表中的按钮响应事件也可能包含打开第二级列表,以此类推,如图例 2 编辑按钮 的第二级列表所示。具体层级关系由各部分按钮功能说明给出。部分按钮的功能已初步实现,需 要完善。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.1.文件&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  当文件按钮被点击时,将出现可选操作的列表,图例如下。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图例 2 文件按钮的列表 列表中每一个选项都是新的按钮。响应事件如下:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;new:创建新的窗体,不能关闭当前窗体,新的窗体处于旧的窗体的上层,横纵坐标略 微错开。新建的窗体没有任何框图。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;open:打开本地文件,文件后缀名为.xml,用 xml 库 供的文件流读取内容,并还原 所有控件及其连接状态。保证还原的控件所有属性和连接状态与保存前相同,且&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;唯一。被还原的框图在当前窗体显示。由于.xml 文件在数据交换中被广泛使用, 所以打开这种格式的文件时,如果打开的不是无人机自动控制程序框图的.xml 文 件,则 示 error:文件内容非法,不产生任何框图或其他操作。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;save:以有向图的结构保存当前工程,控件作为节点,每个节点作为一个独立的单元被 存储,每个单元中需要保存控件的坐标,前继节点和后继节点,编号(含表示其功 能的特征),功能参数(若该参数有具体名称则该名称也需要保存)。暂定以拓扑顺 序保存框图。save 不需要检查框图的正确性。save 只能以.xml 格式保存。若当前 工程未被创建,则执行 save as 的功能。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;save as:当前工程以有向图的格式另存为, 供可选的本地路径和文件名、后缀名为 xml,用户确认后创建一个.xml 文件并执行 save 的功能。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;exit:关闭当前窗体,当前框图存在未保存部分时, 示是否保存,用户选是后,若当 前文件未被建立,执行save as,若当前文件已被建立,则执行save;不论是否 有未保存部分,在关闭前 示是否关闭,是-关闭,否-不关闭。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;可选功能,在完成基础功能的前 下加入: export:导出图形操作界面的框图的图片.jpg,采用 wrap 模式,即尽可能地包括整张&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图片。保留控件的所有 visible 的属性。 print:通过打印机打印框图图片。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.2 编辑&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;当编辑按钮被点击时,将出现列表,图例如下。注意下图仅作为例子,请移除第 1 行 Link-第 7 行 Logic Rec 的按钮,它们将在控件栏中出现;请移除最后一行 properties,它 将在“窗口”列表中出现。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图例 3 编辑按钮的列表 列表中每一个选项都是新的按钮。响应事件如下:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;delete:删除选中的控件。若选中的控件与其他控件存在连线,则该连线一并删除。注 意类似以下情况时,虽然只选中了线段一端的控件,该线段仍应当与控件一同删 除:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; 图例 4 连线端点的控件被选中的情况 删除控件意味着在图形化操作区中该控件消失,在后台中该控件的实例化对象也&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;应当删除,任何能访问到它的方式应当被取消。 Cut:剪切选中的控件。若没有任何连线与控件相连,则直接剪切该控件;若多个控件被&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;选中且其之间存在连线,则连同连线一并剪切;若情况如图例 4 连线端点的控件 被选中的情况所示,则剪切控件的同时删除连线。注意不论什么情况,剪切的操作 对象应当始终是同一个,即被剪切的控件的属性,除了坐标,应当尽数保留。粘贴 时,坐标属性可设定为一个固定值。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;copy:拷贝选中的控件。若没有任何连线与控件相连,则直接拷贝该控件;若多个控件 被选中且其之间存在连线,则连同连线一并拷贝;若情况如图例 4 连线端点的控 件被选中的情况所示,则拷贝控件但不拷贝连线。被拷贝的控件(和连线)最终要 被粘贴,粘贴时控件的所有属性,除了坐标和编号,应当尽数保留,坐标属性可设 定为一个固定值,而编号在编号规则下按生成一个新控件的方式处理。具体的编 号规则见“三、机制和规则”。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;paste:粘贴被剪切/拷贝的控件,具体粘贴内容根据之前剪切/拷贝的内容而定,剪切 和拷贝的内容可以相互覆盖,即若先执行剪切,再执行拷贝,最后粘贴的内容是拷 贝的内容。粘贴的内容出现在图形化操作区的中心坐标位置,可以覆盖在原有框 图之上。粘贴可以重复执行,粘贴时所有出现重复的控件都需要按照编号规则,生 成新控件,除坐标外其余参数保留。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Bring to front:被选中的控件置于顶层。若该控件与其他控件有重叠部分,则会体 现为它在重叠部分遮障其他控件。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Send to back:被选中的控件置于底层。若该控件与其他控件有重叠部分,则会体现 为它在重叠部分被所有其他控件遮障。即若依次删除其他处于顶层的控件,该控 件是最后一个被删除的。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.3 编译&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;当编译按钮被点击时,图形化的控件框图被编译为 python 代码,并生成.py 文件。本 任务中这个按钮只需要实现如下功能。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.3.1 框图阶段&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;该阶段检查当前框图是否存在非法连接(包括不连接),非法逻辑(如并行顺序中同时 执行前进和后退),以及是否存在非法参数,并在非法情况下以弹窗形式 示 error, 示 error 类型:1、非法连接;2、非法指令(即非法逻辑);3、非法参数。弹窗仅 供确认按 钮,点击确认后编译过程终止,焦点返回原窗体。 示非法的同时需要定位到导致错误的控 件所在位置并选中。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;该阶段还需要检查是否存在未被使用的但合法存在的控件及其参数,比如 VAR 控件定 义的自变量。这部分暂时只有前述一种情况,如大家发现其他情况可反映给作者补充。 2.3.2 代码转化阶段&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;若框图检查不存在错误,则进入代码转化阶段。该阶段需要按拓扑顺序遍历所有控件并 生成对应的代码块。由于无人机固件的 API 还未完全掌握,暂不 供控件对应的代码块,因 此暂不需要完成代码块生成的工作。但是需要保证,理论上,在代码中能够方便地按拓扑顺 序访问框图中的所有控件及其所有属性(含坐标)。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.4 窗口&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;点击该按钮后出现列表:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、 工具栏。该项被勾选后工具栏可视;取消勾选后工具栏不可视,无面积碰撞。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、 控件栏。该项被勾选后控件栏可视;取消勾选后控件栏不可视,无面积碰撞。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3、 控件状态栏。该项被勾选后控件状态栏可视;取消勾选后控件栏不可视,无面积碰&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;撞。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4、 画布。该项被点击时,出现弹窗 示,询问更改画布大小值,支持 px、mm 单位。在&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;文本框中输入数值并确认(确认按钮)后,图形化操作区大小更改为该大小,其中&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;心为锚点。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.5 帮助&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  当帮助按钮被点击时,出现下级列表:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、打开控件说明文档,既《widget_manual》。支持会制作 chm 的同学把它做成 chm 格 式。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、关于本软件的说明,该说明尚未编写,暂时以软件需求说明书替。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3、工具栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  工具栏位于菜单栏下方,由图形按钮组成。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本栏所有的按钮都要以图形/图片作为图标,图形/图片必须足够简洁明了,易于辨认且 没有歧义。鼠标悬停图标之上可以看到功能名称。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本栏的功能与菜单栏相同,除“窗口”按钮外,其余按钮应当实现全映射。在实现时不 需要重写按钮和响应,使用同一个 QAction 对象即可,具体在培训中有介绍,或者问学长冯 世祥。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3.1 基本功能部分&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  工具栏暂时只有这一个部分。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;这个部分实现的功能与这些按钮相同:“2、菜单栏”的“文件”、“编辑”的“cut、copy、 paste、bring to front,send to back”,以及“编译”。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4、控件栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本栏需要实现最小化按钮,点击后向右收起,再次点击向左展开。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本栏需要实现 6 种按钮,前 5 种对应 5 种不同控件的生成,最后一种为 link(均从“编 辑”移植而来)。6 个按钮在控件栏竖直分布。前 5 中按钮点击后,应当出现下级列表,列 表中可选择每种控件的具体功能,比如,Action 控件下可选择 takeoff,land 等控件。点 击列表中的按钮可生成相应的控件。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;本栏的按钮,包含列表中的按钮,尽量以图标表示,不能用图标表示的则以文字代替。 需实现鼠标悬停按钮上可查看按钮名称,方便识别。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;生成的控件应当由主体、接口(连线点)组成。其中主体是控件的功能和参数集中的地 方,该区根据控件不同而异。接口部分可以且仅此可以与其他控件连线,接口区分入和出的 方向。不可以从入接口指向其他控件,也不可以从其他控件指向该控件的出接口。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;控件的外形、名称归入美工部分,在最终方案没有决定之前,按《widget_manual》中&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;所绘的形状为准。如在代码实现上有困难且有更好的方案,可向学长 出。但接口应尽量小 巧。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;以下粗略说明各个控件的组成,细节须与《widget_manual》比对,仍有不清楚的地方 可再询问学长。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;IO:主体为该 IO 模块的名称,两个接口,一出一入,位于底端和顶端,三个出接口位 于右侧。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Action:主体为该 Action 模块的名称,两个接口,一出一入,位于底端和顶端。Take off 只有一个出接口,land 只有一个入接口。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;compute:主体为运算符及其操作数,操作数各自都有入接口,运算符有出接口。其位 置比较多样,以 manual 为准。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;logic:主体为没有面积碰撞的大面积区块,两个接口,一个入,位于条件判断区上方, 另一个出,位于主体底部中央。没有面积碰撞的意义在于可以容纳其他控件包括 logic。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;VAR:主体为表示数据类型的正六边形,每条边可以贴合一个同样大小的六边形,四周 的六边形中填写变量名(可初始化),四周六边形数量 0-6 不定;接口有若干个,处于四周 六边形的顶点(且不在贴合的边上),均为出接口。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;每种控件都对应一个按钮,该按钮被点击时会在图形化操作区中心坐标生成一个对应的 控件,同时控件状态栏更新为该控件的属性。点住按钮并拖拽至图形化操作区某个位置,可 在该位置生成一个对应的控件。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;目前控件类基于 QT  供的图形类实现,具体可参阅代码或询问冯世祥学长。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;link 按钮的响应事件为:先后选中两个控件的连接点后,点击 link,可用有向线段将 两者连接起来,方向为从先选指向后选。有向线段不能与控件重叠。在连线过程中 若发现线段穿过控件,则应当折取直角弯从而避开控件(若选中的控件分别处于一 个 Logic 的内外,则不需要避开 Logic)。因此线条显示为带箭头的(直角折)线&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    段。不相关的线条之间可交叉&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5、控件状态栏&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;控件分为 5 种,每种控件下均有不同功能的具体控件,同时每个控件都需要确定自己的 参数、位置等,所以必须有一个区域显示控件的状态。当选中一个控件时,该控件的状态需 要在控件状态栏中给出。如下图例:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图例 6 控件状态栏示例&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;上例中 x,y 为在图形化操作区中的坐标,控件类型指控件的种类,种类和型号在控件&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;生成按钮被点击时已确定,并无法再被修改。各类参数及模式视控件而定,比如 action 中 起飞的模式,compute 中的运算符,任意可调的参数采用文本输入的形式,枚举的参数采用 下拉选择的形式。每次控件状态栏更改某个选项,并返回焦点(就是这个小区域不再被鼠标&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;操作,相当于看视频的时候在桌面上点了一下,就不能再用键盘控制进度条快进后退的那种 概念,具体可自行百度),则更新图形化操作区的控件显示状态。返回焦点的办法至少包括 鼠标点击其他区域/回车中的一种。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;该栏需要实现最小化功能,点击后向右收起,再次点击向左展开。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;注意,由于无人机控制方面的代码尚未完成,可能实现的各种动作模式和传感器(IO) 等尚未确定,因此在软件开发中可能会遇到可调参数未知和模式未知的情况,此时请以“待 定_数字”的格式填充,数字表示在下拉选择情况下的选项,从 0 开始。 6、图形化操作区&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;这个区域中可以显示已被生成的控件,及连接状态,所有生成的控件及连接线必须在这 个区域内。图例如下(该图例中菜单栏、工具栏、控件栏均不可参考):&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图例 7 图形化操作区域 这个区域本身可实现缩放,可以操作控件及线段,包括拖动、选中、删除、从连接点拉&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;取有向线段并连接到其他控件的连接点,双击控件编辑其状态等功能。 拖动:鼠标在图形化操作区内时,拖动有效,拖动时控件随鼠标实时移动,若触碰到当 前显示的边界,则滚动条工作,以暴露出未被显示的部分(就是 word 里选中文本后,鼠标 移到任务栏,那么选中的区域会不断向下扩大),直到碰撞画布边界或鼠标停止/释放,则控&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;件不再移动,鼠标释放时,控件停留在它最后停止的位置。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;另一种拖动:当按住 ctr,鼠标点住图形化操作区空白区域时,可移动该区域在窗体中&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;的位置,滚动条随之移动。若图形化操作区的边界碰撞(包括分离)画布边界或鼠标停止/ 释放,则不再移动。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;选中:点击控件主体,可选中控件(包括连接点),不选中任何线段。点击线段,可选 中,不选中任何控件。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;删除:功能同“2.2 编辑-delete”。响应键盘 del 键。 拉取有向线段:该功能仅连接点和有向线段具备,且只有此二者可以接收有向线段。拉&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;取时,鼠标从起点点住,移动,线段在起点与鼠标之间产生,鼠标始终控制线段终 点(箭头所在的一端)。在拉取过程中若穿过控件,则有向线段必须折取成若干个 直角以避开控件。若按住 shift,可使线段穿过 Logic 控件,但线段必须从 Logic 内部出发或终止于 Logic 内部。线段的起点和终点可以是另一条线段中的某一点,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  图形化操作区&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;也可以是控件的连接点,但仅此两种。 有时候框图中会出现并行顺序,此时线段会出现交汇,需用黑点 示。图例如&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;下:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;且离开被吸附的连接点过远,则取消吸附并继续跟踪鼠标,直到鼠标释放。鼠标 释放时,若线段终点未吸附任何连接点,则删除该线段,框图不做任何修改;若 有吸附,则连接成功,后台更新框图状态。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;双击:双击控件可将焦点转移到控件状态栏并使其更新为被双击控件的状态,且被双击 控件被选中。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;另外,这个区域中控件(除 logic 外)具有面积碰撞,即控件之间不能重叠,但是允许 粘贴、创建等操作导致重叠控件的出现,这种情况视为合法,但拖动控件使得它们不再重叠 之后,面积碰撞即生效。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;四、 机制和规则(含说明和待实现的功能)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、按钮&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;采用 QT  供的信号与槽机制。按钮被点击时发送信号,槽函数接收信号并执行函数体。 这部分内容请自行查找资料和骚扰学长。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、后台&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;在后台,图形化操作区中的框图(或者说控件及其属性)应当被记录。考虑到框图本身 是有向图,因此采用有向图的数据结构分析。在保存与编译的操作中,采用拓扑顺序整理有 向图的节点,从而编译得到的 python 代码可以保证“充分条件一定出现在必要条件之前”, 而保存时考虑到还原过程中的节点之间的顺序问题(有向线段造成的顺序)。关于拓扑顺序 请参阅下文。后台应当还有一个 map 以保存所有在图形化操作区中出现的控件,这是用于保 存所有的控件(因为有向图只是一个概念,并不是一个容器,而 QT  供容器 Qmap),并且 保证可以通过编号方便地遍历。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;后台应当实现定时自动保存的功能,即不论用户在前台做何操作,在关闭窗体之前,后 台每过 10 分钟自动存储当前框图。若当前框图的保存文件尚未建立,弹窗 示先建立该文 件,确认后执行 save as 功能。保存采用 xml 格式的文件,该格式文件处理有专门的库,可 在 QT 库中找到。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  后台与窗体应当分成两个线程操作。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3、编号规则&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;控件的编号规则如下:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、 每种控件的名称,即 IO,Action,Compute,Logic,VAR 打头,后缀以下划线“_”。 2、 每种控件下创建的每个控件,从第一个起,依次在下划线“_”后以数字标记顺序,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;从 1 开始,无上限。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; 图例 5 并行顺序的箭头表示 线段需要具备磁吸功能,在接近连接点自动吸附,若鼠标不放开拉取的控制&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3、 每当有控件被删除,其编号自然被删除,并且不再出现在之后的控件创建中,如 IO_1 IO_2, IO_3, IO_4,删除IO_2后,创建新的IO,则编号变为IO_1,IO_3, IO_4, IO_5。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4、 每个新建的工程,其编号后缀的数字从 1 开始,与以前创建的工程无关。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4、关于 Logic 控件的说明&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Logic 控件比其他控件特殊,因为它无视面积碰撞,被囊括在 Logic 控件中的控件均在 该逻辑块之中运行。《widget_manual》的例子中下方的 while 控件即实现了如下功能:向前 飞 0.1s,检测前方障碍距离,若大于 10 单位,则继续向前飞 0.1s,循环执行......。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;由于 Logic 可以包含其他控件,而被包含控件与 Logic 外部控件不存在顺序的交叉关 系,因此可以将 Logic 当作一个有向图中的“大节点”处理,不同的是,这个节点内部存在 “另一张有向图”,甚至嵌套了多个 Logic,因此需要记录所有 Logic 内部的有向图的结构, 并在保存和编译中反映。保存时,Logic 可以作为普通节点,但具有“包含的控件”的属性; 编译时,可在遍历遇到 Logic 时,递归遍历这个 Logic。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;注意 Logic 内部的控件和外部的控件会连接起来表示执行顺序,但 Logic 的边界会被 穿过,这和 Logic 自己的连接点出入的情况不同。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5、拓扑顺序&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;拓扑顺序是一种可用于处理有向图的理论。在有向图中,若从节点 a 存在一条路径指向 b,那么在拓扑顺序中 a 必须出现在 b 的前面。一种获得拓扑顺序的方法是,在有向图中找 到入度为 0 的节点,以它作为第一个节点,从有向图中删除这个节点,并令所有被它指向的 节点入度减 1,重复这个方法,依次可以删除所有节点,删除顺序即为拓扑顺序。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;拓扑顺序的好处在于可以保证无人机按正确逻辑执行程序。比如,起飞控件是入度为 0 的节点,而降落控件是入度为 1 的节点,这保证了起飞控件一定比降落控件更早地被访问, 被编译为代码,从而在执行代码时,起飞的代码块先被执行,着落后执行,完成起飞着落动 作。&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;一个例子:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; 五、 美工&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;图例 8 拓扑顺序示例&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;美工方面暂无具体要求,亦不是首要任务。但美工的方向须为:简洁明了,不影响功能, 符合现代审美,趣味性强。&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

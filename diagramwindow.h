@@ -3,6 +3,16 @@
 
 #include <QMainWindow>
 #include <QPair>
+//
+#include<qapplication.h>
+#include<qwidget.h>
+#include<qfile.h>
+#include<qtextstream.h>
+#include<qstring.h>
+//#include<qmultilineedit.h>
+#include "openDocumentation.h"
+
+
 
 
 class QAction;
@@ -21,13 +31,15 @@ class TakeoffNode;
 
 /*******************************************************************
  * Class name: DiagramWindow
- * Base class: QMainWindow
+ * Base class: QMainWindo
  * Description: This is the declaration of class DiagramWindow.
  *         DiagramWindow is the main window of DroneVPL.
+
 ******************************************************************/
 class DiagramWindow : public QMainWindow
 {
     Q_OBJECT
+
 
 public:
     DiagramWindow();
@@ -50,6 +62,7 @@ private slots:
     void fileExport();
     void filePrint();
     void loadFile();
+
 
 
     void addTakeoffNode();
@@ -92,6 +105,15 @@ private slots:
     void checkupAndCompile();
 
 
+    void startCompile();
+    void convertCode();
+    void toolBar();
+    void controlToolBar();
+    void statusToolBar();
+    void canvas();
+    void openDocumentation();
+    void systemInformation();
+
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
 
@@ -119,6 +141,7 @@ private:
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
 
 
+
     Link *selectedLink() const;
     Yuan *selectedYuan() const;
     YuanPair selectedYuanPair() const;
@@ -127,8 +150,11 @@ private:
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *viewMenu;
-    QMenu *compileMenu;
-    //QMenu *helpMenu;
+    QMenu *compileMenu
+    QMenu *windowMenu;
+    QMenu *helpMenu;
+
+
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QToolBar *aToolBar;
@@ -144,6 +170,7 @@ private:
     QAction *fileSaveAsAction;
     QAction *fileExportAction;
     QAction *filePrintAction;
+    QAction *closeAction;
     QAction *exitAction;
 
     QAction *addActionNodeAction;
@@ -186,6 +213,16 @@ private:
     QAction *compileAction;
     QAction *checkupAndCompileAction;
 
+    QAction *startCompileAction;
+    QAction *convertCodeAction;
+    QAction *toolBarAction;
+    QAction *controlToolBarAction;
+    QAction *statusToolBarAction;
+    QAction *canvasAction;
+    QAction *openDocumentationAction;
+    QAction *systemInformationAction;
+
+
     QPrinter *printer;
     QGraphicsScene *scene;
     QGraphicsView *view;
@@ -204,6 +241,9 @@ private:
     int ioNodeNum;
     int recNodeNum;
     int linkNodeNum;
+
+
 };
+
 
 #endif
