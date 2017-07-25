@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include "yuan.h"
+#include "newnode.h"
 
 /********************************************************************
 * Class name: newscene
@@ -17,7 +18,19 @@ public:
     ~newscene();
     specialYuan* new_yuan;
 
+    void setnewCreationName();
+    Node *selectedNode() const;
+    NewNode *selectedNewNode() const;
+    void addTranslationNode();
+    void bringToFront();
+
+public slots:
+    void setDirty(bool on=true);
+private:
+    void setZValue(int z);
+
 protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent* new_event);
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);

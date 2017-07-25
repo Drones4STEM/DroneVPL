@@ -3,11 +3,25 @@
 
 #include <QMainWindow>
 #include <QPair>
+
+
+#include<qapplication.h>
+#include<qwidget.h>
+#include<qfile.h>
+#include<qtextstream.h>
+#include<qstring.h>
+//#include<qmultilineedit.h>
+//#include "openDocumentation.h"
+
+
+
+
 #include <QEvent>
 #include <QMouseEvent>
 
 
 #include "scene.h"
+
 
 class QAction;
 class QGraphicsItem;
@@ -25,13 +39,15 @@ class TakeoffNode;
 class WidgetCondition;
 /*******************************************************************
  * Class name: DiagramWindow
- * Base class: QMainWindow
+ * Base class: QMainWindo
  * Description: This is the declaration of class DiagramWindow.
  *         DiagramWindow is the main window of DroneVPL.
+
 ******************************************************************/
 class DiagramWindow : public QMainWindow
 {
     Q_OBJECT
+
 
 public:
     DiagramWindow();
@@ -41,9 +57,24 @@ public:
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
 
+
+    int pasteOffset;
+
+    int minZ;
+    int maxZ;
+    int seqNumber;
+    int varNodeNum;  //计数varNode,命名每个varNode,下同
+    int takeoffNodeNum;
+    int landonNodeNum;
+    int vardefNodeNum;
+    int computeNodeNum;
+    int ioNodeNum;
+    int recNodeNum;
+    int linkNodeNum;
+    int need_to_set = 0;
+    int selected_Index=0;
+
     WidgetCondition *widgetCondition;
-//protected:
- //   void mouseDoubleClickEvent(QMouseEvent* zhc);
 signals:
     bool passWidget(QGraphicsItem *);
 public slots:
@@ -54,11 +85,13 @@ public slots:
 private slots:
     void fileNew();
     void fileOpen();
+    void openRecentFile();
     bool fileSave();
     bool fileSaveAs();
     void fileExport();
     void filePrint();
     void loadFile();
+
 
 
     void addTakeoffNode();
@@ -92,6 +125,22 @@ private slots:
     void sendToBack();
     void properties();
     void updateActions();
+    void showEditToolBar();
+    void showNodeBar();
+    void showNodeStatusBar();
+    void canvas();
+    void checkup();
+    void compile();
+    void checkupAndCompile();
+
+
+    void startCompile();
+    void convertCode();
+    void toolBar();
+    void controlToolBar();
+    void statusToolBar();
+    void openDocumentation();
+    void systemInformation();
 
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
@@ -99,22 +148,30 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
+
     void createWidgetConditionBar(WidgetCondition *widgetCondition);
     void setZValue(int z);
+
     void setupNode(Node *node);
     void setupNewNode(NewNode *newnode);
 
-    void selectItems(const QSet<QGraphicsItem*>&items);
-    void copyItems(const QList<QGraphicsItem*>&items);
+    void selectItems( QSet<QGraphicsItem*>&items);
+    void copyItems( QList<QGraphicsItem*>&items);
 
-    void readItems(QDataStream &in, int offset=0, bool select=false);
+    void readItems(QDataStream &in,int offset,bool select);
     void writeItems(QDataStream &out,
-                    const QList<QGraphicsItem*> &items);
+                     const QList<QGraphicsItem*> &items);
     bool okToClearData();
     bool openPageDesignerFile(QFile *file, QDataStream &in);
 
+    void setCurrentFile(const QString &fileName);
+    void updateRecentFileActions();//update recent files
+    QString strippedName( QString &fullFileName);//updateRecentFileActions()的帮助函数
+
     void addTranslation(TranslationNode* node);//addTranslationNode()的帮助函数
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
+
+
 
     Link *selectedLink() const;
     Yuan *selectedYuan() const;
@@ -123,14 +180,28 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *viewMenu;
+    QMenu *compileMenu;
+    QMenu *windowMenu;
+    QMenu *helpMenu;
+
+
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
+    QToolBar *aToolBar;
+
+
     QAction *fileNewAction;
     QAction *fileOpenAction;
+
+    enum { MaxRecentFiles = 5 };
+    QAction *recentFileActions[MaxRecentFiles];
+
     QAction *fileSaveAction;
     QAction *fileSaveAsAction;
     QAction *fileExportAction;
     QAction *filePrintAction;
+    QAction *closeAction;
     QAction *exitAction;
 
     QAction *addActionNodeAction;
@@ -165,24 +236,33 @@ private:
     QAction *bringToFrontAction;
     QAction *sendToBackAction;
     QAction *propertiesAction;
+    QAction *showEditToolBarAction;
+    QAction *showNodeBarAction;
+    QAction *showNodeStatusBarAction;
+    QAction *canvasAction;
+    QAction *checkupAction;
+    QAction *compileAction;
+    QAction *checkupAndCompileAction;
+
+    QAction *startCompileAction;
+    QAction *convertCodeAction;
+    QAction *toolBarAction;
+    QAction *controlToolBarAction;
+    QAction *statusToolBarAction;
+    QAction *openDocumentationAction;
+    QAction *systemInformationAction;
+
 
     QPrinter *printer;
+    QStringList recentFiles;
+    QString curFile;
+
    QGraphicsView *view;
    newscene* scene;
-    int pasteOffset;
 
-    int minZ;
-    int maxZ;
-    int seqNumber;
-    int varNodeNum;  //计数varNode,命名每个varNode,下同
-    int takeoffNodeNum;
-    int landonNodeNum;
-    int vardefNodeNum;
-    int computeNodeNum;
-    int ioNodeNum;
-    int recNodeNum;
-    int linkNodeNum;
     QMouseEvent *e;
+
 };
+
 
 #endif
