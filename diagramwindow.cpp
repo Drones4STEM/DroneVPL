@@ -109,6 +109,9 @@ DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
     scene = new newscene;
+    QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
+    scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
+    scene->setBackgroundBrush(Qt::white);
     widgetCondition = new WidgetCondition();
     view = new QGraphicsView;
     view->setScene(scene);
@@ -180,10 +183,11 @@ DiagramWindow::DiagramWindow()
 ******************************************************************/
 QSize DiagramWindow::sizeHint() const
 {
-   // QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
-    //size.rwidth() += brushWidget->sizeHint().width();
-    //return size.boundedTo(
-         //  QApplication::desktop()->availableGeometry().size());
+
+    QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
+    size.rwidth()+=widgetCondition->sizeHint().width();
+    return size.boundedTo(
+           QApplication::desktop()->availableGeometry().size());
 }
 
 /*******************************************************************
@@ -595,14 +599,42 @@ bool DiagramWindow::fileSaveAs()
 ******************************************************************/
 void DiagramWindow::fileExport()
 {
-    //QPixmap pixmap;
+    QString suffixes = AQP::filenameFilter(tr("Bitmap image"),
+             QImageWriter::supportedImageFormats());
+    suffixes += tr(";;Vector image (*.svg)");
+    const QString filename = QFileDialog::getSaveFileName(this,
+             tr("%1 - Export").arg(QApplication::applicationName()),
+              ".",suffixes);
+    if (filename.isEmpty())return;
+    QImage image(printer->paperSize(QPrinter::Point).toSize(),
+                 QImage::Format_ARGB32);
+    {
+        QPainter painter(&image);
+        painter.setRenderHints(QPainter::Antialiasing|
+                               QPainter::TextAntialiasing);
+        QList<QGraphicsItem*>items = scene->selectedItems();
+        scene->clearSelection();
+
+        scene->render(&painter);
+        foreach (QGraphicsItem *item,items)
+            item->setSelected(true);
+    }
+    if(image.save(filename))
+        statusBar()->showMessage(tr("Exported %1").arg(filename),
+                                 StatusTimeout);
+    else
+        AQP::warning(this,tr("Error"),tr("Failed to export: %1")
+                                       .arg(filename));
+    /*QPixmap pixmap;
     //pixmap=pixmap.grabWidget(this,0,0,scene->width(), scene->height());
-    //QImage  image;
-    //image=pixmap.toImage();
+    pixmap=pixmap.grabWidget(this,aToolBar->width(),editToolBar->height(),scene->width()+aToolBar->width(),scene->height()+editToolBar->height());
+    QImage  image;
+    image=pixmap.toImage();
     //pixmap.save("D:\qt\image.jpg","JPG");
     QString filename = QFileDialog::getSaveFileName(this,
             tr("%1 - Save As").arg(QApplication::applicationName()),
             ".", tr("JPG (*.jpg)"));
+    pixmap.save(filename);*/
 
 }
 
@@ -615,7 +647,7 @@ void DiagramWindow::fileExport()
 ******************************************************************/
 void DiagramWindow::filePrint()
 {
-    QPrinter printer(QPrinter::HighResolution);
+    /*QPrinter printer(QPrinter::HighResolution);
     QPrintDialog printdialog(&printer,this);
     if(printdialog.exec())
     {
@@ -628,7 +660,20 @@ void DiagramWindow::filePrint()
         painter.setViewport(rect.x(), rect.y(),size.width(), size.height());
         painter.setWindow(image.rect());
         painter.drawPixmap(0,0,image);
-}
+     }*/
+    QPrintDialog dialog(printer);
+    if(dialog.exec())
+    {
+        QPainter painter(printer);
+        QList<QGraphicsItem*>items = scene->selectedItems();
+        scene->clearSelection();
+
+        scene->render(&painter);
+        foreach (QGraphicsItem *item,items)
+            item->setSelected(true);
+    }
+    statusBar()->showMessage(tr("Printed %1")
+             .arg(windowFilePath()),StatusTimeout);
 }
 
 /*******************************************************************
