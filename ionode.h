@@ -46,6 +46,12 @@ private slots:
     //void changeType();
 };
 
+/*******************************************************************
+ * Class name: IoSmallNode
+ * Base class: Node
+ * Desciption:This is a class for developers, and determines some
+ *     to follow.
+******************************************************************/
 class IoSmallNode:public Node
 {
     Q_OBJECT

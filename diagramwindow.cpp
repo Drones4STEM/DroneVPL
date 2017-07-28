@@ -1,8 +1,8 @@
 /*******************************************************************
  * File:diagramwindow.cp
  * Author: Ryan Feng
- * Description: This file includes the realization of class 
- *        DiagramWindow. DiagramWindow is the main window of 
+ * Description: This file includes the realization of class
+ *        DiagramWindow. DiagramWindow is the main window of
  *        DroneVPL
 ******************************************************************/
 
@@ -35,18 +35,68 @@
 #include "canvasdialog.h"
 #include "itemtypes.h"
 #include "widgetcondition.h"
-
 #include "oDocument.h"
 #include "odescription.h"
 
+namespace {
 
 const int StatusTimeout = AQP::MSecPerSecond * 30;
+const int OffsetIncrement = 5;
+const qint32 MagicNumber = 0x5A93DE5;
+const qint16 VersionNumber = 1;
+const QString ShowGrid("ShowGrid");
+const QString MostRecentFile("MostRecentFile");
+const QString MimeType = "application/vnd.qtrac.pagedesigner";
+
+
+
+#ifndef USE_STL
+template<template<typename T> class S, typename T>
+T min(const S<T> &sequence)
+{
+    Q_ASSERT(!sequence.isEmpty());
+    T minimum = sequence.first();
+    foreach (const T &item, sequence)
+        if (item < minimum)
+            minimum = item;
+    return minimum;
+}
+
+template<template<typename T> class S, typename T>
+T max(const S<T> &sequence)
+{
+    Q_ASSERT(!sequence.isEmpty());
+    T maximum = sequence.first();
+    foreach (const T &item, sequence)
+        if (item > maximum)
+            maximum = item;
+    return maximum;
+}
+#endif
+
+#ifdef NO_DYNAMIC_CAST
+QObject *qObjectFrom(QGraphicsItem *item)
+{
+    if (!item)
+        return 0;
+    // Types not inheriting QGraphicsObject must be handled explicitly
+    if (item->type() == BoxItemType)
+        return qobject_cast<QObject*>(static_cast<BoxItem*>(item));
+    // Types inheriting QGraphicsObject can be handled generically
+    return item->toGraphicsObject();
+}
+#endif
+
+} // anonymous namespace
+/*const int StatusTimeout = AQP::MSecPerSecond * 30;
 const QString MostRecentFile("MostRecentFile");
 const qint32 MagicNumber = 0x5A93DE5;
 const qint16 VersionNumber = 1;
 const QString MimeType = "application/vnd.qtrac.pagedesigner";
-const int OffsetIncrement = 5;
+const int OffsetIncrement = 5;*/
 
+
+QStringList DiagramWindow::recentFiles = QStringList();
 /*******************************************************************
 * Function name: DiagramWindow()
  * Description: This is a constructor of DiagramWindow class
@@ -58,30 +108,30 @@ const int OffsetIncrement = 5;
 DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
-
-     scene = new newscene;
-   // scene = new QGraphicsScene;
+    scene = new newscene;
     widgetCondition = new WidgetCondition();
-
-       view = new QGraphicsView;
-  // view = new newview;
+    view = new QGraphicsView;
     view->setScene(scene);
-     setMouseTracking(true);
-
+    setMouseTracking(true);
 
     view->setDragMode(QGraphicsView::RubberBandDrag);
-
     view->setRenderHints(QPainter::Antialiasing
                          | QPainter::TextAntialiasing);
     view->setContextMenuPolicy(Qt::ActionsContextMenu);//显示文本菜单
-    setCentralWidget(view);//设置中心？默认？部件
+    setCentralWidget(view);
 
     minZ = 0;
     maxZ = 0;
     seqNumber = 0;
-    varNodeNum = 0;
 
-
+    varNodeNum=0;  //计数varNode,命名每个varNode,下同
+    takeoffNodeNum=0;
+    landonNodeNum=0;
+    vardefNodeNum=0;
+    computeNodeNum=0;
+    ioNodeNum=0;
+    recNodeNum=0;
+    linkNodeNum=0;
 
     createActions();
     createMenus();
@@ -89,22 +139,36 @@ DiagramWindow::DiagramWindow()
     createWidgetConditionBar(widgetCondition);
 
     connect(scene, SIGNAL(selectionChanged()),
-            this, SLOT(updateActions()));//连接选择改变信号和更新槽
-
-    setCurrentFile("");
-    updateRecentFileActions();
- 
-
-    setAttribute(Qt::WA_DeleteOnClose);
-    connect(scene, SIGNAL(selectionChanged()),
-          this, SLOT(set_new_line()));
+            this, SLOT(updateActions()));
     connect(scene, SIGNAL(selectionChanged()),
           this, SLOT(conditionChanged()));
     connect(this, SIGNAL(passWidget(QGraphicsItem *)),
             widgetCondition, SLOT(setCondition(QGraphicsItem *)));
+    connect(scene,SIGNAL(itemInserted(int)),
+            this,SLOT(setDirty()));
+    connect(scene,SIGNAL(itemInserted(int)),
+            this,SLOT(changeNodeNum(int)));
 
-        setWindowTitle(tr("Diagram"));
-        updateActions();
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QSettings settings("Software Inc.", "Page Designer");
+    recentFiles = settings.value("recentFiles").toStringList();
+
+    foreach (QWidget *win, QApplication::topLevelWidgets()) {
+        if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
+            mainWin->updateRecentFileActions();
+    }
+    //updateRecentFileActions();
+    setCurrentFile("");
+    //QString filename=settings.value(MostRecentFile).toString();
+    //if(filename.isEmpty()||filename==tr("unnamed"))
+    //    QTimer::singleShot(0,this,SLOT(fileNew()));
+    /*else
+    {
+        setWindowFilePath(filename);
+        QTimer::singleShot(0,this,SLOT(loadFile()));
+    }*/
+    updateActions();
 }
 
 /*******************************************************************
@@ -136,6 +200,40 @@ void DiagramWindow::setDirty(bool on)
     updateActions();
 }
 
+void DiagramWindow::setDirty()
+{
+    setWindowModified(true);
+    updateActions();
+}
+
+void DiagramWindow::changeNodeNum(int num)
+{
+    seqNumber++;
+    switch (num) {
+    case 1:
+        takeoffNodeNum++;
+        break;
+    case 2:
+        landonNodeNum++;
+        break;
+    // 待补充完整
+    default:
+        break;
+    }
+}
+
+void DiagramWindow::closeEvent(QCloseEvent *event)
+{
+    if (okToClearData()) {
+        QSettings settings("Software Inc.", "Page Designer");
+        settings.setValue(MostRecentFile, windowFilePath());
+        settings.setValue("recentFiles",recentFiles);
+        event->accept();
+    }
+    else
+        event->ignore();
+}
+
 /*******************************************************************
  * Function name: fileNew()
  * Description: This function creates a new file
@@ -146,19 +244,16 @@ void DiagramWindow::setDirty(bool on)
 ******************************************************************/
 void DiagramWindow::fileNew()
 {
-    if (!okToClearData())
+    /*if (!okToClearData())
         return;
- /*   selectAllItems();
+    selectAllItems();
     del();
-    setWindowFilePath(tr("Unnamed"));
-   setDirty(false);
-*/
-   DiagramWindow *mainWin = new DiagramWindow;
-   //mainWin->setGeography(0,0,200,120);
-   mainWin->show();
-
-
-    CanvasDialog canvas(view,this);
+    setCurrentFile("");
+    setDirty(false);*/
+    DiagramWindow *mainWin = new DiagramWindow;
+    //mainWin->setWindowFilePath(tr("unnamed"));
+    mainWin->show();
+    CanvasDialog canvas(mainWin->view,mainWin);
     canvas.exec();//set the size of canvas when create a new file
 }
 
@@ -211,7 +306,7 @@ void DiagramWindow::fileOpen()
     if (filename.isEmpty())
         return;
     setWindowFilePath(filename);
-    loadFile();  
+    loadFile();
 }
 
 /*******************************************************************
@@ -228,6 +323,7 @@ void DiagramWindow::loadFile()
     QDataStream in;
     if (!openPageDesignerFile(&file, in))
         return;
+    setCurrentFile(windowFilePath());
     in.setVersion(QDataStream::Qt_4_5);
     selectAllItems();
     del();
@@ -235,7 +331,6 @@ void DiagramWindow::loadFile()
     statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
                              StatusTimeout);
     setDirty(false);
-    updateRecentFileActions();
 }
 
 /*******************************************************************
@@ -285,10 +380,13 @@ void DiagramWindow::openRecentFile()
     if (okToClearData()) {
         QAction *action = qobject_cast<QAction *>(sender());
         if (action)
-        {setWindowFilePath(action->data().toString());
-            loadFile();}
+        {
+            setWindowFilePath(action->data().toString());
+            loadFile();
+        }
+    }
 }
-}
+
 /*******************************************************************
  * Function name: setCurrentFile()
  * Description:
@@ -298,19 +396,20 @@ void DiagramWindow::openRecentFile()
 ******************************************************************/
 void DiagramWindow::setCurrentFile(const QString &fileName)
 {
-       curFile = fileName;
+        curFile = fileName;
         setWindowModified(false);
-
-        QString shownName = tr("Untitled");
+        QString shownName = tr("Unnamed");
         if (!curFile.isEmpty()) {
-            shownName = strippedName(curFile);
+            shownName=curFile;
             recentFiles.removeAll(curFile);
             recentFiles.prepend(curFile);
+            foreach (QWidget *win, QApplication::topLevelWidgets()) {
+                if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
+                    mainWin->updateRecentFileActions();
+            }
             updateRecentFileActions();
         }
-
-        setWindowTitle(tr("%1[*] - %2").arg(shownName)
-                                       .arg(tr("Diagram")));
+        setWindowFilePath(tr("%1").arg(shownName));
 }
 /*******************************************************************
  * Function name: updateRecentFileActions()
@@ -339,6 +438,7 @@ void DiagramWindow::updateRecentFileActions()
                 recentFileActions[j]->setVisible(false);
             }
         }
+        separatorAction->setVisible(!recentFiles.isEmpty());
 }
 
 /*******************************************************************
@@ -359,8 +459,7 @@ QString DiagramWindow::strippedName(QString &fullFileName)
  * Callee:
  * Inputs: QDataStream &in, int offset, bool select
  * Outputs:
-******************************************************************/ 
-
+******************************************************************/
 void DiagramWindow::readItems(QDataStream &in,int offset, bool select)
 {
     QSet<QGraphicsItem*>items;
@@ -376,11 +475,11 @@ void DiagramWindow::readItems(QDataStream &in,int offset, bool select)
             in>>*node;
 
             node->setText(tr("take off\n %1 s").arg(node->time));
-           // node->yuan->setPos(QPointF((node->pos().x()),
+            // node->yuan->setPos(QPointF((node->pos().x()),
             //(node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
             node->setPos(node->pos());
-            //scene->addItem(node);
-            //scene->addItem(node->yuan);
+            scene->addItem(node);
+            scene->addItem(node->yuan);
             update();
             item=node;
             break;
@@ -400,7 +499,6 @@ void DiagramWindow::readItems(QDataStream &in,int offset, bool select)
     }
 
 }
-
 
 /*******************************************************************
  * Function name: selectItems()
@@ -437,6 +535,7 @@ bool DiagramWindow::fileSave()
     out.setVersion(QDataStream::Qt_4_5);
     writeItems(out, scene->items());
     file.close();
+    setCurrentFile(filename);
     setDirty(false);
     return true;
 }
@@ -532,7 +631,6 @@ void DiagramWindow::filePrint()
 }
 }
 
-
 /*******************************************************************
  * Function name: addTakeoffNode()
  * Description: This function add a TakeoffNode on the scene.
@@ -542,9 +640,9 @@ void DiagramWindow::filePrint()
 ******************************************************************/
 void DiagramWindow::addTakeoffNode()
 {
-    selected_Index=1;//1means the 1st object
+    scene->selected_Index=1;//1 means the 1st object
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    need_to_set = 1;
+    scene->need_to_set=1;
    // TakeoffNode *node=new TakeoffNode;
    // node->setText(tr("take off\n %1 s").arg(node->time));
    // setupNode(node);
@@ -565,8 +663,8 @@ void DiagramWindow::addTakeoffNode()
 ******************************************************************/
 void DiagramWindow::addLandonNode()
 {
-    need_to_set = 1;
-    selected_Index=2;
+    scene->need_to_set = 1;
+    scene->selected_Index=2;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //LandonNode *node=new LandonNode;
     //node->setText(tr("Land on\n %1 s").arg(node->time));
@@ -590,8 +688,8 @@ void DiagramWindow::addLandonNode()
 ******************************************************************/
 void DiagramWindow::addTranslationNode()
 {
-    need_to_set = 1;
-    selected_Index=3;
+    scene->need_to_set = 1;
+    scene->selected_Index=3;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -639,8 +737,8 @@ void DiagramWindow::addTranslation(TranslationNode *node)
 ******************************************************************/
 void DiagramWindow::addRiseNode()
 {
-    need_to_set = 1;
-    selected_Index = 4;
+    scene->need_to_set = 1;
+    scene->selected_Index = 4;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -658,8 +756,8 @@ void DiagramWindow::addRiseNode()
 ******************************************************************/
 void DiagramWindow::addFallNode()
 {
-    need_to_set = 1;
-    selected_Index = 5;
+    scene->need_to_set = 1;
+    scene->selected_Index = 5;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -677,8 +775,8 @@ void DiagramWindow::addFallNode()
 ******************************************************************/
 void DiagramWindow::addAdvanceNode()
 {
-    need_to_set = 1;
-    selected_Index = 6;
+    scene->need_to_set = 1;
+    scene->selected_Index = 6;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -697,8 +795,8 @@ void DiagramWindow::addAdvanceNode()
 void DiagramWindow::addBackNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 7;
+    scene->need_to_set=1;
+    scene->selected_Index = 7;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(3);
@@ -716,8 +814,8 @@ void DiagramWindow::addBackNode()
 void DiagramWindow::addRightNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 8;
+    scene->need_to_set=1;
+    scene->selected_Index = 8;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(4);
@@ -735,8 +833,8 @@ void DiagramWindow::addRightNode()
 void DiagramWindow::addLeftNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 9;
+    scene->need_to_set=1;
+    scene->selected_Index = 9;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(5);
@@ -754,8 +852,8 @@ void DiagramWindow::addLeftNode()
 void DiagramWindow::addSomeNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 10;
+    scene->need_to_set=1;
+    scene->selected_Index = 10;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(0);
@@ -803,8 +901,8 @@ void DiagramWindow::addSome(SomeNode *node)
 void DiagramWindow::addTurnLeftNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 11;
+    scene->need_to_set=1;
+    scene->selected_Index = 11;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(0);
@@ -822,8 +920,8 @@ void DiagramWindow::addTurnLeftNode()
 void DiagramWindow::addTurnRightNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 12;
+    scene->need_to_set=1;
+    scene->selected_Index = 12;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(1);
@@ -841,8 +939,8 @@ void DiagramWindow::addTurnRightNode()
 void DiagramWindow::addHangingNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 13;
+    scene->need_to_set=1;
+    scene->selected_Index = 13;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(2);
@@ -860,8 +958,8 @@ void DiagramWindow::addHangingNode()
 void DiagramWindow::addDelayNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 14;
+    scene->need_to_set=1;
+    scene->selected_Index = 14;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(3);
@@ -879,8 +977,8 @@ void DiagramWindow::addDelayNode()
 void DiagramWindow::addVarNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 15;
+    scene->need_to_set=1;
+    scene->selected_Index = 15;
     //VarNode* node=new VarNode;
     //node->setText(tr("int"));
     //setupNode(node);
@@ -901,8 +999,8 @@ void DiagramWindow::addVarNode()
 void DiagramWindow::addVardefNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 16;
+    scene->need_to_set=1;
+    scene->selected_Index = 16;
     //QList<QGraphicsItem *> items = scene->selectedItems();
     //if(items.count()==0)
     //{
@@ -910,7 +1008,7 @@ void DiagramWindow::addVardefNode()
     //    node->node=0;
     //    node->setPos(QPoint(80 + (100 * (seqNumber % 5)),
     //                        80 + (50 * ((seqNumber / 5) % 7))));
-     //   scene->addItem(node);
+    //   scene->addItem(node);
     //    ++seqNumber;
     //    node->yuan2->setPos(node->pos().x(),
     //                       node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
@@ -919,13 +1017,13 @@ void DiagramWindow::addVardefNode()
     //    scene->addItem(node->yuan);
     //    scene->addItem(node->yuan2);
 
-     //   vardefNodeNum++;
+    //   vardefNodeNum++;
     //    node->controlsId=vardefNodeNum;
-   // }
-   // else if(items.count()==1)
-   // {
+    // }
+    // else if(items.count()==1)
+    // {
     //    VarNode* node=dynamic_cast<VarNode*>(scene->selectedItems().first());
-     //   if(!node)return;
+    //   if(!node)return;
 
     //    int flag=0;
     //    while(node->flags[node->num])//这个位置已经有了vardefnode
@@ -933,28 +1031,28 @@ void DiagramWindow::addVardefNode()
     //        if(flag==6)return;
     //        node->num=node->num%6+1;
     //        flag++;
-     //   }
+    //   }
 
-        //计算添加的位置
-     //   int i=node->num%3;
-     //   int j;
+    //计算添加的位置
+    //   int i=node->num%3;
+    //   int j;
     //    if(node->num==0||node->num==2)j=-17;
-     //   else if(node->num==3||node->num==5)j=17;
+    //   else if(node->num==3||node->num==5)j=17;
     //    else if(node->num==1)j=-35;
     //    else j=35;
 
-   //     node->array[node->num]->node=node;//使vardefnode知道它属于varnode
+    //     node->array[node->num]->node=node;//使vardefnode知道它属于varnode
 
-     //   node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
-     //                        node->pos().y() + j);
+    //   node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
+    //                        node->pos().y() + j);
     //    node->flags[node->num]=true;
     //    scene->addItem(node->array[node->num]);
     //    node->num=node->num%6+1;
 
     //    vardefNodeNum++;
-     //   node->controlsId=vardefNodeNum;
+    //   node->controlsId=vardefNodeNum;
     //    }
-   // setDirty();
+    // setDirty();
 }
 
 /*******************************************************************
@@ -967,8 +1065,8 @@ void DiagramWindow::addVardefNode()
 void DiagramWindow::addComputeNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 17;
+    scene->need_to_set=1;
+    scene->selected_Index = 17;
     //ComputeNode *node=new ComputeNode;
     //node->setText(tr("Compute"));
     //QGraphicsItem* item=scene->addWidget(node->box);
@@ -1016,46 +1114,46 @@ void DiagramWindow::addComputeNode()
 void DiagramWindow::addIoNode()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 18;
+    scene->need_to_set=1;
+    scene->selected_Index = 18;
     //IoNode* node=new IoNode;
     //node->setText(tr("sensor"));
-   // QGraphicsItem* item=scene->addWidget(node->box);
+    // QGraphicsItem* item=scene->addWidget(node->box);
     //node->item=item;
     //setupNewNode(node);
-//
-   // node->yuan->setPos(QPointF(node->pos().x(),
-   //                   (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-   // node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-   //                    (node->pos().y())));
-   // scene->addItem(node->yuan);
-   // scene->addItem(node->yuan2);
 
-   // node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
-   //                     node->pos().y());
-   // node->node1->setPos(node->node2->pos().x(),
-   //                     node->node2->pos().y() - node->node2->outlineRect().height());
-   // node->node3->setPos(node->node2->pos().x(),
-   //                     node->node2->pos().y() + node->node2->outlineRect().height());
-   // scene->addItem(node->node2);
-   // scene->addItem(node->node1);
-   // scene->addItem(node->node3);
-   // scene->addItem(node->node2->yuan);
-   // scene->addItem(node->node1->yuan);
-   // scene->addItem(node->node3->yuan);
+    // node->yuan->setPos(QPointF(node->pos().x(),
+    //                   (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    // node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+    //                    (node->pos().y())));
+    // scene->addItem(node->yuan);
+    // scene->addItem(node->yuan2);
+
+    // node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+    //                     node->pos().y());
+    // node->node1->setPos(node->node2->pos().x(),
+    //                     node->node2->pos().y() - node->node2->outlineRect().height());
+    // node->node3->setPos(node->node2->pos().x(),
+    //                     node->node2->pos().y() + node->node2->outlineRect().height());
+    // scene->addItem(node->node2);
+    // scene->addItem(node->node1);
+    // scene->addItem(node->node3);
+    // scene->addItem(node->node2->yuan);
+    // scene->addItem(node->node1->yuan);
+    // scene->addItem(node->node3->yuan);
 
 
-   // item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-   //              (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-   // item->setZValue(node->zValue()+1);
-   // node->box->addItem(tr("detection sensor"));
-   // node->box->addItem(tr("A sensor"));
-   // node->box->addItem(tr("B sensor"));
-   // node->box->addItem(tr("delay"));
-   // node->box->setCurrentIndex(0);
+    // item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+    //              (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+    // item->setZValue(node->zValue()+1);
+    // node->box->addItem(tr("detection sensor"));
+    // node->box->addItem(tr("A sensor"));
+    // node->box->addItem(tr("B sensor"));
+    // node->box->addItem(tr("delay"));
+    // node->box->setCurrentIndex(0);
 
     //ioNodeNum++;
-   // node->controlsId=ioNodeNum;
+    // node->controlsId=ioNodeNum;
 
     //setDirty();
 }
@@ -1097,8 +1195,8 @@ void DiagramWindow::addLink()
 void DiagramWindow::addRec()
 {
     //setCursor(Qt::CrossCursor);
-    need_to_set=1;
-    selected_Index = 19;
+    scene->need_to_set=1;
+    scene->selected_Index = 19;
     //Rec *rec=new Rec;
     //QGraphicsItem* item= scene->addWidget(rec->box);
     //rec->item=item;
@@ -1108,11 +1206,11 @@ void DiagramWindow::addRec()
     //rec->setSelected(true);
 
     //rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-     //                          rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    //                          rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
     //scene->addItem(rec->yuan2);
 
     //item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-     //                    (rec->pos().y() - rec->outlineRect().height()/2)));
+    //                    (rec->pos().y() - rec->outlineRect().height()/2)));
     //item->setZValue(rec->zValue()+1);
     //rec->box->addItem(tr("if"));
     //rec->box->addItem(tr("else"));
@@ -1227,7 +1325,6 @@ void DiagramWindow::del()
         delete item;
     }
 }
-
 
 /*******************************************************************
  * Function name: copy()
@@ -1426,7 +1523,6 @@ void DiagramWindow::statusToolBar()
 
 }
 
-
 /*******************************************************************
  * Function name: openDocumentation()
  * Description:This funciton open the help documentation.
@@ -1436,23 +1532,10 @@ void DiagramWindow::statusToolBar()
 ******************************************************************/
 void DiagramWindow::openDocumentation()
 {
- //QApplication a(argc, argv);
- //connect(this, SIGNAL(clicked()), this, SLOT(FileWidget()));
- // FileWidget win;
- // win.show();
-
- //openBtn = new QPushButton("OPEN", this);
- //connect(openBtn, SIGNAL(clicked()), this, SLOT(slotOpenFileDialog()));
- //tipsLabel = new QLabel("help", this);
- //Odocument();
-
     oDocument *w;
     w = new oDocument;
     w->show();
 }
-
-
-
 
 /*******************************************************************
  * Function name: systemInformation()
@@ -1463,13 +1546,11 @@ void DiagramWindow::openDocumentation()
 ******************************************************************/
 void DiagramWindow::systemInformation()
 {
-    
+
     ODescription *description;
     description = new ODescription;
     description->show();
 }
-
-
 
 /*******************************************************************
  * Function name: updateActions()
@@ -1547,11 +1628,11 @@ void DiagramWindow::showNodeBar()
 ******************************************************************/
 void DiagramWindow::showNodeStatusBar()
 {
-    //if(showNodeStatusBar->isChecked()) {
-      // NodeStatusBar->show();
-   // }
-   // else
-    //{NodeStatusBar->hide();}
+    if(showNodeStatusBarAction->isChecked()) {
+        widgetCondition->show();
+    }
+    else
+        widgetCondition->hide();
 }
 
 /*******************************************************************
@@ -1597,7 +1678,6 @@ void DiagramWindow::checkupAndCompile()
  * Inputs:
  * Outputs:
 ******************************************************************/
-
 void DiagramWindow::createActions()
 {
     fileNewAction = new QAction(tr("New"),this);
@@ -1610,9 +1690,10 @@ void DiagramWindow::createActions()
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
     fileOpenAction->setIcon(QIcon(":/images/fileopen.png"));
 
-  for (int i = 0; i < MaxRecentFiles; ++i) {
+    // ///////         还没有完成好      /////////
+   for (int i = 0; i < MaxRecentFiles; ++i) {
         recentFileActions[i] = new QAction(this);
-       recentFileActions[i]->setVisible(false);
+        recentFileActions[i]->setVisible(false);
         connect(recentFileActions[i], SIGNAL(triggered()),
                 this, SLOT(openRecentFile()));
     }
@@ -1645,7 +1726,6 @@ void DiagramWindow::createActions()
 
     addTakeoffNodeAction = new QAction(tr("takeoff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
-
     addLandonNodeAction = new QAction(tr("landon"),this);
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
@@ -1666,7 +1746,6 @@ void DiagramWindow::createActions()
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
-
     addTurnLeftNodeAction = new QAction(tr("turn left"),this);
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
     addTurnRightNodeAction = new QAction(tr("turn right"),this);
@@ -1678,13 +1757,10 @@ void DiagramWindow::createActions()
 
     addVarNodeAction = new QAction(tr("Variable"),this);
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
-
     addVardefNodeAction = new QAction(tr("Vardefine"),this);
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
-
     addComputeNodeAction = new QAction(tr("Compute"),this);
     connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
-
     addIoNodeAction = new QAction(tr("IO"),this);
     connect(addIoNodeAction,SIGNAL(triggered()),this,SLOT(addIoNode()));
 
@@ -1731,23 +1807,20 @@ void DiagramWindow::createActions()
     showEditToolBarAction->setCheckable(true);
     connect(showEditToolBarAction, SIGNAL(triggered()),
             this, SLOT(showEditToolBar()));
-
     showNodeBarAction = new QAction(tr("NodeBar"), this);
     showNodeBarAction->setStatusTip(tr("show or hide the node bar"));
     showNodeBarAction->setCheckable(true);
     connect(showNodeBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeBar()));
-
     showNodeStatusBarAction = new QAction(tr("ToolStatusBar"), this);
     showNodeStatusBarAction->setStatusTip(tr("show or hide the tool status bar"));
-   showNodeStatusBarAction->setCheckable(true);
+    showNodeStatusBarAction->setCheckable(true);
     connect(showNodeStatusBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeStatusBar()));
 
     propertiesAction = new QAction(tr("P&roperties..."), this);
     connect(propertiesAction, SIGNAL(triggered()),
             this, SLOT(properties()));
-
 
     canvasAction = new QAction(tr("canvas..."), this);
     connect(canvasAction, SIGNAL(triggered()),
@@ -1769,27 +1842,20 @@ void DiagramWindow::createActions()
     convertCodeAction = new QAction(tr("&Convert code"),this);
     connect(convertCodeAction,SIGNAL(triggered()),this,SLOT(convertCode()));
 
-    toolBarAction = new QAction(tr("&Tool Bar"),this);
-    connect(toolBarAction,SIGNAL(triggered()),this,SLOT(toolBar()));
+    //toolBarAction = new QAction(tr("&Tool Bar"),this);
+    //connect(toolBarAction,SIGNAL(triggered()),this,SLOT(toolBar()));
 
-    controlToolBarAction = new QAction(tr("&Controls Bar"),this);
-    connect(controlToolBarAction,SIGNAL(triggered()),this,SLOT(controlToolBar()));
+    //controlToolBarAction = new QAction(tr("&Controls Bar"),this);
+    //connect(controlToolBarAction,SIGNAL(triggered()),this,SLOT(controlToolBar()));
 
-    statusToolBarAction = new QAction(tr("&Status Bar"),this);
-    connect(statusToolBarAction,SIGNAL(triggered()),this,SLOT(statusToolBar()));
-/*
-    canvasAction = new QAction(tr("Canvas"),this);
-    connect(canvasAction,SIGNAL(triggered()),this,SLOT(canvas()));
-*/
+    //statusToolBarAction = new QAction(tr("&Status Bar"),this);
+    //connect(statusToolBarAction,SIGNAL(triggered()),this,SLOT(statusToolBar()));
+
     openDocumentationAction = new QAction(tr("&Documentation"),this);
     connect(openDocumentationAction,SIGNAL(triggered()),this,SLOT(openDocumentation()));
 
     systemInformationAction = new QAction(tr("&System information"),this);
     connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
-
-
-
-
 }
 
 /*******************************************************************
@@ -1804,36 +1870,28 @@ void DiagramWindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
-    fileMenu->addSeparator();
-    for (int i = 0; i < MaxRecentFiles; ++i)
-    fileMenu->addAction(recentFileActions[i]);
-    fileMenu->addSeparator();
     fileMenu->addAction(fileSaveAction);
     fileMenu->addAction(fileSaveAsAction);
     fileMenu->addSeparator();
     fileMenu->addAction(fileExportAction);
     fileMenu->addAction(filePrintAction);
+    separatorAction=fileMenu->addSeparator();
+    for(int i=0;i<MaxRecentFiles;++i)
+        fileMenu->addAction(recentFileActions[i]);
     fileMenu->addSeparator();
     fileMenu->addAction(closeAction);
     fileMenu->addAction(exitAction);
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
-    editMenu = menuBar()->addMenu(tr("&Edit"));
 
     compileMenu = menuBar()->addMenu(tr("&Compile"));
     compileMenu->addAction(startCompileAction);
     compileMenu->addAction(convertCodeAction);
 
-    windowMenu = menuBar()->addMenu(tr("&Window"));
-    windowMenu->addAction(toolBarAction);
-    windowMenu->addAction(controlToolBarAction);
-    windowMenu->addAction(statusToolBarAction);
-    windowMenu->addAction(canvasAction);
-    windowMenu->addAction(propertiesAction);
-
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(openDocumentationAction);
     helpMenu->addAction(systemInformationAction);
-
+// ////////////////////////////////////////////////////////////////////////////////////////////
+    editMenu = menuBar()->addMenu(tr("&Edit"));
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addRiseNodeAction<<addFallNodeAction
@@ -1856,22 +1914,16 @@ void DiagramWindow::createMenus()
     editMenu->addAction(addVardefNodeAction);
     editMenu->addAction(addComputeNodeAction);
     editMenu->addAction(addIoNodeAction);
-  
-
     //editMenu->addAction(addRecAction);
-
     editMenu->addSeparator();
-
     editMenu->addAction(deleteAction);
     editMenu->addAction(cutAction);
     editMenu->addAction(copyAction);
     editMenu->addAction(pasteAction);
     editMenu->addSeparator();
-
     editMenu->addAction(bringToFrontAction);
     editMenu->addAction(sendToBackAction);
     editMenu->addSeparator();
-
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
     viewMenu = menuBar()->addMenu(tr("&View"));
@@ -1886,8 +1938,6 @@ void DiagramWindow::createMenus()
     compileMenu->addAction(checkupAction);
     compileMenu->addAction(compileAction);
     compileMenu->addAction(checkupAndCompileAction);
-  
-
     //editMenu->addAction(propertiesAction);
 
 }
@@ -2152,7 +2202,6 @@ bool DiagramWindow::conditionChanged(){
     QList<QGraphicsItem *> items = scene->selectedItems();
     if (items.count() >= 1) {
             QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(items.first());
-            //QGraphicsItem *item = 0;
             emit passWidget(item);
     }
 }

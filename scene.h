@@ -6,6 +6,7 @@
 #include "yuan.h"
 #include "newnode.h"
 
+//class DiagramWindow;
 /********************************************************************
 * Class name: newscene
 * Description: provide a new scene to do some mouse-events
@@ -24,14 +25,16 @@ public:
     void addTranslationNode();
     void bringToFront();
 
-public slots:
-    void setDirty(bool on=true);
+    int need_to_set;
+    int selected_Index;
+
+signals:
+    void itemInserted(int index);
 private:
     void setZValue(int z);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);
-
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 };

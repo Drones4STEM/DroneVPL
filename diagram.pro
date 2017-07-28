@@ -17,10 +17,9 @@ HEADERS       = diagramwindow.h \
     aqp/kuhn_munkres.hpp \
     canvasdialog.h \
     odescription.h \
-    odocument.h
+    odocument.h \
     scene.h \
     widgetcondition.h
-
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -39,15 +38,14 @@ SOURCES       = diagramwindow.cpp \
     aqp/kuhn_munkres.cpp \
     canvasdialog.cpp \
     odescription.cpp \
-    odocument.cpp
-FORMS         = propertiesdialog.ui \
-    canvasdialog.ui \
-    awindow.ui \
-    odescription.ui \
-    odocument.ui
+    odocument.cpp \
     scene.cpp \
     widgetcondition.cpp
-FORMS         = propertiesdialog.ui
+FORMS         = propertiesdialog.ui \
+    awindow.ui \
+    canvasdialog.ui \
+    odescription.ui \
+    odocument.ui
 RESOURCES     = resources.qrc \
     aqp/aqp.qrc
 
@@ -56,4 +54,5 @@ SUBDIRS += \
 
 DISTFILES += \
     aqp/aqp.pro.user \
-    aqp/mime.types
+    aqp/mime.types \
+    document.html
