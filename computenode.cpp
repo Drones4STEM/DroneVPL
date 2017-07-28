@@ -11,6 +11,7 @@
 #include "link.h"
 #include <QtGui>
 #include "computenode.h"
+#include "rec.h"
 
 
 int ComputeNode::ComputeNodeAddNum=0;  int ComputeNode::ComputeNodeSubNum=0;
@@ -78,25 +79,31 @@ QRectF ComputeNode::outlineRect() const
 ******************************************************************/
 QVariant ComputeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change & ItemPositionHasChanged) {
-        yuan->setPos(pos().x(),
-                     pos().y() + outlineRect().height()/2 +yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan->myLinks)
-        {link->trackYuans();update();}
+    if (change & ItemPositionHasChanged){
+        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            yuan->setPos(pos().x(),
+                         pos().y() + outlineRect().height()/2 +yuan->boundingRect().height()/2);
+            foreach (Link *link, yuan->myLinks)
+            {link->trackYuans();update();}
 
-        yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                     pos().y());
-        foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
+            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
+                         pos().y());
+            foreach (Link *link, yuan2->myLinks)
+            {link->trackYuans();update();}
 
-        yuan3->setPos(pos().x() + outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                     pos().y());
-        foreach (Link *link, yuan3->myLinks)
-        {link->trackYuans();update();}
+            yuan3->setPos(pos().x() + outlineRect().width()/2 + yuan2->outlineRect().width()/2,
+                         pos().y());
+            foreach (Link *link, yuan3->myLinks)
+            {link->trackYuans();update();}
 
-        item->setPos(QPointF(pos().x()- item->boundingRect().width()/2,
-                             pos().y() - outlineRect().height()/2 - item->boundingRect().height()/2));
-    }
+            item->setPos(QPointF(pos().x()- item->boundingRect().width()/2,
+                                 pos().y() - outlineRect().height()/2 - item->boundingRect().height()/2));
+       }
+        else{
+            setPos(yuan->x(),
+                   yuan->y() - outlineRect().height()/2 -yuan->boundingRect().height()/2);
+        }}
     return QGraphicsItem::itemChange(change, value);
 }
 

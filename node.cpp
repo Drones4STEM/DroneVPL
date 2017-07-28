@@ -11,6 +11,7 @@
 #include "link.h"
 #include "node.h"
 #include "yuan.h"
+#include "rec.h"
 
 /*******************************************************************
  * Function name: Node()
@@ -195,13 +196,19 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 QVariant Node::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
-    if (change & ItemPositionHasChanged) {
+if (change & ItemPositionHasChanged){
+    if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+   {
         yuan->setPos(pos().x(),
-                     pos().y() + outlineRect().height()/2 +yuan->boundingRect().height()/2);
+                     pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2);
         foreach (Link *link, yuan->myLinks)
         {link->trackYuans();update();}
-    }
-    return QGraphicsItem::itemChange(change, value);
+   }
+    else{
+        setPos(yuan->pos().x(),
+                      yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
+    }}
+return QGraphicsItem::itemChange(change, value);
 }
 
 /*******************************************************************

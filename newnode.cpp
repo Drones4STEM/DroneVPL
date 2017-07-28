@@ -196,8 +196,8 @@ void NewNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 ******************************************************************/
 QVariant NewNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
-{
-    if (change & ItemPositionHasChanged) {
+{   
+    if (change & ItemPositionHasChanged)   {    
         yuan->setPos(pos().x(),
                      pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
         foreach (Link *link, yuan->myLinks)
@@ -205,9 +205,7 @@ QVariant NewNode::itemChange(GraphicsItemChange change,
         yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
                      pos().y());
         foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
-
-    }
+        {link->trackYuans();update();}     }
     return QGraphicsItem::itemChange(change, value);
 }
 
