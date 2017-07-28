@@ -4,21 +4,13 @@
 #include <QMainWindow>
 #include <QPair>
 
-
 #include<qapplication.h>
 #include<qwidget.h>
 #include<qfile.h>
 #include<qtextstream.h>
 #include<qstring.h>
-//#include<qmultilineedit.h>
-//#include "openDocumentation.h"
-
-
-
-
 #include <QEvent>
 #include <QMouseEvent>
-
 
 #include "scene.h"
 
@@ -39,7 +31,7 @@ class TakeoffNode;
 class WidgetCondition;
 /*******************************************************************
  * Class name: DiagramWindow
- * Base class: QMainWindo
+ * Base class: QMainWindow
  * Description: This is the declaration of class DiagramWindow.
  *         DiagramWindow is the main window of DroneVPL.
 
@@ -47,7 +39,6 @@ class WidgetCondition;
 class DiagramWindow : public QMainWindow
 {
     Q_OBJECT
-
 
 public:
     DiagramWindow();
@@ -71,16 +62,21 @@ public:
     int ioNodeNum;
     int recNodeNum;
     int linkNodeNum;
-    int need_to_set = 0;
-    int selected_Index=0;
+
+    static QStringList recentFiles;
 
     WidgetCondition *widgetCondition;
 signals:
     bool passWidget(QGraphicsItem *);
 public slots:
-    void setDirty(bool on=true);
+    void setDirty(bool on);
+    void setDirty();
     void selectAllItems();
     bool conditionChanged();
+    void changeNodeNum(int num);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void fileNew();
@@ -91,8 +87,6 @@ private slots:
     void fileExport();
     void filePrint();
     void loadFile();
-
-
 
     void addTakeoffNode();
     void addLandonNode();
@@ -133,7 +127,6 @@ private slots:
     void compile();
     void checkupAndCompile();
 
-
     void startCompile();
     void convertCode();
     void toolBar();
@@ -148,7 +141,6 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
-
     void createWidgetConditionBar(WidgetCondition *widgetCondition);
     void setZValue(int z);
 
@@ -171,7 +163,8 @@ private:
     void addTranslation(TranslationNode* node);//addTranslationNode()的帮助函数
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
 
-
+    void readSettings();
+    void writeSettings();
 
     Link *selectedLink() const;
     Yuan *selectedYuan() const;
@@ -182,7 +175,6 @@ private:
     QMenu *editMenu;
     QMenu *viewMenu;
     QMenu *compileMenu;
-    QMenu *windowMenu;
     QMenu *helpMenu;
 
 
@@ -196,6 +188,7 @@ private:
 
     enum { MaxRecentFiles = 5 };
     QAction *recentFileActions[MaxRecentFiles];
+    QAction *separatorAction;
 
     QAction *fileSaveAction;
     QAction *fileSaveAsAction;
@@ -226,7 +219,7 @@ private:
     QAction *addVardefNodeAction;
     QAction *addComputeNodeAction;
     QAction *addIoNodeAction;
-    QAction *addTextNodeAction;   //ceshi
+    QAction *addTextNodeAction;
     QAction *addLinkAction;
     QAction *addRecAction;
     QAction *deleteAction;
@@ -246,23 +239,18 @@ private:
 
     QAction *startCompileAction;
     QAction *convertCodeAction;
-    QAction *toolBarAction;
-    QAction *controlToolBarAction;
-    QAction *statusToolBarAction;
     QAction *openDocumentationAction;
     QAction *systemInformationAction;
 
 
     QPrinter *printer;
-    QStringList recentFiles;
     QString curFile;
 
-   QGraphicsView *view;
-   newscene* scene;
+    QGraphicsView *view;
+    newscene* scene;
 
     QMouseEvent *e;
 
 };
-
 
 #endif

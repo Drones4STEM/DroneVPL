@@ -32,16 +32,13 @@
 #include "propertiesdialog.h"
 #include "itemtypes.h"
 
-extern DiagramWindow * view;
-
-
 newscene::newscene()
 {
     new_yuan=new specialYuan;
-    //new_yuan->setOutlineColor(Qt::white);
-    //new_yuan->setBackgroundColor(Qt::white);
+    setSceneRect(QRectF(QPointF(0,0), QSize(1000, 1000)));
 
-setSceneRect(QRectF(QPointF(0,0), QSize(1000, 1000)));
+    need_to_set=0;
+    selected_Index=1;
 }
 
 newscene::~newscene()
@@ -100,13 +97,6 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
-void newscene::setDirty(bool on)//删除或新建按键时引发
-{
-    //setWindowModified(on);//if on == true 状态变为已被改变
-    //updateActions();//更新按键的状态，如是否可复制，剪切
-    //似乎用不到
-}
-
 Node *newscene::selectedNode() const
 {
     QList<QGraphicsItem *> items = this->selectedItems();  //The QGraphicsItem class is the base class for all graphical items in a QGraphicsScene
@@ -163,25 +153,21 @@ void newscene::setZValue(int z)
 
 void newscene::bringToFront()
 {
-    ++view->maxZ;
-    setZValue(view->maxZ);
+    //++view->maxZ;
+    //setZValue(view->maxZ);
 }
 
 void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
-    if(view->need_to_set==1&&new_event->button()==Qt::RightButton){
-        view->need_to_set = 0;
+    if(need_to_set==1&&new_event->button()==Qt::RightButton){
+        need_to_set = 0;
     }
-    if(view->selected_Index==1&&view->need_to_set==1){
+    if(selected_Index==1&&need_to_set==1){
+        emit itemInserted(selected_Index);
         TakeoffNode *node=new TakeoffNode;
         node->setText(tr("take off\n %1 s").arg(node->time));
-
-        //QPoint position(cursor().pos().x()-500,cursor().pos().y()-100);
-
-        //node->setPos(position);
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -189,20 +175,17 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->yuan->setPos(QPointF((node->pos().x()),(node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
         this->addItem(node->yuan);
-        view->takeoffNodeNum++;
-        node->controlsId=view->takeoffNodeNum;
+        node->controlsId++;
 
-        view->need_to_set = 0;
-        setDirty(true);
-            //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
 }
-    if(view->selected_Index==2&&view->need_to_set==1){
+    if(selected_Index==2&&need_to_set==1){
+        emit itemInserted(selected_Index);
         LandonNode *node=new LandonNode;
         node->setText(tr("Land on\n %1 s").arg(node->time));
 
        node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -212,14 +195,13 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
                            (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
         this->addItem(node->yuan2);
 
-        view->landonNodeNum++;
-        node->controlsId=view->landonNodeNum;
+        node->controlsId++;
 
-        view->need_to_set = 0;
-        setDirty(true);
-            //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
+        //setCursor(Qt::ArrowCursor);
     }
-    if(view->selected_Index==3&&view->need_to_set==1){
+    if(selected_Index==3&&need_to_set==1){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
         node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
         QGraphicsItem* item=this->addWidget(node->box);
@@ -227,12 +209,10 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
         bringToFront();
-
 
         node->yuan->setPos(QPointF(node->pos().x(),
                           (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
@@ -252,12 +232,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("right"));
         node->box->addItem(tr("left"));
 
-        view->need_to_set = 0;
-
-        setDirty(true);
-            //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
+        //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==4){
+    if(need_to_set==1&&selected_Index==4){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
         node->box->setCurrentIndex(0);
 
@@ -267,7 +246,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -290,12 +268,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("right"));
         node->box->addItem(tr("left"));
 
-        view->need_to_set = 0;
-
-        setDirty(true);
+        need_to_set = 0;
     //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==5){
+    if(need_to_set==1&&selected_Index==5){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
 
         node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
@@ -304,7 +281,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -330,12 +306,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->box->setCurrentIndex(1);
 
-        view->need_to_set = 0;
-
-        setDirty(true);
-    //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
+        //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==6){
+    if(need_to_set==1&&selected_Index==6){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
 
         node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
@@ -344,7 +319,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -370,22 +344,18 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->box->setCurrentIndex(2);
 
-        view->need_to_set = 0;
-
-        setDirty(true);
-    //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
+        //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==7){
+    if(need_to_set==1&&selected_Index==7){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
-
-
         node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
         QGraphicsItem* item=this->addWidget(node->box);
         node->item=item;
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -409,22 +379,18 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("left"));
 
         node->box->setCurrentIndex(3);
-        view->need_to_set = 0;
-
-        setDirty(true);
-    //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
+        //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==8){
+    if(need_to_set==1&&selected_Index==8){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
-
-
         node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
         QGraphicsItem* item=this->addWidget(node->box);
         node->item=item;
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -449,12 +415,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->box->setCurrentIndex(4);//有什么用？
 
-        view->need_to_set = 0;
-
-        setDirty(true);
-    //setCursor(Qt::ArrowCursor);
+        need_to_set = 0;
+       //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==9){
+    if(need_to_set==1&&selected_Index==9){
+        emit itemInserted(selected_Index);
         TranslationNode *node=new TranslationNode;
 
         node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
@@ -463,7 +428,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -489,12 +453,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->box->setCurrentIndex(5);
 
-        view->need_to_set = 0;
-
-        setDirty(true);
+        need_to_set = 0;
     //setCursor(Qt::ArrowCursor);
     }
-    if(view->need_to_set==1&&view->selected_Index==10){
+    if(need_to_set==1&&selected_Index==10){
+        emit itemInserted(selected_Index);
         SomeNode *node=new SomeNode;
 
         node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
@@ -503,7 +466,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -525,12 +487,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("delay"));
 
 
-        view->need_to_set=0;
+        need_to_set=0;
         node->box->setCurrentIndex(0);
-
-        setDirty();
     }
-    if(view->need_to_set==1&&view->selected_Index==11){
+    if(need_to_set==1&&selected_Index==11){
+        emit itemInserted(selected_Index);
         SomeNode *node=new SomeNode;
 
         node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
@@ -539,7 +500,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -561,11 +521,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("delay"));
 
         node->box->setCurrentIndex(0);
-        view->need_to_set=0;
+        need_to_set=0;
 
-        setDirty();
     }
-    if(view->need_to_set==1&&view->selected_Index==12){
+    if(need_to_set==1&&selected_Index==12){
+        emit itemInserted(selected_Index);
         SomeNode *node=new SomeNode;
 
         node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
@@ -574,7 +534,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -596,11 +555,10 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("delay"));
 
         node->box->setCurrentIndex(1);
-        view->need_to_set=0;
-
-        setDirty();
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==13){
+    if(need_to_set==1&&selected_Index==13){
+        emit itemInserted(selected_Index);
         SomeNode *node=new SomeNode;
 
         node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
@@ -609,7 +567,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -631,11 +588,10 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("delay"));
 
         node->box->setCurrentIndex(2);
-        view->need_to_set=0;
-
-        setDirty();
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==14){
+    if(need_to_set==1&&selected_Index==14){
+        emit itemInserted(selected_Index);
         SomeNode *node=new SomeNode;
 
         node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
@@ -644,7 +600,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -666,31 +621,26 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("delay"));
 
         node->box->setCurrentIndex(3);
-        view->need_to_set=0;
-
-        setDirty();
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==15){
+    if(need_to_set==1&&selected_Index==15){
+        emit itemInserted(selected_Index);
         VarNode* node=new VarNode;
         node->setText(tr("int"));
 
-
         node->setPos(new_event->scenePos());
 
-        ++view->seqNumber;
         this->addItem(node);
         this->clearSelection();
         node->setSelected(true);
         bringToFront();
         //setCursor(Qt::ArrowCursor);
 
-        view->varNodeNum++;
-        node->controlsId=view->varNodeNum;
-        view->need_to_set=0;
-
-        setDirty();
+        node->controlsId++;
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==16){
+    if(need_to_set==1&&selected_Index==16){
+        emit itemInserted(selected_Index);
         QList<QGraphicsItem *> items = this->selectedItems();
         if(items.count()==0)
         {
@@ -698,10 +648,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
             node->node=0;
 
             node->setPos(new_event->scenePos());
-            //node->setPos(QPoint(80 + (100 * (seqNumber % 5)),
-            //                    80 + (50 * ((seqNumber / 5) % 7))));
             this->addItem(node);
-            ++view->seqNumber;
             node->yuan2->setPos(node->pos().x(),
                                node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
             node->yuan->setPos(node->pos().x(),
@@ -709,8 +656,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
             this->addItem(node->yuan);
             this->addItem(node->yuan2);
 
-            view->vardefNodeNum++;
-            node->controlsId=view->vardefNodeNum;
+            node->controlsId++;
         }
         else if(items.count()==1)
         {
@@ -741,21 +687,17 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
             this->addItem(node->array[node->num]);
             node->num=node->num%6+1;
 
-            view->vardefNodeNum++;
-            node->controlsId=view->vardefNodeNum;
+            node->controlsId++;
             }
-        view->need_to_set=0;
-        setDirty();
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==17){
+    if(need_to_set==1&&selected_Index==17){
+        emit itemInserted(selected_Index);
         ComputeNode *node=new ComputeNode;
         node->setText(tr("Compute"));
         QGraphicsItem* item=this->addWidget(node->box);
         node->item=item;
-
-
         node->setPos(new_event->scenePos());
-        ++view->seqNumber;
         this->addItem(node);
         this->clearSelection();
         node->setSelected(true);
@@ -789,13 +731,12 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr(">"));
         node->box->addItem(tr("<"));
 
-        view->computeNodeNum++;
-        node->controlsId=view->computeNodeNum;
+        node->controlsId++;
 
-        view->need_to_set=0;
-        setDirty();
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==18){
+    if(need_to_set==1&&selected_Index==18){
+        emit itemInserted(selected_Index);
         IoNode* node=new IoNode;
         node->setText(tr("sensor"));
         QGraphicsItem* item=this->addWidget(node->box);
@@ -804,7 +745,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         node->setPos(new_event->scenePos());
         this->addItem(node);
-        ++view->seqNumber;
 
         this->clearSelection();
         node->setSelected(true);
@@ -841,13 +781,12 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->box->addItem(tr("delay"));
         node->box->setCurrentIndex(0);
 
-        view->ioNodeNum++;
-        node->controlsId=view->ioNodeNum;
+        node->controlsId++;
 
-        view->need_to_set=0;
-        setDirty();
+        need_to_set=0;
     }
-    if(view->need_to_set==1&&view->selected_Index==19){
+    if(need_to_set==1&&selected_Index==19){
+        emit itemInserted(selected_Index);
         Rec *rec=new Rec;
         QGraphicsItem* item= this->addWidget(rec->box);
         rec->item=item;
@@ -871,11 +810,9 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         rec->box->addItem(tr("else"));
         rec->box->addItem(tr("while"));
 
-        view->recNodeNum++;
-        rec->controlsId=view->recNodeNum;
+        rec->controlsId++;
 
-        view->need_to_set=0;
-        setDirty();
+        need_to_set=0;
     }
     QGraphicsScene::mousePressEvent(new_event);
     //setCursor(Qt::ArrowCursor);

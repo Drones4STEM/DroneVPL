@@ -1,24 +1,20 @@
-/******************************************************************
-* File: main.cpp
+/*******************************************************************
+ * File: main.cpp
  * Author: Ryan Feng
- * Description: This is the main entrance of DroneVPL
+ * Description: This is the main entrance of DroneVPL.
 ******************************************************************/
 #include <QApplication>
 
 #include "diagramwindow.h"
-#include <QFile>
-#include "ODocument.h"
-
-
-DiagramWindow* view;
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
-    DiagramWindow view1;
-    view = &view1;
-    view1.show();
-    view1.show();
+    app.setApplicationName(app.translate("main", "Page Designer"));
+    app.setOrganizationName("Qtrac Ltd.");
+    app.setOrganizationDomain("qtrac.eu");
+    app.setWindowIcon(QIcon(":/images/fileopen.png"));
+    DiagramWindow *mainWin=new DiagramWindow;
+    mainWin->show();
     return app.exec();
 }
