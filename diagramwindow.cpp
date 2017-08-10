@@ -108,15 +108,21 @@ QStringList DiagramWindow::recentFiles = QStringList();
 DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
+    gridGroup = 0;
     scene = new newscene;
+    QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
+    //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
+    scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
+    scene->setBackgroundBrush(Qt::white);
     widgetCondition = new WidgetCondition();
-    view = new QGraphicsView;
+    //view = new QGraphicsView;
+    view = new View;
     view->setScene(scene);
     setMouseTracking(true);
 
-    view->setDragMode(QGraphicsView::RubberBandDrag);
-    view->setRenderHints(QPainter::Antialiasing
-                         | QPainter::TextAntialiasing);
+    //view->setDragMode(QGraphicsView::RubberBandDrag);
+    //view->setRenderHints(QPainter::Antialiasing
+    //                     | QPainter::TextAntialiasing);
     view->setContextMenuPolicy(Qt::ActionsContextMenu);//显示文本菜单
     setCentralWidget(view);
 
@@ -153,6 +159,7 @@ DiagramWindow::DiagramWindow()
 
     QSettings settings("Software Inc.", "Page Designer");
     recentFiles = settings.value("recentFiles").toStringList();
+    viewShowGridAction->setChecked(settings.value(ShowGrid,true).toBool());
 
     foreach (QWidget *win, QApplication::topLevelWidgets()) {
         if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
@@ -180,10 +187,10 @@ DiagramWindow::DiagramWindow()
 ******************************************************************/
 QSize DiagramWindow::sizeHint() const
 {
-   // QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
-    //size.rwidth() += brushWidget->sizeHint().width();
-    //return size.boundedTo(
-         //  QApplication::desktop()->availableGeometry().size());
+    QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
+    size.rwidth()+=widgetCondition->sizeHint().width();
+    return size.boundedTo(
+           QApplication::desktop()->availableGeometry().size());
 }
 
 /*******************************************************************
@@ -228,6 +235,7 @@ void DiagramWindow::closeEvent(QCloseEvent *event)
         QSettings settings("Software Inc.", "Page Designer");
         settings.setValue(MostRecentFile, windowFilePath());
         settings.setValue("recentFiles",recentFiles);
+        settings.setValue(ShowGrid,viewShowGridAction->isChecked());
         event->accept();
     }
     else
@@ -325,8 +333,12 @@ void DiagramWindow::loadFile()
         return;
     setCurrentFile(windowFilePath());
     in.setVersion(QDataStream::Qt_4_5);
+    //clear
     selectAllItems();
     del();
+    gridGroup=0;
+    viewShowGrid(viewShowGridAction->isChecked());
+
     readItems(in,0,false);
     statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
                              StatusTimeout);
@@ -552,6 +564,8 @@ void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &i
 {
      foreach(QGraphicsItem*item,items)
      {
+         if(item==gridGroup||item->group()==gridGroup)
+             continue;    //先检查每个项是不是一个gridGroup或者是否属于参考网格所属的gridGroup
          qint32 type=static_cast<qint32>(item->type());
          out<<type;
          switch(type)
@@ -595,14 +609,47 @@ bool DiagramWindow::fileSaveAs()
 ******************************************************************/
 void DiagramWindow::fileExport()
 {
-    //QPixmap pixmap;
+    QString suffixes = AQP::filenameFilter(tr("Bitmap image"),
+             QImageWriter::supportedImageFormats());
+    suffixes += tr(";;Vector image (*.svg)");
+    const QString filename = QFileDialog::getSaveFileName(this,
+             tr("%1 - Export").arg(QApplication::applicationName()),
+              ".",suffixes);
+    if (filename.isEmpty())return;
+    QImage image(printer->paperSize(QPrinter::Point).toSize(),
+                 QImage::Format_ARGB32);
+    {
+        QPainter painter(&image);
+        painter.setRenderHints(QPainter::Antialiasing|
+                               QPainter::TextAntialiasing);
+        bool showGrid = viewShowGridAction->isChecked();
+        if(showGrid)
+            viewShowGrid(false);
+        QList<QGraphicsItem*>items = scene->selectedItems();
+        scene->clearSelection();
+
+        scene->render(&painter);
+        if(showGrid)
+            viewShowGrid(true);
+        foreach (QGraphicsItem *item,items)
+            item->setSelected(true);
+    }
+    if(image.save(filename))
+        statusBar()->showMessage(tr("Exported %1").arg(filename),
+                                 StatusTimeout);
+    else
+        AQP::warning(this,tr("Error"),tr("Failed to export: %1")
+                                       .arg(filename));
+    /*QPixmap pixmap;
     //pixmap=pixmap.grabWidget(this,0,0,scene->width(), scene->height());
-    //QImage  image;
-    //image=pixmap.toImage();
+    pixmap=pixmap.grabWidget(this,aToolBar->width(),editToolBar->height(),scene->width()+aToolBar->width(),scene->height()+editToolBar->height());
+    QImage  image;
+    image=pixmap.toImage();
     //pixmap.save("D:\qt\image.jpg","JPG");
     QString filename = QFileDialog::getSaveFileName(this,
             tr("%1 - Save As").arg(QApplication::applicationName()),
             ".", tr("JPG (*.jpg)"));
+    pixmap.save(filename);*/
 
 }
 
@@ -615,7 +662,7 @@ void DiagramWindow::fileExport()
 ******************************************************************/
 void DiagramWindow::filePrint()
 {
-    QPrinter printer(QPrinter::HighResolution);
+    /*QPrinter printer(QPrinter::HighResolution);
     QPrintDialog printdialog(&printer,this);
     if(printdialog.exec())
     {
@@ -628,7 +675,25 @@ void DiagramWindow::filePrint()
         painter.setViewport(rect.x(), rect.y(),size.width(), size.height());
         painter.setWindow(image.rect());
         painter.drawPixmap(0,0,image);
-}
+     }*/
+    QPrintDialog dialog(printer);
+    if(dialog.exec())
+    {
+        QPainter painter(printer);
+        bool showGrid = viewShowGridAction->isChecked();
+        if(showGrid)
+            viewShowGrid(false);
+        QList<QGraphicsItem*>items = scene->selectedItems();
+        scene->clearSelection();
+
+        scene->render(&painter);
+        if(showGrid)
+            viewShowGrid(true);;
+        foreach (QGraphicsItem *item,items)
+            item->setSelected(true);
+    }
+    statusBar()->showMessage(tr("Printed %1")
+             .arg(windowFilePath()),StatusTimeout);
 }
 
 /*******************************************************************
@@ -1636,6 +1701,51 @@ void DiagramWindow::showNodeStatusBar()
 }
 
 /*******************************************************************
+ * Function name:viewShowGrid()
+ * Description: This function changes the background of scene
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::viewShowGrid(bool on)
+{
+    /*if(viewShowGridAction->isChecked())
+        scene->setBackgroundBrush(QPixmap(":/images/background1.png"));
+    else
+        scene->setBackgroundBrush(QPixmap(":/images/background2.png"));
+    scene->update();
+    view->update();*/
+    if(!gridGroup)
+    {
+        const int GridSize = 40;
+        QPen pen(QColor(175,175,175,127));
+        gridGroup = new QGraphicsItemGroup;
+        const int MaxX = static_cast<int>(std::ceil(scene->width())
+                                          /GridSize)*GridSize;
+        const int MaxY = static_cast<int>(std::ceil(scene->height())
+                                          /GridSize)*GridSize;
+        for(int x = 0;x <= MaxX;x += GridSize)
+        {
+            QGraphicsLineItem *item = new QGraphicsLineItem(x,0,x,MaxY);
+            item->setPen(pen);
+            item->setZValue(-101);
+            item->setEnabled(false);
+            gridGroup->addToGroup(item);
+        }
+        for(int y = 0;y <= MaxY;y +=GridSize)
+        {
+            QGraphicsLineItem *item = new QGraphicsLineItem(0,y,MaxX,y);
+            item->setPen(pen);
+            item->setZValue(-101);
+            item->setEnabled(false);
+            gridGroup->addToGroup(item);
+        }
+        scene->addItem(gridGroup);
+    }
+    gridGroup->setVisible(on);
+}
+
+/*******************************************************************
  * Function name:canvas()
  * Description: This function is used to set the properties of the canvers.
  * Callee:
@@ -1817,6 +1927,13 @@ void DiagramWindow::createActions()
     showNodeStatusBarAction->setCheckable(true);
     connect(showNodeStatusBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeStatusBar()));
+    viewShowGridAction = new QAction(tr("show grid"),this);
+    viewShowGridAction->setIcon(QIcon(":/images/showgrid.png"));
+    viewShowGridAction->setStatusTip((tr("show or hide grid")));
+    viewShowGridAction->setCheckable(true);
+    viewShowGridAction->setChecked(true);
+    connect(viewShowGridAction,SIGNAL(toggled(bool)),
+             this,SLOT(viewShowGrid(bool)));
 
     propertiesAction = new QAction(tr("P&roperties..."), this);
     connect(propertiesAction, SIGNAL(triggered()),
@@ -1856,6 +1973,15 @@ void DiagramWindow::createActions()
 
     systemInformationAction = new QAction(tr("&System information"),this);
     connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
+
+    viewZoomInAction = new QAction(QIcon(":/images/zoom-in.png"),
+                                   tr("Zoom In"),this);
+    viewZoomInAction->setShortcut(tr("+"));
+    connect(viewZoomInAction,SIGNAL(triggered()),view,SLOT(zoomIn()));
+    viewZoomOutAction = new QAction(QIcon(":/images/zoom-out.png"),
+                                   tr("Zoom out"),this);
+    viewZoomOutAction->setShortcut(tr("-"));
+    connect(viewZoomOutAction,SIGNAL(triggered()),view,SLOT(zoomOut()));
 }
 
 /*******************************************************************
@@ -1868,6 +1994,11 @@ void DiagramWindow::createActions()
 void DiagramWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
+    editMenu = menuBar()->addMenu(tr("&Edit"));
+    viewMenu = menuBar()->addMenu(tr("&View"));
+    compileMenu = menuBar()->addMenu(tr("&Compile"));
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
     fileMenu->addAction(fileSaveAction);
@@ -1883,15 +2014,15 @@ void DiagramWindow::createMenus()
     fileMenu->addAction(exitAction);
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    compileMenu = menuBar()->addMenu(tr("&Compile"));
+    //compileMenu = menuBar()->addMenu(tr("&Compile"));
     compileMenu->addAction(startCompileAction);
     compileMenu->addAction(convertCodeAction);
 
-    helpMenu = menuBar()->addMenu(tr("&Help"));
+    //helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(openDocumentationAction);
     helpMenu->addAction(systemInformationAction);
 // ////////////////////////////////////////////////////////////////////////////////////////////
-    editMenu = menuBar()->addMenu(tr("&Edit"));
+    //editMenu = menuBar()->addMenu(tr("&Edit"));
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addRiseNodeAction<<addFallNodeAction
@@ -1926,15 +2057,19 @@ void DiagramWindow::createMenus()
     editMenu->addSeparator();
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
-    viewMenu = menuBar()->addMenu(tr("&View"));
+    //viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(showEditToolBarAction);
     viewMenu->addAction(showNodeBarAction);
     viewMenu->addAction(showNodeStatusBarAction);
+    viewMenu->addAction(viewShowGridAction);
+    viewMenu->addSeparator();
+    viewMenu->addAction(viewZoomInAction);
+    viewMenu->addAction(viewZoomOutAction);
     viewMenu->addSeparator();
     viewMenu->addAction(propertiesAction);
     viewMenu->addAction(canvasAction);
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
-    compileMenu=menuBar()->addMenu(tr("&Compile"));
+    //compileMenu=menuBar()->addMenu(tr("&Compile"));
     compileMenu->addAction(checkupAction);
     compileMenu->addAction(compileAction);
     compileMenu->addAction(checkupAndCompileAction);
@@ -1963,6 +2098,9 @@ void DiagramWindow::createToolBars()
     editToolBar->addSeparator();
     editToolBar->addAction(bringToFrontAction);
     editToolBar->addAction(sendToBackAction);
+    editToolBar->addAction(viewZoomInAction);
+    editToolBar->addAction(viewZoomOutAction);
+    editToolBar->addAction(viewShowGridAction);
 
     aToolBar = addToolBar(tr("action"));
     aToolBar->addAction(addTakeoffNodeAction);

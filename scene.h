@@ -1,5 +1,5 @@
-#ifndef VIEW_H
-#define VIEW_H
+#ifndef SCENE_H
+#define SCENE_H
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
@@ -39,4 +39,4 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 };
 
-#endif // VIEW_H
+#endif // SCENE_H

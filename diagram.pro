@@ -19,7 +19,8 @@ HEADERS       = diagramwindow.h \
     odescription.h \
     odocument.h \
     scene.h \
-    widgetcondition.h
+    widgetcondition.h \
+    view.h
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
