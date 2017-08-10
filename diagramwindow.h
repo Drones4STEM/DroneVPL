@@ -13,6 +13,7 @@
 #include <QMouseEvent>
 
 #include "scene.h"
+#include "view.h"
 
 
 class QAction;
@@ -122,6 +123,7 @@ private slots:
     void showEditToolBar();
     void showNodeBar();
     void showNodeStatusBar();
+    void viewShowGrid(bool on);   //显示网格
     void canvas();
     void checkup();
     void compile();
@@ -134,6 +136,8 @@ private slots:
     void statusToolBar();
     void openDocumentation();
     void systemInformation();
+
+    //void viewShowGrid(bool on);   //显示网格
 
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
@@ -242,13 +246,17 @@ private:
     QAction *openDocumentationAction;
     QAction *systemInformationAction;
 
+    QAction *viewZoomInAction;
+    QAction *viewZoomOutAction;
+    QAction *viewShowGridAction;
+
 
     QPrinter *printer;
     QString curFile;
-
-    QGraphicsView *view;
+    //QGraphicsView *view;
+    View *view;
     newscene* scene;
-
+    QGraphicsItemGroup *gridGroup;
     QMouseEvent *e;
 
 };

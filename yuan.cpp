@@ -221,6 +221,7 @@ QPainterPath specialYuan::shape()  const
 void specialYuan::paint(QPainter *painter,
                     const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    setZValue(-100);
     QPen pen(myOutlineColor);
     if (option->state &QStyle::State_Selected) {
         pen.setStyle(Qt::DotLine);
@@ -232,4 +233,5 @@ void specialYuan::paint(QPainter *painter,
     QRectF rect = outlineRect();
     painter->drawRoundRect(rect, 99,
                            99);
+
 }
