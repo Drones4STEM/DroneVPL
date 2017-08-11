@@ -20,7 +20,7 @@ public:
     ~newscene();
     specialYuan* new_yuan;
 
-    void setnewCreationName();
+    //void setnewCreationName();
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
     void addTranslationNode();

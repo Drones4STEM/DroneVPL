@@ -13,6 +13,7 @@
 #include "newnode.h"
 #include "rec.h"
 #include "diagramwindow.h"
+#include "wqDragItem.h"
 
 Rec::Rec()
 {
@@ -22,6 +23,28 @@ Rec::Rec()
 
     identifier="Rec";
     controlsId=0;
+
+    mBoundingRect = QRectF(0,0,400,400);
+    mBoundingRect.translate(-mBoundingRect.center());
+
+
+    QRectF curRect = boundingRect().adjusted(0,10,0,-10);
+
+    // Drags
+    wqDragItem* drag1 = new wqDragItem(this);
+    wqDragItem* drag2 = new wqDragItem(this);
+    wqDragItem* drag3 = new wqDragItem(this);
+    wqDragItem* drag4 = new wqDragItem(this);
+
+    drag1->setPos(curRect.topLeft());
+    drag2->setPos(curRect.topRight());
+    drag3->setPos(curRect.bottomLeft());
+    drag4->setPos(curRect.bottomRight());
+
+    connect(drag1, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
+    connect(drag2, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
+    connect(drag3, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
+    connect(drag4, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(showYuan()));
 }
@@ -58,8 +81,9 @@ QRectF Rec::outlineRect() const
 ******************************************************************/
 QRectF Rec::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    //const int Margin = 6;
+    //return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return mBoundingRect;
 }
 
 /*******************************************************************
@@ -74,7 +98,7 @@ QRectF Rec::boundingRect() const
 ******************************************************************/
 QPainterPath Rec::shape() const
 {
-    QRectF rect = outlineRect();
+    QRectF rect = mBoundingRect;
 
     QPainterPath path;
     path.addRoundRect(rect, roundness(rect.width()),
@@ -109,7 +133,7 @@ void Rec::paint(QPainter *painter,
     painter->setPen(pen);
     painter->setBrush(backgroundColor());
 
-    QRectF rect = outlineRect();
+    QRectF rect = mBoundingRect;
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 }
@@ -163,6 +187,24 @@ void Rec::showYuan()
     default:
         break;
     }
+}
+
+void Rec::slot_changeRect()
+{
+    QRectF rect(0,0,0,0);
+    QList<QGraphicsItem*> allItems = childItems();
+    foreach(QGraphicsItem* item, allItems)
+    {
+        wqDragItem* drag = dynamic_cast<wqDragItem*>(item);
+        if(drag)
+        {
+            QRectF r = drag->mapRectToScene(drag->boundingRect());
+            rect = rect.united(r);
+        }
+    }
+
+    prepareGeometryChange();
+    mBoundingRect = mapRectFromScene(rect);
 }
 
 

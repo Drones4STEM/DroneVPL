@@ -7,6 +7,8 @@
 #include <QSet>
 #include <QtGui>
 
+#include<QtCore>
+
 #include "node.h"
 #include "newnode.h"
 #include "itemtypes.h"
@@ -18,7 +20,7 @@ class Yuan;
 /*******************************************************************
  * Class name: Rec
  * Base class: NewNode
- * Description: This is the declaration of class Rec. Rec acts as 
+ * Description: This is the declaration of class Rec. Rec acts as
  *        logic rectangle.
 ******************************************************************/
 class Rec : public NewNode
@@ -46,9 +48,20 @@ public:
     QString identifier;
     int controlsId;
 
+private:
+    QRectF mBoundingRect;
+
+//signals:
+    //void sig_posChanged();//没用
+
+protected slots:
+    void slot_changeRect();
+
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+
+
 private slots:
     void showYuan();
 };
