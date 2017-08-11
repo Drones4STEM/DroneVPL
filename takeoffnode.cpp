@@ -421,8 +421,324 @@ void SomeNode::setNewIdentifier()
     }
 }
 
+//=======================TurnNode=========================
+TurnNode::TurnNode()
+{
+    box=new QComboBox;
+    speed=0;
+    time=0;
+    angel=0;
 
+    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewText()));
+    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
 
+    identifier="TurnLeftNode";
+
+}
+
+TurnNode::~TurnNode()
+{
+    delete box;
+}
+
+void TurnNode::setTime(double t)
+{
+    time=t;
+}
+
+double TurnNode::myTime()
+{
+    return time;
+}
+
+void TurnNode::setSpeed(double s)
+{
+    speed=s;
+}
+
+double TurnNode::mySpeed()
+{
+    return speed;
+}
+
+void TurnNode::setAngel(double a)
+{
+    angel=a;
+}
+
+double TurnNode::myAngel()
+{
+    return angel;
+}
+
+void TurnNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    int index=box->currentIndex();
+    switch (index) {
+    case 0:
+    case 1:
+    {
+        double a = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Angel"), tr("Enter new angel:"),
+                               QLineEdit::Normal, angel);
+        double t = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Time"), tr("Enter new time:"),
+                               QLineEdit::Normal, time);
+        angel=a;time=t;
+        setText(tr(" %1  \n %2 s").arg(a).arg(t));
+        break;
+    }
+    case 2:
+    case 3:
+    {
+        double t = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Time"), tr("Enter new time:"),
+                               QLineEdit::Normal, time);
+        time=t;
+        setText(tr(" %1 s").arg(t));
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+QVariant TurnNode::itemChange(GraphicsItemChange change,
+                    const QVariant &value)
+{
+    if (change & ItemPositionHasChanged){
+         if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+           {
+                yuan->setPos(pos().x(),
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                foreach (Link *link, yuan->myLinks)
+                {link->trackYuans();update();}
+
+                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
+                             pos().y());
+                foreach (Link *link, yuan2->myLinks)
+                {link->trackYuans();update();}
+
+                item->setPos(QPointF(pos().x()-40,
+                             (pos().y() - outlineRect().height()/2 - item->boundingRect().height())));
+               // update();
+           }
+            else{
+                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
+                               yuan2->pos().y());
+            }}
+        return QGraphicsItem::itemChange(change, value);
+}
+
+void TurnNode::setNewText()
+{
+    int index=box->currentIndex();
+    if(index==0||index==1)
+    {
+        setText(tr(" %1  \n %2 s").arg(angel).arg(time));
+    }
+    else
+        setText(tr(" %1 s").arg(time));
+}
+
+void TurnNode::setNewIdentifier()
+{
+    int index=box->currentIndex();
+    switch (index) {
+    case 0:
+    {
+        identifier="TurnLeftNode";
+        break;
+    }
+    case 1:
+    {
+        identifier="TurnRightNode";
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+//=========================HoverNode=======================
+HoverNode::HoverNode()
+{
+    speed=0;
+    time=0;
+    angel=0;
+
+    identifier="Hover";
+}
+
+HoverNode::~HoverNode()
+{
+    ;
+}
+
+void HoverNode::setTime(double t)
+{
+    time=t;
+}
+
+double HoverNode::myTime()
+{
+    return time;
+}
+
+void HoverNode::setSpeed(double s)
+{
+    speed=s;
+}
+
+double HoverNode::mySpeed()
+{
+    return speed;
+}
+
+void HoverNode::setAngel(double a)
+{
+    angel=a;
+}
+
+double HoverNode::myAngel()
+{
+    return angel;
+}
+
+void HoverNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+
+        double a = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Angel"), tr("Enter new angel:"),
+                               QLineEdit::Normal, angel);
+        double t = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Time"), tr("Enter new time:"),
+                               QLineEdit::Normal, time);
+        angel=a;time=t;
+        setText(tr(" %1  \n %2 s").arg(a).arg(t));
+}
+
+QVariant HoverNode::itemChange(GraphicsItemChange change,
+                    const QVariant &value)
+{
+    if (change & ItemPositionHasChanged){
+         if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+           {
+                yuan->setPos(pos().x(),
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                foreach (Link *link, yuan->myLinks)
+                {link->trackYuans();update();}
+
+                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
+                             pos().y());
+                foreach (Link *link, yuan2->myLinks)
+                {link->trackYuans();update();}
+
+                //item->setPos(QPointF(pos().x()-40,
+                             //(pos().y() - outlineRect().height()/2 - item->boundingRect().height())));
+               // update();
+           }
+            else{
+                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
+                               yuan2->pos().y());
+            }}
+        return QGraphicsItem::itemChange(change, value);
+}
+
+void HoverNode::setNewText()
+{
+    setText(tr(" %1  \n %2 s").arg(angel).arg(time));
+}
+
+//===============================DelayNode===========================
+DelayNode::DelayNode()
+{
+    speed=0;
+    time=0;
+    angel=0;
+
+    identifier="Delay";
+}
+
+DelayNode::~DelayNode()
+{
+    ;
+}
+
+void DelayNode::setTime(double t)
+{
+    time=t;
+}
+
+double DelayNode::myTime()
+{
+    return time;
+}
+
+void DelayNode::setSpeed(double s)
+{
+    speed=s;
+}
+
+double DelayNode::mySpeed()
+{
+    return speed;
+}
+
+void DelayNode::setAngel(double a)
+{
+    angel=a;
+}
+
+double DelayNode::myAngel()
+{
+    return angel;
+}
+
+void DelayNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+
+        double a = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Angel"), tr("Enter new angel:"),
+                               QLineEdit::Normal, angel);
+        double t = QInputDialog::getDouble(event->widget(),
+                               tr("Edit Time"), tr("Enter new time:"),
+                               QLineEdit::Normal, time);
+        angel=a;time=t;
+        setText(tr(" %1  \n %2 s").arg(a).arg(t));
+}
+
+QVariant DelayNode::itemChange(GraphicsItemChange change,
+                    const QVariant &value)
+{
+    if (change & ItemPositionHasChanged){
+         if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+           {
+                yuan->setPos(pos().x(),
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                foreach (Link *link, yuan->myLinks)
+                {link->trackYuans();update();}
+
+                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
+                             pos().y());
+                foreach (Link *link, yuan2->myLinks)
+                {link->trackYuans();update();}
+
+                //item->setPos(QPointF(pos().x()-40,
+                             //(pos().y() - outlineRect().height()/2 - item->boundingRect().height())));
+               // update();
+           }
+            else{
+                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
+                               yuan2->pos().y());
+            }}
+        return QGraphicsItem::itemChange(change, value);
+}
+
+void DelayNode::setNewText()
+{
+    setText(tr(" %1  \n %2 s").arg(angel).arg(time));
+}
 
 
 

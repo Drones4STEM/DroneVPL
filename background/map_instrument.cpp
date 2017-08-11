@@ -37,7 +37,7 @@ map_instrument::map_instrument(QObject *parent) : QObject(parent)
 void map_instrument::map_insert(QMap<QString, widget>& m, QString index, WidgetWrap& value)
 {
     m.insert(index,value);
-    qDebug()<<m.isEmpty();
+   // qDebug()<<m.isEmpty();
 }
 
 /*****************************************************

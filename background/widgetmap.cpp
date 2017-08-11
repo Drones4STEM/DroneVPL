@@ -33,12 +33,7 @@ WidgetMap::WidgetMap(QObject *parent) : QObject(parent)
 void WidgetMap::add(WidgetWrap& tmp)
 {
     amount++;
-    QString index = "none";
-    if(tmp.identifier == "TakeOff" ){
-        QString id = QString::number((tmp.mTakeoffNode)->controlsId,10);
-        index = (tmp.mTakeoffNode)->identifier + id;
-    }
-    qDebug()<<index;
+    QString index = tmp.name;
     map_instrument::map_insert(Store,index,tmp);
 }
 
