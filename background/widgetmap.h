@@ -3,7 +3,14 @@
 
 #include <QObject>
 #include <QMap>
+#include <QGraphicsObject>
+
 #include "map_instrument.h"
+#include "widgetwrap.h"
+
+typedef WidgetWrap widget;
+
+using namespace std;
 
 /***************************************************
  * Class name: WidgetMap
@@ -19,18 +26,19 @@ class WidgetMap : public QObject
 {
     Q_OBJECT
 public:
-    explicit WidgetMap(QObject *parent = 0);
+    explicit WidgetMap(QObject *parent);
+    WidgetMap(){amount = 0;}
 
-    //用于在每次用户创建控件时添加该控件节点，
-    void add(widget* w);
+    void add(WidgetWrap& tmp);    //用于在每次用户创建控件时添加该控件节点
+    void del(widget* w);    //删除控件
+    QMap<QString, widget>& get_map();
+    bool set_map(QMap<QString, widget> m){Store = m;return !Store.isEmpty();}
 
-    //删除控件
-    void del(widget* w);
+    bool clear();
 
-    QMap<QString, widget*> get_map();
-
+    QMap<QString, widget> Store;
 private:
-    QMap<QString, widget*> Store;
+
     int amount;
 
 signals:

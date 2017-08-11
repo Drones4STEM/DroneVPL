@@ -6,9 +6,13 @@
  *    It can also write python code according to topological sequence
  *    of block diagram.
 *********************************************************/
+#include <QDebug>
+#include <QPointF>
 
 #include "format.h"
-#include "E:dachuang/QT_project/workspace/diagram1/Link.h"
+#include "link.h"
+
+using namespace std;
 
 /*****************************************************
  * Function name: format
@@ -17,8 +21,9 @@
  * Input: QMap<QString, widget *> - widgets exits now
  * Output: none
  *****************************************************/
-format::format(QObject *parent, QMap<QString, widget *> *m) : QObject(parent)
+format::format(QMap<QString, WidgetWrap>& m)
 {
+    if(m.isEmpty()) qDebug()<<"format(QMap<QString, WidgetWrap>& m)   m is empty";
     Map = m;
 }
 
@@ -32,16 +37,20 @@ format::format(QObject *parent, QMap<QString, widget *> *m) : QObject(parent)
  *****************************************************/
 bool format::save_frame_file(QString filename = "FrameGraph.xml")
 {
-    typename QMap<QString, widget*>::iterator iter;
-    QFile file("E:/QT_project/workspace/"+filename);
+    qDebug()<<filename;
+    typename QMap<QString, widget>::iterator iter;
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
     QXmlStreamWriter stream(&file);
 
     stream.setAutoFormatting(true);
-    stream.writeStartDocument("widgets");
+    stream.writeStartDocument("1.0");
 
-    for(iter=Map->begin(); iter!=Map->end(); iter++){   //遍历控件指针
-        widget_convert_to_xml(iter,stream);
-    }
+    if(Map.isEmpty()) qDebug()<<"format map is empty";
+    else
+        for(iter=Map.begin(); iter!=Map.end(); iter++){   //遍历控件指针
+            widget_convert_to_xml(iter,stream);
+        }
 
     stream.writeEndDocument();
     file.close();
@@ -59,9 +68,113 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
  *        QXmlStreamWriter stream - the file stream to operate the xml file
  * Output: none
  *****************************************************/
-/*
-void widget_convert_to_xml(widget* w, QXmlStreamWriter stream)  //保存一个控件，一个lOGIC算一个控件
+
+void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlStreamWriter& stream)
 {
+    /* 类别 category
+     * 型号 type
+     * 名字 name
+     * 坐标 location
+     *
+     */
+    QString identifier = iter->identifier;
+    QString controlsId = QString::number(iter->controlsId);
+    //---------Action------------------
+    if( iter->type == "Action" ){
+        stream.writeStartElement("widget");
+        stream.writeAttribute("category", "Action");
+
+          if(identifier == "TakeOff"){ //起飞动作
+              stream.writeStartElement("Action");
+              stream.writeAttribute("type",identifier);
+               stream.writeTextElement("id",controlsId);
+               QString x = QString::number((long)iter->mTakeoffNode->pos().x(),10);
+               stream.writeTextElement("location_x",x);
+               QString y = QString::number((long)iter->mTakeoffNode->pos().y(),10);
+               stream.writeTextElement("location_y",y);
+               //stream.writeStartElement("arrow_out");
+                //stream.writeTextElement("goto",);
+               stream.writeEndElement();
+              //stream.writeTextElement("pattern",);
+          }
+          if(identifier == "Land"){ //降落动作
+              stream.writeTextElement("motion","land");
+              //stream.writeTextElement("pattern",);
+          }
+          if(identifier == "GoLeft"){ //左移动作
+              stream.writeTextElement("motion","move_left");
+              stream.writeStartElement("speed");
+              stream.writeAttribute("unit","m/s");
+              //stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "GoRight"){ //右移动作
+              stream.writeTextElement("motion","move_right");
+              stream.writeStartElement("speed");
+              stream.writeAttribute("unit","m/s");
+              //stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "GoUp"){ //上移动作
+              stream.writeTextElement("motion","move_up");
+              stream.writeStartElement("speed");
+              stream.writeAttribute("unit","m/s");
+             // stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "GoDown"){ //下移动作
+              stream.writeTextElement("motion","move_down");
+              stream.writeStartElement("speed");
+              stream.writeAttribute("unit","m/s");
+             // stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "Forward"){ //前移动作
+              stream.writeTextElement("motion","move_forward");
+              stream.writeStartElement("speed");
+              stream.writeAttribute("unit","m/s");
+              //stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "Backward"){ //后移动作
+              stream.writeTextElement("motion","move_back");
+              stream.writeStartElement("speed");
+              stream.writeAttribute("unit","m/s");
+              //stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "TurnLeft"){ //左转动作
+              stream.writeTextElement("motion","turn_left");
+              stream.writeStartElement("angle");
+              stream.writeAttribute("unit","angle");
+              //stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "TurnRight"){ //右转动作
+              stream.writeTextElement("motion","turn_right");
+              stream.writeStartElement("angle");
+              stream.writeAttribute("unit","angle");
+             // stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "Hover"){ //悬停动作
+              stream.writeTextElement("motion","hang_on");
+              stream.writeStartElement("pattern");
+             // stream.writeCharacters();
+              stream.writeEndElement();
+          }
+          if(identifier == "Delay"){ //延时动作
+              stream.writeTextElement("motion","none");
+              stream.writeStartElement("time");
+              stream.writeAttribute("unit","second");
+              //stream.writeCharacters();
+              stream.writeEndElement();
+          }
+         stream.writeEndElement();
+        stream.writeEndElement();
+    }
+    /*
+    //--------VAR--------------
     if( w->compare(0,3,"VAR")==0 ){    //是VAR控件
         stream.writeStartElement("widget");
         stream.writeAttribute("sort", "VAR");
@@ -111,95 +224,6 @@ void widget_convert_to_xml(widget* w, QXmlStreamWriter stream)  //保存一个�
           }
          stream.writeEndElement();
         stream.writeEndElement();
-    }
-    //---------Action------------------
-    if( w->key.compare(0,4,"Action")==0 ){
-        stream.writeStartElement("widget");
-        stream.writeAttribute("sort", "Action");
-         stream.writeStartElement("Action");
-         stream.writeAttribute("name", iter->key);
-          stream.writeTextElement("location_x",iter->value->pos().x());
-          stream.writeTextElement("location_y",iter->value->pos().y());
-          stream.writeStartElement("arrow_out");
-           stream.writeTextElement("goto",);
-          stream.writeEndElement();
-          if(){ //起飞动作
-              stream.writeTextElement("motion","take_off");
-              stream.writeTextElement("pattern",);
-          }
-          if(){ //降落动作
-              stream.writeTextElement("motion","land");
-              stream.writeTextElement("pattern",);
-          }
-          if(){ //左移动作
-              stream.writeTextElement("motion","move_left");
-              stream.writeStartElement("speed");
-              stream.writeAttribute("unit","m/s");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //右移动作
-              stream.writeTextElement("motion","move_right");
-              stream.writeStartElement("speed");
-              stream.writeAttribute("unit","m/s");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //上移动作
-              stream.writeTextElement("motion","move_up");
-              stream.writeStartElement("speed");
-              stream.writeAttribute("unit","m/s");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //下移动作
-              stream.writeTextElement("motion","move_down");
-              stream.writeStartElement("speed");
-              stream.writeAttribute("unit","m/s");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //前移动作
-              stream.writeTextElement("motion","move_forward");
-              stream.writeStartElement("speed");
-              stream.writeAttribute("unit","m/s");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //后移动作
-              stream.writeTextElement("motion","move_back");
-              stream.writeStartElement("speed");
-              stream.writeAttribute("unit","m/s");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //左转动作
-              stream.writeTextElement("motion","turn_left");
-              stream.writeStartElement("angle");
-              stream.writeAttribute("unit","angle");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //右转动作
-              stream.writeTextElement("motion","turn_right");
-              stream.writeStartElement("angle");
-              stream.writeAttribute("unit","angle");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //悬停动作
-              stream.writeTextElement("motion","hang_on");
-              stream.writeStartElement("pattern");
-              stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(){ //延时动作
-              stream.writeTextElement("motion","none");
-          }
-          stream.writeStartElement("time");
-          stream.writeAttribute("unit","second");
-          stream.writeCharacters();
-          stream.writeEndElement();
     }
     //---------Compute------------------
     if( w->key.compare(0,6,"Compute")==0 ){
@@ -280,8 +304,79 @@ void widget_convert_to_xml(widget* w, QXmlStreamWriter stream)  //保存一个�
          stream.writeEndElement();
         stream.writeEndElement();
     }
-}
 */
+}
+
+/*****************************************************
+ * Function name: read_frame_file
+ * Description: This funtion reads a xml file and
+ *              redraw the frame.
+ * Calle:
+ * Input: QString filename - the xml file name
+ * Output: true - to tell if reading is successful
+ *****************************************************/
+bool format::read_frame_file(QString filename){
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QXmlStreamReader stream(&file);
+    qDebug()<<"read frame file";
+    QString category,type;
+    qint16 location_x,location_y,id;
+
+    qDebug()<<stream.hasError();
+    while(!stream.atEnd()){ //exit if at end or has error
+        //qDebug()<<"not end";
+        stream.readNext();
+        if (stream.isStartElement()){
+            if(stream.name().toString() == "widget"){   //根据xml的嵌套关系构建嵌套的if语句，维护属性包装。widget属性暂时无用
+                category = stream.attributes().value("category").toString();
+                qDebug()<<"category: "<<category;
+                stream.readNext();  //不知为何，在读新值之前会先读一个空值
+                stream.readNext();
+                if(stream.name().toString()=="Action"){
+                    type = stream.attributes().value("type").toString();
+                    qDebug()<<"type: "<<type;
+                    if(type=="TakeOff"){
+                        stream.readNext();
+                        stream.readNext();
+                        if(stream.name().toString()=="id"){
+                            id = stream.readElementText().toInt();
+                            qDebug()<<"id: "<<id;
+                        }
+                        stream.readNext();
+                        stream.readNext();
+                        if(stream.name().toString()=="location_x"){
+                            location_x = stream.readElementText().toInt();
+                            qDebug()<<"location_x: "<<location_x;
+                        }
+                        stream.readNext();
+                        stream.readNext();
+                        if(stream.name().toString()=="location_y"){
+                            location_y = stream.readElementText().toInt();
+                            qDebug()<<"location_y: "<<location_y;
+                        }
+                    }
+                    QPointF point(location_x,location_y);
+                    try{
+                        scene->CreateTakeOff(point,id); //在窗口中生成takeoff控件
+                    }catch(exception e){
+                       ;
+                    }
+
+
+                }
+            }
+
+
+        }
+     }
+
+
+    file.close();
+    return true;
+
+}
+
 
 /*****************************************************
  * Function name: save_pyfile
@@ -293,11 +388,12 @@ void widget_convert_to_xml(widget* w, QXmlStreamWriter stream)  //保存一个�
  *****************************************************/
 bool format::save_pyfile(QString filename = "Perform.py")
 {
-    typename QMap<QString, widget*>::iterator iter;
+    typename QMap<QString, widget>::iterator iter;
     QFile file("E:/QT_project/workspace/" + filename);
     QTextStream in(&file);
 
-    for(iter=Map->begin();iter!=Map->end();iter++){
+    for(iter=Map.begin();iter!=Map.end();iter++){
+        //iter->
         widget_convert_to_py(iter, in);
     }
 
@@ -315,8 +411,8 @@ bool format::save_pyfile(QString filename = "Perform.py")
  *        widget* w - the widget to be saved
  * Output: none
  *****************************************************/
-/*
-void format<widget>::widget_convert_to_py(QFile* file, widget* w)
+
+void format::widget_convert_to_py(QMap<QString, widget>::iterator& iter, QTextStream& stream)
 {
     /*
      * 判断传入的控件是什么
@@ -347,9 +443,9 @@ void format<widget>::widget_convert_to_py(QFile* file, widget* w)
     if(iter->value->yuan->myLinks->mytoyuan != nullptr){    //有后置控件
 
     }
-
-}
 */
+}
+
 
 
 

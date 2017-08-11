@@ -6,6 +6,10 @@
 *********************************************************/
 
 #include "widgetmap.h"
+#include "takeoffnode.h"
+#include "widgetwrap.h"
+
+#include <QDebug>
 
 /*****************************************************
  * Function name: WidgetMap
@@ -14,9 +18,8 @@
  * Input: QObject *parent - QT set it, don't need to care about.
  * Output: none
  *****************************************************/
-WidgetMap<widget>::WidgetMap(QObject *parent) : QObject(parent)
+WidgetMap::WidgetMap(QObject *parent) : QObject(parent)
 {
-    Store = new QMap<QString, widget*>();
     amount = 0;
 }
 
@@ -27,10 +30,16 @@ WidgetMap<widget>::WidgetMap(QObject *parent) : QObject(parent)
  * Input: widget* w - the widget to be added.
  * Output: none
  *****************************************************/
-void WidgetMap::add(widget* w)
+void WidgetMap::add(WidgetWrap& tmp)
 {
     amount++;
-    map_instrument::map_insert(&Store, w->name, w);
+    QString index = "none";
+    if(tmp.identifier == "TakeOff" ){
+        QString id = QString::number((tmp.mTakeoffNode)->controlsId,10);
+        index = (tmp.mTakeoffNode)->identifier + id;
+    }
+    qDebug()<<index;
+    map_instrument::map_insert(Store,index,tmp);
 }
 
 /*****************************************************
@@ -43,7 +52,11 @@ void WidgetMap::add(widget* w)
 void WidgetMap::del(widget* w)
 {
     amount--;
-    map_instrument<widget>::del_from_map(&Store, w->name);
+    QString index;
+    if(w->identifier == "TakeOff"){
+        index = (w->mTakeoffNode)->identifier + (w->mTakeoffNode)->controlsId;
+    }
+    map_instrument::del_from_map(Store, index);
 }
 
 /*****************************************************
@@ -53,10 +66,25 @@ void WidgetMap::del(widget* w)
  * Input: noe
  * Output: Store - The map containing widget pointers.
  *****************************************************/
-QMap<QString, widget*> WidgetMap::get_map()
+QMap<QString, widget>& WidgetMap::get_map()
 {
     return Store;
 }
 
+/*****************************************************
+ * Function name: clear
+ * Description: To clear the map.
+ * Calle: none
+ * Input: noe
+ * Output: bool - whether the map is empty.
+ *****************************************************/
+bool WidgetMap::clear()
+{
+    typename QMap<QString, widget>::iterator iter;
 
+    for(iter=Store.begin(); iter!=Store.end();){   //遍历控件指针
+        iter = Store.erase(iter);
+    }
+    return Store.isEmpty();
+}
 
