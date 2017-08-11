@@ -37,6 +37,8 @@
 #include "widgetcondition.h"
 #include "oDocument.h"
 #include "odescription.h"
+#include "format.h"
+
 
 namespace {
 
@@ -107,9 +109,12 @@ QStringList DiagramWindow::recentFiles = QStringList();
 ******************************************************************/
 DiagramWindow::DiagramWindow()
 {
+    wm->moveToThread(&t);    //把map移到子线程中操作
+    t.start();
+
     printer = new QPrinter(QPrinter::HighResolution);
     gridGroup = 0;
-    scene = new newscene;
+    scene = new newscene(wm);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
     //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
@@ -138,6 +143,7 @@ DiagramWindow::DiagramWindow()
     ioNodeNum=0;
     recNodeNum=0;
     linkNodeNum=0;
+
 
     createActions();
     createMenus();
@@ -250,7 +256,7 @@ void DiagramWindow::closeEvent(QCloseEvent *event)
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::fileNew()
+DiagramWindow* DiagramWindow::fileNew()
 {
     /*if (!okToClearData())
         return;
@@ -261,8 +267,9 @@ void DiagramWindow::fileNew()
     DiagramWindow *mainWin = new DiagramWindow;
     //mainWin->setWindowFilePath(tr("unnamed"));
     mainWin->show();
-    CanvasDialog canvas(mainWin->view,mainWin);
-    canvas.exec();//set the size of canvas when create a new file
+    //CanvasDialog canvas(mainWin->view,mainWin);
+    //canvas.exec();//set the size of canvas when create a new file
+    return mainWin;
 }
 
 /*******************************************************************
@@ -306,15 +313,16 @@ void DiagramWindow::selectAllItems()
 ******************************************************************/
 void DiagramWindow::fileOpen()
 {
-    if (!okToClearData())
-        return;
+    //if (!okToClearData())
+      //  return;
     const QString &filename = QFileDialog::getOpenFileName(this,
             tr("%1 - Open").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));  //？？？？？
+            ".", tr("xml (*.xml)"));  //？？？？？
     if (filename.isEmpty())
         return;
     setWindowFilePath(filename);
-    loadFile();
+    DiagramWindow* mainWin = DiagramWindow::fileNew();
+    loadFile(mainWin);
 }
 
 /*******************************************************************
@@ -325,24 +333,29 @@ void DiagramWindow::fileOpen()
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::loadFile()
+void DiagramWindow::loadFile(DiagramWindow* mainWin)
 {
+    setCurrentFile(windowFilePath());
+    gridGroup=0;
+    viewShowGrid(viewShowGridAction->isChecked());
+
+    /*
     QFile file(windowFilePath());
     QDataStream in;
     if (!openPageDesignerFile(&file, in))
         return;
-    setCurrentFile(windowFilePath());
     in.setVersion(QDataStream::Qt_4_5);
-    //clear
     selectAllItems();
     del();
-    gridGroup=0;
-    viewShowGrid(viewShowGridAction->isChecked());
-
     readItems(in,0,false);
     statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
                              StatusTimeout);
     setDirty(false);
+    updateRecentFileActions();
+    */
+    format formater(mainWin->wm->get_map());
+    formater.set_scene(mainWin->scene);
+    formater.read_frame_file(windowFilePath());
 }
 
 /*******************************************************************
@@ -394,7 +407,7 @@ void DiagramWindow::openRecentFile()
         if (action)
         {
             setWindowFilePath(action->data().toString());
-            loadFile();
+            loadFile(this);
         }
     }
 }
@@ -536,19 +549,24 @@ void DiagramWindow::selectItems( QSet<QGraphicsItem *> &items)//const?
 ******************************************************************/
 bool DiagramWindow::fileSave()
 {
+
     const QString filename = windowFilePath();
     if (filename.isEmpty() || filename == tr("Unnamed"))
         return fileSaveAs();
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-        return false;
+    /*
     QDataStream out(&file);
     out << MagicNumber << VersionNumber;
     out.setVersion(QDataStream::Qt_4_5);
     writeItems(out, scene->items());
     file.close();
-    setCurrentFile(filename);
     setDirty(false);
+    return true;
+    */
+    format formater(wm->get_map());
+    //if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
+    //else qDebug()<<"formater map is not empty";
+    formater.save_frame_file(filename);
+   // file.close();
     return true;
 }
 
@@ -591,11 +609,11 @@ bool DiagramWindow::fileSaveAs()
 {
     QString filename = QFileDialog::getSaveFileName(this,
             tr("%1 - Save As").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));
+            ".", tr("xml(*.xml)"));
     if (filename.isEmpty())
         return false;
-    if (!filename.toLower().endsWith(".pd"))
-        filename += ".pd";
+    if (!filename.toLower().endsWith(".xml"))
+        filename += ".xml";
     setWindowFilePath(filename);
     return fileSave();
 }
@@ -785,12 +803,12 @@ void DiagramWindow::addTranslation(TranslationNode *node)
     item->setPos(QPointF(node->pos().x()-40,
                  (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
     item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("rise"));
-    node->box->addItem(tr("fall"));
-    node->box->addItem(tr("advance"));
-    node->box->addItem(tr("back"));
-    node->box->addItem(tr("right"));
-    node->box->addItem(tr("left"));
+    node->box->addItem(tr("GoUp"));
+    node->box->addItem(tr("GoDown"));
+    node->box->addItem(tr("Forward"));
+    node->box->addItem(tr("Backward"));
+    node->box->addItem(tr("GoRight"));
+    node->box->addItem(tr("GoLeft"));
 }
 
 /*******************************************************************
@@ -1834,35 +1852,35 @@ void DiagramWindow::createActions()
 
     addActionNodeAction = new QAction(tr("action"),this);
 
-    addTakeoffNodeAction = new QAction(tr("takeoff"), this);
+    addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
-    addLandonNodeAction = new QAction(tr("landon"),this);
+    addLandonNodeAction = new QAction(tr("Landon"),this);
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Translation"),this);
 
-    addRiseNodeAction = new QAction(tr("rise"),this);
+    addRiseNodeAction = new QAction(tr("GoUp"),this);
     connect(addRiseNodeAction, SIGNAL(triggered()), this, SLOT(addRiseNode()));
-    addFallNodeAction = new QAction(tr("fall"),this);
+    addFallNodeAction = new QAction(tr("GoDown"),this);
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
-    addAdvanceNodeAction = new QAction(tr("advance"),this);
+    addAdvanceNodeAction = new QAction(tr("Forward"),this);
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
-    addBackNodeAction = new QAction(tr("backward"),this);
+    addBackNodeAction = new QAction(tr("Backward"),this);
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
-    addRightNodeAction = new QAction(tr("right"),this);
+    addRightNodeAction = new QAction(tr("GoRight"),this);
     connect(addRightNodeAction, SIGNAL(triggered()), this, SLOT(addRightNode()));
-    addLeftNodeAction = new QAction(tr("left"),this);
+    addLeftNodeAction = new QAction(tr("GoLeft"),this);
     connect(addLeftNodeAction, SIGNAL(triggered()), this, SLOT(addLeftNode()));
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
-    addTurnLeftNodeAction = new QAction(tr("turn left"),this);
+    addTurnLeftNodeAction = new QAction(tr("TurnLeft"),this);
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
-    addTurnRightNodeAction = new QAction(tr("turn right"),this);
+    addTurnRightNodeAction = new QAction(tr("TurnRight"),this);
     connect(addTurnRightNodeAction, SIGNAL(triggered()), this, SLOT(addTurnRightNode()));
-    addHangingNodeAction = new QAction(tr("hanging"),this);
+    addHangingNodeAction = new QAction(tr("Hover"),this);
     connect(addHangingNodeAction, SIGNAL(triggered()), this, SLOT(addHangingNode()));
-    addDelayNodeAction = new QAction(tr("delay"),this);
+    addDelayNodeAction = new QAction(tr("Delay"),this);
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
     addVarNodeAction = new QAction(tr("Variable"),this);

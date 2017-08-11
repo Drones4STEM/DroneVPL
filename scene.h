@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include "yuan.h"
 #include "newnode.h"
+#include "widgetmap.h"
 
 //class DiagramWindow;
 /********************************************************************
@@ -15,7 +16,7 @@ class newscene:public QGraphicsScene
 {
     Q_OBJECT
 public:
-    newscene();
+    newscene(WidgetMap* m);
     ~newscene();
     specialYuan* new_yuan;
 
@@ -25,9 +26,35 @@ public:
     void addTranslationNode();
     void bringToFront();
 
+    bool CreateTakeOff(QPointF point, int id);
+    bool CreateGo(QPointF point, int id);
+    /*
+
+    bool CreateGoLeft(QPointF point, int id);
+    bool CreateGoRight(QPointF point, int id);
+    bool CreateGoUp(QPointF point, int id);
+    bool CreateGoDown(QPointF point, int id);
+    bool CreateForward(QPointF point, int id);
+    bool CreateBackward(QPointF point, int id);
+    bool CreateTurnLeft(QPointF point, int id);
+    bool CreateTurnRight(QPointF point, int id);
+    bool CreateHover(QPointF point, int id);
+    bool CreateDelay(QPointF point, int id);
+*/
+
     int need_to_set;
     int selected_Index;
 
+    int varNodeNum;  //计数varNode,命名每个varNode,下同
+    int takeoffNodeNum;
+    int landonNodeNum;
+    int vardefNodeNum;
+    int computeNodeNum;
+    int ioNodeNum;
+    int recNodeNum;
+    int linkNodeNum;
+
+    WidgetMap* wm;
 signals:
     void itemInserted(int index);
 private:

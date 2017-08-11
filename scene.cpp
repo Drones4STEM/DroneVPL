@@ -32,13 +32,24 @@
 #include "propertiesdialog.h"
 #include "itemtypes.h"
 
-newscene::newscene()
+newscene::newscene(WidgetMap* m)
 {
     new_yuan=new specialYuan;
     setSceneRect(QRectF(QPointF(0,0), QSize(1000, 1000)));
 
     need_to_set=0;
     selected_Index=1;
+
+    varNodeNum=0;  //计数varNode,命名每个varNode,下同
+    takeoffNodeNum=0;
+    landonNodeNum=0;
+    vardefNodeNum=0;
+    computeNodeNum=0;
+    ioNodeNum=0;
+    recNodeNum=0;
+    linkNodeNum=0;
+
+    wm=m;
 }
 
 newscene::~newscene()
@@ -164,18 +175,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     }
     if(selected_Index==1&&need_to_set==1){
         emit itemInserted(selected_Index);
-        TakeoffNode *node=new TakeoffNode;
-        node->setText(tr("take off\n %1 s").arg(node->time));
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF((node->pos().x()),(node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
-        this->addItem(node->yuan);
-        node->controlsId++;
+        this->takeoffNodeNum++;
+        CreateTakeOff(new_event->scenePos(),this->takeoffNodeNum);
 
         need_to_set = 0;
 }
@@ -184,7 +185,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         LandonNode *node=new LandonNode;
         node->setText(tr("Land on\n %1 s").arg(node->time));
 
-       node->setPos(new_event->scenePos());
+        node->setPos(new_event->scenePos());
         this->addItem(node);
 
         this->clearSelection();
@@ -225,12 +226,12 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         item->setPos(QPointF(node->pos().x()-40,
                      (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
         item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
+        node->box->addItem(tr("GoUp"));
+        node->box->addItem(tr("GoDown"));
+        node->box->addItem(tr("Forward"));
+        node->box->addItem(tr("Backward"));
+        node->box->addItem(tr("TureRight"));
+        node->box->addItem(tr("TureLeft"));
 
         need_to_set = 0;
         //setCursor(Qt::ArrowCursor);
@@ -481,10 +482,10 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         item->setPos(QPointF(node->pos().x()-40,
                      (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
         item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("turn left"));
-        node->box->addItem(tr("turn right"));
-        node->box->addItem(tr("hanging"));
-        node->box->addItem(tr("delay"));
+        node->box->addItem(tr("TurnLeft"));
+        node->box->addItem(tr("TurnRight"));
+        node->box->addItem(tr("Hover"));
+        node->box->addItem(tr("Delay"));
 
 
         need_to_set=0;
@@ -819,3 +820,114 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 }
 
 
+bool newscene::CreateTakeOff(QPointF point,int id)
+{
+    TakeoffNode *node=new TakeoffNode;
+    node->setText(tr("take off\n %1 s").arg(node->time));
+
+    //QPoint position(cursor().pos().x()-500,cursor().pos().y()-100);
+
+    //node->setPos(position);
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF((node->pos().x()),(node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
+    this->addItem(node->yuan);
+    node->controlsId=id;
+    node->identifier="TakeOff";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+
+    //setDirty(true);
+    //setCursor(Qt::ArrowCursor);
+
+    WidgetWrap tmp(node);   //包装节点
+    if(tmp.mTakeoffNode!=NULL) qDebug()<<"widgetwrap is not empty";
+    tmp.type = "Action";
+    wm->add(tmp);            //添加到widgetmap中
+    if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
+    else qDebug()<<"CreateTakeOff()   wm's QMap is not empty";
+}
+/*
+bool newscene::CreateLand(QPointF point, int id)
+{
+    LandonNode *node=new LandonNode;
+    node->setText(tr("Land on\n %1 s").arg(node->time));
+
+    node->setPos(point);
+    this->addItem(node);
+
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan2->setPos(QPointF((node->pos().x()),
+                       (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
+    this->addItem(node->yuan2);
+
+
+    node->controlsId=id;
+
+    view->need_to_set = 0;
+    setDirty(true);
+        //setCursor(Qt::ArrowCursor);
+}
+
+bool newscene::CreateGo(QPointF point, int id)
+{
+    TranslationNode *node=new TranslationNode;
+    node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+
+    node->setPos(point);
+    this->addItem(node);
+    ++view->seqNumber;
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                      (node->pos().y() )));
+
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    item->setPos(QPointF(node->pos().x()-40,
+                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("GoUp"));
+    node->box->addItem(tr("GoDown"));
+    node->box->addItem(tr("Forward"));
+    node->box->addItem(tr("Backward"));
+    node->box->addItem(tr("GoRight"));
+    node->box->addItem(tr("GoLeft"));
+    node->box->setCurrentIndex(0);
+    view->need_to_set = 0;
+
+    setDirty(true);
+        //setCursor(Qt::ArrowCursor);
+}
+
+bool newscene::CreateGoLeft(QPointF point, int id){}
+bool newscene::CreateGoRight(QPointF point, int id){}
+bool newscene::CreateGoUp(QPointF point, int id){}
+bool newscene::CreateGoDown(QPointF point, int id){}
+bool newscene::CreateForward(QPointF point, int id){}
+bool newscene::CreateBackward(QPointF point, int id){}
+bool newscene::CreateTurnLeft(QPointF point, int id){}
+bool newscene::CreateTurnRight(QPointF point, int id){}
+bool newscene::CreateHover(QPointF point, int id){}
+bool newscene::CreateDelay(QPointF point, int id){}
+
+
+*/
