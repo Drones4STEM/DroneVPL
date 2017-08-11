@@ -45,6 +45,8 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
 
     stream.setAutoFormatting(true);
     stream.writeStartDocument("1.0");
+    stream.writeStartElement("WidgetsAndLinks");
+    //这个标签本身没有什么意义，但是在读取xml文件的时候需要有一个总标签包含所有子标签，所以用它占位
 
     if(Map.isEmpty()) qDebug()<<"format map is empty";
     else
@@ -52,6 +54,7 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
             widget_convert_to_xml(iter,stream);
         }
 
+    stream.writeEndElement();
     stream.writeEndDocument();
     file.close();
     return true;
@@ -75,32 +78,57 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
      * 型号 type
      * 名字 name
      * 坐标 location
-     *
      */
     QString identifier = iter->identifier;
     QString controlsId = QString::number(iter->controlsId);
+    QString x,y;
     //---------Action------------------
-    if( iter->type == "Action" ){
-        stream.writeStartElement("widget");
-        stream.writeAttribute("category", "Action");
+    if( iter->category == "Action" ){
+        //stream.writeStartElement("widget");
+        //stream.writeAttribute("category", "Action");
 
-          if(identifier == "TakeOff"){ //起飞动作
-              stream.writeStartElement("Action");
-              stream.writeAttribute("type",identifier);
-               stream.writeTextElement("id",controlsId);
-               QString x = QString::number((long)iter->mTakeoffNode->pos().x(),10);
-               stream.writeTextElement("location_x",x);
-               QString y = QString::number((long)iter->mTakeoffNode->pos().y(),10);
-               stream.writeTextElement("location_y",y);
-               //stream.writeStartElement("arrow_out");
-                //stream.writeTextElement("goto",);
-               stream.writeEndElement();
-              //stream.writeTextElement("pattern",);
-          }
-          if(identifier == "Land"){ //降落动作
-              stream.writeTextElement("motion","land");
-              //stream.writeTextElement("pattern",);
-          }
+        stream.writeStartElement("Action");
+        stream.writeAttribute("type",identifier);
+        stream.writeTextElement("id",controlsId);
+        if(identifier == "TakeOff"){ //起飞动作
+             x = QString::number((long)iter->mTakeoffNode->pos().x(),10);
+             stream.writeTextElement("location_x",x);
+             y = QString::number((long)iter->mTakeoffNode->pos().y(),10);
+             stream.writeTextElement("location_y",y);
+             //stream.writeStartElement("arrow_out");
+        }
+        if(identifier == "Land"){ //降落动作
+            x = QString::number((long)iter->mLandNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mLandNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+        }
+        if(identifier == "Go"){ //六个方向的直线移动动作
+            x = QString::number((long)iter->mGoNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mGoNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+        }
+        if(identifier == "Turn"){ //转向动作
+            x = QString::number((long)iter->mTurnNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mTurnNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+
+        }
+        if(identifier == "Hover"){ //悬停动作
+            x = QString::number((long)iter->mHoverNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mHoverNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+        }
+        if(identifier == "Delay"){ //延时动作
+            x = QString::number((long)iter->mDelayNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mDelayNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+        }
+        /*
           if(identifier == "GoLeft"){ //左移动作
               stream.writeTextElement("motion","move_left");
               stream.writeStartElement("speed");
@@ -156,22 +184,14 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
               stream.writeAttribute("unit","angle");
              // stream.writeCharacters();
               stream.writeEndElement();
-          }
-          if(identifier == "Hover"){ //悬停动作
-              stream.writeTextElement("motion","hang_on");
-              stream.writeStartElement("pattern");
-             // stream.writeCharacters();
-              stream.writeEndElement();
-          }
-          if(identifier == "Delay"){ //延时动作
-              stream.writeTextElement("motion","none");
-              stream.writeStartElement("time");
-              stream.writeAttribute("unit","second");
-              //stream.writeCharacters();
-              stream.writeEndElement();
-          }
-         stream.writeEndElement();
-        stream.writeEndElement();
+          }*/
+
+        qDebug()<<"type: "<<identifier;
+        qDebug()<<"id: "<<controlsId;
+        qDebug()<<"location_x: "<<x;
+        qDebug()<<"location_y: "<<y;
+        //stream.writeEndElement();
+        stream.writeEndElement();   //correspond to writeStartElement("Action")
     }
     /*
     //--------VAR--------------
@@ -325,47 +345,61 @@ bool format::read_frame_file(QString filename){
 
     qDebug()<<stream.hasError();
     while(!stream.atEnd()){ //exit if at end or has error
-        //qDebug()<<"not end";
+        qDebug()<<"not end";
         stream.readNext();
         if (stream.isStartElement()){
-            if(stream.name().toString() == "widget"){   //根据xml的嵌套关系构建嵌套的if语句，维护属性包装。widget属性暂时无用
+            /*if(stream.name().toString() == "widget"){   //根据xml的嵌套关系构建嵌套的if语句，维护属性包装。widget属性暂时无用
                 category = stream.attributes().value("category").toString();
                 qDebug()<<"category: "<<category;
                 stream.readNext();  //不知为何，在读新值之前会先读一个空值
-                stream.readNext();
+                stream.readNext();*/
                 if(stream.name().toString()=="Action"){
                     type = stream.attributes().value("type").toString();
                     qDebug()<<"type: "<<type;
-                    if(type=="TakeOff"){
-                        stream.readNext();
-                        stream.readNext();
-                        if(stream.name().toString()=="id"){
-                            id = stream.readElementText().toInt();
-                            qDebug()<<"id: "<<id;
-                        }
-                        stream.readNext();
-                        stream.readNext();
-                        if(stream.name().toString()=="location_x"){
-                            location_x = stream.readElementText().toInt();
-                            qDebug()<<"location_x: "<<location_x;
-                        }
-                        stream.readNext();
-                        stream.readNext();
-                        if(stream.name().toString()=="location_y"){
-                            location_y = stream.readElementText().toInt();
-                            qDebug()<<"location_y: "<<location_y;
-                        }
+                    stream.readNext();
+                    stream.readNext();
+                    if(stream.name().toString()=="id"){
+                        id = stream.readElementText().toInt();
+                        qDebug()<<"id: "<<id;
                     }
+                    stream.readNext();
+                    stream.readNext();
+                    if(stream.name().toString()=="location_x"){
+                        location_x = stream.readElementText().toInt();
+                        qDebug()<<"location_x: "<<location_x;
+                    }
+                    stream.readNext();
+                    stream.readNext();
+                    if(stream.name().toString()=="location_y"){
+                        location_y = stream.readElementText().toInt();
+                        qDebug()<<"location_y: "<<location_y;
+                    }
+
                     QPointF point(location_x,location_y);
                     try{
-                        scene->CreateTakeOff(point,id); //在窗口中生成takeoff控件
+                        if(type=="TakeOff"){
+                            scene->CreateTakeOff(point,id); //在窗口中生成takeoff控件
+                        }
+                        if(type=="Land"){
+                            scene->CreateLand(point,id); //在窗口中生成takeoff控件
+                        }
+                        if(type=="Go"){
+                            scene->CreateGo(point,id); //在窗口中生成takeoff控件
+                        }
+                        if(type=="Turn"){
+                            scene->CreateTurn(point,id); //在窗口中生成takeoff控件
+                        }
+                        if(type=="Hover"){
+                            scene->CreateHover(point,id); //在窗口中生成takeoff控件
+                        }
+                        if(type=="Delay"){
+                            scene->CreateDelay(point,id); //在窗口中生成takeoff控件
+                        }
                     }catch(exception e){
                        ;
                     }
-
-
                 }
-            }
+            //}
 
 
         }

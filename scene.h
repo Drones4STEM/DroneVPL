@@ -27,9 +27,12 @@ public:
     void bringToFront();
 
     bool CreateTakeOff(QPointF point, int id);
+    bool CreateLand(QPointF point, int id);
     bool CreateGo(QPointF point, int id);
+    bool CreateTurn(QPointF point, int id);
+    bool CreateHover(QPointF point, int id);
+    bool CreateDelay(QPointF point, int id);
     /*
-
     bool CreateGoLeft(QPointF point, int id);
     bool CreateGoRight(QPointF point, int id);
     bool CreateGoUp(QPointF point, int id);
@@ -38,21 +41,23 @@ public:
     bool CreateBackward(QPointF point, int id);
     bool CreateTurnLeft(QPointF point, int id);
     bool CreateTurnRight(QPointF point, int id);
-    bool CreateHover(QPointF point, int id);
-    bool CreateDelay(QPointF point, int id);
 */
 
     int need_to_set;
     int selected_Index;
 
     int varNodeNum;  //计数varNode,命名每个varNode,下同
-    int takeoffNodeNum;
-    int landonNodeNum;
     int vardefNodeNum;
     int computeNodeNum;
     int ioNodeNum;
     int recNodeNum;
     int linkNodeNum;
+    int takeoffNodeNum;
+    int landonNodeNum;
+    int GoNodeNum;  //6个方向的直线运动控件都包含在内
+    int TurnNodeNum;    //左右两个方向的转向控件
+    int HoverNodeNum;
+    int DelayNodeNum;
 
     WidgetMap* wm;
 signals:

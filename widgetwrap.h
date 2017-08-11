@@ -16,14 +16,19 @@ class WidgetWrap
 {
 public:
     WidgetWrap();
+    WidgetWrap(TakeoffNode* ton);
+    WidgetWrap(LandonNode* ln);
+    WidgetWrap(TranslationNode* tn);
+    WidgetWrap(TurnNode *turnn);
+    WidgetWrap(HoverNode *hn);
+    WidgetWrap(DelayNode *dn);
     WidgetWrap(ComputeNode* cn);
     WidgetWrap(IoNode* in);
     WidgetWrap(Rec* ln);
-    WidgetWrap(TakeoffNode* tn);
     WidgetWrap(VardefNode* vdn);
     WidgetWrap(VarNode* vn);
 
-    QString type;
+    QString category;
     QString identifier; //控件型号
     int controlsId;
     QString name;   //identifier+controlsId
@@ -31,10 +36,14 @@ public:
     ComputeNode* mComputeNode = NULL;
     IoNode* mIoNode;
     Rec* mLogicNode;
-    TakeoffNode* mTakeoffNode;
     VardefNode* mVardefNode;
     VarNode* mVarNode;
-
+    TakeoffNode* mTakeoffNode;
+    LandonNode* mLandNode;
+    TranslationNode* mGoNode;
+    TurnNode* mTurnNode;
+    HoverNode* mHoverNode;
+    DelayNode* mDelayNode;
 
 private:
 

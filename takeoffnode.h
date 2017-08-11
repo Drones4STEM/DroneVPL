@@ -99,6 +99,114 @@ private slots:
 };
 
 /*******************************************************************
+ * Class name: TurnNode
+ * Base class: NewNode
+ * Description: This is a class for developers, and determines some
+ *     to follow. This class represents some actions including
+ *     turnleft, turnright.
+******************************************************************/
+class TurnNode:public NewNode
+{
+    Q_OBJECT
+public:
+    enum {Type = SomeNodeType};
+    TurnNode();
+    ~TurnNode();
+
+    int type() const { return Type; }
+
+    double time,speed,angel;
+    QComboBox*box;
+    QGraphicsItem *item;
+
+    void setTime(double t);
+    double myTime();
+    void setSpeed(double s);
+    double mySpeed();
+    void setAngel(double a);
+    double myAngel();
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+private slots:
+    void setNewText();
+    void setNewIdentifier();
+};
+
+/*******************************************************************
+ * Class name: HoverNode
+ * Base class: NewNode
+ * Description: This is a class for developers, and determines some
+ *     to follow. This class represents some actions including
+ *     turnleft, turnright.
+******************************************************************/
+class HoverNode:public NewNode
+{
+    Q_OBJECT
+public:
+    enum {Type = SomeNodeType};
+    HoverNode();
+    ~HoverNode();
+
+    int type() const { return Type; }
+
+    double time,speed,angel;
+    //QGraphicsItem *item;
+
+    void setTime(double t);
+    double myTime();
+    void setSpeed(double s);
+    double mySpeed();
+    void setAngel(double a);
+    double myAngel();
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+private slots:
+    void setNewText();
+};
+
+/*******************************************************************
+ * Class name: HoverNode
+ * Base class: NewNode
+ * Description: This is a class for developers, and determines some
+ *     to follow. This class represents some actions including
+ *     turnleft, turnright.
+******************************************************************/
+class DelayNode:public NewNode
+{
+    Q_OBJECT
+public:
+    enum {Type = SomeNodeType};
+    DelayNode();
+    ~DelayNode();
+
+    int type() const { return Type; }
+
+    double time,speed,angel;
+    //QGraphicsItem *item;
+
+    void setTime(double t);
+    double myTime();
+    void setSpeed(double s);
+    double mySpeed();
+    void setAngel(double a);
+    double myAngel();
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+private slots:
+    void setNewText();
+};
+
+
+/*******************************************************************
  * Class name: SomeNode
  * Base class: NewNode
  * Description: This is a class for developers, and determines some

@@ -41,13 +41,17 @@ newscene::newscene(WidgetMap* m)
     selected_Index=1;
 
     varNodeNum=0;  //计数varNode,命名每个varNode,下同
-    takeoffNodeNum=0;
-    landonNodeNum=0;
     vardefNodeNum=0;
     computeNodeNum=0;
     ioNodeNum=0;
     recNodeNum=0;
     linkNodeNum=0;
+    takeoffNodeNum=0;
+    landonNodeNum=0;
+    GoNodeNum = 0;
+    TurnNodeNum = 0;
+    HoverNodeNum = 0;
+    DelayNodeNum = 0;
 
     wm=m;
 }
@@ -182,449 +186,45 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 }
     if(selected_Index==2&&need_to_set==1){
         emit itemInserted(selected_Index);
-        LandonNode *node=new LandonNode;
-        node->setText(tr("Land on\n %1 s").arg(node->time));
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan2->setPos(QPointF((node->pos().x()),
-                           (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
-        this->addItem(node->yuan2);
-
-        node->controlsId++;
+        this->landonNodeNum++;
+        CreateLand(new_event->scenePos(),this->landonNodeNum);
 
         need_to_set = 0;
         //setCursor(Qt::ArrowCursor);
     }
-    if(selected_Index==3&&need_to_set==1){
+    if((selected_Index>=3&&selected_Index<=9)&&need_to_set==1){
         emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
+        this->GoNodeNum++;
 
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("GoUp"));
-        node->box->addItem(tr("GoDown"));
-        node->box->addItem(tr("Forward"));
-        node->box->addItem(tr("Backward"));
-        node->box->addItem(tr("TureRight"));
-        node->box->addItem(tr("TureLeft"));
+        CreateGo(new_event->scenePos(),this->GoNodeNum);
 
         need_to_set = 0;
         //setCursor(Qt::ArrowCursor);
     }
-    if(need_to_set==1&&selected_Index==4){
+    if(need_to_set==1&&selected_Index==10){qDebug()<<"10.";
+
+    }
+    if(need_to_set==1&&(selected_Index>=11&&selected_Index<=12)){qDebug()<<"11.12";
         emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-        node->box->setCurrentIndex(0);
+        this->TurnNodeNum++;
 
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
+        CreateTurn(new_event->scenePos(),this->TurnNodeNum);
 
         need_to_set = 0;
-    //setCursor(Qt::ArrowCursor);
     }
-    if(need_to_set==1&&selected_Index==5){
+    if(need_to_set==1&&selected_Index==13){qDebug()<<"13.";
         emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
-
-
-        node->box->setCurrentIndex(1);
-
         need_to_set = 0;
-        //setCursor(Qt::ArrowCursor);
+        this->HoverNodeNum++;
+        CreateHover(new_event->scenePos(),this->HoverNodeNum);
     }
-    if(need_to_set==1&&selected_Index==6){
+    if(need_to_set==1&&selected_Index==14){qDebug()<<"14.";
         emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
-
-
-        node->box->setCurrentIndex(2);
-
         need_to_set = 0;
-        //setCursor(Qt::ArrowCursor);
+        this->DelayNodeNum++;
+        CreateDelay(new_event->scenePos(),this->DelayNodeNum);
     }
-    if(need_to_set==1&&selected_Index==7){
-        emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
-
-        node->box->setCurrentIndex(3);
-        need_to_set = 0;
-        //setCursor(Qt::ArrowCursor);
-    }
-    if(need_to_set==1&&selected_Index==8){
-        emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
-
-        node->box->setCurrentIndex(4);//有什么用？
-
-        need_to_set = 0;
-       //setCursor(Qt::ArrowCursor);
-    }
-    if(need_to_set==1&&selected_Index==9){
-        emit itemInserted(selected_Index);
-        TranslationNode *node=new TranslationNode;
-
-        node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
-
-
-        node->box->setCurrentIndex(5);
-
-        need_to_set = 0;
-    //setCursor(Qt::ArrowCursor);
-    }
-    if(need_to_set==1&&selected_Index==10){
-        emit itemInserted(selected_Index);
-        SomeNode *node=new SomeNode;
-
-        node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("TurnLeft"));
-        node->box->addItem(tr("TurnRight"));
-        node->box->addItem(tr("Hover"));
-        node->box->addItem(tr("Delay"));
-
-
-        need_to_set=0;
-        node->box->setCurrentIndex(0);
-    }
-    if(need_to_set==1&&selected_Index==11){
-        emit itemInserted(selected_Index);
-        SomeNode *node=new SomeNode;
-
-        node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("turn left"));
-        node->box->addItem(tr("turn right"));
-        node->box->addItem(tr("hanging"));
-        node->box->addItem(tr("delay"));
-
-        node->box->setCurrentIndex(0);
-        need_to_set=0;
-
-    }
-    if(need_to_set==1&&selected_Index==12){
-        emit itemInserted(selected_Index);
-        SomeNode *node=new SomeNode;
-
-        node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("turn left"));
-        node->box->addItem(tr("turn right"));
-        node->box->addItem(tr("hanging"));
-        node->box->addItem(tr("delay"));
-
-        node->box->setCurrentIndex(1);
-        need_to_set=0;
-    }
-    if(need_to_set==1&&selected_Index==13){
-        emit itemInserted(selected_Index);
-        SomeNode *node=new SomeNode;
-
-        node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("turn left"));
-        node->box->addItem(tr("turn right"));
-        node->box->addItem(tr("hanging"));
-        node->box->addItem(tr("delay"));
-
-        node->box->setCurrentIndex(2);
-        need_to_set=0;
-    }
-    if(need_to_set==1&&selected_Index==14){
-        emit itemInserted(selected_Index);
-        SomeNode *node=new SomeNode;
-
-        node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                          (node->pos().y() )));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        item->setPos(QPointF(node->pos().x()-40,
-                     (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("turn left"));
-        node->box->addItem(tr("turn right"));
-        node->box->addItem(tr("hanging"));
-        node->box->addItem(tr("delay"));
-
-        node->box->setCurrentIndex(3);
-        need_to_set=0;
-    }
-    if(need_to_set==1&&selected_Index==15){
+    if(need_to_set==1&&selected_Index==15){qDebug()<<"15.";
         emit itemInserted(selected_Index);
         VarNode* node=new VarNode;
         node->setText(tr("int"));
@@ -640,7 +240,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         node->controlsId++;
         need_to_set=0;
     }
-    if(need_to_set==1&&selected_Index==16){
+    if(need_to_set==1&&selected_Index==16){qDebug()<<"16.";
         emit itemInserted(selected_Index);
         QList<QGraphicsItem *> items = this->selectedItems();
         if(items.count()==0)
@@ -692,7 +292,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
             }
         need_to_set=0;
     }
-    if(need_to_set==1&&selected_Index==17){
+    if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
         ComputeNode *node=new ComputeNode;
         node->setText(tr("Compute"));
@@ -736,7 +336,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         need_to_set=0;
     }
-    if(need_to_set==1&&selected_Index==18){
+    if(need_to_set==1&&selected_Index==18){qDebug()<<"18.";
         emit itemInserted(selected_Index);
         IoNode* node=new IoNode;
         node->setText(tr("sensor"));
@@ -847,12 +447,11 @@ bool newscene::CreateTakeOff(QPointF point,int id)
 
     WidgetWrap tmp(node);   //包装节点
     if(tmp.mTakeoffNode!=NULL) qDebug()<<"widgetwrap is not empty";
-    tmp.type = "Action";
     wm->add(tmp);            //添加到widgetmap中
     if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
     else qDebug()<<"CreateTakeOff()   wm's QMap is not empty";
 }
-/*
+
 bool newscene::CreateLand(QPointF point, int id)
 {
     LandonNode *node=new LandonNode;
@@ -870,12 +469,15 @@ bool newscene::CreateLand(QPointF point, int id)
                        (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
     this->addItem(node->yuan2);
 
-
     node->controlsId=id;
+    node->identifier="Land";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
 
-    view->need_to_set = 0;
-    setDirty(true);
-        //setCursor(Qt::ArrowCursor);
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
+    else qDebug()<<"CreateLand()   wm's QMap is not empty";
 }
 
 bool newscene::CreateGo(QPointF point, int id)
@@ -887,7 +489,6 @@ bool newscene::CreateGo(QPointF point, int id)
 
     node->setPos(point);
     this->addItem(node);
-    ++view->seqNumber;
 
     this->clearSelection();
     node->setSelected(true);
@@ -912,12 +513,131 @@ bool newscene::CreateGo(QPointF point, int id)
     node->box->addItem(tr("GoRight"));
     node->box->addItem(tr("GoLeft"));
     node->box->setCurrentIndex(0);
-    view->need_to_set = 0;
 
-    setDirty(true);
-        //setCursor(Qt::ArrowCursor);
+    node->controlsId=id;
+    node->identifier="Go";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+
 }
 
+bool newscene::CreateTurn(QPointF point, int id)
+{
+    TurnNode *node=new TurnNode;
+
+    node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                      (node->pos().y() )));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    item->setPos(QPointF(node->pos().x()-40,
+                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("TurnLeft"));
+    node->box->addItem(tr("TurnRight"));
+    //node->box->addItem(tr("Hover"));
+    //node->box->addItem(tr("Delay"));
+    node->box->setCurrentIndex(0);
+
+    node->controlsId=id;
+    node->identifier="Turn";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+
+bool newscene::CreateHover(QPointF point, int id)
+{
+    HoverNode *node=new HoverNode;
+
+    node->setText(tr(" Hover \n %2 s").arg(node->angel).arg(node->time));
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                      (node->pos().y() )));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->controlsId=id;
+    node->identifier="Hover";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+
+bool newscene::CreateDelay(QPointF point, int id)
+{
+    DelayNode *node=new DelayNode;
+
+    node->setText(tr(" Delay \n %2 s").arg(node->angel).arg(node->time));
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                      (node->pos().y() )));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->controlsId=id;
+    node->identifier="Delay";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+/*
 bool newscene::CreateGoLeft(QPointF point, int id){}
 bool newscene::CreateGoRight(QPointF point, int id){}
 bool newscene::CreateGoUp(QPointF point, int id){}
@@ -926,8 +646,4 @@ bool newscene::CreateForward(QPointF point, int id){}
 bool newscene::CreateBackward(QPointF point, int id){}
 bool newscene::CreateTurnLeft(QPointF point, int id){}
 bool newscene::CreateTurnRight(QPointF point, int id){}
-bool newscene::CreateHover(QPointF point, int id){}
-bool newscene::CreateDelay(QPointF point, int id){}
-
-
 */
