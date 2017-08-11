@@ -20,7 +20,8 @@ HEADERS       = diagramwindow.h \
     odocument.h \
     scene.h \
     widgetcondition.h \
-    view.h
+    view.h \
+    wqdragitem.h
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -41,7 +42,8 @@ SOURCES       = diagramwindow.cpp \
     odescription.cpp \
     odocument.cpp \
     scene.cpp \
-    widgetcondition.cpp
+    widgetcondition.cpp \
+    wqdragitem.cpp
 FORMS         = propertiesdialog.ui \
     awindow.ui \
     canvasdialog.ui \
