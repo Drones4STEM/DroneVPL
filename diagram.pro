@@ -1,3 +1,5 @@
+INCLUDEPATH += ../DroneVPL/background/
+
 TEMPLATE      = app
 HEADERS       = diagramwindow.h \
                 link.h \
@@ -20,7 +22,12 @@ HEADERS       = diagramwindow.h \
     odocument.h \
     scene.h \
     widgetcondition.h \
-    view.h
+    view.h \
+    widgetwrap.h \
+    background/map_instrument.h \
+    background/widgetmap.h \
+    background/format.h \
+    wqdragitem.h
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -41,7 +48,12 @@ SOURCES       = diagramwindow.cpp \
     odescription.cpp \
     odocument.cpp \
     scene.cpp \
-    widgetcondition.cpp
+    widgetcondition.cpp \
+    widgetwrap.cpp \
+    background/map_instrument.cpp \
+    background/widgetmap.cpp \
+    background/format.cpp \
+    wqdragitem.cpp
 FORMS         = propertiesdialog.ui \
     awindow.ui \
     canvasdialog.ui \

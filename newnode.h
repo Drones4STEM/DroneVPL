@@ -49,6 +49,7 @@ public:
     //控件名称与在同类控件中的编号
     QString identifier;
     int controlsId;
+    QString name;   //identifier+controlsId
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

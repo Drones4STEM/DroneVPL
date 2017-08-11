@@ -5,8 +5,12 @@
  *    put, delete, find.
 *********************************************************/
 
-#include "map_instrument.h"
 #include <string>
+#include <iostream>
+#include <QDebug>
+
+#include "map_instrument.h"
+#include "widgetwrap.h"
 
 /*****************************************************
  * Function name: map_instrument
@@ -30,9 +34,10 @@ map_instrument::map_instrument(QObject *parent) : QObject(parent)
  *        widget* value - the widget to be store
  * Output: none
  *****************************************************/
-void map_instrument::map_insert(QMap<QString, widget*>* m, QString index, widget* value)
+void map_instrument::map_insert(QMap<QString, widget>& m, QString index, WidgetWrap& value)
 {
-    m->insert(index,value);
+    m.insert(index,value);
+    qDebug()<<m.isEmpty();
 }
 
 /*****************************************************
@@ -46,13 +51,13 @@ void map_instrument::map_insert(QMap<QString, widget*>* m, QString index, widget
  * Output: true - if successfully inserted
  *         false - if not inserted successfully(already inserted one)
  *****************************************************/
-bool map_instrument::put_in_map(QMap<QString, widget*>* m, QString s, widget* w)
+bool map_instrument::put_in_map(QMap<QString, widget> m, QString s, widget& w)
 {
-    typename QMap<QString, widget*>::iterator iter;
+    typename QMap<QString, widget>::iterator iter;
     iter = m.find(s);
 
     if(iter == m.end()){       //如果元素未包含
-        map_insert(&m, s, w);
+        map_insert(m, s, w);
         return true;
     }else
         return false;
@@ -69,9 +74,9 @@ bool map_instrument::put_in_map(QMap<QString, widget*>* m, QString s, widget* w)
  * Output: true - if successfully deleted
  *         false - if not deleted successfully(don't exist)
  *****************************************************/
-bool map_instrument::del_from_map(QMap<QString, widget*>* m, QString s)
+bool map_instrument::del_from_map(QMap<QString, widget> m, QString s)
 {
-    typename QMap<QString, widget*>::iterator iter;
+    typename QMap<QString, widget>::iterator iter;
     iter = m.find(s);
 
     if(iter == m.end()){       //如果元素未包含
@@ -95,13 +100,17 @@ bool map_instrument::del_from_map(QMap<QString, widget*>* m, QString s)
  * Output: iter->value - the widget's name
  *         null - no such widget
  *****************************************************/
-widget* map_instrument::find(QMap<QString, widget*>* m, QString name = "null")
+widget map_instrument::find(QMap<QString, widget> m, QString name = "null")
 {
-    typename QMap<QString, widget*>::iterator iter;
-    for(iter=m->begin();iter!=m->end();iter++){
-        if( iter->key.compare(0,5,name)==0 ){  //字符串以"LOGIC"开头
-            return iter->value;
-        }else
-            return NULL;
+    typename QMap<QString, widget>::iterator iter;
+    for(iter=m.begin();iter!=m.end();iter++){
+        if( iter->name == "LogicNode"){  //字符串以"LOGIC"开头
+            widget tmp = *iter;
+            return tmp;
+        }else{
+            widget tmp;
+            tmp.identifier = "none";
+            return tmp;
+        }
     }
 }
