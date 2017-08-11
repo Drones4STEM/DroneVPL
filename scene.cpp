@@ -226,12 +226,12 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         item->setPos(QPointF(node->pos().x()-40,
                      (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
         item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("rise"));
-        node->box->addItem(tr("fall"));
-        node->box->addItem(tr("advance"));
-        node->box->addItem(tr("back"));
-        node->box->addItem(tr("right"));
-        node->box->addItem(tr("left"));
+        node->box->addItem(tr("GoUp"));
+        node->box->addItem(tr("GoDown"));
+        node->box->addItem(tr("Forward"));
+        node->box->addItem(tr("Backward"));
+        node->box->addItem(tr("TureRight"));
+        node->box->addItem(tr("TureLeft"));
 
         need_to_set = 0;
         //setCursor(Qt::ArrowCursor);
@@ -482,10 +482,10 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         item->setPos(QPointF(node->pos().x()-40,
                      (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
         item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("turn left"));
-        node->box->addItem(tr("turn right"));
-        node->box->addItem(tr("hanging"));
-        node->box->addItem(tr("delay"));
+        node->box->addItem(tr("TurnLeft"));
+        node->box->addItem(tr("TurnRight"));
+        node->box->addItem(tr("Hover"));
+        node->box->addItem(tr("Delay"));
 
 
         need_to_set=0;

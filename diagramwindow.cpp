@@ -803,12 +803,12 @@ void DiagramWindow::addTranslation(TranslationNode *node)
     item->setPos(QPointF(node->pos().x()-40,
                  (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
     item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("rise"));
-    node->box->addItem(tr("fall"));
-    node->box->addItem(tr("advance"));
-    node->box->addItem(tr("back"));
-    node->box->addItem(tr("right"));
-    node->box->addItem(tr("left"));
+    node->box->addItem(tr("GoUp"));
+    node->box->addItem(tr("GoDown"));
+    node->box->addItem(tr("Forward"));
+    node->box->addItem(tr("Backward"));
+    node->box->addItem(tr("GoRight"));
+    node->box->addItem(tr("GoLeft"));
 }
 
 /*******************************************************************
@@ -1852,35 +1852,35 @@ void DiagramWindow::createActions()
 
     addActionNodeAction = new QAction(tr("action"),this);
 
-    addTakeoffNodeAction = new QAction(tr("takeoff"), this);
+    addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
-    addLandonNodeAction = new QAction(tr("landon"),this);
+    addLandonNodeAction = new QAction(tr("Landon"),this);
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Translation"),this);
 
-    addRiseNodeAction = new QAction(tr("rise"),this);
+    addRiseNodeAction = new QAction(tr("GoUp"),this);
     connect(addRiseNodeAction, SIGNAL(triggered()), this, SLOT(addRiseNode()));
-    addFallNodeAction = new QAction(tr("fall"),this);
+    addFallNodeAction = new QAction(tr("GoDown"),this);
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
-    addAdvanceNodeAction = new QAction(tr("advance"),this);
+    addAdvanceNodeAction = new QAction(tr("Forward"),this);
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
-    addBackNodeAction = new QAction(tr("backward"),this);
+    addBackNodeAction = new QAction(tr("Backward"),this);
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
-    addRightNodeAction = new QAction(tr("right"),this);
+    addRightNodeAction = new QAction(tr("GoRight"),this);
     connect(addRightNodeAction, SIGNAL(triggered()), this, SLOT(addRightNode()));
-    addLeftNodeAction = new QAction(tr("left"),this);
+    addLeftNodeAction = new QAction(tr("GoLeft"),this);
     connect(addLeftNodeAction, SIGNAL(triggered()), this, SLOT(addLeftNode()));
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
-    addTurnLeftNodeAction = new QAction(tr("turn left"),this);
+    addTurnLeftNodeAction = new QAction(tr("TurnLeft"),this);
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
-    addTurnRightNodeAction = new QAction(tr("turn right"),this);
+    addTurnRightNodeAction = new QAction(tr("TurnRight"),this);
     connect(addTurnRightNodeAction, SIGNAL(triggered()), this, SLOT(addTurnRightNode()));
-    addHangingNodeAction = new QAction(tr("hanging"),this);
+    addHangingNodeAction = new QAction(tr("Hover"),this);
     connect(addHangingNodeAction, SIGNAL(triggered()), this, SLOT(addHangingNode()));
-    addDelayNodeAction = new QAction(tr("delay"),this);
+    addDelayNodeAction = new QAction(tr("Delay"),this);
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
     addVarNodeAction = new QAction(tr("Variable"),this);
