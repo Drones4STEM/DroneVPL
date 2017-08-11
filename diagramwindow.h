@@ -48,7 +48,7 @@ public:
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
-
+    newscene* get_scene(){return scene;}
 
     int pasteOffset;
 
@@ -64,6 +64,10 @@ public:
     int recNodeNum;
     int linkNodeNum;
 
+    WidgetMap* wm = new WidgetMap();
+    QThread t;  //用于后台运行的线程
+    newscene* scene;
+
     static QStringList recentFiles;
 
     WidgetCondition *widgetCondition;
@@ -76,18 +80,19 @@ public slots:
     bool conditionChanged();
     void changeNodeNum(int num);
 
+
 protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void fileNew();
+    DiagramWindow* fileNew();
     void fileOpen();
     void openRecentFile();
     bool fileSave();
     bool fileSaveAs();
     void fileExport();
     void filePrint();
-    void loadFile();
+    void loadFile(DiagramWindow* mainWin);
 
     void addTakeoffNode();
     void addLandonNode();
@@ -255,7 +260,7 @@ private:
     QString curFile;
     //QGraphicsView *view;
     View *view;
-    newscene* scene;
+
     QGraphicsItemGroup *gridGroup;
     QMouseEvent *e;
 

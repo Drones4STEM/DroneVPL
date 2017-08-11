@@ -37,6 +37,8 @@
 #include "widgetcondition.h"
 #include "oDocument.h"
 #include "odescription.h"
+#include "format.h"
+
 
 namespace {
 
@@ -107,9 +109,12 @@ QStringList DiagramWindow::recentFiles = QStringList();
 ******************************************************************/
 DiagramWindow::DiagramWindow()
 {
+    wm->moveToThread(&t);    //把map移到子线程中操作
+    t.start();
+
     printer = new QPrinter(QPrinter::HighResolution);
     gridGroup = 0;
-    scene = new newscene;
+    scene = new newscene(wm);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
     //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
@@ -138,6 +143,7 @@ DiagramWindow::DiagramWindow()
     ioNodeNum=0;
     recNodeNum=0;
     linkNodeNum=0;
+
 
     createActions();
     createMenus();
@@ -250,7 +256,7 @@ void DiagramWindow::closeEvent(QCloseEvent *event)
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::fileNew()
+DiagramWindow* DiagramWindow::fileNew()
 {
     /*if (!okToClearData())
         return;
@@ -261,8 +267,9 @@ void DiagramWindow::fileNew()
     DiagramWindow *mainWin = new DiagramWindow;
     //mainWin->setWindowFilePath(tr("unnamed"));
     mainWin->show();
-    CanvasDialog canvas(mainWin->view,mainWin);
-    canvas.exec();//set the size of canvas when create a new file
+    //CanvasDialog canvas(mainWin->view,mainWin);
+    //canvas.exec();//set the size of canvas when create a new file
+    return mainWin;
 }
 
 /*******************************************************************
@@ -306,15 +313,16 @@ void DiagramWindow::selectAllItems()
 ******************************************************************/
 void DiagramWindow::fileOpen()
 {
-    if (!okToClearData())
-        return;
+    //if (!okToClearData())
+      //  return;
     const QString &filename = QFileDialog::getOpenFileName(this,
             tr("%1 - Open").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));  //？？？？？
+            ".", tr("xml (*.xml)"));  //？？？？？
     if (filename.isEmpty())
         return;
     setWindowFilePath(filename);
-    loadFile();
+    DiagramWindow* mainWin = DiagramWindow::fileNew();
+    loadFile(mainWin);
 }
 
 /*******************************************************************
@@ -325,24 +333,29 @@ void DiagramWindow::fileOpen()
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::loadFile()
+void DiagramWindow::loadFile(DiagramWindow* mainWin)
 {
+    setCurrentFile(windowFilePath());
+    gridGroup=0;
+    viewShowGrid(viewShowGridAction->isChecked());
+
+    /*
     QFile file(windowFilePath());
     QDataStream in;
     if (!openPageDesignerFile(&file, in))
         return;
-    setCurrentFile(windowFilePath());
     in.setVersion(QDataStream::Qt_4_5);
-    //clear
     selectAllItems();
     del();
-    gridGroup=0;
-    viewShowGrid(viewShowGridAction->isChecked());
-
     readItems(in,0,false);
     statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
                              StatusTimeout);
     setDirty(false);
+    updateRecentFileActions();
+    */
+    format formater(mainWin->wm->get_map());
+    formater.set_scene(mainWin->scene);
+    formater.read_frame_file(windowFilePath());
 }
 
 /*******************************************************************
@@ -394,7 +407,7 @@ void DiagramWindow::openRecentFile()
         if (action)
         {
             setWindowFilePath(action->data().toString());
-            loadFile();
+            loadFile(this);
         }
     }
 }
@@ -536,19 +549,24 @@ void DiagramWindow::selectItems( QSet<QGraphicsItem *> &items)//const?
 ******************************************************************/
 bool DiagramWindow::fileSave()
 {
+
     const QString filename = windowFilePath();
     if (filename.isEmpty() || filename == tr("Unnamed"))
         return fileSaveAs();
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-        return false;
+    /*
     QDataStream out(&file);
     out << MagicNumber << VersionNumber;
     out.setVersion(QDataStream::Qt_4_5);
     writeItems(out, scene->items());
     file.close();
-    setCurrentFile(filename);
     setDirty(false);
+    return true;
+    */
+    format formater(wm->get_map());
+    //if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
+    //else qDebug()<<"formater map is not empty";
+    formater.save_frame_file(filename);
+   // file.close();
     return true;
 }
 
@@ -591,11 +609,11 @@ bool DiagramWindow::fileSaveAs()
 {
     QString filename = QFileDialog::getSaveFileName(this,
             tr("%1 - Save As").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));
+            ".", tr("xml(*.xml)"));
     if (filename.isEmpty())
         return false;
-    if (!filename.toLower().endsWith(".pd"))
-        filename += ".pd";
+    if (!filename.toLower().endsWith(".xml"))
+        filename += ".xml";
     setWindowFilePath(filename);
     return fileSave();
 }
