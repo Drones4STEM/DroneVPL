@@ -1,3 +1,4 @@
+
 /********************************************************
  * File: format.cpp
  * Author: Gao Jiefeng
@@ -64,7 +65,7 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
 /*****************************************************
  * Function name: widget_convert_to_xml
  * Description: This is the funtion that save one widget
- *    in xml file. All it's properties will be described
+ *    in xml file. All its properties will be described
  *    in xml.
  * Calle: none
  * Input: widget* w - the widget to be saved

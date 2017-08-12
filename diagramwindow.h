@@ -80,7 +80,6 @@ public slots:
     bool conditionChanged();
     void changeNodeNum(int num);
 
-
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -133,16 +132,8 @@ private slots:
     void checkup();
     void compile();
     void checkupAndCompile();
-
-    void startCompile();
-    void convertCode();
-    void toolBar();
-    void controlToolBar();
-    void statusToolBar();
     void openDocumentation();
     void systemInformation();
-
-    //void viewShowGrid(bool on);   //显示网格
 
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
@@ -245,9 +236,6 @@ private:
     QAction *checkupAction;
     QAction *compileAction;
     QAction *checkupAndCompileAction;
-
-    QAction *startCompileAction;
-    QAction *convertCodeAction;
     QAction *openDocumentationAction;
     QAction *systemInformationAction;
 
@@ -258,7 +246,7 @@ private:
 
     QPrinter *printer;
     QString curFile;
-    //QGraphicsView *view;
+
     View *view;
 
     QGraphicsItemGroup *gridGroup;

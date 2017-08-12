@@ -20,10 +20,6 @@ public:
     ~newscene();
     specialYuan* new_yuan;
 
-    //void setnewCreationName();
-    Node *selectedNode() const;
-    NewNode *selectedNewNode() const;
-    void addTranslationNode();
     void bringToFront();
 
     bool CreateTakeOff(QPointF point, int id);
@@ -62,8 +58,7 @@ public:
     WidgetMap* wm;
 signals:
     void itemInserted(int index);
-private:
-    void setZValue(int z);
+    void sig_bringtofront();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);

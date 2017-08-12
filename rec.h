@@ -51,9 +51,6 @@ public:
 private:
     QRectF mBoundingRect;
 
-//signals:
-    //void sig_posChanged();//没用
-
 protected slots:
     void slot_changeRect();
 

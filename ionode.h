@@ -42,8 +42,6 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
-private slots:
-    //void changeType();
 };
 
 /*******************************************************************

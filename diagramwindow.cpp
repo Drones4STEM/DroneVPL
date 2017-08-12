@@ -120,14 +120,10 @@ DiagramWindow::DiagramWindow()
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
     scene->setBackgroundBrush(Qt::white);
     widgetCondition = new WidgetCondition();
-    //view = new QGraphicsView;
     view = new View;
     view->setScene(scene);
     setMouseTracking(true);
 
-    //view->setDragMode(QGraphicsView::RubberBandDrag);
-    //view->setRenderHints(QPainter::Antialiasing
-    //                     | QPainter::TextAntialiasing);
     view->setContextMenuPolicy(Qt::ActionsContextMenu);//显示文本菜单
     setCentralWidget(view);
 
@@ -160,6 +156,8 @@ DiagramWindow::DiagramWindow()
             this,SLOT(setDirty()));
     connect(scene,SIGNAL(itemInserted(int)),
             this,SLOT(changeNodeNum(int)));
+    connect(scene,SIGNAL(sig_bringtofront()),
+            this,SLOT(bringToFront()));
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -317,11 +315,11 @@ void DiagramWindow::fileOpen()
       //  return;
     const QString &filename = QFileDialog::getOpenFileName(this,
             tr("%1 - Open").arg(QApplication::applicationName()),
-            ".", tr("xml (*.xml)"));  //？？？？？
+            ".", tr("xml (*.xml)"));
     if (filename.isEmpty())
         return;
-    setWindowFilePath(filename);
     DiagramWindow* mainWin = DiagramWindow::fileNew();
+    mainWin->setWindowFilePath(filename);
     loadFile(mainWin);
 }
 
@@ -335,7 +333,7 @@ void DiagramWindow::fileOpen()
 ******************************************************************/
 void DiagramWindow::loadFile(DiagramWindow* mainWin)
 {
-    setCurrentFile(windowFilePath());
+    mainWin->setCurrentFile(mainWin->windowFilePath());
     gridGroup=0;
     viewShowGrid(viewShowGridAction->isChecked());
 
@@ -355,7 +353,11 @@ void DiagramWindow::loadFile(DiagramWindow* mainWin)
     */
     format formater(mainWin->wm->get_map());
     formater.set_scene(mainWin->scene);
-    formater.read_frame_file(windowFilePath());
+    formater.read_frame_file(mainWin->windowFilePath());
+    mainWin->statusBar()->showMessage(tr("Loaded %1").arg(mainWin->windowFilePath()),
+                             StatusTimeout);
+    mainWin->setDirty(false);
+    updateRecentFileActions();
 }
 
 /*******************************************************************
@@ -566,6 +568,7 @@ bool DiagramWindow::fileSave()
     //if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
     //else qDebug()<<"formater map is not empty";
     formater.save_frame_file(filename);
+    setDirty(false);
    // file.close();
     return true;
 }
@@ -1548,65 +1551,6 @@ void DiagramWindow::properties()
 }
 
 /*******************************************************************
- * Function name: startCompile()
- * Description:
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::startCompile()
-{
-
-}
-
-/*******************************************************************
- * Function name: convertCode()
- * Description:
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::convertCode()
-{
-
-}
-/*******************************************************************
- * Function name: toolBar()
- * Description:
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::toolBar()
-{
-
-}
-
-/*******************************************************************
- * Function name: controlBar()
- * Description:
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::controlToolBar()
-{
-
-}
-
-/*******************************************************************
- * Function name: statusBar()
- * Description:
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::statusToolBar()
-{
-
-}
-
-/*******************************************************************
  * Function name: openDocumentation()
  * Description:This funciton open the help documentation.
  * Callee:
@@ -1742,7 +1686,7 @@ void DiagramWindow::viewShowGrid(bool on)
                                           /GridSize)*GridSize;
         const int MaxY = static_cast<int>(std::ceil(scene->height())
                                           /GridSize)*GridSize;
-        for(int x = 0;x <= MaxX;x += GridSize)
+        /*for(int x = 0;x <= MaxX;x += GridSize)
         {
             QGraphicsLineItem *item = new QGraphicsLineItem(x,0,x,MaxY);
             item->setPen(pen);
@@ -1757,7 +1701,27 @@ void DiagramWindow::viewShowGrid(bool on)
             item->setZValue(-101);
             item->setEnabled(false);
             gridGroup->addToGroup(item);
-        }
+        }*/
+        QGraphicsLineItem *item1 = new QGraphicsLineItem(0,0,0,MaxY);
+        item1->setPen(pen);
+        item1->setZValue(-101);
+        //item1->setEnabled(false);
+        gridGroup->addToGroup(item1);
+        QGraphicsLineItem *item2 = new QGraphicsLineItem(MaxX,0,MaxX,MaxY);
+        item2->setPen(pen);
+        item2->setZValue(-101);
+        //item2->setEnabled(false);
+        gridGroup->addToGroup(item2);
+        QGraphicsLineItem *item3 = new QGraphicsLineItem(0,0,MaxX,0);
+        item3->setPen(pen);
+        item3->setZValue(-101);
+        //item3->setEnabled(false);
+        gridGroup->addToGroup(item3);
+        QGraphicsLineItem *item4 = new QGraphicsLineItem(0,MaxY,MaxX,MaxY);
+        item4->setPen(pen);
+        item4->setZValue(-101);
+        //item4->setEnabled(false);
+        gridGroup->addToGroup(item4);
         scene->addItem(gridGroup);
     }
     gridGroup->setVisible(on);
@@ -1818,7 +1782,6 @@ void DiagramWindow::createActions()
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
     fileOpenAction->setIcon(QIcon(":/images/fileopen.png"));
 
-    // ///////         还没有完成好      /////////
    for (int i = 0; i < MaxRecentFiles; ++i) {
         recentFileActions[i] = new QAction(this);
         recentFileActions[i]->setVisible(false);
@@ -1971,21 +1934,6 @@ void DiagramWindow::createActions()
     checkupAndCompileAction = new QAction(tr("check up and compile"),this);
     connect(checkupAndCompileAction,SIGNAL(triggered()),this,SLOT(checkupAndCompile()));
 
-    startCompileAction = new QAction(tr("&Start compile"),this);
-    connect(startCompileAction,SIGNAL(triggered()),this,SLOT(startCompile()));
-
-    convertCodeAction = new QAction(tr("&Convert code"),this);
-    connect(convertCodeAction,SIGNAL(triggered()),this,SLOT(convertCode()));
-
-    //toolBarAction = new QAction(tr("&Tool Bar"),this);
-    //connect(toolBarAction,SIGNAL(triggered()),this,SLOT(toolBar()));
-
-    //controlToolBarAction = new QAction(tr("&Controls Bar"),this);
-    //connect(controlToolBarAction,SIGNAL(triggered()),this,SLOT(controlToolBar()));
-
-    //statusToolBarAction = new QAction(tr("&Status Bar"),this);
-    //connect(statusToolBarAction,SIGNAL(triggered()),this,SLOT(statusToolBar()));
-
     openDocumentationAction = new QAction(tr("&Documentation"),this);
     connect(openDocumentationAction,SIGNAL(triggered()),this,SLOT(openDocumentation()));
 
@@ -2016,7 +1964,7 @@ void DiagramWindow::createMenus()
     viewMenu = menuBar()->addMenu(tr("&View"));
     compileMenu = menuBar()->addMenu(tr("&Compile"));
     helpMenu = menuBar()->addMenu(tr("&Help"));
-
+    //filemenu
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
     fileMenu->addAction(fileSaveAction);
@@ -2030,17 +1978,10 @@ void DiagramWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(closeAction);
     fileMenu->addAction(exitAction);
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //compileMenu = menuBar()->addMenu(tr("&Compile"));
-    compileMenu->addAction(startCompileAction);
-    compileMenu->addAction(convertCodeAction);
-
-    //helpMenu = menuBar()->addMenu(tr("&Help"));
+    //helpmenu
     helpMenu->addAction(openDocumentationAction);
     helpMenu->addAction(systemInformationAction);
-// ////////////////////////////////////////////////////////////////////////////////////////////
-    //editMenu = menuBar()->addMenu(tr("&Edit"));
+    //editmenu
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addRiseNodeAction<<addFallNodeAction
@@ -2063,7 +2004,7 @@ void DiagramWindow::createMenus()
     editMenu->addAction(addVardefNodeAction);
     editMenu->addAction(addComputeNodeAction);
     editMenu->addAction(addIoNodeAction);
-    //editMenu->addAction(addRecAction);
+    editMenu->addAction(addRecAction);
     editMenu->addSeparator();
     editMenu->addAction(deleteAction);
     editMenu->addAction(cutAction);
@@ -2073,9 +2014,7 @@ void DiagramWindow::createMenus()
     editMenu->addAction(bringToFrontAction);
     editMenu->addAction(sendToBackAction);
     editMenu->addSeparator();
-
-// ///////////////////////////////////////////////////////////////////////////////////////////////////
-    //viewMenu = menuBar()->addMenu(tr("&View"));
+    //viewmenu
     viewMenu->addAction(showEditToolBarAction);
     viewMenu->addAction(showNodeBarAction);
     viewMenu->addAction(showNodeStatusBarAction);
@@ -2086,13 +2025,10 @@ void DiagramWindow::createMenus()
     viewMenu->addSeparator();
     viewMenu->addAction(propertiesAction);
     viewMenu->addAction(canvasAction);
-// ///////////////////////////////////////////////////////////////////////////////////////////////////
-    //compileMenu=menuBar()->addMenu(tr("&Compile"));
+    //compilemenu
     compileMenu->addAction(checkupAction);
     compileMenu->addAction(compileAction);
     compileMenu->addAction(checkupAndCompileAction);
-    //editMenu->addAction(propertiesAction);
-
 }
 
 /*******************************************************************
@@ -2207,8 +2143,6 @@ void DiagramWindow::setZValue(int z)
 ******************************************************************/
 void DiagramWindow::setupNode(Node *node)
 {
-    //node->setPos(QPoint(80 + (100 * (seqNumber % 7)),
-    //                    80 + (50 * ((seqNumber / 7) % 9))));
     node->setPos(100,100);
     scene->addItem(node);
     ++seqNumber;
@@ -2227,8 +2161,6 @@ void DiagramWindow::setupNode(Node *node)
 ******************************************************************/
 void DiagramWindow::setupNewNode(NewNode *newnode)
 {
-    //newnode->setPos(QPoint(80 + (100 * (seqNumber % 7)),
-    //                    80 + (70 * ((seqNumber / 7) % 9))));
     newnode->setPos(100,100);
     scene->addItem(newnode);
     ++seqNumber;
