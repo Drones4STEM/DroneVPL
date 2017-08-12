@@ -112,64 +112,9 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
-Node *newscene::selectedNode() const
-{
-    QList<QGraphicsItem *> items = this->selectedItems();  //The QGraphicsItem class is the base class for all graphical items in a QGraphicsScene
-    //QList 类似于列表 http://doc.qt.io/qt-4.8/qlist.html
-
-
-
-    if (items.count() == 1) {
-        {
-            return dynamic_cast<Node *>(items.first());
-        }
-    } else {
-        return 0;
-    }
-}
-
-NewNode *newscene::selectedNewNode() const
-{
-    QList<QGraphicsItem *> items = this->selectedItems();
-    if (items.count() == 1) {
-        {
-            return dynamic_cast<NewNode *>(items.first());
-        }
-    } else {
-        return 0;
-    }
-}
-
-
-void newscene::setZValue(int z)
-{
-    Node *node = selectedNode();
-    if (node)
-    {
-        node->yuan->setZValue(z);
-        foreach (Link*link, node->yuan->myLinks) {
-            link->setZValue(z);
-        }
-        node->setZValue(z);
-    }
-    NewNode *newnode = selectedNewNode();
-    if (newnode)
-    {
-        newnode->yuan->setZValue(z);
-        newnode->yuan2->setZValue(z);
-        foreach (Link*link, newnode->yuan->myLinks) {
-            link->setZValue(z);
-        }
-        foreach (Link*link, newnode->yuan2->myLinks) {
-            link->setZValue(z);
-        }
-        newnode->setZValue(z);}
-}
-
 void newscene::bringToFront()
 {
-    //++view->maxZ;
-    //setZValue(view->maxZ);
+    emit sig_bringtofront();
 }
 
 void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
@@ -418,7 +363,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     QGraphicsScene::mousePressEvent(new_event);
     //setCursor(Qt::ArrowCursor);
 }
-
 
 bool newscene::CreateTakeOff(QPointF point,int id)
 {
