@@ -317,11 +317,11 @@ void DiagramWindow::fileOpen()
       //  return;
     const QString &filename = QFileDialog::getOpenFileName(this,
             tr("%1 - Open").arg(QApplication::applicationName()),
-            ".", tr("xml (*.xml)"));  //？？？？？
+            ".", tr("xml (*.xml)"));
     if (filename.isEmpty())
         return;
-    setWindowFilePath(filename);
     DiagramWindow* mainWin = DiagramWindow::fileNew();
+    mainWin->setWindowFilePath(filename);
     loadFile(mainWin);
 }
 
@@ -335,7 +335,7 @@ void DiagramWindow::fileOpen()
 ******************************************************************/
 void DiagramWindow::loadFile(DiagramWindow* mainWin)
 {
-    setCurrentFile(windowFilePath());
+    mainWin->setCurrentFile(mainWin->windowFilePath());
     gridGroup=0;
     viewShowGrid(viewShowGridAction->isChecked());
 
@@ -355,7 +355,11 @@ void DiagramWindow::loadFile(DiagramWindow* mainWin)
     */
     format formater(mainWin->wm->get_map());
     formater.set_scene(mainWin->scene);
-    formater.read_frame_file(windowFilePath());
+    formater.read_frame_file(mainWin->windowFilePath());
+    mainWin->statusBar()->showMessage(tr("Loaded %1").arg(mainWin->windowFilePath()),
+                             StatusTimeout);
+    mainWin->setDirty(false);
+    updateRecentFileActions();
 }
 
 /*******************************************************************
@@ -566,6 +570,7 @@ bool DiagramWindow::fileSave()
     //if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
     //else qDebug()<<"formater map is not empty";
     formater.save_frame_file(filename);
+    setDirty(false);
    // file.close();
     return true;
 }
