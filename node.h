@@ -47,6 +47,8 @@ public:
     QString identifier;
     int controlsId;
     QString name;   //identifier+controlsId
+    //控件属性
+    int lx,ly;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

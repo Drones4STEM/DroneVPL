@@ -27,7 +27,8 @@ HEADERS       = diagramwindow.h \
     background/map_instrument.h \
     background/widgetmap.h \
     background/format.h \
-    wqdragitem.h
+    wqdragitem.h \
+
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
                 main.cpp \
@@ -53,7 +54,8 @@ SOURCES       = diagramwindow.cpp \
     background/map_instrument.cpp \
     background/widgetmap.cpp \
     background/format.cpp \
-    wqdragitem.cpp
+    wqdragitem.cpp \
+
 FORMS         = propertiesdialog.ui \
     awindow.ui \
     canvasdialog.ui \

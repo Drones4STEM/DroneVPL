@@ -17,7 +17,7 @@
 TakeoffNode::TakeoffNode()
 {
     time=0;
-    identifier="TakeoffNode";
+    identifier="TakeOff";
 }
 
 void TakeoffNode::setTime(double t)

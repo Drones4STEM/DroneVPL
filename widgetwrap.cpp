@@ -38,7 +38,7 @@ WidgetWrap::WidgetWrap(TakeoffNode *ton)
     identifier = "TakeOff"; //控件类型
     controlsId = ton->controlsId;
     name = ton->name;
-    mTakeoffNode = ton;
+    mTakeOffNode = ton;
 }
 
 WidgetWrap::WidgetWrap(LandonNode *ln)

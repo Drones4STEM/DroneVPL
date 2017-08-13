@@ -130,14 +130,14 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     if(selected_Index==1&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->takeoffNodeNum++;
-        CreateTakeOff(new_event->scenePos(),this->takeoffNodeNum);
+        CreateTakeOff(new_event->scenePos(),this->takeoffNodeNum,true);
 
         need_to_set = 0;
 }
     if(selected_Index==2&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->landonNodeNum++;
-        CreateLand(new_event->scenePos(),this->landonNodeNum);
+        CreateLand(new_event->scenePos(),this->landonNodeNum,true);
 
         need_to_set = 0;
         //setCursor(Qt::ArrowCursor);
@@ -146,7 +146,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         this->GoNodeNum++;
         need_to_set = 0;
-        CreateGo(new_event->scenePos(),this->GoNodeNum);
+        CreateGo(new_event->scenePos(),this->GoNodeNum,true);
         //setCursor(Qt::ArrowCursor);
     }
     if(need_to_set==1&&selected_Index==10){qDebug()<<"10.";
@@ -156,62 +156,59 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         this->TurnNodeNum++;
         need_to_set = 0;
-        CreateTurn(new_event->scenePos(),this->TurnNodeNum);
+        CreateTurn(new_event->scenePos(),this->TurnNodeNum,true);
     }
     if(need_to_set==1&&selected_Index==13){qDebug()<<"13.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->HoverNodeNum++;
-        CreateHover(new_event->scenePos(),this->HoverNodeNum);
+        CreateHover(new_event->scenePos(),this->HoverNodeNum,true);
     }
     if(need_to_set==1&&selected_Index==14){qDebug()<<"14.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->DelayNodeNum++;
-        CreateDelay(new_event->scenePos(),this->DelayNodeNum);
+        CreateDelay(new_event->scenePos(),this->DelayNodeNum,true);
     }
     if(need_to_set==1&&selected_Index==15){qDebug()<<"15.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarTypeNodeNum++;
-        CreateVarType(new_event->scenePos(),this->VarTypeNodeNum);
+        CreateVarType(new_event->scenePos(),this->VarTypeNodeNum,true);
     }
     if(need_to_set==1&&selected_Index==16){qDebug()<<"16.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarDefNodeNum++;
-        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum,true);
     }
     if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->CompputeNodeNum++;
-        CreateCompute(new_event->scenePos(),this->CompputeNodeNum);
+        CreateCompute(new_event->scenePos(),this->CompputeNodeNum,true);
     }
     if(need_to_set==1&&selected_Index==18){qDebug()<<"18.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->IONodeNum++;
-        CreateIO(new_event->scenePos(),this->IONodeNum);
+        CreateIO(new_event->scenePos(),this->IONodeNum,true);
     }
     if(need_to_set==1&&selected_Index==19){qDebug()<<"19.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->LogicNodeNum++;
-        CreateLogic(new_event->scenePos(),this->LogicNodeNum);
+        CreateLogic(new_event->scenePos(),this->LogicNodeNum,true);
     }
     QGraphicsScene::mousePressEvent(new_event);
     //setCursor(Qt::ArrowCursor);
 }
 
-bool newscene::CreateTakeOff(QPointF point,int id)
+bool newscene::CreateTakeOff(QPointF point, int id, bool user)
 {
     TakeoffNode *node=new TakeoffNode;
     node->setText(tr("take off\n %1 s").arg(node->time));
 
-    //QPoint position(cursor().pos().x()-500,cursor().pos().y()-100);
-
-    //node->setPos(position);
     node->setPos(point);
     this->addItem(node);
 
@@ -225,18 +222,17 @@ bool newscene::CreateTakeOff(QPointF point,int id)
     node->identifier="TakeOff";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    if(user==true){ //从用户动作中生成控件
+        WidgetWrap tmp(node);   //包装节点
+        //if(tmp.mTakeoffNode!=NULL) qDebug()<<"widgetwrap is not empty";
+        wm->add(tmp);            //添加到widgetmap中
+        if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
+        else qDebug()<<"CreateTakeOff()   wm's QMap is not empty";
+    }
 
-    //setDirty(true);
-    //setCursor(Qt::ArrowCursor);
-
-    WidgetWrap tmp(node);   //包装节点
-    //if(tmp.mTakeoffNode!=NULL) qDebug()<<"widgetwrap is not empty";
-    wm->add(tmp);            //添加到widgetmap中
-    if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
-    else qDebug()<<"CreateTakeOff()   wm's QMap is not empty";
 }
 
-bool newscene::CreateLand(QPointF point, int id)
+bool newscene::CreateLand(QPointF point, int id, bool user)
 {
     LandonNode *node=new LandonNode;
     node->setText(tr("Land on\n %1 s").arg(node->time));
@@ -257,14 +253,15 @@ bool newscene::CreateLand(QPointF point, int id)
     node->identifier="Land";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
-
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
-    if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
-    else qDebug()<<"CreateLand()   wm's QMap is not empty";
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+        if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
+        else qDebug()<<"CreateLand()   wm's QMap is not empty";
+    }
 }
 
-bool newscene::CreateGo(QPointF point, int id)
+bool newscene::CreateGo(QPointF point, int id, bool user)
 {
     TranslationNode *node=new TranslationNode;
     node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
@@ -306,13 +303,13 @@ bool newscene::CreateGo(QPointF point, int id)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
-
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 }
 
-bool newscene::CreateTurn(QPointF point, int id)
+bool newscene::CreateTurn(QPointF point, int id, bool user)
 {
     TurnNode *node=new TurnNode;
 
@@ -351,12 +348,13 @@ bool newscene::CreateTurn(QPointF point, int id)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 }
 
-bool newscene::CreateHover(QPointF point, int id)
+bool newscene::CreateHover(QPointF point, int id, bool user)
 {
     HoverNode *node=new HoverNode;
 
@@ -384,12 +382,13 @@ bool newscene::CreateHover(QPointF point, int id)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 }
 
-bool newscene::CreateDelay(QPointF point, int id)
+bool newscene::CreateDelay(QPointF point, int id, bool user)
 {
     DelayNode *node=new DelayNode;
 
@@ -417,12 +416,14 @@ bool newscene::CreateDelay(QPointF point, int id)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
 }
 
-bool newscene::CreateVarType(QPointF point, int id)
+bool newscene::CreateVarType(QPointF point, int id, bool user)
 {
     VarNode* node=new VarNode;
     node->setText(tr("int"));
@@ -443,12 +444,13 @@ bool newscene::CreateVarType(QPointF point, int id)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 }
 
-bool newscene::CreateVarDef(QPointF point, int id)
+bool newscene::CreateVarDef(QPointF point, int id, bool user)
 {
     QList<QGraphicsItem *> items = this->selectedItems();
     if(items.count()==0)
@@ -474,9 +476,10 @@ bool newscene::CreateVarDef(QPointF point, int id)
         qDebug()<<"name :"<<node->name;
         qDebug()<<"identifier :"<<node->identifier;
         qDebug()<<"controlsId :"<<node->controlsId;
-
-        WidgetWrap tmp(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+        if(user==true){
+            WidgetWrap tmp(node);   //包装节点
+            wm->add(tmp);            //添加到widgetmap中
+        }
     }
     else if(items.count()==1)
     {qDebug()<<"2";
@@ -504,6 +507,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
         int y = node->pos().y() + j;
         (node->array[node->num])->setPos(x,y);
         VardefNode* vdnode = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
+        vdnode->seq = node->num;
         node->flags[node->num]=true;
         this->addItem(node->array[node->num]);
         node->num=node->num%6+1;
@@ -518,13 +522,14 @@ bool newscene::CreateVarDef(QPointF point, int id)
         qDebug()<<"controlsId :"<<vdnode->controlsId;
         //qDebug()<<"location_x :"<<QString::number((long)vdnode->pos().x(),10);
         //qDebug()<<"location_y :"<<QString::number((long)vdnode->pos().y(),10);
-
-        WidgetWrap tmp(vdnode);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+        if(user==true){
+            WidgetWrap tmp(vdnode);   //包装节点
+            wm->add(tmp);            //添加到widgetmap中
+        }
     }
 }
 
-bool newscene::CreateCompute(QPointF point, int id)
+bool newscene::CreateCompute(QPointF point, int id, bool user)
 {
     ComputeNode *node=new ComputeNode;
     node->setText(tr("Compute"));
@@ -572,12 +577,14 @@ bool newscene::CreateCompute(QPointF point, int id)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
 }
 
-bool newscene::CreateIO(QPointF point, int id)
+bool newscene::CreateIO(QPointF point, int id, bool user)
 {
     IoNode* node=new IoNode;
     node->setText(tr("sensor"));
@@ -624,19 +631,20 @@ bool newscene::CreateIO(QPointF point, int id)
     node->box->setCurrentIndex(0);
 
     node->controlsId=id;
-    node->identifier="Compute";
+    node->identifier="IO";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
-    WidgetWrap tmp(node);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
+    if(user==true){
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 }
 
-bool newscene::CreateLogic(QPointF point, int id)
+bool newscene::CreateLogic(QPointF point, int id, bool user)
 {
     Rec *rec=new Rec;
     QGraphicsItem* item= this->addWidget(rec->box);
@@ -669,17 +677,62 @@ bool newscene::CreateLogic(QPointF point, int id)
     qDebug()<<"name :"<<rec->name;
     qDebug()<<"identifier :"<<rec->identifier;
     qDebug()<<"controlsId :"<<rec->controlsId;
-
-    WidgetWrap tmp(rec);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
+    if(user==true){
+        WidgetWrap tmp(rec);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
 }
-/*
-bool newscene::CreateGoLeft(QPointF point, int id){}
-bool newscene::CreateGoRight(QPointF point, int id){}
-bool newscene::CreateGoUp(QPointF point, int id){}
-bool newscene::CreateGoDown(QPointF point, int id){}
-bool newscene::CreateForward(QPointF point, int id){}
-bool newscene::CreateBackward(QPointF point, int id){}
-bool newscene::CreateTurnLeft(QPointF point, int id){}
-bool newscene::CreateTurnRight(QPointF point, int id){}
-*/
+
+bool newscene::CreateWidgets()
+{
+    typename QMap<QString, widget>::iterator iter;
+    QMap<QString,WidgetWrap> Map;
+    Map = wm->get_map();
+
+    for(iter=Map.begin();iter!=Map.end();iter++){
+        if(iter->identifier=="TakeOff"){
+            QPointF point(iter->mTakeOffNode->lx,iter->mTakeOffNode->ly);
+            CreateTakeOff(point,iter->mTakeOffNode->controlsId,false);
+        }
+        if(iter->identifier=="Land"){
+            QPointF point(iter->mLandNode->lx,iter->mLandNode->ly);
+            CreateLand(point,iter->mLandNode->controlsId,false);
+        }
+        if(iter->identifier=="Go"){
+            QPointF point(iter->mGoNode->lx,iter->mGoNode->ly);
+            CreateGo(point,iter->mGoNode->controlsId,false);
+        }
+        if(iter->identifier=="Turn"){
+            QPointF point(iter->mTurnNode->lx,iter->mTurnNode->ly);
+            CreateTurn(point,iter->mTurnNode->controlsId,false);
+        }
+        if(iter->identifier=="Hover"){
+            QPointF point(iter->mHoverNode->lx,iter->mHoverNode->ly);
+            CreateHover(point,iter->mHoverNode->controlsId,false);
+        }
+        if(iter->identifier=="Delay"){
+            QPointF point(iter->mDelayNode->lx,iter->mDelayNode->ly);
+            CreateDelay(point,iter->mDelayNode->controlsId,false);
+        }
+        if(iter->identifier=="VarType"){
+            QPointF point(iter->mVarTypeNode->lx,iter->mVarTypeNode->ly);
+            CreateVarType(point,iter->mVarTypeNode->controlsId,false);
+        }
+        if(iter->identifier=="VarDef"){
+            QPointF point(iter->mVarDefNode->lx,iter->mVarDefNode->ly);
+            CreateVarDef(point,iter->mVarDefNode->controlsId,false);
+        }
+        if(iter->identifier=="Compute"){
+            QPointF point(iter->mComputeNode->lx,iter->mComputeNode->ly);
+            CreateCompute(point,iter->mComputeNode->controlsId,false);
+        }
+        if(iter->identifier=="IO"){
+            QPointF point(iter->mIONode->lx,iter->mIONode->ly);
+            CreateIO(point,iter->mIONode->controlsId,false);
+        }
+        if(iter->identifier=="Logic"){
+            QPointF point(iter->mLogicNode->lx,iter->mLogicNode->ly);
+            CreateLogic(point,iter->mLogicNode->controlsId,false);
+        }
+    }
+}

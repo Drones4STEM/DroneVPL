@@ -26,6 +26,8 @@ public:
     void setTime(double t);
     double myTime();
 
+
+
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 };

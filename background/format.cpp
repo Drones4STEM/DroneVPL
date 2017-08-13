@@ -22,10 +22,9 @@ using namespace std;
  * Input: QMap<QString, widget *> - widgets exits now
  * Output: none
  *****************************************************/
-format::format(QMap<QString, WidgetWrap>& m)
+format::format()
 {
-    if(m.isEmpty()) qDebug()<<"format(QMap<QString, WidgetWrap>& m)   m is empty";
-    Map = m;
+    ;
 }
 
 
@@ -93,9 +92,9 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
         if(identifier == "TakeOff"){ //起飞动作
-             x = QString::number((long)iter->mTakeoffNode->pos().x(),10);
+             x = QString::number((long)iter->mTakeOffNode->pos().x(),10);
              stream.writeTextElement("location_x",x);
-             y = QString::number((long)iter->mTakeoffNode->pos().y(),10);
+             y = QString::number((long)iter->mTakeOffNode->pos().y(),10);
              stream.writeTextElement("location_y",y);
              //stream.writeStartElement("arrow_out");
         }
@@ -213,8 +212,11 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
             stream.writeTextElement("location_x",x);
             y = QString::number((long)iter->mVarDefNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            //if(iter->mVarDefNode->node!=0)
-                //stream.writeTextElement("data_type",iter->mVarDefNode->node->name); //  添加对应的VarType的编号
+            if(iter->mVarDefNode->node!=0)
+                stream.writeStartElement("data_type",iter->mVarDefNode->node->name); //  添加对应的VarType的编号
+                QString seq = QString::number((long)iter->mVarDefNode->seq,10);
+                stream.writeAttribute("sequence",seq);
+                stream.writeEndElement();
             //stream.writeStartElement("arrow_out");
         }
         stream.writeEndElement();   //correspond to writeStartElement("VAR")
@@ -399,7 +401,7 @@ bool format::read_frame_file(QString filename)
     QString category,type;
     qint16 location_x,location_y,id;
 
-    qDebug()<<stream.hasError();
+    //qDebug()<<stream.hasError();
     while(!stream.atEnd()){ //exit if at end or has error
         //qDebug()<<"not end";
         stream.readNext();
@@ -434,22 +436,22 @@ bool format::read_frame_file(QString filename)
                     QPointF point(location_x,location_y);
                     try{
                         if(type=="TakeOff"){
-                            scene->CreateTakeOff(point,id); //在窗口中生成takeoff控件
+                            CreateTakeOff(point,id); //在窗口中生成takeoff控件
                         }
                         if(type=="Land"){
-                            scene->CreateLand(point,id); //在窗口中生成takeoff控件
+                            CreateLand(point,id); //在窗口中生成takeoff控件
                         }
                         if(type=="Go"){
-                            scene->CreateGo(point,id); //在窗口中生成takeoff控件
+                            CreateGo(point,id); //在窗口中生成takeoff控件
                         }
                         if(type=="Turn"){
-                            scene->CreateTurn(point,id); //在窗口中生成takeoff控件
+                            CreateTurn(point,id); //在窗口中生成takeoff控件
                         }
                         if(type=="Hover"){
-                            scene->CreateHover(point,id); //在窗口中生成takeoff控件
+                            CreateHover(point,id); //在窗口中生成takeoff控件
                         }
                         if(type=="Delay"){
-                            scene->CreateDelay(point,id); //在窗口中生成takeoff控件
+                            CreateDelay(point,id); //在窗口中生成takeoff控件
                         }
                     }catch(exception e){
                        ;
@@ -481,14 +483,17 @@ bool format::read_frame_file(QString filename)
                 QPointF point(location_x,location_y);
                 try{
                     if(type=="VarType"){
-                        scene->CreateVarType(point,id); //在窗口中生成takeoff控件
+                        CreateVarType(point,id); //在窗口中生成takeoff控件
                     }
                     if(type=="VarDef"){
-                        //stream.readNext();
-                        //stream.readNext();
-                        //if(stream.name().toString()=="data_type")
-                            //CreateVarDef(point,id,data_type);
-                        scene->CreateVarDef(point,id); //在窗口中生成VarDef控件
+                        stream.readNext();
+                        stream.readNext();
+                        if(stream.name().toString()=="data_type"){
+                            QString name = stream.name().toString();
+                            QString seq = stream.attributes().value("data_type").toString();
+                            int s = seq.toInt();
+                            //CreateVarDef(point,id,name,s); //在窗口中生成VarDef控件
+                        }else ;//  CreateVarDef(point,id,"",-1);   //""和-1表示没有vartype节点
                     }
                 }catch(exception e){
                    ;
@@ -519,7 +524,7 @@ bool format::read_frame_file(QString filename)
                 QPointF point(location_x,location_y);
                 try{
                     if(type=="Compute"){
-                        scene->CreateCompute(point,id); //在窗口中生成compute控件
+                        CreateCompute(point,id); //在窗口中生成compute控件
                     }
                 }catch(exception e){
                    ;
@@ -550,7 +555,7 @@ bool format::read_frame_file(QString filename)
                 QPointF point(location_x,location_y);
                 try{
                     if(type=="IO"){
-                        scene->CreateIO(point,id); //在窗口中生成IO控件
+                        CreateIO(point,id); //在窗口中生成IO控件
                     }
                 }catch(exception e){
                    ;
@@ -581,7 +586,7 @@ bool format::read_frame_file(QString filename)
                 QPointF point(location_x,location_y);
                 try{
                     if(type=="Logic"){
-                        scene->CreateLogic(point,id); //在窗口中生成IO控件
+                        CreateLogic(point,id); //在窗口中生成IO控件
                     }
                 }catch(exception e){
                    ;
@@ -665,35 +670,218 @@ void format::widget_convert_to_py(QMap<QString, widget>::iterator& iter, QTextSt
 */
 }
 
-/*
-bool format::CreateVarDef(QPoint point, int id, QString data_type, int num)
+
+
+
+//-----------------------create……()------------------------
+bool format::CreateTakeOff(QPointF point,int id)
 {
-    WidgetWrap tmp = map_instrument::find(Map,data_type);
+    TakeoffNode *node=new TakeoffNode;
+    node->lx = point.x();
+    node->ly = point.y();
+    node->controlsId=id;
+    node->identifier="TakeOff";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateLand(QPointF point, int id)
+{
+    LandonNode *node=new LandonNode;
+    node->lx = point.x();
+    node->ly = point.y();
+    node->controlsId=id;
+    node->identifier="Land";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateGo(QPointF point, int id)
+{
+    TranslationNode *node=new TranslationNode;
+    node->lx = point.x();
+    node->ly = point.y();
+    node->controlsId=id;
+    node->identifier="Go";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+
+}
+
+bool format::CreateTurn(QPointF point, int id)
+{
+    TurnNode *node=new TurnNode;
+
+    node->lx = point.x();
+    node->ly = point.y();
+    node->controlsId=id;
+    node->identifier="Turn";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateHover(QPointF point, int id)
+{
+    HoverNode *node=new HoverNode;
+    node->lx = point.x();
+    node->ly = point.y();
+    node->controlsId=id;
+    node->identifier="Hover";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateDelay(QPointF point, int id)
+{
+    DelayNode *node=new DelayNode;
+
+    node->lx = point.x();
+    node->ly = point.y();
+    node->controlsId=id;
+    node->identifier="Delay";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateVarType(QPointF point, int id)
+{
+    VarNode* node=new VarNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="VarType";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+/*
+bool format::CreateVarDef(QPoint point, int id, QString name, int num)
+{
     VardefNode* vdn = new VardefNode();
-    vdn->node = tmp.mVarTypeNode;   //使vardefnode知道它属于varnode
-    vdn->node->array[node->num]->node=node;
+    VarNode* vn = new VarNode();
+    if(name!="" && num!=-1){
+        WidgetWrap t = map_instrument::find(Map,name);
+        vdn->node = t.mVarTypeNode;   //使vardefnode知道它属于varnode
+        vn = vdn->node;
+        vn->array[num]=vdn; //使varnode知道属于它的vardefnode
+        vn->flags[num]=true;
+    }
+    vdn->setPos(point);
+    scene->addItem(vdn);
 
-        (node->array[node->num])->setPos(point);
-        VardefNode* vdnode = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
-        node->flags[node->num]=true;
-        this->addItem(node->array[node->num]);
-        node->num=node->num%6+1;
+    vdn->controlsId=id;
+    vdn->identifier="VarDef";
+    QString cid = QString::number(vdn->controlsId,10);
+    vdn->name = vdn->identifier + cid;
+    qDebug()<<"format::Create():";
+    qDebug()<<"name :"<<vdn->name;
+    qDebug()<<"identifier :"<<vdn->identifier;
+    qDebug()<<"controlsId :"<<vdn->controlsId;
+    //qDebug()<<"location_x :"<<QString::number((long)vdn->pos().x(),10);
+    //qDebug()<<"location_y :"<<QString::number((long)vdn->pos().y(),10);
 
-        vdnode->controlsId=id;
-        vdnode->identifier="VarDef";
-        QString cid = QString::number(vdnode->controlsId,10);
-        vdnode->name = vdnode->identifier + cid;
-        qDebug()<<"Create():";
-        qDebug()<<"name :"<<vdnode->name;
-        qDebug()<<"identifier :"<<vdnode->identifier;
-        qDebug()<<"controlsId :"<<vdnode->controlsId;
-        //qDebug()<<"location_x :"<<QString::number((long)vdnode->pos().x(),10);
-        //qDebug()<<"location_y :"<<QString::number((long)vdnode->pos().y(),10);
-
-        WidgetWrap tmp(vdnode);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    WidgetWrap tmp(vdn);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
 }
 */
+bool format::CreateCompute(QPointF point, int id)
+{
+    ComputeNode *node=new ComputeNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="Compute";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateIO(QPointF point, int id)
+{
+    IoNode* node=new IoNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="IO";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateLogic(QPointF point, int id)
+{
+    Rec *node=new Rec;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="Logic";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+}
+
 
 
 

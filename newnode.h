@@ -50,6 +50,7 @@ public:
     QString identifier;
     int controlsId;
     QString name;   //identifier+controlsId
+    int lx,ly;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
