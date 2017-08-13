@@ -22,9 +22,11 @@ public:
     WidgetWrap(TurnNode *turnn);
     WidgetWrap(HoverNode *hn);
     WidgetWrap(DelayNode *dn);
+
     WidgetWrap(ComputeNode* cn);
     WidgetWrap(IoNode* in);
     WidgetWrap(Rec* ln);
+
     WidgetWrap(VardefNode* vdn);
     WidgetWrap(VarNode* vn);
 
@@ -34,10 +36,14 @@ public:
     QString name;   //identifier+controlsId
 
     ComputeNode* mComputeNode = NULL;
-    IoNode* mIoNode;
+
+    IoNode* mIONode;
+
     Rec* mLogicNode;
-    VardefNode* mVardefNode;
-    VarNode* mVarNode;
+
+    VardefNode* mVarDefNode;
+    VarNode* mVarTypeNode;
+
     TakeoffNode* mTakeoffNode;
     LandonNode* mLandNode;
     TranslationNode* mGoNode;

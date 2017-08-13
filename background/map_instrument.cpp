@@ -74,7 +74,7 @@ bool map_instrument::put_in_map(QMap<QString, widget> m, QString s, widget& w)
  * Output: true - if successfully deleted
  *         false - if not deleted successfully(don't exist)
  *****************************************************/
-bool map_instrument::del_from_map(QMap<QString, widget> m, QString s)
+bool map_instrument::del_from_map(QMap<QString, widget>& m, QString s)
 {
     typename QMap<QString, widget>::iterator iter;
     iter = m.find(s);
@@ -93,17 +93,16 @@ bool map_instrument::del_from_map(QMap<QString, widget> m, QString s)
  * Description: This is the funtion that juedge if a
  *    certain widget is in a certain map. This function
  *    is not completed yet.
- *    in a map.
  * Calle: none
- * Input: QMap<QString, widget*>* m - the map to store widget
+ * Input: QMap<QString, widget*> m - the map to store widget
  *        QString name - the widget's name
  * Output: iter->value - the widget's name
  *         null - no such widget
  *****************************************************/
-widget map_instrument::find(QMap<QString, widget> m, QString name = "null")
+widget map_instrument::find(QMap<QString, widget>* m, QString name = "null")
 {
     typename QMap<QString, widget>::iterator iter;
-    for(iter=m.begin();iter!=m.end();iter++){
+    for(iter=m->begin();iter!=m->end();iter++){
         if( iter->name == "LogicNode"){  //字符串以"LOGIC"开头
             widget tmp = *iter;
             return tmp;

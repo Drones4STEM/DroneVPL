@@ -44,14 +44,15 @@ void WidgetMap::add(WidgetWrap& tmp)
  * Input: widget* w - the widget to be deleted.
  * Output: none
  *****************************************************/
-void WidgetMap::del(widget* w)
+void WidgetMap::del(widget w)
 {
     amount--;
-    QString index;
-    if(w->identifier == "TakeOff"){
+    QString index = w.name;
+    qDebug()<<"del()    "<<index;
+    /*if(w->identifier == "TakeOff"){
         index = (w->mTakeoffNode)->identifier + (w->mTakeoffNode)->controlsId;
-    }
-    map_instrument::del_from_map(Store, index);
+    }*/
+    qDebug()<<map_instrument::del_from_map(Store, index);
 }
 
 /*****************************************************

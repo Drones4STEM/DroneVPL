@@ -27,6 +27,7 @@ format::format(QMap<QString, WidgetWrap>& m)
     Map = m;
 }
 
+
 /*****************************************************
  * Function name: save_frame_file
  * Description: This is the funtion that save the block
@@ -114,7 +115,6 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
             stream.writeTextElement("location_x",x);
             y = QString::number((long)iter->mTurnNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-
         }
         if(identifier == "Hover"){ //悬停动作
             x = QString::number((long)iter->mHoverNode->pos().x(),10);
@@ -186,6 +186,7 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
               stream.writeEndElement();
           }*/
 
+        qDebug()<<"category: "<<iter->category;
         qDebug()<<"type: "<<identifier;
         qDebug()<<"id: "<<controlsId;
         qDebug()<<"location_x: "<<x;
@@ -193,16 +194,170 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
         //stream.writeEndElement();
         stream.writeEndElement();   //correspond to writeStartElement("Action")
     }
-    /*
     //--------VAR--------------
-    if( w->compare(0,3,"VAR")==0 ){    //是VAR控件
-        stream.writeStartElement("widget");
-        stream.writeAttribute("sort", "VAR");
-         stream.writeStartElement("VAR");
-         stream.writeAttribute("name", iter->key);
-          stream.writeTextElement("location_x",iter->value->pos().x());
-          stream.writeTextElement("location_y",iter->value->pos().y());
-          stream.writeTextElement("type",iter->);
+    if( iter->category == "VAR" ){    //是VAR控件
+        stream.writeStartElement("VAR");
+        stream.writeAttribute("type",identifier);
+        stream.writeTextElement("id",controlsId);
+        if(identifier == "VarType"){
+            x = QString::number((long)iter->mVarTypeNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mVarTypeNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+            //stream.writeTextElement("data_type",iter->);
+            //stream.writeStartElement("arrow_out");
+        }
+        if(identifier == "VarDef"){
+            x = QString::number((long)iter->mVarDefNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mVarDefNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+            //if(iter->mVarDefNode->node!=0)
+                //stream.writeTextElement("data_type",iter->mVarDefNode->node->name); //  添加对应的VarType的编号
+            //stream.writeStartElement("arrow_out");
+        }
+        stream.writeEndElement();   //correspond to writeStartElement("VAR")
+        qDebug()<<"category: "<<iter->category;
+        qDebug()<<"type: "<<identifier;
+        qDebug()<<"id: "<<controlsId;
+        qDebug()<<"location_x: "<<x;
+        qDebug()<<"location_y: "<<y;
+    }
+    //---------Compute------------------
+    if(iter->category == "Compute"){
+        stream.writeStartElement("Compute");
+        stream.writeAttribute("type",identifier);
+        stream.writeTextElement("id",controlsId);
+        if(identifier == "Compute"){
+            x = QString::number((long)iter->mComputeNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mComputeNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+            //stream.writeStartElement("arrow_out");
+        }
+        stream.writeStartElement("math");
+        if(iter->mComputeNode->box->currentText()=="+"){ //如果加法
+            stream.writeAttribute("operator","add");
+        }
+        stream.writeEndElement();
+        stream.writeEndElement();   //correspond to writeStartElement("Compute")
+        qDebug()<<"category: "<<iter->category;
+        qDebug()<<"type: "<<identifier;
+        qDebug()<<"id: "<<controlsId;
+        qDebug()<<"location_x: "<<x;
+        qDebug()<<"location_y: "<<y;
+        qDebug()<<"operator: "<<iter->mComputeNode->box->currentText();
+    }
+    //---------IO------------------
+    if(iter->category == "IO"){
+        stream.writeStartElement("IO");
+        stream.writeAttribute("type",identifier);
+        stream.writeTextElement("id",controlsId);
+        if(identifier == "IO"){
+            x = QString::number((long)iter->mIONode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mIONode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+            //stream.writeStartElement("arrow_out");
+        }/*
+          if(){ //有输出
+              stream.writeStartElement("arrow_out");
+               stream.writeStartElement("a_to");
+               stream.writeAttribute("name", iter->value->yuan->myLinks->yuan->node->name);
+               //指到node的名字，还未完成
+               stream.writeCharacters(iter->value->yuan->myLinks->yuan);
+               //指到yuan的名字，还未完成
+               stream.writeTextElement("goto",iter->value->yuan->myLinks->yuan->node->name);
+               stream.writeEndElement();
+              stream.writeEndElement();
+          }*/
+        stream.writeEndElement();   //correspond to writeStartElement("IO")
+        qDebug()<<"category: "<<iter->category;
+        qDebug()<<"type: "<<identifier;
+        qDebug()<<"id: "<<controlsId;
+        qDebug()<<"location_x: "<<x;
+        qDebug()<<"location_y: "<<y;
+    }
+    //---------LOGIC------------------
+    if(iter->category == "Logic"){
+        stream.writeStartElement("Logic");
+        stream.writeAttribute("type",identifier);
+        stream.writeTextElement("id",controlsId);
+        if(identifier == "Logic"){
+            x = QString::number((long)iter->mLogicNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)iter->mLogicNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+            //stream.writeStartElement("arrow_out");
+        }
+        stream.writeEndElement();   //correspond to writeStartElement("Logic")
+        qDebug()<<"category: "<<iter->category;
+        qDebug()<<"type: "<<identifier;
+        qDebug()<<"id: "<<controlsId;
+        qDebug()<<"location_x: "<<x;
+        qDebug()<<"location_y: "<<y;
+    }
+        /*
+        QString t;
+        t = ;//判断是if还是else还是while
+         SWmap::iterator WILiter;
+         SWmap* WIL = iter->value->li->WidgetsInLOGIC;
+         for(WILiter=WIL->begin(); WILiter!=WIL->end(); WILiter++){
+            save_widget(WILiter,stream);
+         }
+         if(){ //控件if
+            stream.writeTextElement("else",);
+         }
+         stream.writeEndElement();
+        stream.writeEndElement();
+    }*/
+        /*
+        if(){ //如果减法
+            stream.writeAttribute("subtraction");
+        }
+        if(){ //如果乘法
+            stream.writeAttribute("multiple");
+        }
+        if(){ //如果除法
+            stream.writeAttribute("divison");
+        }
+        if(){ //如果幂
+            stream.writeAttribute("power");
+        }
+        if(){ //如果正弦
+            stream.writeAttribute("sin");
+            stream.writeStartElement("angle");
+            stream.writeAttribute("unit","angle");
+            stream.writeTextElement();
+        }
+        if(){ //如果余弦
+            stream.writeAttribute("cos");
+            stream.writeStartElement("angle");
+            stream.writeAttribute("unit","angle");
+            stream.writeTextElement();
+        }
+        if(){ //如果正切
+            stream.writeAttribute("tan");
+            stream.writeStartElement("angle");
+            stream.writeAttribute("unit","angle");
+            stream.writeTextElement();
+        }
+        if(){ //如果对数
+            stream.writeAttribute("log");
+        }
+        if(){ //如果等于
+            stream.writeAttribute("equal");
+        }
+        if(){ //如果小于
+            stream.writeAttribute("less");
+        }
+        if(){ //如果大于
+            stream.writeAttribute("greater");
+        }
+        stream.writeEndElement();
+        stream.writeEndElement();
+    }*/
+          /*
           if(){   //判断VAR里面是否有保存变量
               stream.writeTextElement("variable_a",iter->);
               stream.writeTextElement("variable_b",iter->);
@@ -223,107 +378,6 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
          stream.writeEndElement();
         stream.writeEndElement();
     }
-    //---------IO------------------
-    if( w->key.compare(0,1,"IO")==0 ){
-        stream.writeStartElement("widget");
-        stream.writeAttribute("sort", "IO");
-         stream.writeStartElement("IO");
-         stream.writeAttribute("name", iter->key);
-          stream.writeTextElement("location_x",iter->value->pos().x());
-          stream.writeTextElement("location_y",iter->value->pos().y());
-          if(){ //有输出
-              stream.writeStartElement("arrow_out");
-               stream.writeStartElement("a_to");
-               stream.writeAttribute("name", iter->value->yuan->myLinks->yuan->node->name);
-               //指到node的名字，还未完成
-               stream.writeCharacters(iter->value->yuan->myLinks->yuan);
-               //指到yuan的名字，还未完成
-               stream.writeTextElement("goto",iter->value->yuan->myLinks->yuan->node->name);
-               stream.writeEndElement();
-              stream.writeEndElement();
-          }
-         stream.writeEndElement();
-        stream.writeEndElement();
-    }
-    //---------Compute------------------
-    if( w->key.compare(0,6,"Compute")==0 ){
-        stream.writeStartElement("widget");
-        stream.writeAttribute("sort","Compute");
-         stream.writeStartElement("Compute");
-         stream.writeAttribute("name",);
-          stream.writeTextElement("location_x",iter->value->pos().x());
-          stream.writeTextElement("location_x",iter->value->pos().y());
-          stream.writeStartElement("arrow_out");
-           stream.writeTextElement("goto",);
-          stream.writeEndElement();
-          stream.writeStartElement("operator");
-          if(){ //如果加法
-              stream.writeAttribute("add");
-          }
-          if(){ //如果减法
-              stream.writeAttribute("subtraction");
-          }
-          if(){ //如果乘法
-              stream.writeAttribute("multiple");
-          }
-          if(){ //如果除法
-              stream.writeAttribute("divison");
-          }
-          if(){ //如果幂
-              stream.writeAttribute("power");
-          }
-          if(){ //如果正弦
-              stream.writeAttribute("sin");
-              stream.writeStartElement("angle");
-              stream.writeAttribute("unit","angle");
-              stream.writeTextElement();
-          }
-          if(){ //如果余弦
-              stream.writeAttribute("cos");
-              stream.writeStartElement("angle");
-              stream.writeAttribute("unit","angle");
-              stream.writeTextElement();
-          }
-          if(){ //如果正切
-              stream.writeAttribute("tan");
-              stream.writeStartElement("angle");
-              stream.writeAttribute("unit","angle");
-              stream.writeTextElement();
-          }
-          if(){ //如果对数
-              stream.writeAttribute("log");
-          }
-          if(){ //如果等于
-              stream.writeAttribute("equal");
-          }
-          if(){ //如果小于
-              stream.writeAttribute("less");
-          }
-          if(){ //如果大于
-              stream.writeAttribute("greater");
-          }
-          stream.writeEndElement();
-        stream.writeEndElement();
-    }
-    //---------LOGIC------------------
-    if( w->key.compare(0,4,"LOGIC")==0 ){
-        stream.writeStartElement("widget");
-        stream.writeAttribute("sort","LOGIC");
-        QString t;
-        t = ;//判断是if还是else还是while
-         stream.writeStartElement("LOGIC");
-         stream.writeAttribute("name",t);
-         SWmap::iterator WILiter;
-         SWmap* WIL = iter->value->li->WidgetsInLOGIC;
-         for(WILiter=WIL->begin(); WILiter!=WIL->end(); WILiter++){
-            save_widget(WILiter,stream);
-         }
-         if(){ //控件if
-            stream.writeTextElement("else",);
-         }
-         stream.writeEndElement();
-        stream.writeEndElement();
-    }
 */
 }
 
@@ -335,7 +389,8 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
  * Input: QString filename - the xml file name
  * Output: true - to tell if reading is successful
  *****************************************************/
-bool format::read_frame_file(QString filename){
+bool format::read_frame_file(QString filename)
+{
     QFile file(filename);
     file.open(QIODevice::ReadOnly);
     QXmlStreamReader stream(&file);
@@ -345,7 +400,7 @@ bool format::read_frame_file(QString filename){
 
     qDebug()<<stream.hasError();
     while(!stream.atEnd()){ //exit if at end or has error
-        qDebug()<<"not end";
+        //qDebug()<<"not end";
         stream.readNext();
         if (stream.isStartElement()){
             /*if(stream.name().toString() == "widget"){   //根据xml的嵌套关系构建嵌套的if语句，维护属性包装。widget属性暂时无用
@@ -353,7 +408,7 @@ bool format::read_frame_file(QString filename){
                 qDebug()<<"category: "<<category;
                 stream.readNext();  //不知为何，在读新值之前会先读一个空值
                 stream.readNext();*/
-                if(stream.name().toString()=="Action"){
+            if(stream.name().toString()=="Action"){
                     type = stream.attributes().value("type").toString();
                     qDebug()<<"type: "<<type;
                     stream.readNext();
@@ -400,8 +455,137 @@ bool format::read_frame_file(QString filename){
                     }
                 }
             //}
+            if(stream.name().toString()=="VAR"){
+                type = stream.attributes().value("type").toString();
+                qDebug()<<"type: "<<type;
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="id"){
+                    id = stream.readElementText().toInt();
+                    qDebug()<<"id: "<<id;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_x"){
+                    location_x = stream.readElementText().toInt();
+                    qDebug()<<"location_x: "<<location_x;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_y"){
+                    location_y = stream.readElementText().toInt();
+                    qDebug()<<"location_y: "<<location_y;
+                }
 
+                QPointF point(location_x,location_y);
+                try{
+                    if(type=="VarType"){
+                        scene->CreateVarType(point,id); //在窗口中生成takeoff控件
+                    }
+                    if(type=="VarDef"){
+                        //stream.readNext();
+                        //stream.readNext();
+                        //if(stream.name().toString()=="data_type")
+                            //CreateVarDef(point,id,data_type);
+                        scene->CreateVarDef(point,id); //在窗口中生成VarDef控件
+                    }
+                }catch(exception e){
+                   ;
+                }
+            }
+            if(stream.name().toString()=="Compute"){
+                type = stream.attributes().value("type").toString();
+                qDebug()<<"type: "<<type;
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="id"){
+                    id = stream.readElementText().toInt();
+                    qDebug()<<"id: "<<id;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_x"){
+                    location_x = stream.readElementText().toInt();
+                    qDebug()<<"location_x: "<<location_x;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_y"){
+                    location_y = stream.readElementText().toInt();
+                    qDebug()<<"location_y: "<<location_y;
+                }
 
+                QPointF point(location_x,location_y);
+                try{
+                    if(type=="Compute"){
+                        scene->CreateCompute(point,id); //在窗口中生成compute控件
+                    }
+                }catch(exception e){
+                   ;
+                }
+            }
+            if(stream.name().toString()=="IO"){
+                type = stream.attributes().value("type").toString();
+                qDebug()<<"type: "<<type;
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="id"){
+                    id = stream.readElementText().toInt();
+                    qDebug()<<"id: "<<id;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_x"){
+                    location_x = stream.readElementText().toInt();
+                    qDebug()<<"location_x: "<<location_x;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_y"){
+                    location_y = stream.readElementText().toInt();
+                    qDebug()<<"location_y: "<<location_y;
+                }
+
+                QPointF point(location_x,location_y);
+                try{
+                    if(type=="IO"){
+                        scene->CreateIO(point,id); //在窗口中生成IO控件
+                    }
+                }catch(exception e){
+                   ;
+                }
+            }
+            if(stream.name().toString()=="Logic"){
+                type = stream.attributes().value("type").toString();
+                qDebug()<<"type: "<<type;
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="id"){
+                    id = stream.readElementText().toInt();
+                    qDebug()<<"id: "<<id;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_x"){
+                    location_x = stream.readElementText().toInt();
+                    qDebug()<<"location_x: "<<location_x;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_y"){
+                    location_y = stream.readElementText().toInt();
+                    qDebug()<<"location_y: "<<location_y;
+                }
+
+                QPointF point(location_x,location_y);
+                try{
+                    if(type=="Logic"){
+                        scene->CreateLogic(point,id); //在窗口中生成IO控件
+                    }
+                }catch(exception e){
+                   ;
+                }
+            }
         }
      }
 
@@ -480,9 +664,35 @@ void format::widget_convert_to_py(QMap<QString, widget>::iterator& iter, QTextSt
 */
 }
 
+/*
+bool format::CreateVarDef(QPoint point, int id, QString data_type, int num)
+{
+    WidgetWrap tmp = map_instrument::find(Map,data_type);
+    VardefNode* vdn = new VardefNode();
+    vdn->node = tmp.mVarTypeNode;   //使vardefnode知道它属于varnode
+    vdn->node->array[node->num]->node=node;
 
+        (node->array[node->num])->setPos(point);
+        VardefNode* vdnode = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
+        node->flags[node->num]=true;
+        this->addItem(node->array[node->num]);
+        node->num=node->num%6+1;
 
+        vdnode->controlsId=id;
+        vdnode->identifier="VarDef";
+        QString cid = QString::number(vdnode->controlsId,10);
+        vdnode->name = vdnode->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<vdnode->name;
+        qDebug()<<"identifier :"<<vdnode->identifier;
+        qDebug()<<"controlsId :"<<vdnode->controlsId;
+        //qDebug()<<"location_x :"<<QString::number((long)vdnode->pos().x(),10);
+        //qDebug()<<"location_y :"<<QString::number((long)vdnode->pos().y(),10);
 
+        WidgetWrap tmp(vdnode);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+}
+*/
 
 
 
