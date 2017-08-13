@@ -30,7 +30,7 @@ public:
     WidgetMap(){amount = 0;}
 
     void add(WidgetWrap& tmp);    //用于在每次用户创建控件时添加该控件节点
-    void del(widget* w);    //删除控件
+    void del(widget w);    //删除控件
     QMap<QString, widget>& get_map();
     bool set_map(QMap<QString, widget> m){Store = m;return !Store.isEmpty();}
 

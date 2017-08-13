@@ -28,6 +28,11 @@ public:
     bool CreateTurn(QPointF point, int id);
     bool CreateHover(QPointF point, int id);
     bool CreateDelay(QPointF point, int id);
+    bool CreateVarType(QPointF point, int id);
+    bool CreateVarDef(QPointF point, int id);
+    bool CreateCompute(QPointF point, int id);
+    bool CreateIO(QPointF point, int id);
+    bool CreateLogic(QPointF point, int id);
     /*
     bool CreateGoLeft(QPointF point, int id);
     bool CreateGoRight(QPointF point, int id);
@@ -42,18 +47,23 @@ public:
     int need_to_set;
     int selected_Index;
 
-    int varNodeNum;  //计数varNode,命名每个varNode,下同
-    int vardefNodeNum;
-    int computeNodeNum;
-    int ioNodeNum;
-    int recNodeNum;
-    int linkNodeNum;
+    int VarTypeNodeNum;  //计数varNode,命名每个varNode,下同
+    int VarDefNodeNum;
+
+    int LogicNodeNum;
+
     int takeoffNodeNum;
     int landonNodeNum;
     int GoNodeNum;  //6个方向的直线运动控件都包含在内
     int TurnNodeNum;    //左右两个方向的转向控件
     int HoverNodeNum;
     int DelayNodeNum;
+
+    int CompputeNodeNum;
+
+    int IONodeNum;
+
+    int linkNodeNum;
 
     WidgetMap* wm;
 signals:

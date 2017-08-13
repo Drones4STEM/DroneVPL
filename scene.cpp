@@ -40,18 +40,23 @@ newscene::newscene(WidgetMap* m)
     need_to_set=0;
     selected_Index=1;
 
-    varNodeNum=0;  //计数varNode,命名每个varNode,下同
-    vardefNodeNum=0;
-    computeNodeNum=0;
-    ioNodeNum=0;
-    recNodeNum=0;
-    linkNodeNum=0;
+    VarTypeNodeNum = 0;  //计数varNode,命名每个varNode,下同
+    VarDefNodeNum = 0;
+
+    LogicNodeNum=0;
+
     takeoffNodeNum=0;
     landonNodeNum=0;
     GoNodeNum = 0;
     TurnNodeNum = 0;
     HoverNodeNum = 0;
     DelayNodeNum = 0;
+
+    CompputeNodeNum = 0;
+
+    IONodeNum = 0;
+
+    linkNodeNum=0;
 
     wm=m;
 }
@@ -140,10 +145,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     if((selected_Index>=3&&selected_Index<=9)&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->GoNodeNum++;
-
-        CreateGo(new_event->scenePos(),this->GoNodeNum);
-
         need_to_set = 0;
+        CreateGo(new_event->scenePos(),this->GoNodeNum);
         //setCursor(Qt::ArrowCursor);
     }
     if(need_to_set==1&&selected_Index==10){qDebug()<<"10.";
@@ -152,10 +155,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     if(need_to_set==1&&(selected_Index>=11&&selected_Index<=12)){qDebug()<<"11.12";
         emit itemInserted(selected_Index);
         this->TurnNodeNum++;
-
-        CreateTurn(new_event->scenePos(),this->TurnNodeNum);
-
         need_to_set = 0;
+        CreateTurn(new_event->scenePos(),this->TurnNodeNum);
     }
     if(need_to_set==1&&selected_Index==13){qDebug()<<"13.";
         emit itemInserted(selected_Index);
@@ -171,194 +172,33 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     }
     if(need_to_set==1&&selected_Index==15){qDebug()<<"15.";
         emit itemInserted(selected_Index);
-        VarNode* node=new VarNode;
-        node->setText(tr("int"));
-
-        node->setPos(new_event->scenePos());
-
-        this->addItem(node);
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-        //setCursor(Qt::ArrowCursor);
-
-        node->controlsId++;
-        need_to_set=0;
+        need_to_set = 0;
+        this->VarTypeNodeNum++;
+        CreateVarType(new_event->scenePos(),this->VarTypeNodeNum);
     }
     if(need_to_set==1&&selected_Index==16){qDebug()<<"16.";
         emit itemInserted(selected_Index);
-        QList<QGraphicsItem *> items = this->selectedItems();
-        if(items.count()==0)
-        {
-            VardefNode* node=new VardefNode;
-            node->node=0;
-
-            node->setPos(new_event->scenePos());
-            this->addItem(node);
-            node->yuan2->setPos(node->pos().x(),
-                               node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
-            node->yuan->setPos(node->pos().x(),
-                               node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
-            this->addItem(node->yuan);
-            this->addItem(node->yuan2);
-
-            node->controlsId++;
-        }
-        else if(items.count()==1)
-        {
-            VarNode* node=dynamic_cast<VarNode*>(this->selectedItems().first());
-            if(!node)return;
-
-            int flag=0;
-            while(node->flags[node->num])//这个位置已经有了vardefnode
-            {
-                if(flag==6)return;
-                node->num=node->num%6+1;
-                flag++;
-            }
-
-            //计算添加的位置
-            int i=node->num%3;
-            int j;
-            if(node->num==0||node->num==2)j=-17;
-            else if(node->num==3||node->num==5)j=17;
-            else if(node->num==1)j=-35;
-            else j=35;
-
-            node->array[node->num]->node=node;//使vardefnode知道它属于varnode
-
-            node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
-                                 node->pos().y() + j);
-            node->flags[node->num]=true;
-            this->addItem(node->array[node->num]);
-            node->num=node->num%6+1;
-
-            node->controlsId++;
-            }
-        need_to_set=0;
+        need_to_set = 0;
+        this->VarDefNodeNum++;
+        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
     }
     if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
-        ComputeNode *node=new ComputeNode;
-        node->setText(tr("Compute"));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-        //setCursor(Qt::ArrowCursor);
-
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                                   node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-        node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                                    node->pos().y()));
-        node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
-                                    node->pos().y()));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-        this->addItem(node->yuan3);
-
-        item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
-                     node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("+"));
-        node->box->addItem(tr("-"));
-        node->box->addItem(tr("*"));
-        node->box->addItem(tr("/"));
-        node->box->addItem(tr("cos"));
-        node->box->addItem(tr("sin"));
-        node->box->addItem(tr("tan"));
-        node->box->addItem(tr("log"));
-        node->box->addItem(tr("e"));
-        node->box->addItem(tr("="));
-        node->box->addItem(tr(">"));
-        node->box->addItem(tr("<"));
-
-        node->controlsId++;
-
-        need_to_set=0;
+        need_to_set = 0;
+        this->CompputeNodeNum++;
+        CreateCompute(new_event->scenePos(),this->CompputeNodeNum);
     }
     if(need_to_set==1&&selected_Index==18){qDebug()<<"18.";
         emit itemInserted(selected_Index);
-        IoNode* node=new IoNode;
-        node->setText(tr("sensor"));
-        QGraphicsItem* item=this->addWidget(node->box);
-        node->item=item;
-
-
-        node->setPos(new_event->scenePos());
-        this->addItem(node);
-
-        this->clearSelection();
-        node->setSelected(true);
-        bringToFront();
-
-
-        node->yuan->setPos(QPointF(node->pos().x(),
-                          (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-        node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                           (node->pos().y())));
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
-
-        node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
-                            node->pos().y());
-        node->node1->setPos(node->node2->pos().x(),
-                            node->node2->pos().y() - node->node2->outlineRect().height());
-        node->node3->setPos(node->node2->pos().x(),
-                            node->node2->pos().y() + node->node2->outlineRect().height());
-        this->addItem(node->node2);
-        this->addItem(node->node1);
-        this->addItem(node->node3);
-        this->addItem(node->node2->yuan);
-        this->addItem(node->node1->yuan);
-        this->addItem(node->node3->yuan);
-
-
-        item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-                     (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-        item->setZValue(node->zValue()+1);
-        node->box->addItem(tr("detection sensor"));
-        node->box->addItem(tr("A sensor"));
-        node->box->addItem(tr("B sensor"));
-        node->box->addItem(tr("delay"));
-        node->box->setCurrentIndex(0);
-
-        node->controlsId++;
-
-        need_to_set=0;
+        need_to_set = 0;
+        this->IONodeNum++;
+        CreateIO(new_event->scenePos(),this->IONodeNum);
     }
-    if(need_to_set==1&&selected_Index==19){
+    if(need_to_set==1&&selected_Index==19){qDebug()<<"19.";
         emit itemInserted(selected_Index);
-        Rec *rec=new Rec;
-        QGraphicsItem* item= this->addWidget(rec->box);
-        rec->item=item;
-
-        rec->setPos(new_event->scenePos());
-        this->addItem(rec);
-        this->clearSelection();
-        rec->setSelected(true);
-
-        this->clearSelection();
-        rec->setSelected(true);
-
-        rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                                   rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-        this->addItem(rec->yuan2);
-
-        item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-                             (rec->pos().y() - rec->outlineRect().height()/2)));
-        item->setZValue(rec->zValue()+1);
-        rec->box->addItem(tr("if"));
-        rec->box->addItem(tr("else"));
-        rec->box->addItem(tr("while"));
-
-        rec->controlsId++;
-
-        need_to_set=0;
+        need_to_set = 0;
+        this->LogicNodeNum++;
+        CreateLogic(new_event->scenePos(),this->LogicNodeNum);
     }
     QGraphicsScene::mousePressEvent(new_event);
     //setCursor(Qt::ArrowCursor);
@@ -390,7 +230,7 @@ bool newscene::CreateTakeOff(QPointF point,int id)
     //setCursor(Qt::ArrowCursor);
 
     WidgetWrap tmp(node);   //包装节点
-    if(tmp.mTakeoffNode!=NULL) qDebug()<<"widgetwrap is not empty";
+    //if(tmp.mTakeoffNode!=NULL) qDebug()<<"widgetwrap is not empty";
     wm->add(tmp);            //添加到widgetmap中
     if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
     else qDebug()<<"CreateTakeOff()   wm's QMap is not empty";
@@ -579,6 +419,258 @@ bool newscene::CreateDelay(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+
+bool newscene::CreateVarType(QPointF point, int id)
+{
+    VarNode* node=new VarNode;
+    node->setText(tr("int"));
+
+    node->setPos(point);
+
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+    //setCursor(Qt::ArrowCursor);
+
+    node->controlsId=id;
+    node->identifier="VarType";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+
+bool newscene::CreateVarDef(QPointF point, int id)
+{
+    QList<QGraphicsItem *> items = this->selectedItems();
+    if(items.count()==0)
+    {
+        qDebug()<<"1";
+        VardefNode* node=new VardefNode;
+        node->node=0;
+
+        node->setPos(point);
+        this->addItem(node);
+        node->yuan2->setPos(node->pos().x(),
+                           node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
+        node->yuan->setPos(node->pos().x(),
+                           node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
+        this->addItem(node->yuan);
+        this->addItem(node->yuan2);
+
+        node->controlsId=id;
+        node->identifier="VarType";
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap tmp(node);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
+    else if(items.count()==1)
+    {qDebug()<<"2";
+        VarNode* node=dynamic_cast<VarNode*>(this->selectedItems().first());
+        if(!node)return false;
+
+        int flag=0;
+        while(node->flags[node->num])//这个位置已经有了vardefnode
+        {
+            if(flag==6)return false;
+            node->num=node->num%6+1;
+            flag++;
+        }
+        //计算添加的位置
+        int i=node->num%3;
+        int j;
+        if(node->num==0||node->num==2)j=-17;
+        else if(node->num==3||node->num==5)j=17;
+        else if(node->num==1)j=-35;
+        else j=35;
+
+        node->array[node->num]->node=node;//使vardefnode知道它属于varnode
+
+        int x = node->pos().x() + (1-i)*30;
+        int y = node->pos().y() + j;
+        (node->array[node->num])->setPos(x,y);
+        VardefNode* vdnode = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
+        node->flags[node->num]=true;
+        this->addItem(node->array[node->num]);
+        node->num=node->num%6+1;
+
+        vdnode->controlsId=id;
+        vdnode->identifier="VarDef";
+        QString cid = QString::number(vdnode->controlsId,10);
+        vdnode->name = vdnode->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<vdnode->name;
+        qDebug()<<"identifier :"<<vdnode->identifier;
+        qDebug()<<"controlsId :"<<vdnode->controlsId;
+        //qDebug()<<"location_x :"<<QString::number((long)vdnode->pos().x(),10);
+        //qDebug()<<"location_y :"<<QString::number((long)vdnode->pos().y(),10);
+
+        WidgetWrap tmp(vdnode);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
+    }
+}
+
+bool newscene::CreateCompute(QPointF point, int id)
+{
+    ComputeNode *node=new ComputeNode;
+    node->setText(tr("Compute"));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+    node->setPos(point);
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+    //setCursor(Qt::ArrowCursor);
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                                node->pos().y()));
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
+                                node->pos().y()));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+    this->addItem(node->yuan3);
+
+    item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
+                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("+"));
+    node->box->addItem(tr("-"));
+    node->box->addItem(tr("*"));
+    node->box->addItem(tr("/"));
+    node->box->addItem(tr("cos"));
+    node->box->addItem(tr("sin"));
+    node->box->addItem(tr("tan"));
+    node->box->addItem(tr("log"));
+    node->box->addItem(tr("e"));
+    node->box->addItem(tr("="));
+    node->box->addItem(tr(">"));
+    node->box->addItem(tr("<"));
+
+    node->controlsId=id;
+    node->identifier="Compute";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+
+bool newscene::CreateIO(QPointF point, int id)
+{
+    IoNode* node=new IoNode;
+    node->setText(tr("sensor"));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+
+
+    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("detection sensor"));
+    node->box->addItem(tr("A sensor"));
+    node->box->addItem(tr("B sensor"));
+    node->box->addItem(tr("delay"));
+    node->box->setCurrentIndex(0);
+
+    node->controlsId=id;
+    node->identifier="Compute";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap tmp(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+}
+
+bool newscene::CreateLogic(QPointF point, int id)
+{
+    Rec *rec=new Rec;
+    QGraphicsItem* item= this->addWidget(rec->box);
+    rec->item=item;
+
+    rec->setPos(point);
+    this->addItem(rec);
+    this->clearSelection();
+    rec->setSelected(true);
+
+    this->clearSelection();
+    rec->setSelected(true);
+
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    this->addItem(rec->yuan2);
+
+    item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
+                         (rec->pos().y() - rec->outlineRect().height()/2)));
+    item->setZValue(rec->zValue()+1);
+    rec->box->addItem(tr("if"));
+    rec->box->addItem(tr("else"));
+    rec->box->addItem(tr("while"));
+
+    rec->controlsId=id;
+    rec->identifier="Logic";
+    QString cid = QString::number(rec->controlsId,10);
+    rec->name = rec->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<rec->name;
+    qDebug()<<"identifier :"<<rec->identifier;
+    qDebug()<<"controlsId :"<<rec->controlsId;
+
+    WidgetWrap tmp(rec);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
 }
 /*

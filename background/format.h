@@ -29,6 +29,7 @@ typedef WidgetWrap widget ;
 class format
 {
 public:
+    //~format(){;}
     //format(){set_scene(view->scene);}
     format(QMap<QString,WidgetWrap>& m);
     bool save_frame_file(QString filename);    //保存框图文件
@@ -52,6 +53,8 @@ private:
     //控件转化成xml格式代码。参数1是指向要转化的控件的迭代器，2是xml文件的写入流
     void widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlStreamWriter& stream);
 
+    //读取xml文件并生成控件的需要，实现与scene中代码类似的create函数。num表示VarDef是VarType的第几个节点
+    //bool CreateVarDef(QPoint point, int id, QString data_type, int num);
 signals:
 
 public slots:

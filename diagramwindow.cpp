@@ -1338,6 +1338,30 @@ void DiagramWindow::del()
         if(dynamic_cast<LandonNode*>(items[i]))
             itemLandons<<dynamic_cast<LandonNode*>(items[i]);
     }
+    QList<TranslationNode*>itemTranslations;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TranslationNode*>(items[i]))
+            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
+    }
+    QList<TurnNode*>itemTurn;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TurnNode*>(items[i]))
+            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
+    }
+    QList<HoverNode*>itemHover;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<HoverNode*>(items[i]))
+            itemHover<<dynamic_cast<HoverNode*>(items[i]);
+    }
+    QList<DelayNode*>itemDelay;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<DelayNode*>(items[i]))
+            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
+    }
     QList<ComputeNode*>itemComputes;
     for(i=0;i<itemsCount;i++)
     {
@@ -1355,12 +1379,6 @@ void DiagramWindow::del()
     {
         if(dynamic_cast<Rec*>(items[i]))
             itemRecs<<dynamic_cast<Rec*>(items[i]);
-    }
-    QList<TranslationNode*>itemTranslations;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<TranslationNode*>(items[i]))
-            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
     }
     QList<SomeNode*>itemSomes;
     for(i=0;i<itemsCount;i++)
@@ -1384,30 +1402,70 @@ void DiagramWindow::del()
         delete item;
     }
     foreach (TakeoffNode* item, itemTakeoffs) {
+        /*qDebug()<<"In del():\n"<<"TakeOff: ";
+        qDebug()<<"type: "<<item->identifier;
+        qDebug()<<"id: "<<item->controlsId;
+        qDebug()<<"location_x: "<<item->pos().x();
+        qDebug()<<"location_y: "<<item->pos().y();*/
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
         delete item;
     }
     foreach (LandonNode* item, itemLandons) {
-        delete item;
-    }
-    foreach (ComputeNode* item, itemComputes) {
-        delete item;
-    }
-    foreach (IoNode* item, itemIos) {
-        delete item;
-    }
-    foreach (Rec* item, itemRecs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
         delete item;
     }
     foreach (TranslationNode* item, itemTranslations) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
         delete item;
     }
-    foreach (SomeNode* item, itemSomes) {
+    foreach (TurnNode* item, itemTurn) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (HoverNode* item, itemHover) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (DelayNode* item, itemDelay) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (ComputeNode* item, itemComputes) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (IoNode* item, itemIos) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (Rec* item, itemRecs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
         delete item;
     }
     foreach (VardefNode* item, itemVardefs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
         delete item;
     }
     foreach (VarNode* item, itemVars) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (SomeNode* item, itemSomes) {
+
         delete item;
     }
 }
