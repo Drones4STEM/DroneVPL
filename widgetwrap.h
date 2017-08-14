@@ -44,7 +44,7 @@ public:
     VardefNode* mVarDefNode;
     VarNode* mVarTypeNode;
 
-    TakeoffNode* mTakeoffNode;
+    TakeoffNode* mTakeOffNode;
     LandonNode* mLandNode;
     TranslationNode* mGoNode;
     TurnNode* mTurnNode;

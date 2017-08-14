@@ -31,17 +31,18 @@ class format
 public:
     //~format(){;}
     //format(){set_scene(view->scene);}
-    format(QMap<QString,WidgetWrap>& m);
+    format();
     bool save_frame_file(QString filename);    //保存框图文件
     bool save_pyfile(QString filename);     //保存py可执行文件
     bool read_frame_file(QString filename);
+
+    bool set_map(QMap<QString,WidgetWrap>& m){Map = m; return !Map.isEmpty();}
     QMap<QString, widget> get_map(){return Map;}
     bool set_scene(newscene* s){scene = s;return true;}
 
-
-private:
-    //WidgetMap wm;
     QMap<QString, widget> Map;
+private:
+
     //SSmap用于保存需要接受变量的控件的名字和对应的变量
     //因为每一个前置控件都知道其后置控件需要什么参数并定义该参数，但是后置控件需要事先与参数绑定才能在转化时找到它
     QMap<QString,QString> SSmap;
@@ -53,8 +54,19 @@ private:
     //控件转化成xml格式代码。参数1是指向要转化的控件的迭代器，2是xml文件的写入流
     void widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlStreamWriter& stream);
 
-    //读取xml文件并生成控件的需要，实现与scene中代码类似的create函数。num表示VarDef是VarType的第几个节点
-    //bool CreateVarDef(QPoint point, int id, QString data_type, int num);
+    //These are create……() functions like those in newscene,h, but they have one important point that
+    //they accept parameters from xml.
+    bool CreateTakeOff(QPointF point, int id);
+    bool CreateLand(QPointF point, int id);
+    bool CreateGo(QPointF point, int id);
+    bool CreateTurn(QPointF point, int id);
+    bool CreateHover(QPointF point, int id);
+    bool CreateDelay(QPointF point, int id);
+    bool CreateVarType(QPointF point, int id);
+    bool CreateVarDef(QPoint point, int id, QString name, int num);   //num表示VarDef是VarType的第几个节点
+    bool CreateCompute(QPointF point, int id);
+    bool CreateIO(QPointF point, int id);
+    bool CreateLogic(QPointF point, int id);
 signals:
 
 public slots:

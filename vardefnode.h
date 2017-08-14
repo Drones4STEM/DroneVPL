@@ -37,6 +37,7 @@ public:
 
     //存储varnode
     VarNode* node;
+    int seq;//记录自己是node的第几个vardef节点
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

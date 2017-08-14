@@ -351,9 +351,18 @@ void DiagramWindow::loadFile(DiagramWindow* mainWin)
     setDirty(false);
     updateRecentFileActions();
     */
-    format formater(mainWin->wm->get_map());
+    qDebug()<<mainWin->windowFilePath();
+    format formater;
     formater.set_scene(mainWin->scene);
     formater.read_frame_file(mainWin->windowFilePath());
+    if(formater.Map.isEmpty()) qDebug()<<"format is empty";
+    else qDebug()<<"format is not empty";
+    mainWin->wm->set_map(formater.get_map());
+    qDebug()<<"diagramwindow::loadfile(): ";
+    if(mainWin->wm->Store.isEmpty()) qDebug()<<"wm is empty";
+    else qDebug()<<"wm is not empty";
+    mainWin->scene->CreateWidgets();
+
     mainWin->statusBar()->showMessage(tr("Loaded %1").arg(mainWin->windowFilePath()),
                              StatusTimeout);
     mainWin->setDirty(false);
@@ -564,9 +573,11 @@ bool DiagramWindow::fileSave()
     setDirty(false);
     return true;
     */
-    format formater(wm->get_map());
-    //if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
-    //else qDebug()<<"formater map is not empty";
+    format formater;
+    formater.set_map(wm->get_map());
+    qDebug()<<"whether wm is empty "<<wm->Store.isEmpty();
+    if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
+    else qDebug()<<"formater map is not empty";
     formater.save_frame_file(filename);
     setDirty(false);
    // file.close();
