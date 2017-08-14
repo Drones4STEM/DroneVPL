@@ -31,7 +31,7 @@ public:
     bool CreateHover(QPointF point, int id, bool user);
     bool CreateDelay(QPointF point, int id, bool user);
     bool CreateVarType(QPointF point, int id, bool user);
-    bool CreateVarDef(QPointF point, int id, bool user);
+    bool CreateVarDef(QPointF point, int id, bool user, VardefNode *vdncopy);
     bool CreateCompute(QPointF point, int id, bool user);
     bool CreateIO(QPointF point, int id, bool user);
     bool CreateLogic(QPointF point, int id, bool user);

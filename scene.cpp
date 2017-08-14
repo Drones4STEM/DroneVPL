@@ -180,7 +180,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarDefNodeNum++;
-        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum,true);
+        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum,true,0);
     }
     if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
@@ -450,82 +450,81 @@ bool newscene::CreateVarType(QPointF point, int id, bool user)
     }
 }
 
-bool newscene::CreateVarDef(QPointF point, int id, bool user)
-{
-    QList<QGraphicsItem *> items = this->selectedItems();
-    if(items.count()==0)
-    {
-        qDebug()<<"1";
-        VardefNode* node=new VardefNode;
-        node->node=0;
+bool newscene::CreateVarDef(QPointF point, int id, bool user, VardefNode* vdncopy)
+{   //先设定不论从哪里生成控件都会需要的公共的属性
+    VardefNode* vdn=new VardefNode;
+    vdn->setPos(point);
 
-        node->setPos(point);
-        this->addItem(node);
-        node->yuan2->setPos(node->pos().x(),
-                           node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
-        node->yuan->setPos(node->pos().x(),
-                           node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
-        this->addItem(node->yuan);
-        this->addItem(node->yuan2);
+    if(user==true){ //如果是用户动作创建的
+        QList<QGraphicsItem *> items = this->selectedItems();
+        if(items.count()==0)
+        {
+            this->addItem(vdn);
+            vdn->node=0;
+            vdn->yuan2->setPos(vdn->pos().x(),
+                               vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
+            vdn->yuan->setPos(vdn->pos().x(),
+                               vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
+            this->addItem(vdn->yuan);
+            this->addItem(vdn->yuan2);
+        }else if(items.count()==1)
+        {
+            VarNode* node=dynamic_cast<VarNode*>(this->selectedItems().first());
+            if(!node)return false;
 
-        node->controlsId=id;
-        node->identifier="VarType";
-        QString cid = QString::number(node->controlsId,10);
-        node->name = node->identifier + cid;
-        qDebug()<<"Create():";
-        qDebug()<<"name :"<<node->name;
-        qDebug()<<"identifier :"<<node->identifier;
-        qDebug()<<"controlsId :"<<node->controlsId;
-        if(user==true){
-            WidgetWrap tmp(node);   //包装节点
-            wm->add(tmp);            //添加到widgetmap中
+            int flag=0;
+            while(node->flags[node->num])//这个位置已经有了vardefnode
+            {
+                if(flag==6)return false;
+                node->num=node->num%6+1;
+                flag++;
+            }
+            //计算添加的位置
+            int i=node->num%3;
+            int j;
+            if(node->num==0||node->num==2)j=-17;
+            else if(node->num==3||node->num==5)j=17;
+            else if(node->num==1)j=-35;
+            else j=35;
+
+            node->array[node->num]->node=node;//使vardefnode知道它属于varnode
+
+            int x = node->pos().x() + (1-i)*30;
+            int y = node->pos().y() + j;
+            (node->array[node->num])->setPos(x,y);
+            vdn = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
+            vdn->seq = node->num;
+            node->flags[node->num]=true;
+            this->addItem(node->array[node->num]);
+            node->num=node->num%6+1;
+        }
+    }else if(user==false){
+        this->addItem(vdn);
+        if(vdncopy->node==0 && vdncopy->seq==-1){   //没有vartype
+            vdn->node=0;
+            vdn->seq=-1;
+            vdn->yuan2->setPos(vdn->pos().x(),
+                               vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
+            vdn->yuan->setPos(vdn->pos().x(),
+                               vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
+            this->addItem(vdn->yuan);
+            this->addItem(vdn->yuan2);
+        }else if(vdncopy->node!=0 && vdncopy->seq!=-1){
+            vdn->node = vdncopy->node;
+            vdn->seq = vdncopy->seq;
         }
     }
-    else if(items.count()==1)
-    {qDebug()<<"2";
-        VarNode* node=dynamic_cast<VarNode*>(this->selectedItems().first());
-        if(!node)return false;
-
-        int flag=0;
-        while(node->flags[node->num])//这个位置已经有了vardefnode
-        {
-            if(flag==6)return false;
-            node->num=node->num%6+1;
-            flag++;
-        }
-        //计算添加的位置
-        int i=node->num%3;
-        int j;
-        if(node->num==0||node->num==2)j=-17;
-        else if(node->num==3||node->num==5)j=17;
-        else if(node->num==1)j=-35;
-        else j=35;
-
-        node->array[node->num]->node=node;//使vardefnode知道它属于varnode
-
-        int x = node->pos().x() + (1-i)*30;
-        int y = node->pos().y() + j;
-        (node->array[node->num])->setPos(x,y);
-        VardefNode* vdnode = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
-        vdnode->seq = node->num;
-        node->flags[node->num]=true;
-        this->addItem(node->array[node->num]);
-        node->num=node->num%6+1;
-
-        vdnode->controlsId=id;
-        vdnode->identifier="VarDef";
-        QString cid = QString::number(vdnode->controlsId,10);
-        vdnode->name = vdnode->identifier + cid;
-        qDebug()<<"Create():";
-        qDebug()<<"name :"<<vdnode->name;
-        qDebug()<<"identifier :"<<vdnode->identifier;
-        qDebug()<<"controlsId :"<<vdnode->controlsId;
-        //qDebug()<<"location_x :"<<QString::number((long)vdnode->pos().x(),10);
-        //qDebug()<<"location_y :"<<QString::number((long)vdnode->pos().y(),10);
-        if(user==true){
-            WidgetWrap tmp(vdnode);   //包装节点
-            wm->add(tmp);            //添加到widgetmap中
-        }
+    vdn->controlsId=id;
+    vdn->identifier="VarDef";
+    QString cid = QString::number(vdn->controlsId,10);
+    vdn->name = vdn->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<vdn->name;
+    qDebug()<<"identifier :"<<vdn->identifier;
+    qDebug()<<"controlsId :"<<vdn->controlsId;
+    if(user==true){
+        WidgetWrap tmp(vdn);   //包装节点
+        wm->add(tmp);            //添加到widgetmap中
     }
 }
 
@@ -720,7 +719,7 @@ bool newscene::CreateWidgets()
         }
         if(iter->identifier=="VarDef"){
             QPointF point(iter->mVarDefNode->lx,iter->mVarDefNode->ly);
-            CreateVarDef(point,iter->mVarDefNode->controlsId,false);
+            CreateVarDef(point,iter->mVarDefNode->controlsId,false,iter->mVarDefNode);
         }
         if(iter->identifier=="Compute"){
             QPointF point(iter->mComputeNode->lx,iter->mComputeNode->ly);

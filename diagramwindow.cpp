@@ -353,14 +353,10 @@ void DiagramWindow::loadFile(DiagramWindow* mainWin)
     */
     qDebug()<<mainWin->windowFilePath();
     format formater;
-    formater.set_scene(mainWin->scene);
     formater.read_frame_file(mainWin->windowFilePath());
-    if(formater.Map.isEmpty()) qDebug()<<"format is empty";
-    else qDebug()<<"format is not empty";
     mainWin->wm->set_map(formater.get_map());
     qDebug()<<"diagramwindow::loadfile(): ";
-    if(mainWin->wm->Store.isEmpty()) qDebug()<<"wm is empty";
-    else qDebug()<<"wm is not empty";
+
     mainWin->scene->CreateWidgets();
 
     mainWin->statusBar()->showMessage(tr("Loaded %1").arg(mainWin->windowFilePath()),
