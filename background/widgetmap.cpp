@@ -30,11 +30,11 @@ WidgetMap::WidgetMap(QObject *parent) : QObject(parent)
  * Input: widget* w - the widget to be added.
  * Output: none
  *****************************************************/
-void WidgetMap::add(WidgetWrap& tmp)
+void WidgetMap::add(WidgetWrap* tmp)
 {
     amount++;
-    QString index = tmp.name;
-    map_instrument::map_insert(Store,index,tmp);
+    QString index = tmp->name;
+    map_instrument::map_insert(Store,index,*tmp);
 }
 
 /*****************************************************

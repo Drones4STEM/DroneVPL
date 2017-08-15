@@ -54,7 +54,11 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
             widget_convert_to_xml(iter,stream);
     }
     for(iter=Map.begin(); iter!=Map.end(); iter++){   //存剩下的控件
-        if(iter->identifier!="VarType")
+        if(iter->identifier!="VarType" && iter->identifier!="Link")
+            widget_convert_to_xml(iter,stream);
+    }
+    for(iter=Map.begin(); iter!=Map.end(); iter++){   //存剩下的控件
+        if(iter->identifier=="Link")
             widget_convert_to_xml(iter,stream);
     }
     stream.writeEndElement();
@@ -331,6 +335,28 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
         stream.writeEndElement();
     }
 */
+    if(iter->category == "Link"){
+        stream.writeStartElement("Link");
+        stream.writeAttribute("type",identifier);
+        stream.writeTextElement("id",controlsId);
+        if(identifier == "Link"){ //连线
+             x = QString::number((long)iter->mLinkNode->pos().x(),10);
+             stream.writeTextElement("location_x",x);
+             y = QString::number((long)iter->mLinkNode->pos().y(),10);
+             stream.writeTextElement("location_y",y);
+             Link* l = iter->mLinkNode;
+             QString from = iter->mLinkNode->from_master_name();
+             QString to = iter->mLinkNode->to_master_name();
+             stream.writeTextElement("from",from);
+             stream.writeTextElement("to",to);
+        }
+        qDebug()<<"category: "<<iter->category;
+        qDebug()<<"type: "<<identifier;
+        qDebug()<<"id: "<<controlsId;
+        qDebug()<<"location_x: "<<x;
+        qDebug()<<"location_y: "<<y;
+        stream.writeEndElement();   //correspond to writeStartElement("Link")
+    }
 }
 
 /*****************************************************
@@ -544,8 +570,46 @@ bool format::read_frame_file(QString filename)
                    ;
                 }
             }
+            if(stream.name().toString()=="Link"){
+                type = stream.attributes().value("type").toString();
+                qDebug()<<"type: "<<type;
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="id"){
+                    id = stream.readElementText().toInt();
+                    qDebug()<<"id: "<<id;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_x"){
+                    location_x = stream.readElementText().toInt();
+                    qDebug()<<"location_x: "<<location_x;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="location_y"){
+                    location_y = stream.readElementText().toInt();
+                    qDebug()<<"location_y: "<<location_y;
+                }
+                stream.readNext();  stream.readNext();
+                QString from;
+                if(stream.name().toString()=="from"){
+                    from = stream.readElementText();
+                    qDebug()<<"from: "<<from;
+                }
+                stream.readNext();  stream.readNext();
+                QString to;
+                if(stream.name().toString()=="to"){
+                    to = stream.readElementText();
+                    qDebug()<<"to: "<<to;
+                }
+                QPointF point(location_x,location_y);
+                if(type=="Link"){
+                    CreateLink(point,id,from,to); //在窗口中生成IO控件
+                }
+            }
         }
-     }
+    }
 
 
     file.close();
@@ -646,8 +710,9 @@ bool format::CreateTakeOff(QPointF point,int id)
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    node->yuan->master = tmp;
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateLand(QPointF point, int id)
@@ -660,8 +725,9 @@ bool format::CreateLand(QPointF point, int id)
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    node->yuan2->master = tmp;
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateGo(QPointF point, int id)
@@ -678,8 +744,8 @@ bool format::CreateGo(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 
 }
 
@@ -698,8 +764,8 @@ bool format::CreateTurn(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateHover(QPointF point, int id)
@@ -716,8 +782,8 @@ bool format::CreateHover(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateDelay(QPointF point, int id)
@@ -735,8 +801,8 @@ bool format::CreateDelay(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateVarType(QPointF point, int id)
@@ -754,8 +820,8 @@ bool format::CreateVarType(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 /*********
  * QString name - the associated VarType name.
@@ -797,8 +863,8 @@ bool format::CreateVarDef(QPointF point, int id, QString name, int seq)//varnode
     qDebug()<<"identifier :"<<vdn->identifier;
     qDebug()<<"controlsId :"<<vdn->controlsId;
 
-    WidgetWrap tmp(vdn);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateCompute(QPointF point, int id)
@@ -816,8 +882,8 @@ bool format::CreateCompute(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateIO(QPointF point, int id)
@@ -835,8 +901,8 @@ bool format::CreateIO(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
 bool format::CreateLogic(QPointF point, int id)
@@ -854,10 +920,31 @@ bool format::CreateLogic(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
 
-    WidgetWrap tmp(node);   //包装节点
-    Map.insert(tmp.name,tmp);            //添加到widgetmap中
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
+bool format::CreateLink(QPointF point, int id, QString from, QString to)
+{
+    QMap<QString,WidgetWrap>* m = &Map;
+    WidgetWrap wfrom = map_instrument::find(m,from);
+    WidgetWrap wto = map_instrument::find(m,to);
+    Yuan *first,*second;
+    if(wfrom.identifier == "TakeOff"){
+        first = dynamic_cast<Yuan*> (wfrom.mTakeOffNode->yuan);//triYuan->Yuan
+    }
+    if(wto.identifier == "Land"){
+        second = wto.mLandNode->yuan2;
+    }
+    Link *link = new Link(first,second);
 
+    link->controlsId = id;
+    link->identifier = "Link";
+    QString cid = QString::number(link->controlsId,10);
+    link->name = link->identifier + cid;
+
+    WidgetWrap* tmp = new WidgetWrap(link);   //包装节点
+    Map.insert(tmp->name,*tmp);            //添加到widgetmap中
+}
 
 

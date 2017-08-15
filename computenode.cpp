@@ -30,14 +30,17 @@ int ComputeNode::ComputeNodeMoreNum=0; int ComputeNode::ComputeNodeLessNum=0;
 ******************************************************************/
 ComputeNode::ComputeNode()
 {
-    yuan = new triYuan(this);
-    yuan2 = new Yuan(this);
-    yuan3 = new Yuan(this);
+    //yuan->master = new WidgetWrap(this);
+    //yuan2->master = new WidgetWrap(this);
+    //yuan3->master = new WidgetWrap(this);
+    yuan = new triYuan();
+    yuan2 = new Yuan();
+    yuan3 = new Yuan();
     yuan2->setInout(1);
     yuan3->setInout(1);
     box = new QComboBox;
 
-    identifier="ComputeNodeAdd";
+    identifier="Compute";
 }
 
 /*******************************************************************

@@ -25,9 +25,9 @@ NewNode::NewNode()
     myOutlineColor = Qt::darkBlue;
     myBackgroundColor = Qt::white;
 
-    QGraphicsItem*p=dynamic_cast<QGraphicsItem*>(this);
-    yuan=new triYuan(p);
-    yuan2=new Yuan(p);
+    //QGraphicsItem*p=dynamic_cast<QGraphicsItem*>(this);
+    yuan=new triYuan();
+    yuan2=new Yuan();
     yuan2->setInout(1);
 
     setFlags(ItemIsMovable | ItemIsSelectable);
@@ -94,7 +94,31 @@ QColor NewNode::backgroundColor() const
 {
     return myBackgroundColor;
 }
-
+/*
+bool NewNode::set_controlsId(int id)
+{
+    if(controlsId = id) return true;
+    else return false;
+}
+bool NewNode::set_identifier(QString idtf)
+{
+    identifier = idtf;
+    if(identifier != "") return true;
+    else return false;
+}
+bool NewNode::set_name()
+{
+    QString id = QString::number(controlsId,10);
+    this->name = identifier + id;
+    if(name!="") return true;
+    else return false;
+}
+bool NewNode::set_master(WidgetWrap* w)
+{
+    yuan->master = w;
+    yuan2->master = w;
+    return true;
+}*/
 /*******************************************************************
  * Function name: boundingRect()
  * Description: This function defines the outer bounds of the item

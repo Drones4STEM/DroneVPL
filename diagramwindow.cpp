@@ -1274,6 +1274,18 @@ void DiagramWindow::addLink()
     Link *link = new Link(yuans.first, yuans.second);
     link->setZValue(100);
     scene->addItem(link);
+    scene->linkNodeNum++;
+
+    link->controlsId = scene->linkNodeNum;
+    link->identifier = "Link";
+    QString cid = QString::number(link->controlsId,10);
+    link->name = link->identifier + cid;
+    WidgetWrap* tmp = new WidgetWrap(link);   //包装节点
+    wm->add(tmp);
+    qDebug()<<"diagramwindow::addlink(): ";
+    qDebug()<<"type: "<<link->identifier;
+    qDebug()<<"id: "<<link->controlsId;
+    qDebug()<<"name: "<<link->name;
 
     setDirty();
 }

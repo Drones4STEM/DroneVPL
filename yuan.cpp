@@ -12,9 +12,8 @@
 #include "yuan.h"
 #include "node.h"
 
-Yuan::Yuan(QGraphicsItem *parent)
+Yuan::Yuan()
 {
-    node=parent;
     myOutlineColor = Qt::darkBlue;
     myBackgroundColor = Qt::red;
 
@@ -119,12 +118,12 @@ int Yuan::roundness(double size) const
     const int Diameter = 1;
     return 100 * Diameter / int(size);
 }
-
+/*
 QGraphicsItem* Yuan::myNode() const
 {
     return node;
 }
-
+*/
 /*******************************************************************
  * Function name: setInout()
  * Description: This function set the inout mode of a Yuan.
@@ -139,9 +138,9 @@ void Yuan::setInout(int mode)
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-triYuan::triYuan(QGraphicsItem *parent)
+triYuan::triYuan(WidgetWrap *mst)
 {
-    node=parent;
+    master=mst;
     setOutlineColor(Qt::darkBlue);
     setBackgroundColor(Qt::red);
 
@@ -187,9 +186,9 @@ void triYuan::paint(QPainter *painter,
 
 }
 
-specialYuan::specialYuan(QGraphicsItem *parent)
+specialYuan::specialYuan(WidgetWrap *mst)
 {
-    node=parent;
+    master=mst;
     setOutlineColor(Qt::white);
     setBackgroundColor(Qt::white);
 

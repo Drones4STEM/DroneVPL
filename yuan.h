@@ -6,6 +6,7 @@
 #include <QGraphicsItem>
 #include <QSet>
 #include "itemtypes.h"
+#include "widgetwrap.h"
 
 class Link;
 class Node;
@@ -20,7 +21,7 @@ class Yuan:public QGraphicsObject
 {
 public:
     enum {Type = YuanType};
-    Yuan(QGraphicsItem *parent=0);
+    Yuan();
     ~Yuan();
 
     int type() const { return Type; }
@@ -46,7 +47,8 @@ public:
     int inout() const {return m_mode;}
     void setInout(int mode);
 
-    QGraphicsItem *node;
+    //QGraphicsItem *node;
+    WidgetWrap *master;
 //private:
 
     int roundness(double size) const;
@@ -65,7 +67,7 @@ public:
 class triYuan:public Yuan
 {
 public:
-    triYuan(QGraphicsItem *parent=0);
+    triYuan(WidgetWrap *mst=0);
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -82,7 +84,7 @@ public:
 class specialYuan:public Yuan
 {
 public:
-    specialYuan(QGraphicsItem *parent=0);
+    specialYuan(WidgetWrap *mst=0);
 
     QRectF boundingRect() const;
     QPainterPath shape() const;

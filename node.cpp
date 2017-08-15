@@ -93,7 +93,30 @@ QColor Node::backgroundColor() const
 {
     return myBackgroundColor;
 }
-
+/*
+bool Node::set_controlsId(int id)
+{
+    if(controlsId = id) return true;
+    else return false;
+}
+bool Node::set_identifier(QString idtf)
+{
+    identifier = idtf;
+    if(identifier != "") return true;
+    else return false;
+}
+bool Node::set_name()
+{
+    QString id = QString::number(controlsId,10);
+    name = identifier + id;
+    yuan->master->name = name;
+    if(name!="") return true;
+    else return false;
+}
+bool Node::set_master()
+{
+    ;//yuan->master = wrap;
+}*/
 /*******************************************************************
  * Function name: boundingRect()
  * Description: This function defines the outer bounds of the item

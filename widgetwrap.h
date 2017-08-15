@@ -11,6 +11,7 @@
 #include "takeoffnode.h"
 #include "vardefnode.h"
 #include "varnode.h"
+#include "link.h"
 
 class WidgetWrap
 {
@@ -29,6 +30,8 @@ public:
 
     WidgetWrap(VardefNode* vdn);
     WidgetWrap(VarNode* vn);
+
+    WidgetWrap(Link* link);
 
     QString category;
     QString identifier; //控件型号
@@ -50,6 +53,7 @@ public:
     TurnNode* mTurnNode;
     HoverNode* mHoverNode;
     DelayNode* mDelayNode;
+    Link* mLinkNode;
 
 private:
 

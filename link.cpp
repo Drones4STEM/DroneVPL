@@ -78,6 +78,16 @@ QColor Link::color() const
     return pen().color();
 }
 
+QString Link::from_master_name()
+{
+    return myFromYuan->master->name;
+}
+
+QString Link::to_master_name()
+{
+    return myToYuan->master->name;
+}
+
 /*******************************************************************
  * Function name: trackYuans()
  * Description: This function sets the ends of the Link.
