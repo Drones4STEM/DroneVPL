@@ -21,12 +21,11 @@ public:
 
     int type() const { return Type; }
 
+
     double time;
 
     void setTime(double t);
     double myTime();
-
-
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

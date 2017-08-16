@@ -19,7 +19,9 @@ VardefNode::VardefNode()
     myInt=0;
     myDouble=0.0;
     myString="NULL";
-    identifier="VardefNode";
+    identifier="VarDef";
+    node = 0;
+    seq = -1;
 }
 
 QPolygonF VardefNode::outlineRect() const

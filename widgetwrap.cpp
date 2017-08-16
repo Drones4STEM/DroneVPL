@@ -12,6 +12,7 @@ WidgetWrap::WidgetWrap(ComputeNode* cn)
     controlsId = cn->controlsId;
     name = cn->name;
     mComputeNode = cn;
+    //cn->wrap = this;
 }
 //-------------------------------
 WidgetWrap::WidgetWrap(IoNode* in)
@@ -21,6 +22,7 @@ WidgetWrap::WidgetWrap(IoNode* in)
     controlsId = in->controlsId;
     name = in->name;
     mIONode = in;
+    //in->wrap = this;
 }
 //-------------------------------
 WidgetWrap::WidgetWrap(Rec* ln)
@@ -30,6 +32,7 @@ WidgetWrap::WidgetWrap(Rec* ln)
     controlsId = ln->controlsId;
     name = ln->name;
     mLogicNode = ln;
+    //ln->wrap = this;
 }
 //---------Action--------------
 WidgetWrap::WidgetWrap(TakeoffNode *ton)
@@ -39,6 +42,7 @@ WidgetWrap::WidgetWrap(TakeoffNode *ton)
     controlsId = ton->controlsId;
     name = ton->name;
     mTakeOffNode = ton;
+    //ton->wrap = this;
 }
 
 WidgetWrap::WidgetWrap(LandonNode *ln)
@@ -48,6 +52,7 @@ WidgetWrap::WidgetWrap(LandonNode *ln)
     controlsId = ln->controlsId;
     name = ln->name;
     mLandNode = ln;
+    //ln->wrap = this;
 }
 
 WidgetWrap::WidgetWrap(TranslationNode *tn)
@@ -57,6 +62,7 @@ WidgetWrap::WidgetWrap(TranslationNode *tn)
     controlsId = tn->controlsId;
     name = tn->name;
     mGoNode = tn;
+   // tn->wrap = this;
 }
 
 WidgetWrap::WidgetWrap(TurnNode *tn)
@@ -66,6 +72,7 @@ WidgetWrap::WidgetWrap(TurnNode *tn)
     controlsId = tn->controlsId;
     name = tn->name;
     mTurnNode = tn;
+    //tn->wrap = this;
 }
 
 WidgetWrap::WidgetWrap(HoverNode *hn)
@@ -75,6 +82,7 @@ WidgetWrap::WidgetWrap(HoverNode *hn)
     controlsId = hn->controlsId;
     name = hn->name;
     mHoverNode = hn;
+    //hn->wrap = this;
 }
 
 WidgetWrap::WidgetWrap(DelayNode *dn)
@@ -84,6 +92,7 @@ WidgetWrap::WidgetWrap(DelayNode *dn)
     controlsId = dn->controlsId;
     name = dn->name;
     mDelayNode = dn;
+   // dn->wrap = this;
 }
 //-------------------------------
 WidgetWrap::WidgetWrap(VardefNode* vdn)
@@ -93,6 +102,7 @@ WidgetWrap::WidgetWrap(VardefNode* vdn)
     controlsId = vdn->controlsId;
     name = vdn->name;
     mVarDefNode = vdn;
+    //vdn->wrap = this;
 }
 
 WidgetWrap::WidgetWrap(VarNode* vn)
@@ -102,9 +112,18 @@ WidgetWrap::WidgetWrap(VarNode* vn)
     controlsId = vn->controlsId;
     name = vn->name;
     mVarTypeNode = vn;
+    //vn->wrap = this;
 }
 //--------------------------------
 
+WidgetWrap::WidgetWrap(Link* link)
+{
+    mLinkNode = link;
+    category = "Link";
+    identifier = "Link";
+    controlsId = link->controlsId;
+    name = link->name;
 
+}
 
 

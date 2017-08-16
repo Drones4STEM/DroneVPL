@@ -353,14 +353,10 @@ void DiagramWindow::loadFile(DiagramWindow* mainWin)
     */
     qDebug()<<mainWin->windowFilePath();
     format formater;
-    formater.set_scene(mainWin->scene);
     formater.read_frame_file(mainWin->windowFilePath());
-    if(formater.Map.isEmpty()) qDebug()<<"format is empty";
-    else qDebug()<<"format is not empty";
     mainWin->wm->set_map(formater.get_map());
     qDebug()<<"diagramwindow::loadfile(): ";
-    if(mainWin->wm->Store.isEmpty()) qDebug()<<"wm is empty";
-    else qDebug()<<"wm is not empty";
+
     mainWin->scene->CreateWidgets();
 
     mainWin->statusBar()->showMessage(tr("Loaded %1").arg(mainWin->windowFilePath()),
@@ -1278,6 +1274,18 @@ void DiagramWindow::addLink()
     Link *link = new Link(yuans.first, yuans.second);
     link->setZValue(100);
     scene->addItem(link);
+    scene->linkNodeNum++;
+
+    link->controlsId = scene->linkNodeNum;
+    link->identifier = "Link";
+    QString cid = QString::number(link->controlsId,10);
+    link->name = link->identifier + cid;
+    WidgetWrap* tmp = new WidgetWrap(link);   //包装节点
+    wm->add(tmp);
+    qDebug()<<"diagramwindow::addlink(): ";
+    qDebug()<<"type: "<<link->identifier;
+    qDebug()<<"id: "<<link->controlsId;
+    qDebug()<<"name: "<<link->name;
 
     setDirty();
 }
@@ -1915,9 +1923,9 @@ void DiagramWindow::createActions()
     addDelayNodeAction = new QAction(tr("Delay"),this);
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
-    addVarNodeAction = new QAction(tr("Variable"),this);
+    addVarNodeAction = new QAction(tr("VarType"),this);
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
-    addVardefNodeAction = new QAction(tr("Vardefine"),this);
+    addVardefNodeAction = new QAction(tr("VarDef"),this);
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
     addComputeNodeAction = new QAction(tr("Compute"),this);
     connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
@@ -1929,7 +1937,7 @@ void DiagramWindow::createActions()
     addLinkAction->setShortcut(tr("Ctrl+L"));
     connect(addLinkAction, SIGNAL(triggered()), this, SLOT(addLink()));
 
-    addRecAction = new QAction(tr("Logic Rec"), this);
+    addRecAction = new QAction(tr("Logic"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
 
     deleteAction = new QAction(tr("&Delete"), this);
@@ -2333,6 +2341,7 @@ Yuan *DiagramWindow::selectedYuan() const
     } else {
         return 0;
     }
+
 }
 
 /*******************************************************************

@@ -16,8 +16,8 @@
 
 TakeoffNode::TakeoffNode()
 {
-    time=0;
     identifier="TakeOff";
+    time=0;
 }
 
 void TakeoffNode::setTime(double t)
@@ -76,13 +76,14 @@ QDataStream &operator >>(QDataStream &in,TakeoffNode &node)
 }
 
 
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LandonNode::LandonNode()
 {
-    time=0;
+    identifier="Land";
 
-    identifier="LandonNode";
+    time=0;
 }
 
 void LandonNode::setTime(double t)

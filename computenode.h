@@ -1,13 +1,14 @@
 #ifndef COMPUTENODE_H
 #define COMPUTENODE_H
 
-class Yuan;
-class QComboBox;
-class QGraphicsItem;
+
 #include "QObject"
 #include "node.h"
 #include "itemtypes.h"
 
+class Yuan;
+class QComboBox;
+class QGraphicsItem;
 /*******************************************************************
  * Class name: ComputeNode
  * Base class: Node
@@ -17,7 +18,7 @@ class QGraphicsItem;
 ******************************************************************/
 class ComputeNode:public Node
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     enum {Type = ComputeNodeType};
     ComputeNode();

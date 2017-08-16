@@ -6,6 +6,11 @@
 #include <QGraphicsItem>
 #include <QSet>
 
+#include <QApplication>
+#include <QColor>
+#include <QGraphicsItem>
+#include <QSet>
+
 class Link;
 class Yuan;
 class triYuan;
@@ -39,7 +44,12 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
-
+/*
+    bool set_controlsId(int id);
+    bool set_identifier(QString idtf);
+    bool set_name();
+    bool set_master();
+*/
     triYuan* yuan;
     triYuan* myYuan()const;
 
@@ -47,6 +57,7 @@ public:
     QString identifier;
     int controlsId;
     QString name;   //identifier+controlsId
+    //WidgetWrap* wrap;
     //控件属性
     int lx,ly;
 

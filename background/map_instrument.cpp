@@ -103,12 +103,8 @@ widget map_instrument::find(QMap<QString, widget>* m, QString name = "null")
 {
     typename QMap<QString, widget>::iterator iter;
     for(iter=m->begin();iter!=m->end();iter++){
-        if( iter->name == "LogicNode"){  //字符串以"LOGIC"开头
-            widget tmp = *iter;
-            return tmp;
-        }else{
-            widget tmp;
-            tmp.identifier = "none";
+        if( iter->name == name){
+            WidgetWrap tmp = iter.value();
             return tmp;
         }
     }

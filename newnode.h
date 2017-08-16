@@ -41,7 +41,12 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
-
+/*
+    bool set_controlsId(int id);
+    bool set_identifier(QString idtf);
+    bool set_name();
+    //bool set_master(WidgetWrap* w);
+*/
     triYuan* yuan;
     Yuan* yuan2;
     Yuan* myYuan()const;
@@ -50,6 +55,7 @@ public:
     QString identifier;
     int controlsId;
     QString name;   //identifier+controlsId
+    //WidgetWrap* wrap;
     int lx,ly;
 
 protected:

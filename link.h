@@ -30,9 +30,13 @@ public:
 
     void trackYuans();
 
+    QString from_master_name();
+    QString to_master_name();
+
     //控件名称与在同类控件中的编号
     QString identifier;
     int controlsId;
+    QString name;
 
 private:
     Yuan *myFromYuan;

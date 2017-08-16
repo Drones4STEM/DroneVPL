@@ -38,7 +38,7 @@ public:
 
     bool set_map(QMap<QString,WidgetWrap>& m){Map = m; return !Map.isEmpty();}
     QMap<QString, widget> get_map(){return Map;}
-    bool set_scene(newscene* s){scene = s;return true;}
+    //bool set_scene(newscene* s){scene = s;return true;}
 
     QMap<QString, widget> Map;
 private:
@@ -46,7 +46,7 @@ private:
     //SSmap用于保存需要接受变量的控件的名字和对应的变量
     //因为每一个前置控件都知道其后置控件需要什么参数并定义该参数，但是后置控件需要事先与参数绑定才能在转化时找到它
     QMap<QString,QString> SSmap;
-    newscene* scene;
+    //newscene* scene;
 
     //控件转化成代码块。参数1是要写入的目标文件名，2是要被转化的控件的指针
     void widget_convert_to_py(QMap<QString, widget>::iterator& iter, QTextStream& stream);
@@ -63,10 +63,12 @@ private:
     bool CreateHover(QPointF point, int id);
     bool CreateDelay(QPointF point, int id);
     bool CreateVarType(QPointF point, int id);
-    bool CreateVarDef(QPoint point, int id, QString name, int num);   //num表示VarDef是VarType的第几个节点
+    bool CreateVarDef(QPointF point, int id, QString name, int seq);   //num表示VarDef是VarType的第几个节点
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
+
+    bool CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan);
 signals:
 
 public slots:

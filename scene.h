@@ -22,19 +22,35 @@ public:
 
     void bringToFront();
 
+
     bool CreateWidgets();
-    //从用户鼠标事件或xml文件创建控件
-    bool CreateTakeOff(QPointF point, int id, bool user);
-    bool CreateLand(QPointF point, int id, bool user);
-    bool CreateGo(QPointF point, int id, bool user);
-    bool CreateTurn(QPointF point, int id, bool user);
-    bool CreateHover(QPointF point, int id, bool user);
-    bool CreateDelay(QPointF point, int id, bool user);
-    bool CreateVarType(QPointF point, int id, bool user);
-    bool CreateVarDef(QPointF point, int id, bool user);
-    bool CreateCompute(QPointF point, int id, bool user);
-    bool CreateIO(QPointF point, int id, bool user);
-    bool CreateLogic(QPointF point, int id, bool user);
+    //从用户鼠标事件创建控件
+    bool CreateTakeOff(QPointF point, int id);
+    bool CreateLand(QPointF point, int id);
+    bool CreateGo(QPointF point, int id);
+    bool CreateTurn(QPointF point, int id);
+    bool CreateHover(QPointF point, int id);
+    bool CreateDelay(QPointF point, int id);
+    bool CreateVarType(QPointF point, int id);
+    bool CreateVarDef(QPointF point, int id);
+    bool CreateCompute(QPointF point, int id);
+    bool CreateIO(QPointF point, int id);
+    bool CreateLogic(QPointF point, int id);
+    bool CreateLink(QGraphicsSceneMouseEvent* event);
+
+    //从xml文件创建控件
+    bool CreateTakeOff(TakeoffNode* ton);
+    bool CreateLand(LandonNode* ln);
+    bool CreateGo(TranslationNode* gn);
+    bool CreateTurn(TurnNode* tn);
+    bool CreateHover(HoverNode* hn);
+    bool CreateDelay(DelayNode* dn);
+    bool CreateVarType(VarNode* vtn);
+    bool CreateVarDef(VardefNode* vdn);
+    bool CreateCompute(ComputeNode* cn);
+    bool CreateIO(IoNode* ion);
+    bool CreateLogic(Rec* ln);
+    bool CreateLink(Link* link);
 
 
     int need_to_set;
@@ -52,7 +68,7 @@ public:
     int HoverNodeNum;
     int DelayNodeNum;
 
-    int CompputeNodeNum;
+    int ComputeNodeNum;
 
     int IONodeNum;
 
