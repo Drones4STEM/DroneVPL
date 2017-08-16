@@ -90,44 +90,8 @@ void newscene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    if(new_yuan->myLinks.size()!=0)
-    {
-        foreach (Link* link,new_yuan->myLinks)
-         delete link;
-       if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems()[0])!=0)
-        {
-           if(new_yuan->collidingItems().count()>=1)
-           {
-              for(int i=0;i<new_yuan->collidingItems().count();i++)
-              {
-                  if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0&&dynamic_cast<triYuan *>(new_yuan->collidingItems()[i])==0)
-                  {
-                      Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
-                                        dynamic_cast<Yuan *>(new_yuan->collidingItems()[i]));
-                      new_link->setZValue(100);
-                      this->addItem(new_link);
 
-                      this->linkNodeNum++;
-                      new_link->controlsId = this->linkNodeNum;
-                      new_link->identifier = "Link";
-                      QString cid = QString::number(new_link->controlsId,10);
-                      new_link->name = new_link->identifier + cid;
-                      WidgetWrap* tmp = new WidgetWrap(new_link);   //包装节点
-                      wm->add(tmp);
-                      qDebug()<<"scene::mouseMoveEvent(): ";
-                      qDebug()<<"type: "<<new_link->identifier;
-                      qDebug()<<"id: "<<new_link->controlsId;
-                      qDebug()<<"name: "<<new_link->name;
-                      break;
-                  }
-              }
-            }
-
-        }
-        new_yuan->setPos(0,0);
-
-    }
-
+    CreateLink(event);
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
@@ -717,33 +681,42 @@ bool newscene::CreateLogic(QPointF point, int id)
 
 bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 {
-    if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems().first())!=0)
+    if(new_yuan->myLinks.size()!=0)
     {
-          new_yuan->setPos(event->scenePos());
+        foreach (Link* link,new_yuan->myLinks)
+         delete link;
+       if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems()[0])!=0)
+        {
+           if(new_yuan->collidingItems().count()>=1)
+           {
+              for(int i=0;i<new_yuan->collidingItems().count();i++)
+              {
+                  if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0&&dynamic_cast<triYuan *>(new_yuan->collidingItems()[i])==0)
+                  {
+                      Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
+                                        dynamic_cast<Yuan *>(new_yuan->collidingItems()[i]));
+                      new_link->setZValue(100);
+                      this->addItem(new_link);
 
-          if(new_yuan->myLinks.size()>0)
-          {
-              foreach (Link* link,new_yuan->myLinks)
-                  delete link;
-          }
-         Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems(). first()),new_yuan);
-         new_link->setZValue(100);
-         this->addItem(new_link);
-         this->addItem(new_yuan);
-         /*
-         this->linkNodeNum++;
+                      this->linkNodeNum++;
+                      new_link->controlsId = this->linkNodeNum;
+                      new_link->identifier = "Link";
+                      QString cid = QString::number(new_link->controlsId,10);
+                      new_link->name = new_link->identifier + cid;
+                      WidgetWrap* tmp = new WidgetWrap(new_link);   //包装节点
+                      wm->add(tmp);
+                      qDebug()<<"scene::mouseMoveEvent(): ";
+                      qDebug()<<"type: "<<new_link->identifier;
+                      qDebug()<<"id: "<<new_link->controlsId;
+                      qDebug()<<"name: "<<new_link->name;
+                      break;
+                  }
+              }
+            }
 
-         new_link->controlsId = this->linkNodeNum;
-         new_link->identifier = "Link";
-         QString cid = QString::number(new_link->controlsId,10);
-         new_link->name = new_link->identifier + cid;
-         WidgetWrap* tmp = new WidgetWrap(new_link);   //包装节点
-         wm->add(tmp);
-         qDebug()<<"scene::mouseMoveEvent(): ";
-         qDebug()<<"type: "<<new_link->identifier;
-         qDebug()<<"id: "<<new_link->controlsId;
-         qDebug()<<"name: "<<new_link->name;*/
-    update();
+        }
+        new_yuan->setPos(0,0);
+
     }
 }
 
