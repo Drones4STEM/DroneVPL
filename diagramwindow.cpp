@@ -2341,6 +2341,7 @@ Yuan *DiagramWindow::selectedYuan() const
     } else {
         return 0;
     }
+
 }
 
 /*******************************************************************

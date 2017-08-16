@@ -68,7 +68,7 @@ private:
     bool CreateIO(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
 
-    bool CreateLink(QPointF point, int id, QString from, QString to);
+    bool CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan);
 signals:
 
 public slots:

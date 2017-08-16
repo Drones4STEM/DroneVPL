@@ -228,7 +228,7 @@ bool newscene::CreateTakeOff(QPointF point, int id)
     wm->add(tmp);            //添加到widgetmap中
 
     node->yuan->master = tmp;
-;
+    node->yuan->name = "yuan";
 }
 
 bool newscene::CreateLand(QPointF point, int id)
@@ -258,6 +258,7 @@ bool newscene::CreateLand(QPointF point, int id)
         if(wm->Store.isEmpty()==true) qDebug()<<"CreateTakeOff()   wm's QMap is empty";
         else qDebug()<<"CreateLand()   wm's QMap is not empty";
     node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
 }
 
 bool newscene::CreateGo(QPointF point, int id)
@@ -304,7 +305,14 @@ bool newscene::CreateGo(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+
+
 }
 
 bool newscene::CreateTurn(QPointF point, int id)
@@ -348,7 +356,12 @@ bool newscene::CreateTurn(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+
 }
 
 bool newscene::CreateHover(QPointF point, int id)
@@ -381,7 +394,12 @@ bool newscene::CreateHover(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+
 
 }
 
@@ -415,7 +433,12 @@ bool newscene::CreateDelay(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+
 }
 
 bool newscene::CreateVarType(QPointF point, int id)
@@ -441,7 +464,7 @@ bool newscene::CreateVarType(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
 }
 
 bool newscene::CreateVarDef(QPointF point, int id)
@@ -501,7 +524,12 @@ bool newscene::CreateVarDef(QPointF point, int id)
     qDebug()<<"identifier :"<<vdn->identifier;
     qDebug()<<"controlsId :"<<vdn->controlsId;
     WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+    vdn->yuan2->master = tmp;
+    vdn->yuan2->name = "yuan2";
+    vdn->yuan->master = tmp;
+    vdn->yuan->name = "yuan";
+
 }
 
 bool newscene::CreateCompute(QPointF point, int id)
@@ -554,7 +582,14 @@ bool newscene::CreateCompute(QPointF point, int id)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";
+
 }
 
 bool newscene::CreateIO(QPointF point, int id)
@@ -613,7 +648,18 @@ bool newscene::CreateIO(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-        wm->add(tmp);            //添加到widgetmap中
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->node1->yuan->master = tmp;
+    node->node1->yuan->name = "n1yuan";
+    node->node2->yuan->master = tmp;
+    node->node2->yuan->name = "n2yuan";
+    node->node3->yuan->master = tmp;
+    node->node3->yuan->name = "n3yuan";
+
 }
 
 bool newscene::CreateLogic(QPointF point, int id)
@@ -651,6 +697,9 @@ bool newscene::CreateLogic(QPointF point, int id)
     qDebug()<<"controlsId :"<<rec->controlsId;
     WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    rec->yuan2->master = tmp;
+    rec->yuan2->name = "yuan2";
+
 }
 
 bool newscene::CreateLink()

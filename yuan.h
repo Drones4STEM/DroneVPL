@@ -49,6 +49,7 @@ public:
 
     //QGraphicsItem *node;
     WidgetWrap *master;
+    QString name;
 //private:
 
     int roundness(double size) const;

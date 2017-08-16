@@ -347,8 +347,17 @@ void format::widget_convert_to_xml(QMap<QString, widget>::iterator& iter, QXmlSt
              Link* l = iter->mLinkNode;
              QString from = iter->mLinkNode->from_master_name();
              QString to = iter->mLinkNode->to_master_name();
-             stream.writeTextElement("from",from);
-             stream.writeTextElement("to",to);
+             QString fyuan = iter->mLinkNode->fromYuan()->name;
+             QString tyuan = iter->mLinkNode->toYuan()->name;
+             stream.writeStartElement("from");
+             stream.writeTextElement("widget",from);
+             stream.writeTextElement("yuan",fyuan);
+             stream.writeEndElement();
+             stream.writeStartElement("to");
+             stream.writeTextElement("widget",to);
+             stream.writeTextElement("yuan",tyuan);
+             stream.writeEndElement();
+
         }
         qDebug()<<"category: "<<iter->category;
         qDebug()<<"type: "<<identifier;
@@ -592,20 +601,31 @@ bool format::read_frame_file(QString filename)
                     qDebug()<<"location_y: "<<location_y;
                 }
                 stream.readNext();  stream.readNext();
-                QString from;
+                QString from,fyuan;
                 if(stream.name().toString()=="from"){
-                    from = stream.readElementText();
-                    qDebug()<<"from: "<<from;
+                    stream.readNext();  stream.readNext();
+                    if(stream.name().toString()=="widget")
+                        from = stream.readElementText();
+                    stream.readNext();  stream.readNext();
+                    if(stream.name().toString()=="yuan")
+                        fyuan = stream.readElementText();
+                    qDebug()<<"from: "<<from<<" "<<fyuan;
                 }
-                stream.readNext();  stream.readNext();
-                QString to;
+                stream.readNextStartElement();
+                stream.readNextStartElement();
+                QString to,tyuan;
                 if(stream.name().toString()=="to"){
-                    to = stream.readElementText();
-                    qDebug()<<"to: "<<to;
+                    stream.readNext();  stream.readNext();
+                    if(stream.name().toString()=="widget")
+                        to = stream.readElementText();
+                    stream.readNext();  stream.readNext();
+                    if(stream.name().toString()=="yuan")
+                        tyuan = stream.readElementText();
+                    qDebug()<<"to: "<<to<<" "<<tyuan;
                 }
                 QPointF point(location_x,location_y);
                 if(type=="Link"){
-                    CreateLink(point,id,from,to); //在窗口中生成IO控件
+                    CreateLink(point,id,from,to,fyuan,tyuan); //在窗口中生成IO控件
                 }
             }
         }
@@ -924,7 +944,7 @@ bool format::CreateLogic(QPointF point, int id)
     Map.insert(tmp->name,*tmp);            //添加到widgetmap中
 }
 
-bool format::CreateLink(QPointF point, int id, QString from, QString to)
+bool format::CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan)
 {
     QMap<QString,WidgetWrap>* m = &Map;
     WidgetWrap wfrom = map_instrument::find(m,from);
@@ -933,8 +953,77 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to)
     if(wfrom.identifier == "TakeOff"){
         first = dynamic_cast<Yuan*> (wfrom.mTakeOffNode->yuan);//triYuan->Yuan
     }
+    if(wfrom.identifier == "Land"){
+        //Land不可能是指出的点
+    }
+    if(wfrom.identifier == "Go"){
+        first = dynamic_cast<Yuan*> (wfrom.mGoNode->yuan);
+    }
+    if(wfrom.identifier == "Turn"){
+        first = dynamic_cast<Yuan*> (wfrom.mTurnNode->yuan);
+    }
+    if(wfrom.identifier == "Hover"){
+        first = dynamic_cast<Yuan*> (wfrom.mHoverNode->yuan);
+    }
+    if(wfrom.identifier == "Delay"){
+        first = dynamic_cast<Yuan*> (wfrom.mDelayNode->yuan);
+    }
+    if(wfrom.identifier == "VarType"){
+    }
+    if(wfrom.identifier == "VarDef"){
+        first = dynamic_cast<Yuan*> (wfrom.mVarDefNode->yuan);
+    }
+    if(wfrom.identifier == "Compute"){
+        first = dynamic_cast<Yuan*> (wfrom.mComputeNode->yuan);
+    }
+    if(wfrom.identifier == "IO"){
+        if(fyuan == "n1yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mIONode->node1->yuan);
+        else if(fyuan == "n2yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mIONode->node2->yuan);
+        else if(fyuan == "n3yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mIONode->node3->yuan);
+        else if(fyuan == "yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mIONode->yuan);
+    }
+    if(wfrom.identifier == "Logic"){
+        //Logci不可能是指出的点，if和else的情况暂时不算
+    }
+    if(wto.identifier == "TakeOff"){
+        //TakeOff不可能是指入的点
+    }
     if(wto.identifier == "Land"){
         second = wto.mLandNode->yuan2;
+    }
+    if(wto.identifier == "Go"){
+        second = wto.mGoNode->yuan2;
+    }
+    if(wto.identifier == "Turn"){
+        second = wto.mTurnNode->yuan2;
+    }
+    if(wto.identifier == "Hover"){
+        second = wto.mHoverNode->yuan2;
+    }
+    if(wto.identifier == "Delay"){
+        second = wto.mDelayNode->yuan2;
+    }
+    if(wto.identifier == "VarType"){
+        //VarType没有指入和指出
+    }
+    if(wto.identifier == "VarDef"){
+        second = wto.mVarDefNode->yuan2;
+    }
+    if(wto.identifier == "Compute"){
+        if(tyuan == "yuan2")
+            second = wto.mComputeNode->yuan2;
+        else if(tyuan == "yuan3")
+            second = wto.mComputeNode->yuan3;
+    }
+    if(wto.identifier == "IO"){
+        second = wto.mIONode->yuan2;
+    }
+    if(wto.identifier == "Logic"){
+        second = wto.mLogicNode->yuan2;
     }
     Link *link = new Link(first,second);
 
