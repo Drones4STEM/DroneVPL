@@ -69,21 +69,22 @@ newscene::~newscene()
 
 void newscene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-   if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems().first())!=0)
-   {
-         new_yuan->setPos(event->scenePos());
+    if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems().first())!=0)
+    {
+          new_yuan->setPos(event->scenePos());
 
-         if(new_yuan->myLinks.size()>0)
-         {
-             foreach (Link* link,new_yuan->myLinks)
-                 delete link;
-         }
-        Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems(). first()),new_yuan);
-        new_link->setZValue(100);
-        this->addItem(new_link);
-        this->addItem(new_yuan);
-   update();
-   }
+          if(new_yuan->myLinks.size()>0)
+          {
+              foreach (Link* link,new_yuan->myLinks)
+                  delete link;
+          }
+         Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems(). first()),new_yuan);
+         new_link->setZValue(100);
+         this->addItem(new_link);
+         this->addItem(new_yuan);
+
+    update();
+    }
     QGraphicsScene::mouseMoveEvent(event);
 }
 
@@ -100,13 +101,25 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
               for(int i=0;i<new_yuan->collidingItems().count();i++)
               {
                   if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0&&dynamic_cast<triYuan *>(new_yuan->collidingItems()[i])==0)
-               {
-                Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
+                  {
+                      Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
                                         dynamic_cast<Yuan *>(new_yuan->collidingItems()[i]));
-               new_link->setZValue(100);
-               this->addItem(new_link);
-               break;
-              }
+                      new_link->setZValue(100);
+                      this->addItem(new_link);
+
+                      this->linkNodeNum++;
+                      new_link->controlsId = this->linkNodeNum;
+                      new_link->identifier = "Link";
+                      QString cid = QString::number(new_link->controlsId,10);
+                      new_link->name = new_link->identifier + cid;
+                      WidgetWrap* tmp = new WidgetWrap(new_link);   //包装节点
+                      wm->add(tmp);
+                      qDebug()<<"scene::mouseMoveEvent(): ";
+                      qDebug()<<"type: "<<new_link->identifier;
+                      qDebug()<<"id: "<<new_link->controlsId;
+                      qDebug()<<"name: "<<new_link->name;
+                      break;
+                  }
               }
             }
 
@@ -702,9 +715,36 @@ bool newscene::CreateLogic(QPointF point, int id)
 
 }
 
-bool newscene::CreateLink()
+bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 {
-    ;//To be used.Maybe...
+    if((this->selectedItems().count()==1)&&dynamic_cast<triYuan *>(this->selectedItems().first())!=0)
+    {
+          new_yuan->setPos(event->scenePos());
+
+          if(new_yuan->myLinks.size()>0)
+          {
+              foreach (Link* link,new_yuan->myLinks)
+                  delete link;
+          }
+         Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems(). first()),new_yuan);
+         new_link->setZValue(100);
+         this->addItem(new_link);
+         this->addItem(new_yuan);
+         /*
+         this->linkNodeNum++;
+
+         new_link->controlsId = this->linkNodeNum;
+         new_link->identifier = "Link";
+         QString cid = QString::number(new_link->controlsId,10);
+         new_link->name = new_link->identifier + cid;
+         WidgetWrap* tmp = new WidgetWrap(new_link);   //包装节点
+         wm->add(tmp);
+         qDebug()<<"scene::mouseMoveEvent(): ";
+         qDebug()<<"type: "<<new_link->identifier;
+         qDebug()<<"id: "<<new_link->controlsId;
+         qDebug()<<"name: "<<new_link->name;*/
+    update();
+    }
 }
 
 //----------------从xml文件创建控件-----------------------

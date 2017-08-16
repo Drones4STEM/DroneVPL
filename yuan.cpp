@@ -138,9 +138,8 @@ void Yuan::setInout(int mode)
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-triYuan::triYuan(WidgetWrap *mst)
+triYuan::triYuan()
 {
-    master=mst;
     setOutlineColor(Qt::darkBlue);
     setBackgroundColor(Qt::red);
 
@@ -186,9 +185,8 @@ void triYuan::paint(QPainter *painter,
 
 }
 
-specialYuan::specialYuan(WidgetWrap *mst)
+specialYuan::specialYuan()
 {
-    master=mst;
     setOutlineColor(Qt::white);
     setBackgroundColor(Qt::white);
 

@@ -36,7 +36,7 @@ public:
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
-    bool CreateLink();
+    bool CreateLink(QGraphicsSceneMouseEvent* event);
 
     //从xml文件创建控件
     bool CreateTakeOff(TakeoffNode* ton);

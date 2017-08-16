@@ -1923,9 +1923,9 @@ void DiagramWindow::createActions()
     addDelayNodeAction = new QAction(tr("Delay"),this);
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
-    addVarNodeAction = new QAction(tr("Variable"),this);
+    addVarNodeAction = new QAction(tr("VarType"),this);
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
-    addVardefNodeAction = new QAction(tr("Vardefine"),this);
+    addVardefNodeAction = new QAction(tr("VarDef"),this);
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
     addComputeNodeAction = new QAction(tr("Compute"),this);
     connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
@@ -1937,7 +1937,7 @@ void DiagramWindow::createActions()
     addLinkAction->setShortcut(tr("Ctrl+L"));
     connect(addLinkAction, SIGNAL(triggered()), this, SLOT(addLink()));
 
-    addRecAction = new QAction(tr("Logic Rec"), this);
+    addRecAction = new QAction(tr("Logic"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
 
     deleteAction = new QAction(tr("&Delete"), this);

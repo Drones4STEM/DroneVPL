@@ -15,7 +15,7 @@ class Node;
  * Class name: Yuan
  * Base class: QGraphicsObject
  * Desciption: This is the declaration of class Yuan. Yuan is an
- *       "out" node.
+ *       "in" node.
 ******************************************************************/
 class Yuan:public QGraphicsObject
 {
@@ -63,12 +63,12 @@ public:
  * Class name: triYuan
  * Base class: Yuan
  * Description: This is the declaration of class triYuan. triYuan is
- *       an "in" node.
+ *       an "out" node.
 ******************************************************************/
 class triYuan:public Yuan
 {
 public:
-    triYuan(WidgetWrap *mst=0);
+    triYuan();
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -85,7 +85,7 @@ public:
 class specialYuan:public Yuan
 {
 public:
-    specialYuan(WidgetWrap *mst=0);
+    specialYuan();
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
