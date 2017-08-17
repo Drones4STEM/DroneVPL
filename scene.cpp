@@ -650,12 +650,11 @@ bool newscene::CreateLogic(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    this->clearSelection();
-    rec->setSelected(true);
-
     rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));
     this->addItem(rec->yuan2);
+    this->addItem(rec->yuan);
 
     item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
                          (rec->pos().y() - rec->outlineRect().height()/2)));
@@ -663,6 +662,7 @@ bool newscene::CreateLogic(QPointF point, int id)
     rec->box->addItem(tr("if"));
     rec->box->addItem(tr("else"));
     rec->box->addItem(tr("while"));
+    rec->box->setCurrentIndex(0);
 
     rec->controlsId=id;
     rec->identifier="Logic";
