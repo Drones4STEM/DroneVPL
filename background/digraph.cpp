@@ -10,7 +10,8 @@
 *********************************************************/
 
 #include "digraph.h"
-#include "E:dachuang/QT_project/workspace/diagram1/Link.h"
+#include "link.h"
+#include "yuan.h"
 
 /*****************************************
  * Function name: diagraph
@@ -19,9 +20,14 @@
  * Input: QMap<QString, widget *> - widgets exits now.
  * Output: none
  *****************************************/
-digraph::digraph(QObject *parent, QMap<QString, widget *> *m) : QObject(parent)
+digraph::digraph(QMap<QString, widget> *m)
 {
     Map = m;
+    typename QMap<QString, widget>::iterator it;
+    for(it=Map->begin();it!=Map->end();it++){
+        if(it->identifier != "Link")
+            visited.insert(it.key(),0);
+    }
 }
 
 /*****************************************************
@@ -33,17 +39,28 @@ digraph::digraph(QObject *parent, QMap<QString, widget *> *m) : QObject(parent)
  * Output: stack<widget*> Stack - The stack containing
  *            widgets in topological sequence.
  *****************************************************/
-std::stack<widget*> digraph::get_topology()
-{
-    typename QMap<QString, widget*>::iterator it;
+std::stack<widget> digraph::get_topology()
+{/*
+    typename QMap<QString, widget>::iterator it;
     for(it=Map->begin();it!=Map->end();it++){
-        DFS(it->value);
+        tmp = &(it.value());
+        if(tmp->identifier != "Link")
+            DFS(tmp);
+    }*/
+    WidgetWrap *tmp;
+    std::stack<widget> stk = get_nodes_without_IN();
+    while(!stk.empty()){
+        tmp = &(stk.top());
+        stk.pop();
+        if(tmp->identifier != "Link")
+            DFS(tmp);
     }
+
     return Stack;
 }
 
 /*****************************************************
- * Function name: get_nodes_without_OUT
+ * Function name: get_nodes_without_IN
  * Description: This is the function that gets
  *    the widgets of no out-link one by one.
  * Calle: none
@@ -51,19 +68,18 @@ std::stack<widget*> digraph::get_topology()
  * Output: stack<widget*> sta - The stack containing
  *            widgets with no out-link.
  *****************************************************/
-std::stack<widget*> digraph::get_nodes_without_OUT()
+std::stack<widget> digraph::get_nodes_without_IN()
 {
     //遍历map，找节点
-    std::stack<widget*> sta;  //保存没有出度的节点，返回这个栈对象
-    typename QMap<QString, widget*>::iterator it;
+    std::stack<widget> stk;  //保存没有出度的节点，返回这个栈对象
+    typename QMap<QString, widget>::iterator it;
     for(it=Map->begin(); it!=Map->end(); ++it){
-        if(it->value->yuan->myLinks->isEmpty()){     //没有link
-            sta.push(it->value);
+        if(it->check_yuan_in()==false){     //没有link
+            stk.push(it.value());
         }
     }
-    return sta;
+    return stk;
 }
-
 /*****************************************************
  * Function name: DFS
  * Description: This is the function that traverse
@@ -74,14 +90,16 @@ std::stack<widget*> digraph::get_nodes_without_OUT()
  *****************************************************/
 void digraph::DFS(widget* w)
 {
-    if(visited(w->type())==0){
-        visited(w->type())=1;
-        QSetIterator<Link*> it(w->yuan->myLinks);   //Qset的迭代器,传入迭代对象
-        for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
-            //widget* ww = it.next()->mytoyuan->node;
-            DFS(it.next()->toYuan()->node);
+    if(visited.value(w->name)==0){
+        visited[w->name]=1;
+        if(w->get_yuan_out() != NULL){
+            QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
+            for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
+                //widget* ww = it.next()->mytoyuan->node;
+                DFS(it.next()->toYuan()->master);
+            }
         }
-        Stack.push(w);  //加入结果集
+        Stack.push(*w);  //加入结果集
     }
 }
 

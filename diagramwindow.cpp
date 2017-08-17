@@ -38,6 +38,7 @@
 #include "oDocument.h"
 #include "odescription.h"
 #include "format.h"
+#include "digraph.h"
 
 
 namespace {
@@ -1831,7 +1832,18 @@ void DiagramWindow::checkup()
 
 void DiagramWindow::compile()
 {
-
+    QMap<QString,WidgetWrap> *m =&(wm->get_map());
+    digraph digrapher(m);
+    std::stack<widget> stk = digrapher.get_topology();
+    WidgetWrap tmp;
+    while(!stk.empty()){
+        tmp = stk.top();
+        stk.pop();
+        qDebug()<<"compile():";
+        qDebug()<<"name :"<<tmp.name;
+        qDebug()<<"identifier :"<<tmp.identifier;
+        qDebug()<<"controlsId :"<<tmp.controlsId;
+    }
 }
 
 void DiagramWindow::checkupAndCompile()

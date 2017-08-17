@@ -158,7 +158,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarDefNodeNum++;
-        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        if(flag == false)   this->VarDefNodeNum--;
     }
     if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
@@ -445,7 +446,7 @@ bool newscene::CreateVarType(QPointF point, int id)
 }
 
 bool newscene::CreateVarDef(QPointF point, int id)
-{   //先设定不论从哪里生成控件都会需要的公共的属性
+{
     VardefNode* vdn=new VardefNode;
     vdn->setPos(point);
 
@@ -506,7 +507,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
     vdn->yuan2->name = "yuan2";
     vdn->yuan->master = tmp;
     vdn->yuan->name = "yuan";
-
+    return true;
 }
 
 bool newscene::CreateCompute(QPointF point, int id)
