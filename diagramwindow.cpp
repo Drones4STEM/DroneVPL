@@ -35,6 +35,7 @@
 #include "canvasdialog.h"
 #include "itemtypes.h"
 #include "widgetcondition.h"
+#include "propertywidget.h"
 #include "oDocument.h"
 #include "odescription.h"
 #include "format.h"
@@ -145,6 +146,7 @@ DiagramWindow::DiagramWindow()
     createMenus();
     createToolBars();
     createWidgetConditionBar(widgetCondition);
+    createDockWidgets();
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
@@ -158,6 +160,10 @@ DiagramWindow::DiagramWindow()
             this,SLOT(changeNodeNum(int)));
     connect(scene,SIGNAL(sig_bringtofront()),
             this,SLOT(bringToFront()));
+    connect(scene,SIGNAL(sig_connectItem(QObject*)),
+            this,SLOT(connectItem(QObject*)));
+    connect(scene,SIGNAL(selectionChanged()),
+            this,SLOT(selectionChanged()));
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -722,6 +728,22 @@ void DiagramWindow::filePrint()
     }
     statusBar()->showMessage(tr("Printed %1")
              .arg(windowFilePath()),StatusTimeout);
+}
+
+void DiagramWindow::connectItem(QObject *item)
+{
+    connect(item,SIGNAL(dirty()),this,SLOT(setDirty()));
+    const QMetaObject *metaObject = item->metaObject();
+    if(metaObject->indexOfProperty("textColor")>-1)
+        connect(colorWidget,SIGNAL(textColorChanged(QColor)),
+                item,SLOT(setTextColor(const QColor&)));
+    if(metaObject->indexOfProperty("outlineColor")>-1)
+        connect(colorWidget,SIGNAL(outlineColorChanged(QColor)),
+                item,SLOT(setOutlineColor(const QColor&)));
+    if(metaObject->indexOfProperty("backgroundColor")>-1)
+        connect(colorWidget,SIGNAL(backgroundColorChanged(QColor)),
+                item,SLOT(setBackgroundColor(const QColor&)));
+
 }
 
 /*******************************************************************
@@ -2179,6 +2201,21 @@ void DiagramWindow::createWidgetConditionBar(WidgetCondition *widgetCondition)
     addDockWidget(Qt::RightDockWidgetArea, rightside);
 }
 
+void DiagramWindow::createDockWidgets()
+{
+    setDockOptions(QMainWindow::AnimatedDocks);
+    QDockWidget::DockWidgetFeatures features =
+            QDockWidget::DockWidgetMovable|
+            QDockWidget::DockWidgetFloatable;
+    colorWidget = new ColorWidget;
+    QDockWidget *colorDockWidget = new QDockWidget(
+                tr("Color"),this);
+    colorDockWidget->setFeatures(features);
+    colorDockWidget->setWidget(colorWidget);
+    addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
+
+}
+
 /*******************************************************************
  * Function name: setZValue()
  * Description: This function changes the Z-coordinate of item.
@@ -2369,5 +2406,27 @@ bool DiagramWindow::conditionChanged(){
     if (items.count() >= 1) {
             QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(items.first());
             emit passWidget(item);
+    }
+}
+
+
+void DiagramWindow::selectionChanged()
+{
+    QList<QGraphicsItem*>items = scene->selectedItems();
+    if(items.count()==1)
+    {
+        if(QObject *item = dynamic_cast<QObject*>(items.at(0)))
+        {
+            if(item->property("textColor").isValid())
+                colorWidget->setTextColor(
+                            item->property("textColor").value<QColor>());
+            if(item->property("outlineColor").isValid())
+                colorWidget->setOutlineColor(
+                            item->property("outlineColor").value<QColor>());
+            if(item->property("backgroundColor").isValid())
+                colorWidget->setBackgroundColor(
+                            item->property("backgroundColor").value<QColor>());
+
+        }
     }
 }

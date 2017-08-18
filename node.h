@@ -23,19 +23,19 @@ class triYuan;
 ******************************************************************/
 class Node : public QGraphicsObject
 {
-    //Q_DECLARE_TR_FUNCTIONS(Node)
+    Q_OBJECT
+    Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+    Q_PROPERTY(QColor outlineColor READ outlineColor WRITE setOutlineColor)
 
 public:
     Node();
     ~Node();
 
     void setText(const QString &text);
-    QString text() const;
-    void setTextColor(const QColor &color);
-    QColor textColor() const;
-    void setOutlineColor(const QColor &color);
-    QColor outlineColor() const;
-    void setBackgroundColor(const QColor &color);
+    QString text() const;   
+    QColor textColor() const;    
+    QColor outlineColor() const;    
     QColor backgroundColor() const;
     int roundness(double size) const;
 
@@ -60,6 +60,13 @@ public:
     //WidgetWrap* wrap;
     //控件属性
     int lx,ly;
+
+signals:
+    void dirty();
+public slots:
+    void setTextColor(const QColor &color);
+    void setOutlineColor(const QColor &color);
+    void setBackgroundColor(const QColor &color);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

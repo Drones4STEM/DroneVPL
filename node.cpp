@@ -63,8 +63,12 @@ QString Node::text() const
 
 void Node::setTextColor(const QColor &color)
 {
-    myTextColor = color;
-    update();
+    if(isSelected()&&color!=textColor())
+    {
+        myTextColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor Node::textColor() const
@@ -74,8 +78,12 @@ QColor Node::textColor() const
 
 void Node::setOutlineColor(const QColor &color)
 {
-    myOutlineColor = color;
-    update();
+    if(isSelected()&&color!=outlineColor())
+    {
+        myOutlineColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor Node::outlineColor() const
@@ -85,8 +93,12 @@ QColor Node::outlineColor() const
 
 void Node::setBackgroundColor(const QColor &color)
 {
-    myBackgroundColor = color;
-    update();
+    if(isSelected()&&color!=backgroundColor())
+    {
+        myBackgroundColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor Node::backgroundColor() const

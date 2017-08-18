@@ -28,6 +28,8 @@ HEADERS       = diagramwindow.h \
     background/widgetmap.h \
     background/format.h \
     wqdragitem.h \
+    propertywidget.h \
+    swatch.h
 
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
@@ -55,6 +57,8 @@ SOURCES       = diagramwindow.cpp \
     background/widgetmap.cpp \
     background/format.cpp \
     wqdragitem.cpp \
+    propertywidget.cpp \
+    swatch.cpp
 
 FORMS         = propertiesdialog.ui \
     awindow.ui \

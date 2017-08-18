@@ -30,6 +30,7 @@ class Yuan;
 class Rec;
 class TakeoffNode;
 class WidgetCondition;
+class ColorWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -135,6 +136,9 @@ private slots:
     void openDocumentation();
     void systemInformation();
 
+    void connectItem(QObject *item);//建立属性框与item之间的连接
+    void selectionChanged();//确保工具箱窗口部件正确显示选中项的属性
+
 private:
     typedef QPair<Yuan *, Yuan *> YuanPair;
 
@@ -142,6 +146,7 @@ private:
     void createMenus();
     void createToolBars();
     void createWidgetConditionBar(WidgetCondition *widgetCondition);
+    void createDockWidgets();//创建可停靠的的悬浮属性框
     void setZValue(int z);
 
     void setupNode(Node *node);
@@ -242,6 +247,8 @@ private:
     QAction *viewZoomInAction;
     QAction *viewZoomOutAction;
     QAction *viewShowGridAction;
+
+    ColorWidget *colorWidget;
 
 
     QPrinter *printer;
