@@ -12,6 +12,7 @@
 #include "vardefnode.h"
 #include "varnode.h"
 #include "link.h"
+#include "yuan.h"
 
 class WidgetWrap
 {
@@ -32,6 +33,9 @@ public:
     WidgetWrap(VarNode* vn);
 
     WidgetWrap(Link* link);
+
+    triYuan* get_yuan_out();
+    bool check_yuan_in();
 
     QString category;
     QString identifier; //控件型号

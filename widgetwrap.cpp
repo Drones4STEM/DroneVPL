@@ -125,5 +125,75 @@ WidgetWrap::WidgetWrap(Link* link)
     name = link->name;
 
 }
-
-
+//--------------------------------
+triYuan* WidgetWrap::get_yuan_out()
+{
+    if(identifier == "TakeOff")
+        return mTakeOffNode->yuan;
+    if(identifier == "Land")
+        return NULL;
+    if(identifier == "Go")
+        return mGoNode->yuan;
+    if(identifier == "Turn")
+        return mTurnNode->yuan;
+    if(identifier == "Hover")
+        return mHoverNode->yuan;
+    if(identifier == "Delay")
+        return mDelayNode->yuan;
+    if(identifier == "VarType")
+        return NULL;
+    if(identifier == "VarDef")
+        return mVarDefNode->yuan;
+    if(identifier == "Compute")
+        return mComputeNode->yuan;
+    if(identifier == "IO")
+        return mIONode->yuan;
+    if(identifier == "Logic")
+        return mLogicNode->yuan;
+}
+bool WidgetWrap::check_yuan_in()
+{
+    if(identifier == "TakeOff")
+        return false;
+    if(identifier == "Land")
+        if(!mLandNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Go")
+        if(!mGoNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Turn")
+        if(!mTurnNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Hover")
+        if(!mHoverNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Delay")
+        if(!mDelayNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "VarType")
+        return false;
+    if(identifier == "VarDef")
+        if(!mVarDefNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Compute")
+        if(mComputeNode->yuan2->myLinks.isEmpty() &&
+                mComputeNode->yuan3->myLinks.isEmpty())
+            return false;
+        else return true;
+    if(identifier == "IO")
+        if(!mIONode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Logic")
+        if(!mLogicNode->yuan2->myLinks.isEmpty())
+            return true;
+        else return false;
+    if(identifier == "Link")
+            return true;
+}

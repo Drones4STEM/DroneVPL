@@ -158,7 +158,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarDefNodeNum++;
-        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        if(flag == false)   this->VarDefNodeNum--;
     }
     if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
@@ -445,7 +446,7 @@ bool newscene::CreateVarType(QPointF point, int id)
 }
 
 bool newscene::CreateVarDef(QPointF point, int id)
-{   //先设定不论从哪里生成控件都会需要的公共的属性
+{
     VardefNode* vdn=new VardefNode;
     vdn->setPos(point);
 
@@ -506,7 +507,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
     vdn->yuan2->name = "yuan2";
     vdn->yuan->master = tmp;
     vdn->yuan->name = "yuan";
-
+    return true;
 }
 
 bool newscene::CreateCompute(QPointF point, int id)
@@ -650,12 +651,11 @@ bool newscene::CreateLogic(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    this->clearSelection();
-    rec->setSelected(true);
-
     rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));
     this->addItem(rec->yuan2);
+    this->addItem(rec->yuan);
 
     item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
                          (rec->pos().y() - rec->outlineRect().height()/2)));
@@ -663,6 +663,7 @@ bool newscene::CreateLogic(QPointF point, int id)
     rec->box->addItem(tr("if"));
     rec->box->addItem(tr("else"));
     rec->box->addItem(tr("while"));
+    rec->box->setCurrentIndex(0);
 
     rec->controlsId=id;
     rec->identifier="Logic";
