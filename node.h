@@ -44,6 +44,8 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void sethw();
+    void setxy(QPointF point);   //从绘图时传入的point决定
 /*
     bool set_controlsId(int id);
     bool set_identifier(QString idtf);
@@ -59,7 +61,8 @@ public:
     QString name;   //identifier+controlsId
     //WidgetWrap* wrap;
     //控件属性
-    int lx,ly;
+    int lx,ly;  //坐标
+    int high,wide;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

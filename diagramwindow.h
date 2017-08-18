@@ -14,6 +14,7 @@
 
 #include "scene.h"
 #include "view.h"
+#include "logic_help.h"
 
 
 class QAction;
@@ -64,7 +65,8 @@ public:
     int recNodeNum;
     int linkNodeNum;
 
-    WidgetMap* wm = new WidgetMap();
+    WidgetMap* wm;
+    QMap<QString,LOGIC_Help*>* LHM;
     QThread t;  //用于后台运行的线程
     newscene* scene;
 

@@ -14,6 +14,7 @@
 #include "link.h"
 #include "yuan.h"
 
+
 class WidgetWrap
 {
 public:
@@ -34,13 +35,17 @@ public:
 
     WidgetWrap(Link* link);
 
+    QPointF pos();
+
     triYuan* get_yuan_out();
     bool check_yuan_in();
 
+    //在wrap中复制控件的基本属性，省去筛选控件类型和多一级指针调用
     QString category;
     QString identifier; //控件型号
     int controlsId;
     QString name;   //identifier+controlsId
+    int lx,ly,high,wide;
 
     ComputeNode* mComputeNode = NULL;
 
@@ -58,6 +63,7 @@ public:
     HoverNode* mHoverNode;
     DelayNode* mDelayNode;
     Link* mLinkNode;
+
 
 private:
 

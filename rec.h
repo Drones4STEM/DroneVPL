@@ -13,6 +13,7 @@
 #include "newnode.h"
 #include "itemtypes.h"
 
+
 class NewNode;
 class DiagramWindow;
 class Yuan;
@@ -40,6 +41,7 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget);
     void setText(const QString &text);
     QString text() const;
+    void setLogichw();  //newnode中有sethw，但logic的绘图方法和正常的控件不一样，故另写一个
 
     QComboBox *box;
     QGraphicsItem *item;
@@ -47,6 +49,7 @@ public:
     //控件名称与在同类控件中的编号
     QString identifier;
     int controlsId;
+
 
 private:
     QRectF mBoundingRect;

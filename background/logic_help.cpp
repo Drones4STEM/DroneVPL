@@ -5,7 +5,7 @@
  *    in LOGIC everytime widget created or moved.
 *********************************************************/
 
-#include "logic_instrument.h"
+#include "logic_help.h"
 
 /*****************************************************
  * Function name: format
@@ -15,11 +15,11 @@
  *        QObject *parent - QT set it, don't need to care about.
  * Output: none
  *****************************************************/
-LOGIC_instrument::LOGIC_instrument(LOGIC *L, QObject *parent) : QObject(parent)
+LOGIC_Help::LOGIC_Help(LOGIC *L)
 {
     LOG = L;
-    LOGname[0] = LOG->type();
-    LOGname[1] = LOG->controlsId;
+    //LOGname[0] = LOG->type();
+    //LOGname[1] = LOG->controlsId;
 }
 
 /*****************************************************
@@ -31,18 +31,29 @@ LOGIC_instrument::LOGIC_instrument(LOGIC *L, QObject *parent) : QObject(parent)
  *        LOGIC* L - the LOGIC to judge
  * Output: true,false - to tell the judging result
  *****************************************************/
-/*
-bool LOGIC_instrument<widget>::in_LOGIC(widget* w, LOGIC* L)
+
+bool LOGIC_Help::in_LOGIC(widget* w)
 {
-    if( w->x()-w->boundingRect()->width() > L->x()-L->boundingRect()->width()   //横坐标包含
-         && w->x()+w->boundingRect()->width() > L->x()+L->boundingRect()->width()
-         && w->y()-w->boundingRect()->height() > L->x()-L->boundingRect()->height() //纵坐标包含
-         && w->y()+w->boundingRect()->height() > L->x()+L->boundingRect()->height())
+    qDebug()<<"LOGIC_Helo::in_LOGIC(): ";
+    qDebug()<<"w->pos().x() " <<w->pos().x();
+    qDebug()<<"w->pos().y() " <<w->pos().y();
+    qDebug()<<"w->wide " <<w->wide;
+    qDebug()<<"w->high " <<w->high;
+    qDebug()<<"LOG->pos().x() " <<LOG->pos().x();
+    qDebug()<<"LOG->pos().y() " <<LOG->pos().y();
+    qDebug()<<"LOG->wide " <<LOG->wide;
+    qDebug()<<"LOG->high " <<LOG->high;
+
+    if( w->pos().x() - w->wide > LOG->pos().x() - LOG->wide   //横坐标包含
+         && w->pos().x() + w->wide < LOG->pos().x() + LOG->wide
+         && w->pos().y() - w->high > LOG->pos().y() - LOG->high  //纵坐标包含
+         && w->pos().y() + w->high < LOG->pos().y() + LOG->high)
         return true;
     else
         return false;
+
 }
-*/
+
 
 /*****************************************************
  * Function name: widget_make_or_move
@@ -53,8 +64,8 @@ bool LOGIC_instrument<widget>::in_LOGIC(widget* w, LOGIC* L)
  *        LOGIC* L - the LOGIC to judge
  * Output: true,false - to tell the opertation result.
  *****************************************************/
-//template <class widget>
-bool LOGIC_instrument::widget_make_or_move(widget* w, LOGIC* L)
+/*
+bool LOGIC_Help::widget_make_or_move(widget* w, LOGIC* L)
 {//控件生成/拖动/删除时触发
     bool flag = in_LOGIC(w, L);
     if(flag){       //如果在本LOGIC中，就判断是否有内嵌的LOGIC，是否也包含该控件
@@ -71,5 +82,5 @@ bool LOGIC_instrument::widget_make_or_move(widget* w, LOGIC* L)
         return false;
     }
 }
-
+*/
 

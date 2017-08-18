@@ -110,12 +110,14 @@ QStringList DiagramWindow::recentFiles = QStringList();
 ******************************************************************/
 DiagramWindow::DiagramWindow()
 {
+    wm = new WidgetMap();
     wm->moveToThread(&t);    //把map移到子线程中操作
     t.start();
+    LHM = new QMap<QString,LOGIC_Help*>();
 
     printer = new QPrinter(QPrinter::HighResolution);
     gridGroup = 0;
-    scene = new newscene(wm);
+    scene = new newscene(wm,LHM);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
     //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
@@ -2382,4 +2384,5 @@ bool DiagramWindow::conditionChanged(){
             QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(items.first());
             emit passWidget(item);
     }
+    return true;
 }

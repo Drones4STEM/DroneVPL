@@ -12,7 +12,10 @@ WidgetWrap::WidgetWrap(ComputeNode* cn)
     controlsId = cn->controlsId;
     name = cn->name;
     mComputeNode = cn;
-    //cn->wrap = this;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
 }
 //-------------------------------
 WidgetWrap::WidgetWrap(IoNode* in)
@@ -22,7 +25,10 @@ WidgetWrap::WidgetWrap(IoNode* in)
     controlsId = in->controlsId;
     name = in->name;
     mIONode = in;
-    //in->wrap = this;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
 }
 //-------------------------------
 WidgetWrap::WidgetWrap(Rec* ln)
@@ -32,7 +38,10 @@ WidgetWrap::WidgetWrap(Rec* ln)
     controlsId = ln->controlsId;
     name = ln->name;
     mLogicNode = ln;
-    //ln->wrap = this;
+    lx = ln->lx;
+    ly = ln->ly;
+    high = ln->high;
+    wide = ln->wide;
 }
 //---------Action--------------
 WidgetWrap::WidgetWrap(TakeoffNode *ton)
@@ -42,7 +51,10 @@ WidgetWrap::WidgetWrap(TakeoffNode *ton)
     controlsId = ton->controlsId;
     name = ton->name;
     mTakeOffNode = ton;
-    //ton->wrap = this;
+    lx = ton->lx;
+    ly = ton->ly;
+    high = ton->high;
+    wide = ton->wide;
 }
 
 WidgetWrap::WidgetWrap(LandonNode *ln)
@@ -52,7 +64,10 @@ WidgetWrap::WidgetWrap(LandonNode *ln)
     controlsId = ln->controlsId;
     name = ln->name;
     mLandNode = ln;
-    //ln->wrap = this;
+    lx = ln->lx;
+    ly = ln->ly;
+    high = ln->high;
+    wide = ln->wide;
 }
 
 WidgetWrap::WidgetWrap(TranslationNode *tn)
@@ -62,7 +77,10 @@ WidgetWrap::WidgetWrap(TranslationNode *tn)
     controlsId = tn->controlsId;
     name = tn->name;
     mGoNode = tn;
-   // tn->wrap = this;
+    lx = tn->lx;
+    ly = tn->ly;
+    high = tn->high;
+    wide = tn->wide;
 }
 
 WidgetWrap::WidgetWrap(TurnNode *tn)
@@ -72,7 +90,10 @@ WidgetWrap::WidgetWrap(TurnNode *tn)
     controlsId = tn->controlsId;
     name = tn->name;
     mTurnNode = tn;
-    //tn->wrap = this;
+    lx = tn->lx;
+    ly = tn->ly;
+    high = tn->high;
+    wide = tn->wide;
 }
 
 WidgetWrap::WidgetWrap(HoverNode *hn)
@@ -82,7 +103,10 @@ WidgetWrap::WidgetWrap(HoverNode *hn)
     controlsId = hn->controlsId;
     name = hn->name;
     mHoverNode = hn;
-    //hn->wrap = this;
+    lx = hn->lx;
+    ly = hn->ly;
+    high = hn->high;
+    wide = hn->wide;
 }
 
 WidgetWrap::WidgetWrap(DelayNode *dn)
@@ -92,7 +116,10 @@ WidgetWrap::WidgetWrap(DelayNode *dn)
     controlsId = dn->controlsId;
     name = dn->name;
     mDelayNode = dn;
-   // dn->wrap = this;
+    lx = dn->lx;
+    ly = dn->ly;
+    high = dn->high;
+    wide = dn->wide;
 }
 //-------------------------------
 WidgetWrap::WidgetWrap(VardefNode* vdn)
@@ -102,7 +129,10 @@ WidgetWrap::WidgetWrap(VardefNode* vdn)
     controlsId = vdn->controlsId;
     name = vdn->name;
     mVarDefNode = vdn;
-    //vdn->wrap = this;
+    lx = vdn->lx;
+    ly = vdn->ly;
+    high = vdn->high;
+    wide = vdn->wide;
 }
 
 WidgetWrap::WidgetWrap(VarNode* vn)
@@ -112,7 +142,10 @@ WidgetWrap::WidgetWrap(VarNode* vn)
     controlsId = vn->controlsId;
     name = vn->name;
     mVarTypeNode = vn;
-    //vn->wrap = this;
+    lx = vn->lx;
+    ly = vn->ly;
+    high = vn->high;
+    wide = vn->wide;
 }
 //--------------------------------
 
@@ -196,4 +229,30 @@ bool WidgetWrap::check_yuan_in()
         else return false;
     if(identifier == "Link")
             return true;
+}
+
+QPointF WidgetWrap::pos()
+{
+    if(identifier == "TakeOff")
+        return mTakeOffNode->pos();
+    if(identifier == "Land")
+        return mLandNode->pos();
+    if(identifier == "Go")
+        return mGoNode->pos();
+    if(identifier == "Turn")
+        return mTurnNode->pos();
+    if(identifier == "Hover")
+        return mHoverNode->pos();
+    if(identifier == "Delay")
+        return mDelayNode->pos();
+    if(identifier == "VarType")
+        return mVarTypeNode->pos();
+    if(identifier == "VarDef")
+        return mVarDefNode->pos();
+    if(identifier == "Compute")
+        return mComputeNode->pos();
+    if(identifier == "IO")
+        return mIONode->pos();
+    if(identifier == "Logic")
+        return mLogicNode->pos();
 }

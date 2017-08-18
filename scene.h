@@ -6,6 +6,7 @@
 #include "yuan.h"
 #include "newnode.h"
 #include "widgetmap.h"
+#include "logic_help.h"
 
 //class DiagramWindow;
 /********************************************************************
@@ -16,7 +17,7 @@ class newscene:public QGraphicsScene
 {
     Q_OBJECT
 public:
-    newscene(WidgetMap* m);
+    newscene(WidgetMap* m, QMap<QString,LOGIC_Help*>*L);
     ~newscene();
     specialYuan* new_yuan;
 
@@ -52,6 +53,8 @@ public:
     bool CreateLogic(Rec* ln);
     bool CreateLink(Link* link);
 
+    bool CheckInLogic(WidgetWrap *tmp);
+
 
     int need_to_set;
     int selected_Index;
@@ -75,6 +78,8 @@ public:
     int linkNodeNum;
 
     WidgetMap* wm;
+    QMap<QString,LOGIC_Help*>* LHM;
+
 signals:
     void itemInserted(int index);
     void sig_bringtofront();

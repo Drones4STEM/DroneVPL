@@ -35,6 +35,7 @@ Node::Node()
 
     controlsId=0;
     identifier="Node";
+
 }
 
 /*******************************************************************
@@ -54,6 +55,7 @@ void Node::setText(const QString &text)
     prepareGeometryChange();
     myText = text;
     update();
+    sethw();
 }
 
 QString Node::text() const
@@ -219,19 +221,20 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 QVariant Node::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
-if (change & ItemPositionHasChanged){
-    if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-   {
-        yuan->setPos(pos().x(),
-                     pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan->myLinks)
-        {link->trackYuans();update();}
-   }
-    else{
-        setPos(yuan->pos().x(),
-                      yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
-    }}
-return QGraphicsItem::itemChange(change, value);
+
+    if (change & ItemPositionHasChanged){
+        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            yuan->setPos(pos().x(),
+                         pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2);
+            foreach (Link *link, yuan->myLinks)
+            {link->trackYuans();update();}
+       }
+        else{
+            setPos(yuan->pos().x(),
+                          yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
+        }}
+    return QGraphicsItem::itemChange(change, value);
 }
 
 /*******************************************************************
@@ -248,6 +251,7 @@ QRectF Node::outlineRect() const
     QRectF rect = metrics.boundingRect(myText);
     rect.adjust(-Padding, -Padding, +Padding, +Padding);
     rect.translate(-rect.center());
+
     return rect;
 }
 
@@ -268,4 +272,18 @@ int Node::roundness(double size) const
 triYuan* Node::myYuan()const
 {
     return yuan;
+}
+
+void Node::sethw()
+{
+    QRectF rect = outlineRect();
+    high = rect.height();
+    wide = rect.width();
+}
+
+void Node::setxy(QPointF point)
+{
+    lx = point.x();
+    ly = point.y();
+
 }
