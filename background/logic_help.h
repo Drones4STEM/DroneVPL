@@ -30,17 +30,15 @@ public:
 
     //判断是否某个控件是否在某个LOGIC内部。LOGIC是LOGIC类对象
     bool in_LOGIC(widget* w);
+    void put_in_Logic(widget* w);
+    QMap<QString, widget*> WidgetsInLOGIC;
 
 private:
 
-    QMap<QString, widget*> WidgetsInLOGIC;
+
     LOGIC* LOG;     //指向对应的LOGIC
     //int LOGname[1]; //保存LOG的名字
 
-signals:
-
-public slots:
-    bool widget_make_or_move(widget *w, LOGIC *L);
 };
 
 #endif // LOGIC_INSTRUMENT_H

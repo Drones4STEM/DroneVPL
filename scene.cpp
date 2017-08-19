@@ -94,31 +94,9 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 
     CreateLink(event);
-    //检查是否在Logic内
-    QList<QGraphicsItem *> items = this->selectedItems();
-    typename QList<QGraphicsItem *>::iterator liter;
-    typename QMap<QString, widget>::iterator miter;
-    QMap<QString, widget>& m = wm->get_map();
-    for(liter=items.begin();liter!=items.end();liter++){
-        QGraphicsItem * t = *liter;
-        NewNode* n1 = dynamic_cast<NewNode *>(t);
-        Node* n2 = dynamic_cast<Node *>(t);
-        if(n1!=0){
-            for(miter=m.begin();miter!=m.end();miter++){
-                if(n1->name == miter->name){
-                    CheckInLogic(&(miter.value()));
-                }
-            }
-        }else if(n2!=0){
-            for(miter=m.begin();miter!=m.end();miter++){
-                if(n2->name == miter->name){
-                    CheckInLogic(&(miter.value()));
-                }
-            }
-        }
+    //检查鼠标释放时生成/拖动的控件是否在Logic内
+    CheckInLogic();
 
-
-    }
 
     QGraphicsScene::mouseReleaseEvent(event);
 }
@@ -411,7 +389,7 @@ bool newscene::CreateHover(QPointF point, int id)
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
 
-
+    return true;
 }
 
 bool newscene::CreateDelay(QPointF point, int id)
@@ -449,7 +427,7 @@ bool newscene::CreateDelay(QPointF point, int id)
     node->yuan2->name = "yuan2";
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
-
+    return true;
 }
 
 bool newscene::CreateVarType(QPointF point, int id)
@@ -476,6 +454,7 @@ bool newscene::CreateVarType(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool newscene::CreateVarDef(QPointF point, int id)
@@ -600,7 +579,7 @@ bool newscene::CreateCompute(QPointF point, int id)
     node->yuan->name = "yuan";
     node->yuan3->master = tmp;
     node->yuan3->name = "yuan3";
-
+    return true;
 }
 
 bool newscene::CreateIO(QPointF point, int id)
@@ -1139,15 +1118,46 @@ bool newscene::CreateLink(Link* link)
 }
 //------------------------------------------------------
 
-bool newscene::CheckInLogic(WidgetWrap* tmp)
+bool newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
 {
     bool flag;
     typename QMap<QString, LOGIC_Help*>::iterator iter;
     for(iter=LHM->begin();iter!=LHM->end();iter++){
         LOGIC_Help* lh = iter.value();
         flag = lh->in_LOGIC(tmp);
+        if(flag){
+            if(operate=="add")  lh->put_in_Logic(tmp);
+            else if(operate=="del") lh->WidgetsInLOGIC.remove(tmp->name);
+        }
         qDebug()<<"scene::CheckInLogic():";
-        qDebug()<<flag;
+        qDebug()<<operate<<" "<<flag;
     }
     return flag;
+}
+
+bool newscene::CheckInLogic()
+{
+    QList<QGraphicsItem *> items = this->selectedItems();
+    typename QList<QGraphicsItem *>::iterator liter;
+    typename QMap<QString, widget>::iterator miter;
+    QMap<QString, widget>& m = wm->get_map();
+    for(liter=items.begin();liter!=items.end();liter++){
+        QGraphicsItem * t = *liter;
+        NewNode* n1 = dynamic_cast<NewNode *>(t);
+        Node* n2 = dynamic_cast<Node *>(t);
+        if(n1!=0){
+            for(miter=m.begin();miter!=m.end();miter++){
+                if(n1->name == miter->name){
+                    check_in_Logic(&(miter.value()),"add");
+                }
+            }
+        }else if(n2!=0){
+            for(miter=m.begin();miter!=m.end();miter++){
+                if(n2->name == miter->name){
+                    check_in_Logic(&(miter.value()),"add");
+                }
+            }
+        }
+    }
+    return true;
 }

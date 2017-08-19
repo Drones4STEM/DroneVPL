@@ -18,8 +18,7 @@
 LOGIC_Help::LOGIC_Help(LOGIC *L)
 {
     LOG = L;
-    //LOGname[0] = LOG->type();
-    //LOGname[1] = LOG->controlsId;
+
 }
 
 /*****************************************************
@@ -84,3 +83,7 @@ bool LOGIC_Help::widget_make_or_move(widget* w, LOGIC* L)
 }
 */
 
+void LOGIC_Help::put_in_Logic(widget* w)
+{
+    WidgetsInLOGIC.insert(w->name,w);
+}

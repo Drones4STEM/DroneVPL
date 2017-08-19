@@ -28,9 +28,10 @@ VarNode::VarNode()
 }
 
 VarNode::~VarNode()
-{
+{/*
     for(int i=0;i<6;i++)
-        delete array[i];
+        delete array[i];*/
+    ;
 }
 
 /*******************************************************************

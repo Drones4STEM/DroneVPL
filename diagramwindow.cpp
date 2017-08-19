@@ -1431,7 +1431,7 @@ void DiagramWindow::del()
         qDebug()<<"location_y: "<<item->pos().y();*/
         WidgetWrap tmp(item);
         wm->del(tmp);
-        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (LandonNode* item, itemLandons) {

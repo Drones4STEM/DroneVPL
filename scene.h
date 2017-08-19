@@ -53,7 +53,8 @@ public:
     bool CreateLogic(Rec* ln);
     bool CreateLink(Link* link);
 
-    bool CheckInLogic(WidgetWrap *tmp);
+    bool CheckInLogic();    //调用方法
+    bool check_in_Logic(WidgetWrap *tmp, QString operate);  //调用方法的内部工具
 
 
     int need_to_set;
