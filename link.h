@@ -3,9 +3,11 @@
 
 #include <QGraphicsLineItem>
 #include "itemtypes.h"
+#include "rec.h"
 
 class Node;
 class Yuan;
+class Rec;
 
 /*******************************************************************
  * Class name: Link
@@ -37,6 +39,9 @@ public:
     QString identifier;
     int controlsId;
     QString name;
+
+    Rec* toLogic;
+    Rec* fromLogic;
 
 private:
     Yuan *myFromYuan;

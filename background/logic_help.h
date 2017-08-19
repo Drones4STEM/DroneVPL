@@ -33,10 +33,12 @@ public:
     void put_in_Logic(widget* w);
     QMap<QString, widget*> WidgetsInLOGIC;
 
+        LOGIC* LOG;     //指向对应的LOGIC
+
 private:
 
 
-    LOGIC* LOG;     //指向对应的LOGIC
+
     //int LOGname[1]; //保存LOG的名字
 
 };

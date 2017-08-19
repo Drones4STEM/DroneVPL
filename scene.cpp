@@ -93,7 +93,8 @@ void newscene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 
-    CreateLink(event);
+    Link* link = CreateLink(event);
+    CheckLinkOverLogic(link);
     //检查鼠标释放时生成/拖动的控件是否在Logic内
     CheckInLogic();
 
@@ -696,8 +697,9 @@ bool newscene::CreateLogic(QPointF point, int id)
     return true;
 }
 
-bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
+Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 {
+    Link* new_link = 0;
     if(new_yuan->myLinks.size()!=0)
     {
         foreach (Link* link,new_yuan->myLinks)
@@ -710,7 +712,7 @@ bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
               {
                   if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0&&dynamic_cast<triYuan *>(new_yuan->collidingItems()[i])==0)
                   {
-                      Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
+                      new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
                                         dynamic_cast<Yuan *>(new_yuan->collidingItems()[i]));
                       new_link->setZValue(100);
                       this->addItem(new_link);
@@ -735,6 +737,7 @@ bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
         new_yuan->setPos(0,0);
 
     }
+    return new_link;
 }
 
 //----------------从xml文件创建控件-----------------------
@@ -753,7 +756,7 @@ bool newscene::CreateTakeOff(TakeoffNode* node)
     this->addItem(node->yuan);
     this->takeoffNodeNum++;
      //node->set_master(tmp);
-
+    return true;
 }
 bool newscene::CreateLand(LandonNode* node)
 {
@@ -770,7 +773,8 @@ bool newscene::CreateLand(LandonNode* node)
     node->yuan2->setPos(QPointF((node->pos().x()),
                        (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
     this->addItem(node->yuan2);
-     this->landonNodeNum++;
+    this->landonNodeNum++;
+    return true;
 }
 bool newscene::CreateGo(TranslationNode* node)
 {
@@ -810,6 +814,7 @@ bool newscene::CreateGo(TranslationNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    return true;
 }
 bool newscene::CreateTurn(TurnNode* node)
 {
@@ -843,6 +848,7 @@ bool newscene::CreateTurn(TurnNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    return true;
 }
 bool newscene::CreateHover(HoverNode* node)
 {
@@ -867,6 +873,7 @@ bool newscene::CreateHover(HoverNode* node)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
     this->HoverNodeNum++;
+    return true;
 }
 bool newscene::CreateDelay(DelayNode *node)
 {
@@ -891,6 +898,7 @@ bool newscene::CreateDelay(DelayNode *node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    return true;
 }
 bool newscene::CreateVarType(VarNode* node)
 {
@@ -1118,21 +1126,24 @@ bool newscene::CreateLink(Link* link)
 }
 //------------------------------------------------------
 
-bool newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
+Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
 {
     bool flag;
     typename QMap<QString, LOGIC_Help*>::iterator iter;
+    LOGIC_Help* lh;
     for(iter=LHM->begin();iter!=LHM->end();iter++){
-        LOGIC_Help* lh = iter.value();
+        lh = iter.value();
         flag = lh->in_LOGIC(tmp);
+
+        qDebug()<<"scene::CheckInLogic():";
+        qDebug()<<operate<<" "<<flag;
+
         if(flag){
             if(operate=="add")  lh->put_in_Logic(tmp);
             else if(operate=="del") lh->WidgetsInLOGIC.remove(tmp->name);
-        }
-        qDebug()<<"scene::CheckInLogic():";
-        qDebug()<<operate<<" "<<flag;
+            return lh->LOG;
+        }else return 0;
     }
-    return flag;
 }
 
 bool newscene::CheckInLogic()
@@ -1159,5 +1170,15 @@ bool newscene::CheckInLogic()
             }
         }
     }
+    return true;
+}
+
+bool newscene::CheckLinkOverLogic(Link *link)
+{
+    if(link==0) return false;
+    Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
+    Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
+    if(rec1==0 && rec2!=0)  link->toLogic = rec2;
+    if(rec2==0 && rec1!=0)  rec1->llink = link;
     return true;
 }

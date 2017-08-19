@@ -12,11 +12,13 @@
 #include "node.h"
 #include "newnode.h"
 #include "itemtypes.h"
+#include "link.h"
 
 
 class NewNode;
 class DiagramWindow;
 class Yuan;
+class Link;
 
 /*******************************************************************
  * Class name: Rec
@@ -50,7 +52,7 @@ public:
     QString identifier;
     int controlsId;
 
-
+    Link* llink;
 private:
     QRectF mBoundingRect;
 

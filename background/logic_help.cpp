@@ -43,10 +43,10 @@ bool LOGIC_Help::in_LOGIC(widget* w)
     qDebug()<<"LOG->wide " <<LOG->wide;
     qDebug()<<"LOG->high " <<LOG->high;
 
-    if( w->pos().x() - w->wide > LOG->pos().x() - LOG->wide   //横坐标包含
-         && w->pos().x() + w->wide < LOG->pos().x() + LOG->wide
-         && w->pos().y() - w->high > LOG->pos().y() - LOG->high  //纵坐标包含
-         && w->pos().y() + w->high < LOG->pos().y() + LOG->high)
+    if( w->pos().x() - w->wide/2 > LOG->pos().x() - LOG->wide/2   //横坐标包含
+         && w->pos().x() + w->wide/2 < LOG->pos().x() + LOG->wide/2
+         && w->pos().y() - w->high/2 > LOG->pos().y() - LOG->high/2  //纵坐标包含
+         && w->pos().y() + w->high/2 < LOG->pos().y() + LOG->high/2)
         return true;
     else
         return false;

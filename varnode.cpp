@@ -25,6 +25,7 @@ VarNode::VarNode()
     }
 
     identifier="VarNode";
+    sethw();
 }
 
 VarNode::~VarNode()
@@ -46,6 +47,7 @@ QPolygonF VarNode::outlineRect() const
     QPolygonF poly;
     poly<<QPointF(10,16)<<QPointF(20,0)<<QPointF(10,-16)
        <<QPointF(-10,-16)<<QPointF(-20,0)<<QPointF(-10,16);
+
     return poly;
 }
 

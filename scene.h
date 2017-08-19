@@ -8,6 +8,8 @@
 #include "widgetmap.h"
 #include "logic_help.h"
 
+typedef Rec Logic;
+
 //class DiagramWindow;
 /********************************************************************
 * Class name: newscene
@@ -37,7 +39,7 @@ public:
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
-    bool CreateLink(QGraphicsSceneMouseEvent* event);
+    Link* CreateLink(QGraphicsSceneMouseEvent* event);
 
     //从xml文件创建控件
     bool CreateTakeOff(TakeoffNode* ton);
@@ -54,7 +56,8 @@ public:
     bool CreateLink(Link* link);
 
     bool CheckInLogic();    //调用方法
-    bool check_in_Logic(WidgetWrap *tmp, QString operate);  //调用方法的内部工具
+    Rec *check_in_Logic(WidgetWrap *tmp, QString operate);  //调用方法的内部工具
+    bool CheckLinkOverLogic(Link* link);
 
 
     int need_to_set;

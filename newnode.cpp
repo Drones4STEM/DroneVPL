@@ -56,6 +56,7 @@ void NewNode::setText(const QString &text)
     prepareGeometryChange();
     myText = text;
     update();
+    sethw();
 }
 
 QString NewNode::text() const

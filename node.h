@@ -46,6 +46,7 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget);
     void sethw();
     void setxy(QPointF point);   //从绘图时传入的point决定
+    //这个函数暂时没实质作用，因为QT提供了自己的实时追踪坐标的pos（）函数
 /*
     bool set_controlsId(int id);
     bool set_identifier(QString idtf);
