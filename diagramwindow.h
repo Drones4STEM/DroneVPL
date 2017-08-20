@@ -178,6 +178,7 @@ private:
     Yuan *selectedYuan() const;
     YuanPair selectedYuanPair() const;
     Rec *selectedRec() const;
+    bool sceneHasItems() const;
 
     QMenu *fileMenu;
     QMenu *editMenu;

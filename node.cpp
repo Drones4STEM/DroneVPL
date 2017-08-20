@@ -59,6 +59,7 @@ void Node::setText(const QString &text)
     prepareGeometryChange();
     myText = text;
     update();
+    emit dirty();
     sethw();
 }
 
@@ -131,6 +132,7 @@ QPoint Node::position()const
 void Node::setPosition()           //在控件移动时，改变myPosition变量
 {
     myPosition = pos().toPoint();
+    emit dirty();
 }
 
 /*
@@ -271,7 +273,8 @@ QVariant Node::itemChange(GraphicsItemChange change,
         else{
             setPos(yuan->pos().x(),
                           yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
-        }}
+        }
+    }
     return QGraphicsItem::itemChange(change, value);
 }
 

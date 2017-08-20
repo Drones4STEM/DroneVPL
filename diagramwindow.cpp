@@ -1714,15 +1714,25 @@ void DiagramWindow::updateActions()
     bool isNode = (selectedNode() != 0||selectedNewNode()!=0);
     bool isYuanPair = (selectedYuanPair() != YuanPair());
     bool isRec = (selectedRec() != 0);
-    bool hasSelection = !scene->selectedItems().isEmpty();
 
-    cutAction->setEnabled(isNode);
-    copyAction->setEnabled(isNode);
+    fileSaveAction->setEnabled(isWindowModified());
+    bool hasItems=sceneHasItems();
+    fileSaveAsAction->setEnabled(hasItems);
+    fileExportAction->setEnabled(hasItems);
+    filePrintAction->setEnabled(hasItems);
+    int selected=scene->selectedItems().count();
+    cutAction->setEnabled(selected>=1);
+    copyAction->setEnabled(selected>=1);
+    deleteAction->setEnabled(selected>=1);
+    //pasteAction未写  以下为参考
+    /*QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    editPasteAction->setEnabled(mimeData &&
+            (mimeData->hasFormat(MimeType) || mimeData->hasHtml() ||
+             mimeData->hasText()));*/
     addLinkAction->setEnabled(isYuanPair);
-    deleteAction->setEnabled(hasSelection);
     bringToFrontAction->setEnabled(isNode||isRec);
     sendToBackAction->setEnabled(isNode||isRec);
-    propertiesAction->setEnabled(isNode);
 
     foreach (QAction *action, view->actions())
         view->removeAction(action);
@@ -1731,6 +1741,15 @@ void DiagramWindow::updateActions()
         if (action->isEnabled())
         view->addAction(action);
     }
+}
+
+bool DiagramWindow::sceneHasItems() const
+{
+    foreach (QGraphicsItem *item, scene->items()) {
+        if(item!=gridGroup && item->group()!=gridGroup)
+            return true;
+    }
+    return false;
 }
 
 /*******************************************************************

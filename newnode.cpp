@@ -58,6 +58,7 @@ void NewNode::setText(const QString &text)
 {
     prepareGeometryChange();
     myText = text;
+    emit dirty();
     update();
     sethw();
 }
@@ -132,6 +133,7 @@ QPoint NewNode::position()const
 void NewNode::setPosition()           //在控件移动时，改变myPosition变量
 {
     myPosition = pos().toPoint();
+    emit dirty();
 }
 /*
 bool NewNode::set_controlsId(int id)
