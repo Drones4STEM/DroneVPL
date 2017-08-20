@@ -734,7 +734,6 @@ void DiagramWindow::connectItem(QObject *item)
 {
     connect(item,SIGNAL(dirty()),this,SLOT(setDirty()));
     connect(item,SIGNAL(positionChanged(QPoint)),positionWidget,SLOT(setPosition(QPoint)));
-    //connect(positionWidget,SIGNAL(positionChanged(QPoint)),item,SLOT(changePosition(QPoint)));
     const QMetaObject *metaObject = item->metaObject();
     if(metaObject->indexOfProperty("textColor")>-1)
         connect(colorWidget,SIGNAL(textColorChanged(QColor)),
@@ -2435,10 +2434,11 @@ void DiagramWindow::selectionChanged()
             if(item->property("backgroundColor").isValid())
                 colorWidget->setBackgroundColor(
                             item->property("backgroundColor").value<QColor>());
+            if(item->property("myIdentifier").isValid())
+                colorWidget->setIdentifier(
+                            item->property("myIdentifier").value<QString>());
             if(item->property("position").isValid())
                 positionWidget->setPosition(item->property("position").value<QPoint>());
-            qDebug()<<item->property("position").value<QPoint>().x();
-            qDebug()<<item->property("position").value<QPoint>().y();
         }
     }
 }

@@ -2,6 +2,7 @@
 #include "aqp/alt_key.hpp"
 #include "QFormLayout"
 #include "swatch.h"
+#include "QDebug"
 
 ColorWidget::ColorWidget(QWidget *parent)
     :QWidget(parent)
@@ -10,6 +11,7 @@ ColorWidget::ColorWidget(QWidget *parent)
     setTextColor(QColor());
     setOutlineColor(QColor());
     setBackgroundColor(QColor());
+    setIdentifier(NULL);
     createLayout();
     createConnections();
     setFixedSize(minimumSizeHint());
@@ -32,12 +34,14 @@ void ColorWidget::createWidgets()
         QColor color(name);
         backgroundColorComboBox->addItem(colorSwatch(color),name,color);
     }
+    identifierLabel = new QLabel;
 }
 
 
 void ColorWidget::createLayout()
 {
     QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("type"),identifierLabel);
     layout->addRow(tr("textColor"),textColorComboBox);
     layout->addRow(tr("outlineColor"),outlineColorComboBox);
     layout->addRow(tr("backgroundColor"),backgroundColorComboBox);
@@ -80,6 +84,13 @@ void ColorWidget::setBackgroundColor(const QColor &color)
         m_backgroundColor=color;
     backgroundColorComboBox->setCurrentIndex(
                 backgroundColorComboBox->findData(m_backgroundColor));
+}
+
+void ColorWidget::setIdentifier(const QString str)
+{
+    if(m_identifier!=str)
+        m_identifier=str;
+    identifierLabel->setText(m_identifier);
 }
 
 void ColorWidget::updateTextColor(int index)

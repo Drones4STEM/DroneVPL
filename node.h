@@ -28,6 +28,7 @@ class Node : public QGraphicsObject
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
     Q_PROPERTY(QColor outlineColor READ outlineColor WRITE setOutlineColor)
     Q_PROPERTY(QPoint position READ position WRITE setPosition)
+    Q_PROPERTY(QString myIdentifier READ myIdentifier)
 
 public:
     Node();
@@ -39,6 +40,8 @@ public:
     QColor outlineColor() const;    
     QColor backgroundColor() const;
     QPoint position() const;
+    QString myIdentifier() const {return identifier;}
+
     int roundness(double size) const;
 
     QRectF outlineRect() const;

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QLabel>
 
 
 class ColorWidget:public QWidget
@@ -17,12 +18,13 @@ public:
     QColor m_textColor;
     QColor m_outlineColor;
     QColor m_backgroundColor;
-    QPointF m_pos;
+    QString m_identifier;
 
 public slots:
     void setTextColor(const QColor &color);
     void setOutlineColor(const QColor &color);
     void setBackgroundColor(const QColor &color);
+    void setIdentifier(const QString str);
 signals:
     void textColorChanged(const QColor &color);
     void outlineColorChanged(const QColor &color);
@@ -40,6 +42,7 @@ private:
     QComboBox *textColorComboBox;
     QComboBox *outlineColorComboBox;
     QComboBox *backgroundColorComboBox;
+    QLabel *identifierLabel;
 };
 
 
