@@ -94,7 +94,7 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 
     Link* link = CreateLink(event);
-    CheckLinkOverLogic(link);
+    CheckLinkOverLogic(link);   //检查link是否穿越logic
     //检查鼠标释放时生成/拖动的控件是否在Logic内
     CheckInLogic();
 
@@ -650,7 +650,7 @@ bool newscene::CreateIO(QPointF point, int id)
     node->node2->yuan->name = "n2yuan";
     node->node3->yuan->master = tmp;
     node->node3->yuan->name = "n3yuan";
-
+    return true;
 }
 
 bool newscene::CreateLogic(QPointF point, int id)
@@ -916,6 +916,7 @@ bool newscene::CreateVarType(VarNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    return true;
 }
 bool newscene::CreateVarDef(VardefNode* vdn)
 {   //先设定不论从哪里生成控件都会需要的公共的属性
@@ -937,6 +938,7 @@ bool newscene::CreateVarDef(VardefNode* vdn)
     qDebug()<<"name :"<<vdn->name;
     qDebug()<<"identifier :"<<vdn->identifier;
     qDebug()<<"controlsId :"<<vdn->controlsId;
+    return true;
 }
 bool newscene::CreateCompute(ComputeNode *node)
 {
@@ -980,6 +982,7 @@ bool newscene::CreateCompute(ComputeNode *node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    return true;
 }
 bool newscene::CreateIO(IoNode* node)
 {
@@ -1030,6 +1033,7 @@ bool newscene::CreateIO(IoNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    return true;
 }
 bool newscene::CreateLogic(Rec *rec)
 {
@@ -1152,16 +1156,25 @@ bool newscene::CheckInLogic()
     typename QList<QGraphicsItem *>::iterator liter;
     typename QMap<QString, widget>::iterator miter;
     QMap<QString, widget>& m = wm->get_map();
+
     for(liter=items.begin();liter!=items.end();liter++){
         QGraphicsItem * t = *liter;
         NewNode* n1 = dynamic_cast<NewNode *>(t);
         Node* n2 = dynamic_cast<Node *>(t);
         if(n1!=0){
-            for(miter=m.begin();miter!=m.end();miter++){
-                if(n1->name == miter->name){
+            if(n1->identifier=="Logic"){
+                for(miter=m.begin();miter!=m.end();miter++){
+                    //这个函数会遍历所有Logic进行检查
                     check_in_Logic(&(miter.value()),"add");
                 }
+            }else{
+                for(miter=m.begin();miter!=m.end();miter++){
+                    if(n1->name == miter->name){
+                        check_in_Logic(&(miter.value()),"add");
+                    }
+                }
             }
+
         }else if(n2!=0){
             for(miter=m.begin();miter!=m.end();miter++){
                 if(n2->name == miter->name){
@@ -1179,6 +1192,6 @@ bool newscene::CheckLinkOverLogic(Link *link)
     Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
     Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
     if(rec1==0 && rec2!=0)  link->toLogic = rec2;
-    if(rec2==0 && rec1!=0)  rec1->llink = link;
+    if(rec2==0 && rec1!=0)  rec1->llink<<link;
     return true;
 }

@@ -1421,6 +1421,20 @@ void DiagramWindow::del()
             itemVars<<dynamic_cast<VarNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
+        typename QMap<QString, LOGIC_Help*>::iterator iter;
+        //typename QList<Link*>::iterator it;
+        LOGIC_Help* lh;
+        Link* link;
+        for(iter=LHM->begin();iter!=LHM->end();iter++){
+            lh = iter.value();
+            for(int i=0;i<lh->LOG->llink.length();i++){
+                link = lh->LOG->llink[i];
+                if(link->name==item->name){
+                    lh->LOG->llink.removeOne(link);
+                }
+            }
+
+        }
         delete item;
     }
     foreach (TakeoffNode* item, itemTakeoffs) {

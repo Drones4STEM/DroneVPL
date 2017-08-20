@@ -92,13 +92,18 @@ void digraph::DFS(widget* w)
 {
     if(visited.value(w->name)==0){
         visited[w->name]=1;
-        if(w->get_yuan_out() != NULL){
-            QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
-            for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
-                //widget* ww = it.next()->mytoyuan->node;
-                DFS(it.next()->toYuan()->master);
+        if(w->identifier!="Logic"){
+            if(w->get_yuan_out() != NULL){
+                QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
+                for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
+                    //widget* ww = it.next()->mytoyuan->node;
+                    DFS(it.next()->toYuan()->master);
+                }
             }
+        }else{
+
         }
+
         Stack.push(*w);  //加入结果集
     }
 }

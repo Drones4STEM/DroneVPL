@@ -52,7 +52,7 @@ public:
     QString identifier;
     int controlsId;
 
-    Link* llink;
+    QList<Link*> llink;
 private:
     QRectF mBoundingRect;
 
