@@ -215,8 +215,8 @@ bool newscene::CreateTakeOff(QPointF point, int id)
 
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
-
-
+  
+    emit sig_connectItem(node);//发送连接item的信号到diagramwindow
     return true;
 }
 
@@ -248,6 +248,9 @@ bool newscene::CreateLand(QPointF point, int id)
         else qDebug()<<"CreateLand()   wm's QMap is not empty";
     node->yuan2->master = tmp;
     node->yuan2->name = "yuan2";
+
+    emit sig_connectItem(node);
+
     return true;
 }
 
@@ -302,6 +305,7 @@ bool newscene::CreateGo(QPointF point, int id)
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
 
+    emit sig_connectItem(node);
     return true;
 }
 
@@ -351,6 +355,9 @@ bool newscene::CreateTurn(QPointF point, int id)
     node->yuan2->name = "yuan2";
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
+
+    emit sig_connectItem(node);
+
     return true;
 }
 
@@ -390,6 +397,8 @@ bool newscene::CreateHover(QPointF point, int id)
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
 
+    emit sig_connectItem(node);
+
     return true;
 }
 
@@ -428,6 +437,9 @@ bool newscene::CreateDelay(QPointF point, int id)
     node->yuan2->name = "yuan2";
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
+
+    emit sig_connectItem(node);
+
     return true;
 }
 
@@ -455,6 +467,9 @@ bool newscene::CreateVarType(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+
+    emit sig_connectItem(node);
+
     return true;
 }
 
@@ -520,6 +535,9 @@ bool newscene::CreateVarDef(QPointF point, int id)
     vdn->yuan2->name = "yuan2";
     vdn->yuan->master = tmp;
     vdn->yuan->name = "yuan";
+
+    emit sig_connectItem(vdn);
+
     return true;
 }
 
@@ -580,6 +598,9 @@ bool newscene::CreateCompute(QPointF point, int id)
     node->yuan->name = "yuan";
     node->yuan3->master = tmp;
     node->yuan3->name = "yuan3";
+
+    emit sig_connectItem(node);
+
     return true;
 }
 
@@ -650,7 +671,10 @@ bool newscene::CreateIO(QPointF point, int id)
     node->node2->yuan->name = "n2yuan";
     node->node3->yuan->master = tmp;
     node->node3->yuan->name = "n3yuan";
+    emit sig_connectItem(node);
+
     return true;
+
 }
 
 bool newscene::CreateLogic(QPointF point, int id)
@@ -691,6 +715,8 @@ bool newscene::CreateLogic(QPointF point, int id)
     wm->add(tmp);            //添加到widgetmap中
     rec->yuan2->master = tmp;
     rec->yuan2->name = "yuan2";
+
+    emit sig_connectItem(rec);
 
     LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
     LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
@@ -756,7 +782,11 @@ bool newscene::CreateTakeOff(TakeoffNode* node)
     this->addItem(node->yuan);
     this->takeoffNodeNum++;
      //node->set_master(tmp);
+
+    emit sig_connectItem(node);
+
     return true;
+
 }
 bool newscene::CreateLand(LandonNode* node)
 {
@@ -773,7 +803,10 @@ bool newscene::CreateLand(LandonNode* node)
     node->yuan2->setPos(QPointF((node->pos().x()),
                        (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
     this->addItem(node->yuan2);
-    this->landonNodeNum++;
+     this->landonNodeNum++;
+
+    emit sig_connectItem(node);
+
     return true;
 }
 bool newscene::CreateGo(TranslationNode* node)
@@ -814,6 +847,9 @@ bool newscene::CreateGo(TranslationNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+
+    emit sig_connectItem(node);
+
     return true;
 }
 bool newscene::CreateTurn(TurnNode* node)
@@ -848,6 +884,9 @@ bool newscene::CreateTurn(TurnNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+
+    emit sig_connectItem(node);
+
     return true;
 }
 bool newscene::CreateHover(HoverNode* node)
@@ -873,6 +912,9 @@ bool newscene::CreateHover(HoverNode* node)
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
     this->HoverNodeNum++;
+
+    emit sig_connectItem(node);
+
     return true;
 }
 bool newscene::CreateDelay(DelayNode *node)
@@ -898,6 +940,9 @@ bool newscene::CreateDelay(DelayNode *node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+
+    emit sig_connectItem(node);
+
     return true;
 }
 bool newscene::CreateVarType(VarNode* node)
@@ -916,6 +961,8 @@ bool newscene::CreateVarType(VarNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
     return true;
 }
 bool newscene::CreateVarDef(VardefNode* vdn)
@@ -938,6 +985,8 @@ bool newscene::CreateVarDef(VardefNode* vdn)
     qDebug()<<"name :"<<vdn->name;
     qDebug()<<"identifier :"<<vdn->identifier;
     qDebug()<<"controlsId :"<<vdn->controlsId;
+    emit sig_connectItem(vdn);
+
     return true;
 }
 bool newscene::CreateCompute(ComputeNode *node)
@@ -982,7 +1031,12 @@ bool newscene::CreateCompute(ComputeNode *node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+
+    emit sig_connectItem(node);
+
     return true;
+    
+
 }
 bool newscene::CreateIO(IoNode* node)
 {
@@ -1033,7 +1087,10 @@ bool newscene::CreateIO(IoNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
     return true;
+
 }
 bool newscene::CreateLogic(Rec *rec)
 {
@@ -1064,6 +1121,9 @@ bool newscene::CreateLogic(Rec *rec)
     qDebug()<<"name :"<<rec->name;
     qDebug()<<"identifier :"<<rec->identifier;
     qDebug()<<"controlsId :"<<rec->controlsId;
+
+    emit sig_connectItem(rec);
+    return true;
 }
 bool newscene::CreateWidgets()
 {

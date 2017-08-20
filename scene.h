@@ -87,6 +87,7 @@ public:
 signals:
     void itemInserted(int index);
     void sig_bringtofront();
+    void sig_connectItem(QObject *item);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);

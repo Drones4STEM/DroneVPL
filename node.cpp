@@ -36,6 +36,10 @@ Node::Node()
     controlsId=0;
     identifier="Node";
 
+    connect(this,SIGNAL(xChanged()),this,SLOT(emitSignal()));
+    connect(this,SIGNAL(yChanged()),this,SLOT(emitSignal()));
+    connect(this,SIGNAL(positionChanged(QPoint)),this,SLOT(setPosition()));
+
 }
 
 /*******************************************************************
@@ -65,8 +69,12 @@ QString Node::text() const
 
 void Node::setTextColor(const QColor &color)
 {
-    myTextColor = color;
-    update();
+    if(isSelected()&&color!=textColor())
+    {
+        myTextColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor Node::textColor() const
@@ -76,8 +84,12 @@ QColor Node::textColor() const
 
 void Node::setOutlineColor(const QColor &color)
 {
-    myOutlineColor = color;
-    update();
+    if(isSelected()&&color!=outlineColor())
+    {
+        myOutlineColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor Node::outlineColor() const
@@ -87,14 +99,40 @@ QColor Node::outlineColor() const
 
 void Node::setBackgroundColor(const QColor &color)
 {
-    myBackgroundColor = color;
-    update();
+    if(isSelected()&&color!=backgroundColor())
+    {
+        myBackgroundColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor Node::backgroundColor() const
 {
     return myBackgroundColor;
 }
+
+void Node::setPosition(QPoint pos)   //根据lineEdit的改变移动node
+{
+    if(isSelected()&&pos!=position())
+    {
+        myPosition = pos;
+        setPos(pos);
+        emit dirty();
+        update();
+    }
+}
+
+QPoint Node::position()const
+{
+    return myPosition;
+}
+
+void Node::setPosition()           //在控件移动时，改变myPosition变量
+{
+    myPosition = pos().toPoint();
+}
+
 /*
 bool Node::set_controlsId(int id)
 {
@@ -274,6 +312,12 @@ triYuan* Node::myYuan()const
     return yuan;
 }
 
+
+void Node::emitSignal()
+{
+    emit positionChanged(pos().toPoint());
+}
+
 void Node::sethw()
 {
     QRectF rect = outlineRect();
@@ -285,5 +329,4 @@ void Node::setxy(QPointF point)
 {
     lx = point.x();
     ly = point.y();
-
 }
