@@ -12,10 +12,13 @@
 #include "node.h"
 #include "newnode.h"
 #include "itemtypes.h"
+#include "link.h"
+
 
 class NewNode;
 class DiagramWindow;
 class Yuan;
+class Link;
 
 /*******************************************************************
  * Class name: Rec
@@ -40,6 +43,7 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget);
     void setText(const QString &text);
     QString text() const;
+    void setLogichw();  //newnode中有sethw，但logic的绘图方法和正常的控件不一样，故另写一个
 
     QComboBox *box;
     QGraphicsItem *item;
@@ -48,6 +52,7 @@ public:
     QString identifier;
     int controlsId;
 
+    Link* llink;
 private:
     QRectF mBoundingRect;
 

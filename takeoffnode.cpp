@@ -38,6 +38,7 @@ void TakeoffNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     time=t;
 
     setText(tr("take off\n %1 s").arg(t));
+
 }
 
 QDataStream &operator <<(QDataStream &out,const TakeoffNode &node)

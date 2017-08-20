@@ -50,6 +50,9 @@ Link::Link(Yuan *fromYuan, Yuan *toYuan)
 
     identifier="Link";
     controlsId=0;
+
+    toLogic = 0;
+    fromLogic = 0;
 }
 
 Link::~Link()

@@ -6,6 +6,9 @@
 #include "yuan.h"
 #include "newnode.h"
 #include "widgetmap.h"
+#include "logic_help.h"
+
+typedef Rec Logic;
 
 //class DiagramWindow;
 /********************************************************************
@@ -16,7 +19,7 @@ class newscene:public QGraphicsScene
 {
     Q_OBJECT
 public:
-    newscene(WidgetMap* m);
+    newscene(WidgetMap* m, QMap<QString,LOGIC_Help*>*L);
     ~newscene();
     specialYuan* new_yuan;
 
@@ -36,7 +39,7 @@ public:
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
-    bool CreateLink(QGraphicsSceneMouseEvent* event);
+    Link* CreateLink(QGraphicsSceneMouseEvent* event);
 
     //从xml文件创建控件
     bool CreateTakeOff(TakeoffNode* ton);
@@ -51,6 +54,10 @@ public:
     bool CreateIO(IoNode* ion);
     bool CreateLogic(Rec* ln);
     bool CreateLink(Link* link);
+
+    bool CheckInLogic();    //调用方法
+    Rec *check_in_Logic(WidgetWrap *tmp, QString operate);  //调用方法的内部工具
+    bool CheckLinkOverLogic(Link* link);
 
 
     int need_to_set;
@@ -75,6 +82,8 @@ public:
     int linkNodeNum;
 
     WidgetMap* wm;
+    QMap<QString,LOGIC_Help*>* LHM;
+
 signals:
     void itemInserted(int index);
     void sig_bringtofront();

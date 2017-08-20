@@ -32,8 +32,9 @@
 #include "propertiesdialog.h"
 #include "itemtypes.h"
 #include "map_instrument.h"
+#include "logic_help.h"
 
-newscene::newscene(WidgetMap* m)
+newscene::newscene(WidgetMap* m, QMap<QString, LOGIC_Help *> *L)
 {
     new_yuan=new specialYuan;
     setSceneRect(QRectF(QPointF(0,0), QSize(1000, 1000)));
@@ -60,6 +61,7 @@ newscene::newscene(WidgetMap* m)
     linkNodeNum=0;
 
     wm=m;
+    LHM = L;
 }
 
 newscene::~newscene()
@@ -91,7 +93,12 @@ void newscene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 
-    CreateLink(event);
+    Link* link = CreateLink(event);
+    CheckLinkOverLogic(link);
+    //检查鼠标释放时生成/拖动的控件是否在Logic内
+    CheckInLogic();
+
+
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
@@ -158,7 +165,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarDefNodeNum++;
-        CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
+        if(flag == false)   this->VarDefNodeNum--;
     }
     if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
         emit itemInserted(selected_Index);
@@ -188,6 +196,7 @@ bool newscene::CreateTakeOff(QPointF point, int id)
     node->setText(tr("take off\n %1 s").arg(node->time));
 
     node->setPos(point);
+    node->setxy(point);
     this->addItem(node);
 
     this->clearSelection();
@@ -206,7 +215,9 @@ bool newscene::CreateTakeOff(QPointF point, int id)
 
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
+  
     emit sig_connectItem(node);//发送连接item的信号到diagramwindow
+    return true;
 }
 
 bool newscene::CreateLand(QPointF point, int id)
@@ -237,7 +248,10 @@ bool newscene::CreateLand(QPointF point, int id)
         else qDebug()<<"CreateLand()   wm's QMap is not empty";
     node->yuan2->master = tmp;
     node->yuan2->name = "yuan2";
+
     emit sig_connectItem(node);
+
+    return true;
 }
 
 bool newscene::CreateGo(QPointF point, int id)
@@ -292,6 +306,7 @@ bool newscene::CreateGo(QPointF point, int id)
     node->yuan->name = "yuan";
 
     emit sig_connectItem(node);
+    return true;
 }
 
 bool newscene::CreateTurn(QPointF point, int id)
@@ -343,6 +358,7 @@ bool newscene::CreateTurn(QPointF point, int id)
 
     emit sig_connectItem(node);
 
+    return true;
 }
 
 bool newscene::CreateHover(QPointF point, int id)
@@ -382,6 +398,8 @@ bool newscene::CreateHover(QPointF point, int id)
     node->yuan->name = "yuan";
 
     emit sig_connectItem(node);
+
+    return true;
 }
 
 bool newscene::CreateDelay(QPointF point, int id)
@@ -421,6 +439,8 @@ bool newscene::CreateDelay(QPointF point, int id)
     node->yuan->name = "yuan";
 
     emit sig_connectItem(node);
+
+    return true;
 }
 
 bool newscene::CreateVarType(QPointF point, int id)
@@ -449,10 +469,12 @@ bool newscene::CreateVarType(QPointF point, int id)
     wm->add(tmp);            //添加到widgetmap中
 
     emit sig_connectItem(node);
+
+    return true;
 }
 
 bool newscene::CreateVarDef(QPointF point, int id)
-{   //先设定不论从哪里生成控件都会需要的公共的属性
+{
     VardefNode* vdn=new VardefNode;
     vdn->setPos(point);
 
@@ -516,6 +538,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
 
     emit sig_connectItem(vdn);
 
+    return true;
 }
 
 bool newscene::CreateCompute(QPointF point, int id)
@@ -578,6 +601,7 @@ bool newscene::CreateCompute(QPointF point, int id)
 
     emit sig_connectItem(node);
 
+    return true;
 }
 
 bool newscene::CreateIO(QPointF point, int id)
@@ -659,16 +683,16 @@ bool newscene::CreateLogic(QPointF point, int id)
     rec->item=item;
 
     rec->setPos(point);
+    rec->setxy(point);
     this->addItem(rec);
-    this->clearSelection();
-    rec->setSelected(true);
-
     this->clearSelection();
     rec->setSelected(true);
 
     rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));
     this->addItem(rec->yuan2);
+    this->addItem(rec->yuan);
 
     item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
                          (rec->pos().y() - rec->outlineRect().height()/2)));
@@ -676,6 +700,7 @@ bool newscene::CreateLogic(QPointF point, int id)
     rec->box->addItem(tr("if"));
     rec->box->addItem(tr("else"));
     rec->box->addItem(tr("while"));
+    rec->box->setCurrentIndex(0);
 
     rec->controlsId=id;
     rec->identifier="Logic";
@@ -692,10 +717,14 @@ bool newscene::CreateLogic(QPointF point, int id)
 
     emit sig_connectItem(rec);
 
+    LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
+    LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
+    return true;
 }
 
-bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
+Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 {
+    Link* new_link = 0;
     if(new_yuan->myLinks.size()!=0)
     {
         foreach (Link* link,new_yuan->myLinks)
@@ -708,7 +737,7 @@ bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
               {
                   if(dynamic_cast<Yuan *>(new_yuan->collidingItems()[i])!=0&&dynamic_cast<triYuan *>(new_yuan->collidingItems()[i])==0)
                   {
-                      Link* new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
+                      new_link=new Link(dynamic_cast<triYuan *>(this->selectedItems().first()),
                                         dynamic_cast<Yuan *>(new_yuan->collidingItems()[i]));
                       new_link->setZValue(100);
                       this->addItem(new_link);
@@ -733,6 +762,7 @@ bool newscene::CreateLink(QGraphicsSceneMouseEvent* event)
         new_yuan->setPos(0,0);
 
     }
+    return new_link;
 }
 
 //----------------从xml文件创建控件-----------------------
@@ -754,6 +784,8 @@ bool newscene::CreateTakeOff(TakeoffNode* node)
 
     emit sig_connectItem(node);
 
+    return true;
+
 }
 bool newscene::CreateLand(LandonNode* node)
 {
@@ -773,6 +805,8 @@ bool newscene::CreateLand(LandonNode* node)
      this->landonNodeNum++;
 
     emit sig_connectItem(node);
+
+    return true;
 }
 bool newscene::CreateGo(TranslationNode* node)
 {
@@ -814,6 +848,8 @@ bool newscene::CreateGo(TranslationNode* node)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     emit sig_connectItem(node);
+
+    return true;
 }
 bool newscene::CreateTurn(TurnNode* node)
 {
@@ -849,6 +885,8 @@ bool newscene::CreateTurn(TurnNode* node)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     emit sig_connectItem(node);
+
+    return true;
 }
 bool newscene::CreateHover(HoverNode* node)
 {
@@ -875,6 +913,8 @@ bool newscene::CreateHover(HoverNode* node)
     this->HoverNodeNum++;
 
     emit sig_connectItem(node);
+
+    return true;
 }
 bool newscene::CreateDelay(DelayNode *node)
 {
@@ -901,6 +941,8 @@ bool newscene::CreateDelay(DelayNode *node)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     emit sig_connectItem(node);
+
+    return true;
 }
 bool newscene::CreateVarType(VarNode* node)
 {
@@ -1134,5 +1176,63 @@ bool newscene::CreateLink(Link* link)
     link->setZValue(100);
     this->addItem(link);
     this->linkNodeNum++;
+    return true;
+}
+//------------------------------------------------------
+
+Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
+{
+    bool flag;
+    typename QMap<QString, LOGIC_Help*>::iterator iter;
+    LOGIC_Help* lh;
+    for(iter=LHM->begin();iter!=LHM->end();iter++){
+        lh = iter.value();
+        flag = lh->in_LOGIC(tmp);
+
+        qDebug()<<"scene::CheckInLogic():";
+        qDebug()<<operate<<" "<<flag;
+
+        if(flag){
+            if(operate=="add")  lh->put_in_Logic(tmp);
+            else if(operate=="del") lh->WidgetsInLOGIC.remove(tmp->name);
+            return lh->LOG;
+        }else return 0;
+    }
+}
+
+bool newscene::CheckInLogic()
+{
+    QList<QGraphicsItem *> items = this->selectedItems();
+    typename QList<QGraphicsItem *>::iterator liter;
+    typename QMap<QString, widget>::iterator miter;
+    QMap<QString, widget>& m = wm->get_map();
+    for(liter=items.begin();liter!=items.end();liter++){
+        QGraphicsItem * t = *liter;
+        NewNode* n1 = dynamic_cast<NewNode *>(t);
+        Node* n2 = dynamic_cast<Node *>(t);
+        if(n1!=0){
+            for(miter=m.begin();miter!=m.end();miter++){
+                if(n1->name == miter->name){
+                    check_in_Logic(&(miter.value()),"add");
+                }
+            }
+        }else if(n2!=0){
+            for(miter=m.begin();miter!=m.end();miter++){
+                if(n2->name == miter->name){
+                    check_in_Logic(&(miter.value()),"add");
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool newscene::CheckLinkOverLogic(Link *link)
+{
+    if(link==0) return false;
+    Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
+    Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
+    if(rec1==0 && rec2!=0)  link->toLogic = rec2;
+    if(rec2==0 && rec1!=0)  rec1->llink = link;
     return true;
 }

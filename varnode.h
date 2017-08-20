@@ -26,6 +26,9 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void sethw(){wide = 40; high = 32;}
+    //为了方便，直接在头文件里定死长宽，若修改outlineRect()中的六边形长宽，
+    //则这里的数据也要改
 
     QComboBox* box;
     QGraphicsItem* item;

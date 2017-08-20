@@ -25,12 +25,14 @@ VarNode::VarNode()
     }
 
     identifier="VarNode";
+    sethw();
 }
 
 VarNode::~VarNode()
-{
+{/*
     for(int i=0;i<6;i++)
-        delete array[i];
+        delete array[i];*/
+    ;
 }
 
 /*******************************************************************
@@ -45,6 +47,7 @@ QPolygonF VarNode::outlineRect() const
     QPolygonF poly;
     poly<<QPointF(10,16)<<QPointF(20,0)<<QPointF(10,-16)
        <<QPointF(-10,-16)<<QPointF(-20,0)<<QPointF(-10,16);
+
     return poly;
 }
 

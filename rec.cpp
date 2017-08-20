@@ -26,7 +26,7 @@ Rec::Rec()
 
     mBoundingRect = QRectF(0,0,400,400);
     mBoundingRect.translate(-mBoundingRect.center());
-
+    setLogichw();
 
     QRectF curRect = boundingRect().adjusted(0,10,0,-10);
 
@@ -47,6 +47,7 @@ Rec::Rec()
     connect(drag4, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(showYuan()));
+
 }
 
 Rec::~Rec()
@@ -154,6 +155,8 @@ QVariant Rec::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged) {
         yuan2->setPos(pos().x() - outlineRect().width()/2 + item->boundingRect().width()/2,
                      pos().y() - outlineRect().height()/2 + item->boundingRect().height()*1.5);
+        yuan->setPos(QPointF(pos().x(), pos().y() + outlineRect().height()*0.5));
+
         foreach (Link *link, yuan->myLinks)
         {link->trackYuans();update();}
 
@@ -173,15 +176,22 @@ void Rec::showYuan()
 {
     int i=box->currentIndex();
     switch (i) {
-    case 0:
-    case 2:
+    case 0://if
     {
         yuan2->setVisible(true);
+        yuan->setVisible(true);
         break;
     }
     case 1:
-    {
-        yuan2->setVisible(false);
+    {//else
+        yuan2->setVisible(true);
+        yuan->setVisible(false);
+        break;
+    }
+    case 2:
+    {//while
+        yuan2->setVisible(true);
+        yuan->setVisible(false);
         break;
     }
     default:
@@ -208,3 +218,8 @@ void Rec::slot_changeRect()
 }
 
 
+void Rec::setLogichw()
+{
+    high = mBoundingRect.height();
+    wide = mBoundingRect.width();
+}

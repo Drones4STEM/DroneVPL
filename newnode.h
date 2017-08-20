@@ -46,6 +46,9 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    void sethw();
+    void setxy(QPointF point);
 /*
     bool set_controlsId(int id);
     bool set_identifier(QString idtf);
@@ -62,6 +65,7 @@ public:
     QString name;   //identifier+controlsId
     //WidgetWrap* wrap;
     int lx,ly;
+    int high,wide;
 
 signals:
     void dirty();

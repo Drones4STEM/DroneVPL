@@ -10,6 +10,7 @@
 
 class Link;
 class Node;
+class WidgetWrap;
 
 /*******************************************************************
  * Class name: Yuan
