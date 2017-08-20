@@ -35,6 +35,7 @@
 #include "canvasdialog.h"
 #include "itemtypes.h"
 #include "widgetcondition.h"
+#include "propertywidget.h"
 #include "oDocument.h"
 #include "odescription.h"
 #include "format.h"
@@ -148,6 +149,7 @@ DiagramWindow::DiagramWindow()
     createMenus();
     createToolBars();
     createWidgetConditionBar(widgetCondition);
+    createDockWidgets();
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
@@ -161,6 +163,10 @@ DiagramWindow::DiagramWindow()
             this,SLOT(changeNodeNum(int)));
     connect(scene,SIGNAL(sig_bringtofront()),
             this,SLOT(bringToFront()));
+    connect(scene,SIGNAL(sig_connectItem(QObject*)),
+            this,SLOT(connectItem(QObject*)));
+    connect(scene,SIGNAL(selectionChanged()),
+            this,SLOT(selectionChanged()));
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -725,6 +731,26 @@ void DiagramWindow::filePrint()
     }
     statusBar()->showMessage(tr("Printed %1")
              .arg(windowFilePath()),StatusTimeout);
+}
+
+void DiagramWindow::connectItem(QObject *item)
+{
+    connect(item,SIGNAL(dirty()),this,SLOT(setDirty()));
+    connect(item,SIGNAL(positionChanged(QPoint)),positionWidget,SLOT(setPosition(QPoint)));
+    const QMetaObject *metaObject = item->metaObject();
+    if(metaObject->indexOfProperty("textColor")>-1)
+        connect(colorWidget,SIGNAL(textColorChanged(QColor)),
+                item,SLOT(setTextColor(const QColor&)));
+    if(metaObject->indexOfProperty("outlineColor")>-1)
+        connect(colorWidget,SIGNAL(outlineColorChanged(QColor)),
+                item,SLOT(setOutlineColor(const QColor&)));
+    if(metaObject->indexOfProperty("backgroundColor")>-1)
+        connect(colorWidget,SIGNAL(backgroundColorChanged(QColor)),
+                item,SLOT(setBackgroundColor(const QColor&)));
+    if(metaObject->indexOfProperty("position")>-1)
+        connect(positionWidget,SIGNAL(positionChanged(QPoint)),
+                 item,SLOT(setPosition(QPoint)));
+
 }
 
 /*******************************************************************
@@ -2209,6 +2235,25 @@ void DiagramWindow::createWidgetConditionBar(WidgetCondition *widgetCondition)
     addDockWidget(Qt::RightDockWidgetArea, rightside);
 }
 
+void DiagramWindow::createDockWidgets()
+{
+    setDockOptions(QMainWindow::AnimatedDocks);
+    QDockWidget::DockWidgetFeatures features =
+            QDockWidget::DockWidgetMovable|
+            QDockWidget::DockWidgetFloatable;
+    colorWidget = new ColorWidget;
+    QDockWidget *colorDockWidget = new QDockWidget(
+                tr("Color"),this);
+    colorDockWidget->setFeatures(features);
+    colorDockWidget->setWidget(colorWidget);
+    addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
+    positionWidget = new PositionWidget;
+    QDockWidget *positionDockWidget = new QDockWidget(
+                tr("Position"),this);
+    positionDockWidget->setWidget(positionWidget);
+    addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+}
+
 /*******************************************************************
  * Function name: setZValue()
  * Description: This function changes the Z-coordinate of item.
@@ -2401,4 +2446,30 @@ bool DiagramWindow::conditionChanged(){
             emit passWidget(item);
     }
     return true;
+}
+
+
+void DiagramWindow::selectionChanged()
+{
+    QList<QGraphicsItem*>items = scene->selectedItems();
+    if(items.count()==1)
+    {
+        if(QObject *item = dynamic_cast<QObject*>(items.at(0)))
+        {
+            if(item->property("textColor").isValid())
+                colorWidget->setTextColor(
+                            item->property("textColor").value<QColor>());
+            if(item->property("outlineColor").isValid())
+                colorWidget->setOutlineColor(
+                            item->property("outlineColor").value<QColor>());
+            if(item->property("backgroundColor").isValid())
+                colorWidget->setBackgroundColor(
+                            item->property("backgroundColor").value<QColor>());
+            if(item->property("myIdentifier").isValid())
+                colorWidget->setIdentifier(
+                            item->property("myIdentifier").value<QString>());
+            if(item->property("position").isValid())
+                positionWidget->setPosition(item->property("position").value<QPoint>());
+        }
+    }
 }

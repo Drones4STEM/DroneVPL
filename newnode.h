@@ -19,20 +19,25 @@ class triYuan;
 ******************************************************************/
 class NewNode : public QGraphicsObject
 {
-    //Q_DECLARE_TR_FUNCTIONS(Yuan)
+    Q_OBJECT
+    Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+    Q_PROPERTY(QColor outlineColor READ outlineColor WRITE setOutlineColor)
+    Q_PROPERTY(QPoint position READ position WRITE setPosition)
+    Q_PROPERTY(QString myIdentifier READ myIdentifier)
+
 
 public:
     NewNode();
     ~NewNode();
 
     void setText(const QString &text);
-    QString text() const;
-    void setTextColor(const QColor &color);
-    QColor textColor() const;
-    void setOutlineColor(const QColor &color);
-    QColor outlineColor() const;
-    void setBackgroundColor(const QColor &color);
+    QString text() const;    
+    QColor textColor() const;    
+    QColor outlineColor() const;    
     QColor backgroundColor() const;
+    QPoint position() const;
+    QString myIdentifier() const {return identifier;}
     int roundness(double size) const;
 
 
@@ -62,6 +67,18 @@ public:
     int lx,ly;
     int high,wide;
 
+signals:
+    void dirty();
+    void positionChanged(QPoint pos);
+
+public slots:
+    void setTextColor(const QColor &color);
+    void setOutlineColor(const QColor &color);
+    void setBackgroundColor(const QColor &color);
+    void setPosition(QPoint pos);
+    void setPosition();
+    void emitSignal();//接受xChanged/yChanged信号，并发送positionChanged信号
+
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
@@ -72,6 +89,7 @@ private:
     QColor myTextColor;
     QColor myBackgroundColor;
     QColor myOutlineColor;
+    QPoint myPosition;
 };
 
 #endif
