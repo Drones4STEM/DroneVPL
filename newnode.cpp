@@ -35,6 +35,7 @@ NewNode::NewNode()
 
     identifier="NewNode";
     controlsId=0;
+
 }
 
 /*******************************************************************
@@ -55,6 +56,7 @@ void NewNode::setText(const QString &text)
     prepareGeometryChange();
     myText = text;
     update();
+    sethw();
 }
 
 QString NewNode::text() const
@@ -189,6 +191,7 @@ void NewNode::paint(QPainter *painter,
 
     painter->setPen(myTextColor);
     painter->drawText(rect, Qt::AlignCenter, myText);
+
 }
 
 /*******************************************************************
@@ -267,4 +270,18 @@ int NewNode::roundness(double size) const
 Yuan* NewNode::myYuan()const
 {
     return yuan;
+}
+
+void NewNode::sethw()
+{
+    QRectF rect = outlineRect();
+    high = rect.height();
+    wide = rect.width();
+}
+
+void NewNode::setxy(QPointF point)
+{
+    lx = point.x();
+    ly = point.y();
+
 }

@@ -6,8 +6,9 @@
 #include <QMap>
 #include <QString>
 #include "map_instrument.h"
-#include "E:dachuang/QT_project/workspace/diagram1/rec.h"
+#include "rec.h"
 typedef Rec LOGIC;
+typedef WidgetWrap widget;
 
 /***************************************************
  * Class name: LOGIC_instrument
@@ -21,27 +22,25 @@ typedef Rec LOGIC;
  *     receive this signal and do the first funciton.
 ****************************************************/
 
-//template <class widget>
-class LOGIC_instrument : public QObject
+class LOGIC_Help
 {
-    Q_OBJECT
 public:
 
-    explicit LOGIC_instrument(LOGIC* L, QObject *parent = 0);
+    LOGIC_Help(LOGIC* L);
 
     //判断是否某个控件是否在某个LOGIC内部。LOGIC是LOGIC类对象
-    static bool in_LOGIC(widget* w, LOGIC* L);
+    bool in_LOGIC(widget* w);
+    void put_in_Logic(widget* w);
+    QMap<QString, widget*> WidgetsInLOGIC;
+
+        LOGIC* LOG;     //指向对应的LOGIC
 
 private:
 
-    QMap<QString, widget*> WidgetsInLOGIC;
-    LOGIC* LOG;     //指向对应的LOGIC
-    int LOGname[1]; //保存LOG的名字
 
-signals:
 
-public slots:
-    bool widget_make_or_move(widget *w, LOGIC *L);
+    //int LOGname[1]; //保存LOG的名字
+
 };
 
 #endif // LOGIC_INSTRUMENT_H

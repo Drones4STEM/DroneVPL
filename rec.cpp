@@ -26,7 +26,7 @@ Rec::Rec()
 
     mBoundingRect = QRectF(0,0,400,400);
     mBoundingRect.translate(-mBoundingRect.center());
-
+    setLogichw();
 
     QRectF curRect = boundingRect().adjusted(0,10,0,-10);
 
@@ -47,6 +47,7 @@ Rec::Rec()
     connect(drag4, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(showYuan()));
+
 }
 
 Rec::~Rec()
@@ -217,3 +218,8 @@ void Rec::slot_changeRect()
 }
 
 
+void Rec::setLogichw()
+{
+    high = mBoundingRect.height();
+    wide = mBoundingRect.width();
+}

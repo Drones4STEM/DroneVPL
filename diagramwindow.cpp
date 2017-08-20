@@ -110,12 +110,14 @@ QStringList DiagramWindow::recentFiles = QStringList();
 ******************************************************************/
 DiagramWindow::DiagramWindow()
 {
+    wm = new WidgetMap();
     wm->moveToThread(&t);    //把map移到子线程中操作
     t.start();
+    LHM = new QMap<QString,LOGIC_Help*>();
 
     printer = new QPrinter(QPrinter::HighResolution);
     gridGroup = 0;
-    scene = new newscene(wm);
+    scene = new newscene(wm,LHM);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
     //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
@@ -1429,59 +1431,75 @@ void DiagramWindow::del()
         qDebug()<<"location_y: "<<item->pos().y();*/
         WidgetWrap tmp(item);
         wm->del(tmp);
-        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (LandonNode* item, itemLandons) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (TranslationNode* item, itemTranslations) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        qDebug()<<"wm whether empty"<<wm->Store.isEmpty();
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (TurnNode* item, itemTurn) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (HoverNode* item, itemHover) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (DelayNode* item, itemDelay) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (IoNode* item, itemIos) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (Rec* item, itemRecs) {
         WidgetWrap tmp(item);
+        typename QMap<QString, LOGIC_Help*>::iterator iter;
+        LOGIC_Help* lh;
+        for(iter=LHM->begin();iter!=LHM->end();){
+            lh = iter.value();
+            if(lh->LOG->name==tmp.name){
+                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
+                LHM->remove(lh->LOG->name);
+            }else iter++;
+        }
         wm->del(tmp);
         delete item;
     }
     foreach (VardefNode* item, itemVardefs) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (VarNode* item, itemVars) {
         WidgetWrap tmp(item);
         wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
         delete item;
     }
     foreach (SomeNode* item, itemSomes) {
@@ -2382,4 +2400,5 @@ bool DiagramWindow::conditionChanged(){
             QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(items.first());
             emit passWidget(item);
     }
+    return true;
 }

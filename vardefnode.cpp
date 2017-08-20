@@ -22,13 +22,15 @@ VardefNode::VardefNode()
     identifier="VarDef";
     node = 0;
     seq = -1;
+    sethw();
 }
 
-QPolygonF VardefNode::outlineRect() const
+QPolygonF VardefNode::outlineRect()const
 {
     QPolygonF poly;
     poly<<QPointF(10,16)<<QPointF(20,0)<<QPointF(10,-16)
        <<QPointF(-10,-16)<<QPointF(-20,0)<<QPointF(-10,16);
+
     return poly;
 }
 
