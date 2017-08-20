@@ -100,4 +100,62 @@ void ColorWidget::updateBackgroundColor(int index)
     emit backgroundColorChanged(m_backgroundColor);
 }
 
+/*////////////////               PositionWidget             ///////////////////*/
+PositionWidget::PositionWidget(QWidget *parent)
+    :QWidget(parent)
+{
+    createWidgets();
+    QPoint pos(0,0);
+    setPosition(pos);
+    createLayouts();
+    createConnections();
+    setFixedSize(minimumSizeHint());
+}
+
+void PositionWidget::createWidgets()
+{
+    xLineEdit = new QLineEdit;
+    yLineEdit = new QLineEdit;
+}
+
+void PositionWidget::createLayouts()
+{
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("x:"),xLineEdit);
+    layout->addRow(tr("y:"),yLineEdit);
+    setLayout(layout);
+}
+
+void PositionWidget::createConnections()
+{
+    connect(xLineEdit,SIGNAL(textChanged(QString)),
+            this,SLOT(updateXPosition(QString)));
+    connect(yLineEdit,SIGNAL(textChanged(QString)),
+            this,SLOT(updateYPosition(QString)));
+}
+
+void PositionWidget::setPosition(const QPoint pos)
+{
+    if(m_pos!=pos)
+    {
+        m_pos.setX(pos.x());
+        m_pos.setY(pos.y());
+        xLineEdit->setText(QString::number(pos.x()));
+        yLineEdit->setText(QString::number(pos.y()));
+    }
+}
+
+void PositionWidget::updateXPosition(QString x)
+{
+
+    m_pos.setX(x.toInt());
+    emit positionChanged(m_pos);
+}
+
+void PositionWidget::updateYPosition(QString y)
+{
+    m_pos.setY(y.toInt());
+    emit positionChanged(m_pos);
+}
+
 

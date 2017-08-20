@@ -27,6 +27,7 @@ class Node : public QGraphicsObject
     Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
     Q_PROPERTY(QColor outlineColor READ outlineColor WRITE setOutlineColor)
+    Q_PROPERTY(QPoint position READ position WRITE setPosition)
 
 public:
     Node();
@@ -37,6 +38,7 @@ public:
     QColor textColor() const;    
     QColor outlineColor() const;    
     QColor backgroundColor() const;
+    QPoint position() const;
     int roundness(double size) const;
 
     QRectF outlineRect() const;
@@ -63,10 +65,14 @@ public:
 
 signals:
     void dirty();
+    void positionChanged(QPoint pos);
 public slots:
     void setTextColor(const QColor &color);
     void setOutlineColor(const QColor &color);
     void setBackgroundColor(const QColor &color);
+    void setPosition(QPoint pos);
+    void setPosition();
+    void emitSignal();//接受xChanged/yChanged信号，并发送positionChanged信号
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -79,6 +85,7 @@ private:
     QColor myTextColor;
     QColor myBackgroundColor;
     QColor myOutlineColor;
+    QPoint myPosition;
 };
 
 #endif

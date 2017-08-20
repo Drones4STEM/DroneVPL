@@ -733,6 +733,8 @@ void DiagramWindow::filePrint()
 void DiagramWindow::connectItem(QObject *item)
 {
     connect(item,SIGNAL(dirty()),this,SLOT(setDirty()));
+    connect(item,SIGNAL(positionChanged(QPoint)),positionWidget,SLOT(setPosition(QPoint)));
+    //connect(positionWidget,SIGNAL(positionChanged(QPoint)),item,SLOT(changePosition(QPoint)));
     const QMetaObject *metaObject = item->metaObject();
     if(metaObject->indexOfProperty("textColor")>-1)
         connect(colorWidget,SIGNAL(textColorChanged(QColor)),
@@ -743,6 +745,9 @@ void DiagramWindow::connectItem(QObject *item)
     if(metaObject->indexOfProperty("backgroundColor")>-1)
         connect(colorWidget,SIGNAL(backgroundColorChanged(QColor)),
                 item,SLOT(setBackgroundColor(const QColor&)));
+    if(metaObject->indexOfProperty("position")>-1)
+        connect(positionWidget,SIGNAL(positionChanged(QPoint)),
+                 item,SLOT(setPosition(QPoint)));
 
 }
 
@@ -2213,7 +2218,11 @@ void DiagramWindow::createDockWidgets()
     colorDockWidget->setFeatures(features);
     colorDockWidget->setWidget(colorWidget);
     addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
-
+    positionWidget = new PositionWidget;
+    QDockWidget *positionDockWidget = new QDockWidget(
+                tr("Position"),this);
+    positionDockWidget->setWidget(positionWidget);
+    addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
 }
 
 /*******************************************************************
@@ -2426,7 +2435,10 @@ void DiagramWindow::selectionChanged()
             if(item->property("backgroundColor").isValid())
                 colorWidget->setBackgroundColor(
                             item->property("backgroundColor").value<QColor>());
-
+            if(item->property("position").isValid())
+                positionWidget->setPosition(item->property("position").value<QPoint>());
+            qDebug()<<item->property("position").value<QPoint>().x();
+            qDebug()<<item->property("position").value<QPoint>().y();
         }
     }
 }

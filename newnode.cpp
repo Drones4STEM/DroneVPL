@@ -35,6 +35,10 @@ NewNode::NewNode()
 
     identifier="NewNode";
     controlsId=0;
+
+    connect(this,SIGNAL(xChanged()),this,SLOT(emitSignal()));
+    connect(this,SIGNAL(yChanged()),this,SLOT(emitSignal()));
+    connect(this,SIGNAL(positionChanged(QPoint)),this,SLOT(setPosition()));
 }
 
 /*******************************************************************
@@ -105,6 +109,28 @@ void NewNode::setBackgroundColor(const QColor &color)
 QColor NewNode::backgroundColor() const
 {
     return myBackgroundColor;
+}
+
+void NewNode::setPosition(QPoint pos)   //根据lineEdit的改变移动node
+{
+    if(isSelected()&&pos!=position())
+    {
+        myPosition = pos;
+        setPos(pos);
+        emit dirty();
+        update();
+    }
+
+}
+
+QPoint NewNode::position()const
+{
+    return myPosition;
+}
+
+void NewNode::setPosition()           //在控件移动时，改变myPosition变量
+{
+    myPosition = pos().toPoint();
 }
 /*
 bool NewNode::set_controlsId(int id)
@@ -279,4 +305,9 @@ int NewNode::roundness(double size) const
 Yuan* NewNode::myYuan()const
 {
     return yuan;
+}
+
+void NewNode::emitSignal()
+{
+    emit positionChanged(pos().toPoint());
 }

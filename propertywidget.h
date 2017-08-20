@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QComboBox>
+#include <QLineEdit>
 
 
 class ColorWidget:public QWidget
@@ -16,6 +17,7 @@ public:
     QColor m_textColor;
     QColor m_outlineColor;
     QColor m_backgroundColor;
+    QPointF m_pos;
 
 public slots:
     void setTextColor(const QColor &color);
@@ -38,6 +40,33 @@ private:
     QComboBox *textColorComboBox;
     QComboBox *outlineColorComboBox;
     QComboBox *backgroundColorComboBox;
+};
+
+
+class PositionWidget :public QWidget
+{
+    Q_OBJECT
+public:
+    explicit PositionWidget(QWidget *parent=0);
+
+    QPoint position() const{return m_pos;}
+    QPoint m_pos;
+
+public slots:
+    void setPosition(const QPoint pos);
+signals:
+    void positionChanged(const QPoint pos);
+private slots:
+    void updateXPosition(QString x);
+    void updateYPosition(QString y);
+
+private:
+    void createWidgets();
+    void createLayouts();
+    void createConnections();
+
+    QLineEdit *xLineEdit;
+    QLineEdit *yLineEdit;
 };
 
 

@@ -31,6 +31,7 @@ class Rec;
 class TakeoffNode;
 class WidgetCondition;
 class ColorWidget;
+class PositionWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -249,6 +250,7 @@ private:
     QAction *viewShowGridAction;
 
     ColorWidget *colorWidget;
+    PositionWidget *positionWidget;
 
 
     QPrinter *printer;
