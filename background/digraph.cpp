@@ -100,10 +100,9 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
             if(it.value()->rank()==((l==0)?1:l->rank+1))
                 if(it.value()->check_yuan_in()==false){     //没有入度
                     //如果是Logic条件判断式，则无视。之后在转py读取的时候访问
-                    //这段代码暂时不执行，因为还没有画出包含逻辑条件判断的图，之后要用
-                    //if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value()))
-                      //  continue;
-                    //else
+                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value()))
+                        continue;
+                    else
                         stk.push(it.value());
                 }
     }
@@ -142,7 +141,10 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
                     }else
                         DFS(it.next()->toYuan()->master,rank,stack);
                 }
+            }else if(!w->mLogicNode->yuan->myLinks.empty()){    //Logic只有if一种可以指出的情况，这种情况下只能有一个指出的箭头
+                DFS(w->mLogicNode->yuan->myLinks.values()[0]->toYuan()->master,rank,stack);
             }
+
         }
         stack->push(w);  //加入结果集
     }
