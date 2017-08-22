@@ -716,6 +716,21 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     if(w->identifier=="TakeOff"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
+    if(w->identifier=="Land"){    //如果传入的控件是Action
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="Go"){    //如果传入的控件是Action
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="Turn"){    //如果传入的控件是Action
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="Hover"){    //如果传入的控件是Action
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="Delay"){    //如果传入的控件是Action
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
 
     if(w->identifier=="Compute"){    //如果传入的控件是Compute
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -723,6 +738,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
 
     if(w->identifier=="Logic"){    //如果传入的控件是Logic
         //理论上讲Logic不会被传到这个函数里执行
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name<<"(if you see logic is print like now,then this is a bug)";
     }
 /*
     if(iter->value->yuan->myLinks->mytoyuan != nullptr){    //有后置控件
