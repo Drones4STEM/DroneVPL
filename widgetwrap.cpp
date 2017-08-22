@@ -189,44 +189,125 @@ bool WidgetWrap::check_yuan_in()
     if(identifier == "TakeOff")
         return false;
     if(identifier == "Land")
-        if(!mLandNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mLandNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mLandNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mLandNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Go")
-        if(!mGoNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mGoNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mGoNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mGoNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Turn")
-        if(!mTurnNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mTurnNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mTurnNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mTurnNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Hover")
-        if(!mHoverNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mHoverNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mHoverNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mHoverNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Delay")
-        if(!mDelayNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mDelayNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mDelayNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mDelayNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "VarType")
         return false;
     if(identifier == "VarDef")
-        if(!mVarDefNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mVarDefNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mVarDefNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mVarDefNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Compute")
         if(mComputeNode->yuan2->myLinks.isEmpty() &&
                 mComputeNode->yuan3->myLinks.isEmpty())
             return false;
-        else return true;
+        else{
+            QList<Link*> links = mComputeNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mComputeNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "IO")
-        if(!mIONode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mIONode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mIONode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mIONode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Logic")
-        if(!mLogicNode->yuan2->myLinks.isEmpty())
-            return true;
-        else return false;
+        if(mLogicNode->flink.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mLogicNode->flink;
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mLogicNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Link")
             return true;
 }
@@ -255,4 +336,56 @@ QPointF WidgetWrap::pos()
         return mIONode->pos();
     if(identifier == "Logic")
         return mLogicNode->pos();
+}
+
+int WidgetWrap::rank()
+{
+    if(identifier == "TakeOff")
+        return mTakeOffNode->rank;
+    if(identifier == "Land")
+        return mLandNode->rank;
+    if(identifier == "Go")
+        return mGoNode->rank;
+    if(identifier == "Turn")
+        return mTurnNode->rank;
+    if(identifier == "Hover")
+        return mHoverNode->rank;
+    if(identifier == "Delay")
+        return mDelayNode->rank;
+    if(identifier == "VarType")
+        return mVarTypeNode->rank;
+    if(identifier == "VarDef")
+        return mVarDefNode->rank;
+    if(identifier == "Compute")
+        return mComputeNode->rank;
+    if(identifier == "IO")
+        return mIONode->rank;
+    if(identifier == "Logic")
+        return mLogicNode->rank;
+}
+
+void WidgetWrap::rank(int r)
+{
+    if(identifier == "TakeOff")
+        mTakeOffNode->rank = r;
+    if(identifier == "Land")
+        mLandNode->rank = r;
+    if(identifier == "Go")
+        mGoNode->rank = r;
+    if(identifier == "Turn")
+        mTurnNode->rank = r;
+    if(identifier == "Hover")
+        mHoverNode->rank = r;
+    if(identifier == "Delay")
+        mDelayNode->rank = r;
+    if(identifier == "VarType")
+        mVarTypeNode->rank = r;
+    if(identifier == "VarDef")
+        mVarDefNode->rank = r;
+    if(identifier == "Compute")
+        mComputeNode->rank = r;
+    if(identifier == "IO")
+        mIONode->rank = r;
+    if(identifier == "Logic")
+        mLogicNode->rank = r;
 }

@@ -41,6 +41,7 @@ ComputeNode::ComputeNode()
     box = new QComboBox;
 
     identifier="Compute";
+    rank = 0;
 }
 
 /*******************************************************************

@@ -26,15 +26,15 @@ public:
     explicit map_instrument(QObject *parent = 0);
 
     //把一个元素放入map中，如果已经存在，会返回false，否则保存该元素并返回true
-    static bool put_in_map(QMap<QString, widget> m, QString s, widget& w);
+    static bool put_in_map(QMap<QString, widget*> m, QString s, widget *w);
 
     //把一个元素从map中删除，如果本不存在，会返回false，否则删除该元素并返回true
-    static bool del_from_map(QMap<QString, widget> &m, QString s);
+    static bool del_from_map(QMap<QString, widget*> &m, QString s);
 
-    static widget find(QMap<QString, widget> *m, QString name);
+    static widget find(QMap<QString, widget*> *m, QString name);
 
     //包装map自带的插入函数以提高性能和兼容各种index及value的属性
-    static void map_insert(QMap<QString, widget> &m, QString index, WidgetWrap& value);
+    static void map_insert(QMap<QString, widget*> &m, QString index, WidgetWrap* value);
 
 private:
 
