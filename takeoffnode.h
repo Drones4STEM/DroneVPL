@@ -7,6 +7,7 @@
 #include "QObject"
 #include "itemtypes.h"
 
+
 /*******************************************************************
  * Class name: TakeoffNode
  * Base class: Node
@@ -23,9 +24,13 @@ public:
 
 
     double time;
+    double altitude;
 
     void setTime(double t);
     double myTime();
+    void setAltitude(double a);
+    double myAltitude();
+
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -76,15 +81,16 @@ public:
 
     int type() const { return Type; }
 
-    double speed,time;
+    double time;
+    double groundspeed;
     QComboBox *box;
 
     QGraphicsItem *item;
 
     void setTime(double t);
     double myTime();
-    void setSpeed(double s);
-    double mySpeed();
+    void setGroundSpeed(double s);
+    double myGroundSpeed();
 
     static int riseNodeNum;     static int fallNodeNum;
     static int advanceNodeNum;  static int backNodeNum;

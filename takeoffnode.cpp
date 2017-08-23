@@ -19,11 +19,22 @@ TakeoffNode::TakeoffNode()
     identifier="TakeOff";
     time=0;
     rank = 0;
+    altitude = 0;
 }
 
 void TakeoffNode::setTime(double t)
 {
     time=t;
+}
+
+void TakeoffNode::setAltitude(double a)
+{
+    altitude=a;
+}
+
+double TakeoffNode::myAltitude()
+{
+    return altitude;
 }
 
 double TakeoffNode::myTime()
@@ -35,10 +46,9 @@ void TakeoffNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     double t = QInputDialog::getDouble(event->widget(),
                            tr("Edit Text"), tr("Enter new text:"),
-                           QLineEdit::Normal, time);
-    time=t;
-
-    setText(tr("take off\n %1 s").arg(t));
+                           QLineEdit::Normal, altitude);
+    altitude = t;
+    setText(tr("take off\n %1 m").arg(t));
 
 }
 
@@ -140,8 +150,8 @@ int TranslationNode::rightNodeNum=0;     int TranslationNode::leftNodeNum=0;
 TranslationNode::TranslationNode()
 {
     box=new QComboBox;
-    speed=0;
     time=0;
+    groundspeed = 0;
 
     identifier="RiseNode";
     rank = 0;
@@ -163,26 +173,26 @@ double TranslationNode::myTime()
     return time;
 }
 
-void TranslationNode::setSpeed(double s)
+void TranslationNode::setGroundSpeed(double s)
 {
-    speed=s;
+    groundspeed=s;
 }
 
-double TranslationNode::mySpeed()
+double TranslationNode::myGroundSpeed()
 {
-    return speed;
+    return groundspeed;
 }
 
 void TranslationNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    double s = QInputDialog::getDouble(event->widget(),
-                           tr("Edit Speed"), tr("Enter new speed:"),
-                           QLineEdit::Normal, speed);
-    double t = QInputDialog::getDouble(event->widget(),
-                           tr("Edit Time"), tr("Enter new time:"),
-                           QLineEdit::Normal, time);
-    speed=s;time=t;
-    setText(tr(" %1 m/s \n %2 s").arg(s).arg(t));
+    double gs = QInputDialog::getDouble(event->widget(),
+                           tr("Edit GroudSpeed"), tr("Enter new GroundSpeed:"),
+                           QLineEdit::Normal, groundspeed);
+    //double t = QInputDialog::getDouble(event->widget(),
+                          // tr("Edit Time"), tr("Enter new time:"),
+                          // QLineEdit::Normal, time);
+    groundspeed=gs;
+    setText(tr(" %1 m/s").arg(gs));
 }
 
 QVariant TranslationNode::itemChange(GraphicsItemChange change,
@@ -619,7 +629,7 @@ void HoverNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                                tr("Edit Time"), tr("Enter new time:"),
                                QLineEdit::Normal, time);
         angel=a;time=t;
-        setText(tr(" %1  \n %2 s").arg(a).arg(t));
+        setText(tr("%2 s").arg(t));
 }
 
 QVariant HoverNode::itemChange(GraphicsItemChange change,

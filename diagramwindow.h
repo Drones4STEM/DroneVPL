@@ -118,6 +118,7 @@ private slots:
     void addVardefNode();
     void addComputeNode();
     void addIoNode();
+    void addBatteryNode();
     void addLink();
     void addRec();
     void del();
@@ -226,7 +227,8 @@ private:
     QAction *addVarNodeAction;
     QAction *addVardefNodeAction;
     QAction *addComputeNodeAction;
-    QAction *addIoNodeAction;
+    QAction *addIONodeAction;
+    QAction *addBatteryNodeAction;
     QAction *addTextNodeAction;
     QAction *addLinkAction;
     QAction *addRecAction;

@@ -210,10 +210,10 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         stream.writeStartElement("IO");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
-        if(identifier == "IO"){
-            x = QString::number((long)ww->mIONode->pos().x(),10);
+        if(identifier == "Battery"){
+            x = QString::number((long)ww->mBatteryNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
-            y = QString::number((long)ww->mIONode->pos().y(),10);
+            y = QString::number((long)ww->mBatteryNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
             //stream.writeStartElement("arrow_out");
         }/*
@@ -541,8 +541,8 @@ bool format::read_frame_file(QString filename)
 
                 QPointF point(location_x,location_y);
                 try{
-                    if(type=="IO"){
-                        CreateIO(point,id); //在窗口中生成IO控件
+                    if(type=="Battery"){
+                        CreateBattery(point,id); //在窗口中生成IO控件
                     }
                 }catch(exception e){
                    ;
@@ -679,6 +679,21 @@ bool format::SavePyFile(QString filename)
     file.open(QIODevice::WriteOnly);
     QTextStream in(&file);
 
+    in<<"from dronekit import connect, VehicleMode, LocationGlobalRelative\n"
+      <<"import time\n"<<"import argparse\n"
+      <<"parser = argparse.ArgumentParser(description='Commands vehicle using vehicle.simple_goto.')\n"
+      <<"parser.add_argument('--connect', "
+      <<"help=\"Vehicle connection target string. If not specified, SITL automatically started and used.\")\n"
+      <<"args = parser.parse_args()\n"
+      <<"connection_string = args.connect\n"
+      <<"sitl = None\n\n"
+      <<"if not connection_string:\n"
+      <<"import dronekit_sitl\n"
+      <<"sitl = dronekit_sitl.start_default()\n"
+      <<"connection_string = sitl.connection_string()\n"
+      <<"print 'Connecting to vehicle on: %s' % connection_string\n"
+      <<"vehicle = connect(connection_string, wait_ready=True)\n";
+
     QMap<QString, widget*>* m = &(Map);
     std::stack<widget*>* stk = digrapher->get_topology(0);
     save_py_file(stk,in);
@@ -709,12 +724,13 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
-    if(w->identifier=="IO"){    //如果传入的控件是IO
+    if(w->identifier=="Battery"){    //如果传入的控件是Battery
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
     if(w->identifier=="TakeOff"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+
     }
     if(w->identifier=="Land"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -966,6 +982,26 @@ bool format::CreateIO(QPointF point, int id)
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
 }
+
+bool format::CreateBattery(QPointF point, int id)
+{
+    BatteryNode* node=new BatteryNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="Battery";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+}
+
 
 bool format::CreateLogic(QPointF point, int id)
 {

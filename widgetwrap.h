@@ -28,6 +28,7 @@ public:
 
     WidgetWrap(ComputeNode* cn);
     WidgetWrap(IoNode* in);
+    WidgetWrap(BatteryNode* in);
     WidgetWrap(Rec* ln);
 
     WidgetWrap(VardefNode* vdn);
@@ -53,6 +54,7 @@ public:
     ComputeNode* mComputeNode = NULL;
 
     IoNode* mIONode;
+    BatteryNode* mBatteryNode;
 
     Rec* mLogicNode;
 

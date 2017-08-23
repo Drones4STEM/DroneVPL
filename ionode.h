@@ -72,4 +72,34 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 };
 
+/*******************************************************************
+ * Class name: BatteryNode
+ * Base class: NewNode
+ * Description: This is the declaration of class IoNode. IoNode is a
+ *       node which represents I/O operations.
+******************************************************************/
+class BatteryNode:public NewNode
+{
+    Q_OBJECT
+public:
+   // enum {Type = BatteryNodeType};
+    BatteryNode();
+    ~BatteryNode();
+
+    //int type() const { return Type;}
+
+    QComboBox *box;
+    IoSmallNode *node1, *node2, *node3;
+    QGraphicsItem* item;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+protected:
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+};
 #endif // IONODE_H

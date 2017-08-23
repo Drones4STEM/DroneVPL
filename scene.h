@@ -38,6 +38,7 @@ public:
     bool CreateVarDef(QPointF point, int id);
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
+    bool CreateBattery(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
     Link* CreateLink(QGraphicsSceneMouseEvent* event);
 
@@ -52,6 +53,7 @@ public:
     bool CreateVarDef(VardefNode* vdn);
     bool CreateCompute(ComputeNode* cn);
     bool CreateIO(IoNode* ion);
+    bool CreateBattery(BatteryNode* ion);
     bool CreateLogic(Rec* ln);
     bool CreateLink(Link* link);
 
@@ -78,6 +80,7 @@ public:
     int ComputeNodeNum;
 
     int IONodeNum;
+    int BatteryNodeNum;
 
     int linkNodeNum;
 

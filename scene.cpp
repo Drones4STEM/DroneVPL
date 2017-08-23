@@ -180,6 +180,12 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         this->IONodeNum++;
         CreateIO(new_event->scenePos(),this->IONodeNum);
     }
+    if(need_to_set==1&&selected_Index==401){qDebug()<<"401.";
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->BatteryNodeNum++;
+        CreateBattery(new_event->scenePos(),this->BatteryNodeNum);
+    }
     if(need_to_set==1&&selected_Index==19){qDebug()<<"19.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
@@ -193,7 +199,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 bool newscene::CreateTakeOff(QPointF point, int id)
 {
     TakeoffNode *node=new TakeoffNode;
-    node->setText(tr("take off\n %1 s").arg(node->time));
+    node->setText(tr("take off\n %1 m").arg(node->time));
 
     node->setPos(point);
     node->setxy(point);
@@ -257,7 +263,7 @@ bool newscene::CreateLand(QPointF point, int id)
 bool newscene::CreateGo(QPointF point, int id)
 {
     TranslationNode *node=new TranslationNode;
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
+    node->setText(tr(" %1 m/s").arg(node->groundspeed));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -365,7 +371,7 @@ bool newscene::CreateHover(QPointF point, int id)
 {
     HoverNode *node=new HoverNode;
 
-    node->setText(tr(" Hover \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Hover \n %2 s").arg(node->time));
 
     node->setPos(point);
     this->addItem(node);
@@ -677,6 +683,79 @@ bool newscene::CreateIO(QPointF point, int id)
 
 }
 
+bool newscene::CreateBattery(QPointF point, int id)
+{
+    BatteryNode* node=new BatteryNode;
+    node->setText(tr("sensor"));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+
+
+    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("detection sensor"));
+    node->box->addItem(tr("A sensor"));
+    node->box->addItem(tr("B sensor"));
+    node->box->addItem(tr("delay"));
+    node->box->setCurrentIndex(0);
+
+    node->controlsId=id;
+    node->identifier="Battery";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->node1->yuan->master = tmp;
+    node->node1->yuan->name = "n1yuan";
+    node->node2->yuan->master = tmp;
+    node->node2->yuan->name = "n2yuan";
+    node->node3->yuan->master = tmp;
+    node->node3->yuan->name = "n3yuan";
+    emit sig_connectItem(node);
+
+    return true;
+
+}
+
 bool newscene::CreateLogic(QPointF point, int id)
 {
     Rec *rec=new Rec;
@@ -811,7 +890,7 @@ bool newscene::CreateLand(LandonNode* node)
 }
 bool newscene::CreateGo(TranslationNode* node)
 {
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
+    node->setText(tr(" %1 m/s \n %2 s").arg(node->time));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -1092,6 +1171,61 @@ bool newscene::CreateIO(IoNode* node)
     return true;
 
 }
+
+bool newscene::CreateBattery(BatteryNode* node)
+{
+    node->setText(tr("sensor"));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+
+
+    node->setPos(node->lx,node->ly);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    this->BatteryNodeNum++;
+
+    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("detection sensor"));
+    node->box->addItem(tr("A sensor"));
+    node->box->addItem(tr("B sensor"));
+    node->box->addItem(tr("delay"));
+    node->box->setCurrentIndex(0);
+
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
+    return true;
+}
+
 bool newscene::CreateLogic(Rec *rec)
 {
     QGraphicsItem* item= this->addWidget(rec->box);
