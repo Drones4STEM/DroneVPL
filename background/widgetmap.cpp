@@ -34,7 +34,7 @@ void WidgetMap::add(WidgetWrap* tmp)
 {
     amount++;
     QString index = tmp->name;
-    map_instrument::map_insert(Store,index,*tmp);
+    map_instrument::map_insert(Store,index,tmp);
 }
 
 /*****************************************************
@@ -49,9 +49,6 @@ void WidgetMap::del(widget w)
     amount--;
     QString index = w.name;
     qDebug()<<"del()    "<<index;
-    /*if(w->identifier == "TakeOff"){
-        index = (w->mTakeoffNode)->identifier + (w->mTakeoffNode)->controlsId;
-    }*/
     qDebug()<<map_instrument::del_from_map(Store, index);
 }
 
@@ -62,7 +59,7 @@ void WidgetMap::del(widget w)
  * Input: noe
  * Output: Store - The map containing widget pointers.
  *****************************************************/
-QMap<QString, widget>& WidgetMap::get_map()
+QMap<QString, widget*>& WidgetMap::get_map()
 {
     return Store;
 }
@@ -76,7 +73,7 @@ QMap<QString, widget>& WidgetMap::get_map()
  *****************************************************/
 bool WidgetMap::clear()
 {
-    typename QMap<QString, widget>::iterator iter;
+    typename QMap<QString, widget*>::iterator iter;
 
     for(iter=Store.begin(); iter!=Store.end();){   //遍历控件指针
         iter = Store.erase(iter);

@@ -346,20 +346,6 @@ void DiagramWindow::loadFile(DiagramWindow* mainWin)
     gridGroup=0;
     viewShowGrid(viewShowGridAction->isChecked());
 
-    /*
-    QFile file(windowFilePath());
-    QDataStream in;
-    if (!openPageDesignerFile(&file, in))
-        return;
-    in.setVersion(QDataStream::Qt_4_5);
-    selectAllItems();
-    del();
-    readItems(in,0,false);
-    statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
-                             StatusTimeout);
-    setDirty(false);
-    updateRecentFileActions();
-    */
     qDebug()<<mainWin->windowFilePath();
     format formater;
     formater.read_frame_file(mainWin->windowFilePath());
@@ -579,7 +565,7 @@ bool DiagramWindow::fileSave()
     return true;
     */
     format formater;
-    formater.set_map(wm->get_map());
+    formater.set_map(&(wm->get_map()));
     qDebug()<<"whether wm is empty "<<wm->Store.isEmpty();
     if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
     else qDebug()<<"formater map is not empty";
@@ -1447,6 +1433,20 @@ void DiagramWindow::del()
             itemVars<<dynamic_cast<VarNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
+        typename QMap<QString, LOGIC_Help*>::iterator iter;
+        //typename QList<Link*>::iterator it;
+        LOGIC_Help* lh;
+        Link* link;
+        for(iter=LHM->begin();iter!=LHM->end();iter++){
+            lh = iter.value();
+            for(int i=0;i<lh->LOG->tlink.length();i++){
+                link = lh->LOG->tlink[i];
+                if(link->name==item->name){
+                    lh->LOG->tlink.removeOne(link);
+                }
+            }
+
+        }
         delete item;
     }
     foreach (TakeoffNode* item, itemTakeoffs) {
@@ -1876,18 +1876,23 @@ void DiagramWindow::checkup()
 
 void DiagramWindow::compile()
 {
-    QMap<QString,WidgetWrap> *m =&(wm->get_map());
+    QMap<QString,WidgetWrap*> *m = &(wm->get_map());
+    format formater;
+    formater.set_map(m);
+    formater.set_digraph(m,LHM);
+    formater.SavePyFile("Compile.py");
+    /*
     digraph digrapher(m);
-    std::stack<widget> stk = digrapher.get_topology();
-    WidgetWrap tmp;
+    std::stack<widget*> stk = digrapher.get_topology();
+    WidgetWrap* tmp;
     while(!stk.empty()){
         tmp = stk.top();
         stk.pop();
         qDebug()<<"compile():";
-        qDebug()<<"name :"<<tmp.name;
-        qDebug()<<"identifier :"<<tmp.identifier;
-        qDebug()<<"controlsId :"<<tmp.controlsId;
-    }
+        qDebug()<<"name :"<<tmp->name;
+        qDebug()<<"identifier :"<<tmp->identifier;
+        qDebug()<<"controlsId :"<<tmp->controlsId;
+    }*/
 }
 
 void DiagramWindow::checkupAndCompile()

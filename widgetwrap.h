@@ -36,6 +36,8 @@ public:
     WidgetWrap(Link* link);
 
     QPointF pos();
+    int rank();
+    void rank(int r);
 
     triYuan* get_yuan_out();
     bool check_yuan_in();
@@ -46,6 +48,7 @@ public:
     int controlsId;
     QString name;   //identifier+controlsId
     int lx,ly,high,wide;
+
 
     ComputeNode* mComputeNode = NULL;
 

@@ -23,6 +23,7 @@ Rec::Rec()
 
     identifier="Rec";
     controlsId=0;
+    rank = 0;
 
     mBoundingRect = QRectF(0,0,400,400);
     mBoundingRect.translate(-mBoundingRect.center());

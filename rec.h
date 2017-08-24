@@ -52,7 +52,8 @@ public:
     QString identifier;
     int controlsId;
 
-    Link* llink;
+    QList<Link*> flink; //从logic指入的link
+    QList<Link*> tlink; //从logic指出的link
 private:
     QRectF mBoundingRect;
 

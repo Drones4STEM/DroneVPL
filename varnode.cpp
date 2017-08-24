@@ -25,6 +25,7 @@ VarNode::VarNode()
     }
 
     identifier="VarNode";
+    rank = 0;
     sethw();
 }
 

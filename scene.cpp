@@ -94,7 +94,7 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 
     Link* link = CreateLink(event);
-    CheckLinkOverLogic(link);
+    CheckLinkOverLogic(link);   //检查link是否穿越logic
     //检查鼠标释放时生成/拖动的控件是否在Logic内
     CheckInLogic();
 
@@ -671,8 +671,9 @@ bool newscene::CreateIO(QPointF point, int id)
     node->node2->yuan->name = "n2yuan";
     node->node3->yuan->master = tmp;
     node->node3->yuan->name = "n3yuan";
-
     emit sig_connectItem(node);
+
+    return true;
 
 }
 
@@ -960,8 +961,9 @@ bool newscene::CreateVarType(VarNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
     emit sig_connectItem(node);
+
+    return true;
 }
 bool newscene::CreateVarDef(VardefNode* vdn)
 {   //先设定不论从哪里生成控件都会需要的公共的属性
@@ -983,8 +985,9 @@ bool newscene::CreateVarDef(VardefNode* vdn)
     qDebug()<<"name :"<<vdn->name;
     qDebug()<<"identifier :"<<vdn->identifier;
     qDebug()<<"controlsId :"<<vdn->controlsId;
-
     emit sig_connectItem(vdn);
+
+    return true;
 }
 bool newscene::CreateCompute(ComputeNode *node)
 {
@@ -1030,6 +1033,10 @@ bool newscene::CreateCompute(ComputeNode *node)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     emit sig_connectItem(node);
+
+    return true;
+    
+
 }
 bool newscene::CreateIO(IoNode* node)
 {
@@ -1080,8 +1087,10 @@ bool newscene::CreateIO(IoNode* node)
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
     emit sig_connectItem(node);
+
+    return true;
+
 }
 bool newscene::CreateLogic(Rec *rec)
 {
@@ -1114,62 +1123,66 @@ bool newscene::CreateLogic(Rec *rec)
     qDebug()<<"controlsId :"<<rec->controlsId;
 
     emit sig_connectItem(rec);
+    return true;
 }
 bool newscene::CreateWidgets()
 {
-    typename QMap<QString, widget>::iterator iter;
-    QMap<QString,WidgetWrap> Map;
+    typename QMap<QString, widget*>::iterator iter;
+    QMap<QString,WidgetWrap*> Map;
+    WidgetWrap* ww;
     Map = wm->get_map();
 
     for(iter=Map.begin();iter!=Map.end();iter++){
-        if(iter->identifier=="TakeOff"){
+        ww = iter.value();
+        if(ww->identifier=="TakeOff"){
             //QPointF point(iter->mTakeOffNode->lx,iter->mTakeOffNode->ly);
-            CreateTakeOff(iter->mTakeOffNode);
+            CreateTakeOff(ww->mTakeOffNode);
         }
-        if(iter->identifier=="Land"){
+        if(ww->identifier=="Land"){
             //QPointF point(iter->mLandNode->lx,iter->mLandNode->ly);
-            CreateLand(iter->mLandNode);
+            CreateLand(ww->mLandNode);
         }
-        if(iter->identifier=="Go"){
+        if(ww->identifier=="Go"){
             //QPointF point(iter->mGoNode->lx,iter->mGoNode->ly);
-            CreateGo(iter->mGoNode);
+            CreateGo(ww->mGoNode);
         }
-        if(iter->identifier=="Turn"){
+        if(ww->identifier=="Turn"){
             //QPointF point(iter->mTurnNode->lx,iter->mTurnNode->ly);
-            CreateTurn(iter->mTurnNode);
+            CreateTurn(ww->mTurnNode);
         }
-        if(iter->identifier=="Hover"){
+        if(ww->identifier=="Hover"){
             //QPointF point(iter->mHoverNode->lx,iter->mHoverNode->ly);
-            CreateHover(iter->mHoverNode);
+            CreateHover(ww->mHoverNode);
         }
-        if(iter->identifier=="Delay"){
+        if(ww->identifier=="Delay"){
             //QPointF point(iter->mDelayNode->lx,iter->mDelayNode->ly);
-            CreateDelay(iter->mDelayNode);
+            CreateDelay(ww->mDelayNode);
         }
-        if(iter->identifier=="VarType"){
+        if(ww->identifier=="VarType"){
             //QPointF point(iter->mVarTypeNode->lx,iter->mVarTypeNode->ly);
-            CreateVarType(iter->mVarTypeNode);
+            CreateVarType(ww->mVarTypeNode);
         }
-        if(iter->identifier=="VarDef"){
+        if(ww->identifier=="VarDef"){
             //QPointF point(iter->mVarDefNode->lx,iter->mVarDefNode->ly);
-            CreateVarDef(iter->mVarDefNode);
+            CreateVarDef(ww->mVarDefNode);
         }
-        if(iter->identifier=="Compute"){
+        if(ww->identifier=="Compute"){
             //QPointF point(iter->mComputeNode->lx,iter->mComputeNode->ly);
-            CreateCompute(iter->mComputeNode);
+            CreateCompute(ww->mComputeNode);
         }
-        if(iter->identifier=="IO"){
+        if(ww->identifier=="IO"){
             //QPointF point(iter->mIONode->lx,iter->mIONode->ly);
-            CreateIO(iter->mIONode);
+            CreateIO(ww->mIONode);
         }
-        if(iter->identifier=="Logic"){
+        if(ww->identifier=="Logic"){
             //QPointF point(iter->mLogicNode->lx,iter->mLogicNode->ly);
-            CreateLogic(iter->mLogicNode);
+            CreateLogic(ww->mLogicNode);
         }
-        if(iter->identifier=="Link"){
-            CreateLink(iter->mLinkNode);
+        if(ww->identifier=="Link"){
+            CreateLink(ww->mLinkNode);
         }
     }
+    return true;
 }
 bool newscene::CreateLink(Link* link)
 {
@@ -1185,41 +1198,57 @@ Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
     bool flag;
     typename QMap<QString, LOGIC_Help*>::iterator iter;
     LOGIC_Help* lh;
+    LOGIC* l = 0;   int r=1000;
     for(iter=LHM->begin();iter!=LHM->end();iter++){
         lh = iter.value();
         flag = lh->in_LOGIC(tmp);
 
-        qDebug()<<"scene::CheckInLogic():";
+        qDebug()<<"scene::check_in_Logic():";
         qDebug()<<operate<<" "<<flag;
 
         if(flag){
-            if(operate=="add")  lh->put_in_Logic(tmp);
-            else if(operate=="del") lh->WidgetsInLOGIC.remove(tmp->name);
-            return lh->LOG;
-        }else return 0;
+            if(operate=="add"){
+                lh->put_in_Logic(tmp);  //记录内部的widget
+                tmp->rank(lh->LOG->rank+1); //设置rank
+            }else if(operate=="del")
+                lh->WidgetsInLOGIC.remove(tmp->name);
+            l = (r<lh->LOG->rank)?l:lh->LOG;
+        }
+
     }
+    if(l==0)    tmp->rank(1);
+    return l;
 }
 
 bool newscene::CheckInLogic()
 {
     QList<QGraphicsItem *> items = this->selectedItems();
     typename QList<QGraphicsItem *>::iterator liter;
-    typename QMap<QString, widget>::iterator miter;
-    QMap<QString, widget>& m = wm->get_map();
+    typename QMap<QString, widget*>::iterator miter;
+    QMap<QString, widget*>& m = wm->get_map();
+
     for(liter=items.begin();liter!=items.end();liter++){
         QGraphicsItem * t = *liter;
         NewNode* n1 = dynamic_cast<NewNode *>(t);
         Node* n2 = dynamic_cast<Node *>(t);
         if(n1!=0){
-            for(miter=m.begin();miter!=m.end();miter++){
-                if(n1->name == miter->name){
-                    check_in_Logic(&(miter.value()),"add");
+            if(n1->identifier=="Logic"){
+                for(miter=m.begin();miter!=m.end();miter++){
+                    //这个函数会遍历所有Logic进行检查
+                    check_in_Logic(miter.value(),"add");
+                }
+            }else{
+                for(miter=m.begin();miter!=m.end();miter++){
+                    if(n1->name == miter.value()->name){
+                        check_in_Logic(miter.value(),"add");
+                    }
                 }
             }
+
         }else if(n2!=0){
             for(miter=m.begin();miter!=m.end();miter++){
-                if(n2->name == miter->name){
-                    check_in_Logic(&(miter.value()),"add");
+                if(n2->name == miter.value()->name){
+                    check_in_Logic(miter.value(),"add");
                 }
             }
         }
@@ -1232,7 +1261,12 @@ bool newscene::CheckLinkOverLogic(Link *link)
     if(link==0) return false;
     Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
     Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
-    if(rec1==0 && rec2!=0)  link->toLogic = rec2;
-    if(rec2==0 && rec1!=0)  rec1->llink = link;
+    if(rec1!=rec2){
+        link->toLogic = (rec2!=0)?rec2:0;
+        link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
+        if(rec1!=0)  rec1->tlink<<link; //从logic指出
+        if(rec1==0)  rec2->flink<<link; //向logic指入
+
+    }
     return true;
 }

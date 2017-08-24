@@ -69,6 +69,7 @@ public:
     //控件属性
     int lx,ly;  //坐标
     int high,wide;
+    int rank; // from 1 to n
 
 signals:
     void dirty();
