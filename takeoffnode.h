@@ -16,6 +16,7 @@
 ******************************************************************/
 class TakeOffNode:public Node
 {
+    Q_PROPERTY(double altitude READ myAltitude WRITE setAltitude)
 public:
     enum {Type = TakeoffNodeType};
     TakeOffNode();
@@ -47,6 +48,7 @@ QDataStream &operator >>(QDataStream &in,TakeOffNode &node);
 ******************************************************************/
 class LandNode:public NewNode
 {
+    Q_PROPERTY(double time READ mytime WRITE setTime)
 public:
     enum {Type = LandonNodeType};
     LandNode();
@@ -74,6 +76,7 @@ protected:
 class GoNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double groundspeed READ myGroundSpeed WRITE setGroundSpeed)
 public:
     enum {Type = TranslationNodeType};
     GoNode();
@@ -115,6 +118,7 @@ private slots:
 class TurnNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double speed READ mySpeed WRITE setSpeed)
 public:
     enum {Type = SomeNodeType};
     TurnNode();
@@ -152,6 +156,7 @@ private slots:
 class HoverNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double time READ myTime WRITE setTime)
 public:
     enum {Type = SomeNodeType};
     HoverNode();
@@ -178,7 +183,7 @@ private slots:
 };
 
 /*******************************************************************
- * Class name: HoverNode
+ * Class name: DelayNode
  * Base class: NewNode
  * Description: This is a class for developers, and determines some
  *     to follow. This class represents some actions including
@@ -187,6 +192,7 @@ private slots:
 class DelayNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double time READ myTime WRITE setTime)
 public:
     enum {Type = SomeNodeType};
     DelayNode();

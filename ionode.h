@@ -22,6 +22,7 @@ class IoSmallNode;
 class IoNode:public NewNode
 {
     Q_OBJECT
+
 public:
     enum {Type = IoNodeType};
     IoNode();
@@ -88,6 +89,9 @@ protected:
 class BatteryNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double voltage READ myVoltage WRITE setVoltage)
+    Q_PROPERTY(double current READ myCurrent WRITE setCurrent)
+    Q_PROPERTY(double level READ myLevel WRITE setLevel)
 public:
    // enum {Type = BatteryNodeType};
     BatteryNode();
@@ -98,6 +102,14 @@ public:
     QComboBox *box;
     IoSmallNode *node1, *node2, *node3;
     QGraphicsItem* item;
+    double voltage,current,level;
+
+    double myVoltage(){return voltage;}
+    void setVoltage(double v){voltage = v;}
+    double myCurrent(){return current;}
+    void setCurrent(double c){current = c;}
+    double myLevel(){return level;}
+    void setLevel(double l){level = l;}
 
     QRectF outlineRect() const;
     QRectF boundingRect() const;
@@ -119,6 +131,9 @@ protected:
 class GimbalNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double pitch READ myPitch WRITE setPitch)
+    Q_PROPERTY(double roll READ myRoll WRITE setRoll)
+    Q_PROPERTY(double yaw READ myYaw WRITE setYaw)
 public:
     GimbalNode();
     ~GimbalNode();
@@ -126,6 +141,14 @@ public:
     QComboBox *box;
     IoSmallNode *node1, *node2, *node3;
     QGraphicsItem* item;
+    double pitch,roll,yaw;
+
+    double myPitch(){return pitch;}
+    void setPitch(double v){pitch = v;}
+    double myYaw(){return yaw;}
+    void setYaw(double c){yaw = c;}
+    double myRoll(){return roll;}
+    void setRoll(double l){roll = l;}
 
     QRectF outlineRect() const;
     QRectF boundingRect() const;
