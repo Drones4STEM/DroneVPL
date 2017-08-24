@@ -18,6 +18,7 @@ TakeoffNode::TakeoffNode()
 {
     identifier="TakeOff";
     time=0;
+    rank = 0;
 }
 
 void TakeoffNode::setTime(double t)
@@ -83,7 +84,7 @@ QDataStream &operator >>(QDataStream &in,TakeoffNode &node)
 LandonNode::LandonNode()
 {
     identifier="Land";
-
+    rank = 0;
     time=0;
 }
 
@@ -143,7 +144,7 @@ TranslationNode::TranslationNode()
     time=0;
 
     identifier="RiseNode";
-
+    rank = 0;
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
 }
 
@@ -435,7 +436,7 @@ TurnNode::TurnNode()
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
 
     identifier="TurnLeftNode";
-
+    rank = 0;
 }
 
 TurnNode::~TurnNode()
@@ -570,6 +571,7 @@ HoverNode::HoverNode()
     angel=0;
 
     identifier="Hover";
+    rank = 0;
 }
 
 HoverNode::~HoverNode()
@@ -658,7 +660,7 @@ DelayNode::DelayNode()
     speed=0;
     time=0;
     angel=0;
-
+    rank = 0;
     identifier="Delay";
 }
 

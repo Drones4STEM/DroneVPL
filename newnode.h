@@ -49,12 +49,7 @@ public:
 
     void sethw();
     void setxy(QPointF point);
-/*
-    bool set_controlsId(int id);
-    bool set_identifier(QString idtf);
-    bool set_name();
-    //bool set_master(WidgetWrap* w);
-*/
+
     triYuan* yuan;
     Yuan* yuan2;
     Yuan* myYuan()const;
@@ -66,6 +61,7 @@ public:
     //WidgetWrap* wrap;
     int lx,ly;
     int high,wide;
+    int rank; // from 1 to n
 
 signals:
     void dirty();

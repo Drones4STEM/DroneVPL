@@ -26,7 +26,7 @@ Node::Node()
     myOutlineColor = Qt::darkBlue;
     myBackgroundColor = Qt::white;
 
-    QGraphicsItem* p=dynamic_cast<QGraphicsItem*>(this);
+    //QGraphicsItem* p=dynamic_cast<QGraphicsItem*>(this);
     //yuan=new triYuan(p);
     yuan=new triYuan();
 

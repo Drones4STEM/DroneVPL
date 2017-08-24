@@ -33,7 +33,7 @@ public:
     void put_in_Logic(widget* w);
     QMap<QString, widget*> WidgetsInLOGIC;
 
-        LOGIC* LOG;     //指向对应的LOGIC
+    LOGIC* LOG;     //指向对应的LOGIC
 
 private:
 

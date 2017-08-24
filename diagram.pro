@@ -30,8 +30,8 @@ HEADERS       = diagramwindow.h \
     wqdragitem.h \
     propertywidget.h \
     swatch.h \
+    background/logic_help.h \
     background/digraph.h \
-    background/logic_help.h
 
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
@@ -61,8 +61,8 @@ SOURCES       = diagramwindow.cpp \
     wqdragitem.cpp \
     propertywidget.cpp \
     swatch.cpp \
+    background/logic_help.cpp \
     background/digraph.cpp \
-    background/logic_help.cpp
 
 FORMS         = propertiesdialog.ui \
     awindow.ui \

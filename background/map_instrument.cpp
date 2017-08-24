@@ -34,7 +34,7 @@ map_instrument::map_instrument(QObject *parent) : QObject(parent)
  *        widget* value - the widget to be store
  * Output: none
  *****************************************************/
-void map_instrument::map_insert(QMap<QString, widget>& m, QString index, WidgetWrap& value)
+void map_instrument::map_insert(QMap<QString, widget *> &m, QString index, WidgetWrap* value)
 {
     m.insert(index,value);
    // qDebug()<<m.isEmpty();
@@ -51,9 +51,9 @@ void map_instrument::map_insert(QMap<QString, widget>& m, QString index, WidgetW
  * Output: true - if successfully inserted
  *         false - if not inserted successfully(already inserted one)
  *****************************************************/
-bool map_instrument::put_in_map(QMap<QString, widget> m, QString s, widget& w)
+bool map_instrument::put_in_map(QMap<QString, widget*> m, QString s, widget* w)
 {
-    typename QMap<QString, widget>::iterator iter;
+    typename QMap<QString, widget*>::iterator iter;
     iter = m.find(s);
 
     if(iter == m.end()){       //如果元素未包含
@@ -74,9 +74,9 @@ bool map_instrument::put_in_map(QMap<QString, widget> m, QString s, widget& w)
  * Output: true - if successfully deleted
  *         false - if not deleted successfully(don't exist)
  *****************************************************/
-bool map_instrument::del_from_map(QMap<QString, widget>& m, QString s)
+bool map_instrument::del_from_map(QMap<QString, widget *> &m, QString s)
 {
-    typename QMap<QString, widget>::iterator iter;
+    typename QMap<QString, widget*>::iterator iter;
     iter = m.find(s);
 
     if(iter == m.end()){       //如果元素未包含
@@ -99,13 +99,13 @@ bool map_instrument::del_from_map(QMap<QString, widget>& m, QString s)
  * Output: iter->value - the widget's name
  *         null - no such widget
  *****************************************************/
-widget map_instrument::find(QMap<QString, widget>* m, QString name = "null")
+widget map_instrument::find(QMap<QString, widget*>* m, QString name = "null")
 {
-    typename QMap<QString, widget>::iterator iter;
+    typename QMap<QString, widget*>::iterator iter;
     for(iter=m->begin();iter!=m->end();iter++){
-        if( iter->name == name){
-            WidgetWrap tmp = iter.value();
-            return tmp;
+        if( iter.value()->name == name){
+            WidgetWrap* tmp = iter.value();
+            return *tmp;
         }
     }
 }

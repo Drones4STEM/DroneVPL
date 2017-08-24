@@ -22,6 +22,7 @@ VardefNode::VardefNode()
     identifier="VarDef";
     node = 0;
     seq = -1;
+    rank = 0;
     sethw();
 }
 
