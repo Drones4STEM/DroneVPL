@@ -498,7 +498,7 @@ void DiagramWindow::readItems(QDataStream &in,int offset, bool select)
         switch (itemType) {
         case TakeoffNodeType:
         {
-            TakeoffNode* node=new TakeoffNode;
+            TakeOffNode* node=new TakeOffNode;
             in>>*node;
 
             node->setText(tr("take off\n %1 s").arg(node->time));
@@ -595,7 +595,7 @@ void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &i
          {
          case TakeoffNodeType:
          {
-             out<<*static_cast<TakeoffNode*>(item);
+             out<<*static_cast<TakeOffNode*>(item);
              break;
          }
          //default:
@@ -1208,6 +1208,19 @@ void DiagramWindow::addBatteryNode()
 }
 
 /*******************************************************************
+ * Function name: addGimbalNode()
+ * Description: This function add an BatteryNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addGimbalNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 402;
+}
+
+/*******************************************************************
  * Function name: addLink()
  * Description: This function add a Link on the scene.
  * Callee:
@@ -1301,23 +1314,23 @@ void DiagramWindow::del()
         if(dynamic_cast<Link*>(items[i]))
             itemLinks<<dynamic_cast<Link*>(items[i]);
     }
-    QList<TakeoffNode*>itemTakeoffs;
+    QList<TakeOffNode*>itemTakeoffs;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<TakeoffNode*>(items[i]))
-            itemTakeoffs<<dynamic_cast<TakeoffNode*>(items[i]);
+        if(dynamic_cast<TakeOffNode*>(items[i]))
+            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
     }
-    QList<LandonNode*>itemLandons;
+    QList<LandNode*>itemLandons;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<LandonNode*>(items[i]))
-            itemLandons<<dynamic_cast<LandonNode*>(items[i]);
+        if(dynamic_cast<LandNode*>(items[i]))
+            itemLandons<<dynamic_cast<LandNode*>(items[i]);
     }
-    QList<TranslationNode*>itemTranslations;
+    QList<GoNode*>itemTranslations;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<TranslationNode*>(items[i]))
-            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
+        if(dynamic_cast<GoNode*>(items[i]))
+            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
     }
     QList<TurnNode*>itemTurn;
     for(i=0;i<itemsCount;i++)
@@ -1354,6 +1367,12 @@ void DiagramWindow::del()
     {
         if(dynamic_cast<BatteryNode*>(items[i]))
             itemBry<<dynamic_cast<BatteryNode*>(items[i]);
+    }
+    QList<GimbalNode*>itemGim;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<GimbalNode*>(items[i]))
+            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
     }
     QList<Rec*>itemRecs;
     for(i=0;i<itemsCount;i++)
@@ -1396,7 +1415,7 @@ void DiagramWindow::del()
         }
         delete item;
     }
-    foreach (TakeoffNode* item, itemTakeoffs) {
+    foreach (TakeOffNode* item, itemTakeoffs) {
         /*qDebug()<<"In del():\n"<<"TakeOff: ";
         qDebug()<<"type: "<<item->identifier;
         qDebug()<<"id: "<<item->controlsId;
@@ -1407,13 +1426,13 @@ void DiagramWindow::del()
         scene->check_in_Logic(&tmp,"del");
         delete item;
     }
-    foreach (LandonNode* item, itemLandons) {
+    foreach (LandNode* item, itemLandons) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del");
         delete item;
     }
-    foreach (TranslationNode* item, itemTranslations) {
+    foreach (GoNode* item, itemTranslations) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del");
@@ -1450,6 +1469,12 @@ void DiagramWindow::del()
         delete item;
     }
     foreach (BatteryNode* item, itemBry) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
+        delete item;
+    }
+    foreach (GimbalNode* item, itemGim) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del");
@@ -1946,6 +1971,8 @@ void DiagramWindow::createActions()
     connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
     addBatteryNodeAction = new QAction(tr("Battery"),this);
     connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
+    addGimbalNodeAction = new QAction(tr("Gimbal"),this);
+    connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
     addLinkAction = new QAction(tr("&Link"), this);
     addLinkAction->setIcon(QIcon(":/images/link.png"));
@@ -2093,7 +2120,8 @@ void DiagramWindow::createMenus()
 
     QMenu *IOMenu = new QMenu(tr("IO"),this);
     foreach(QAction *action,QList<QAction*>()
-            <<addBatteryNodeAction)
+            <<addBatteryNodeAction
+            <<addGimbalNodeAction)
         IOMenu->addAction(action);
     addIONodeAction->setMenu(IOMenu);
 

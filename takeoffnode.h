@@ -14,11 +14,11 @@
  * Description: This is the declaration of class TakeoffNode.
  *       TakeoffNode is an action node stands for takeoff.
 ******************************************************************/
-class TakeoffNode:public Node
+class TakeOffNode:public Node
 {
 public:
     enum {Type = TakeoffNodeType};
-    TakeoffNode();
+    TakeOffNode();
 
     int type() const { return Type; }
 
@@ -36,8 +36,8 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 };
 
-QDataStream &operator <<(QDataStream &out,const TakeoffNode &node);
-QDataStream &operator >>(QDataStream &in,TakeoffNode &node);
+QDataStream &operator <<(QDataStream &out,const TakeOffNode &node);
+QDataStream &operator >>(QDataStream &in,TakeOffNode &node);
 
 /*******************************************************************
  * Class name: LandonNode
@@ -45,11 +45,11 @@ QDataStream &operator >>(QDataStream &in,TakeoffNode &node);
  * Description: This is the declaration of class LandNode.
  *       LandNode is an action node stands for takeoff.
 ******************************************************************/
-class LandonNode:public NewNode
+class LandNode:public NewNode
 {
 public:
     enum {Type = LandonNodeType};
-    LandonNode();
+    LandNode();
 
     int type() const { return Type; }
 
@@ -71,13 +71,13 @@ protected:
  * Description: This is the declaration of class TranslationNode.
  *     TranslateionNode represents some motions of translation.
 ******************************************************************/
-class TranslationNode:public NewNode
+class GoNode:public NewNode
 {
     Q_OBJECT
 public:
     enum {Type = TranslationNodeType};
-    TranslationNode();
-    ~TranslationNode();
+    GoNode();
+    ~GoNode();
 
     int type() const { return Type; }
 

@@ -39,13 +39,14 @@ public:
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateBattery(QPointF point, int id);
+    bool CreateGimbal(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
     Link* CreateLink(QGraphicsSceneMouseEvent* event);
 
     //从xml文件创建控件
-    bool CreateTakeOff(TakeoffNode* ton);
-    bool CreateLand(LandonNode* ln);
-    bool CreateGo(TranslationNode* gn);
+    bool CreateTakeOff(TakeOffNode* ton);
+    bool CreateLand(LandNode* ln);
+    bool CreateGo(GoNode* gn);
     bool CreateTurn(TurnNode* tn);
     bool CreateHover(HoverNode* hn);
     bool CreateDelay(DelayNode* dn);
@@ -54,6 +55,7 @@ public:
     bool CreateCompute(ComputeNode* cn);
     bool CreateIO(IoNode* ion);
     bool CreateBattery(BatteryNode* ion);
+    bool CreateGimbal(GimbalNode* ion);
     bool CreateLogic(Rec* ln);
     bool CreateLink(Link* link);
 
@@ -81,6 +83,7 @@ public:
 
     int IONodeNum;
     int BatteryNodeNum;
+    int GimbalNodeNum;
 
     int linkNodeNum;
 

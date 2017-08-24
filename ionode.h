@@ -63,6 +63,13 @@ public:
     QString ioType();
     void setVar(QString &var);
     QString var();
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+
 private:
     QString myIoType;
     QString myVar;
@@ -87,6 +94,34 @@ public:
     ~BatteryNode();
 
     //int type() const { return Type;}
+
+    QComboBox *box;
+    IoSmallNode *node1, *node2, *node3;
+    QGraphicsItem* item;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+protected:
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+};
+
+/*******************************************************************
+ * Class name: GimbalNode
+ * Base class: NewNode
+ * Description: This is the declaration of class GimbalNode. GimbalNode
+ *       is a node which represents I/O operations.
+******************************************************************/
+class GimbalNode:public NewNode
+{
+    Q_OBJECT
+public:
+    GimbalNode();
+    ~GimbalNode();
 
     QComboBox *box;
     IoSmallNode *node1, *node2, *node3;

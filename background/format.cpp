@@ -216,6 +216,13 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             y = QString::number((long)ww->mBatteryNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
             //stream.writeStartElement("arrow_out");
+        }
+        if(identifier == "Gimbal"){
+            x = QString::number((long)ww->mGimbalNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)ww->mGimbalNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+            //stream.writeStartElement("arrow_out");
         }/*
           if(){ //有输出
               stream.writeStartElement("arrow_out");
@@ -544,6 +551,9 @@ bool format::read_frame_file(QString filename)
                     if(type=="Battery"){
                         CreateBattery(point,id); //在窗口中生成IO控件
                     }
+                    if(type=="Gimbal"){
+                        CreateGimbal(point,id); //在窗口中生成IO控件
+                    }
                 }catch(exception e){
                    ;
                 }
@@ -688,9 +698,9 @@ bool format::SavePyFile(QString filename)
       <<"connection_string = args.connect\n"
       <<"sitl = None\n\n"
       <<"if not connection_string:\n"
-      <<"import dronekit_sitl\n"
-      <<"sitl = dronekit_sitl.start_default()\n"
-      <<"connection_string = sitl.connection_string()\n"
+      <<"   import dronekit_sitl\n"
+      <<"   sitl = dronekit_sitl.start_default()\n"
+      <<"   connection_string = sitl.connection_string()\n"
       <<"print 'Connecting to vehicle on: %s' % connection_string\n"
       <<"vehicle = connect(connection_string, wait_ready=True)\n";
 
@@ -713,13 +723,7 @@ bool format::SavePyFile(QString filename)
 
 void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
 {
-    /*
-     * 判断传入的控件是什么
-     * -判断传入的控件有没有in
-     * --有的话从SSmap调用名字对应的变量名
-     * -判断传入的控件是否有out
-     * -根据控件的类别和参数形成代码字符，写入file
-    */
+
     if(w->identifier=="VarType"){    //如果传入的控件是VAR
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
@@ -728,21 +732,48 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
+    if(w->identifier=="Gimbal"){    //如果传入的控件是Battery
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+
     if(w->identifier=="TakeOff"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        stream<<"print \"Arming motors\"\n"
+              <<"vehicle.mode = VehicleMode(\"GUIDED\")\n"
+              <<"vehicle.armed = True\n"
+              <<"while not vehicle.armed:\n"
+              <<"   print \" Waiting for arming...\"\n"
+              <<"   time.sleep(1)\n";
+        //arm和takeoff之后可能还是分成两个控件好，所以现在写成两段代码
+        stream<<"print \"Taking off!\"\n"
+              <<"aTargetAltitude = "<<w->mTakeOffNode->altitude;
+              <<"vehicle.simple_takeoff(aTargetAltitude)\n"
+              <<"while True:\n"
+              <<"   print \" Altitude: \", vehicle.location.global_relative_frame.alt\n"
+              <<"   if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.95:\n "
+              <<"       print \"Reached target altitude\"\n"
+              <<"       break\n"
+              <<"   time.sleep(1)\n";
 
     }
     if(w->identifier=="Land"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        stream<<"vehicle.mode = VehicleMode(\"RTL\")\n"
     }
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        stream<<"print \"Going towards first point for 30 seconds ...\"\n"
+              <<"point1 = LocationGlobalRelative(-35.361354, 149.165218, 20)\n"
+              <<"vehicle.simple_goto(point1,groundspeed)\n"
+
+
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="Hover"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        stream<<"time.sleep(t)\n"
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -779,7 +810,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
  *******************************************************************************************/
 bool format::CreateTakeOff(QPointF point,int id)
 {
-    TakeoffNode *node=new TakeoffNode;
+    TakeOffNode *node=new TakeOffNode;
     node->lx = point.x();
     node->ly = point.y();
     node->controlsId=id;
@@ -795,7 +826,7 @@ bool format::CreateTakeOff(QPointF point,int id)
 
 bool format::CreateLand(QPointF point, int id)
 {
-    LandonNode *node=new LandonNode;
+    LandNode *node=new LandNode;
     node->lx = point.x();
     node->ly = point.y();
     node->controlsId=id;
@@ -810,7 +841,7 @@ bool format::CreateLand(QPointF point, int id)
 
 bool format::CreateGo(QPointF point, int id)
 {
-    TranslationNode *node=new TranslationNode;
+    GoNode *node=new GoNode;
     node->lx = point.x();
     node->ly = point.y();
     node->controlsId=id;
@@ -862,6 +893,7 @@ bool format::CreateHover(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateDelay(QPointF point, int id)
@@ -881,6 +913,7 @@ bool format::CreateDelay(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateVarType(QPointF point, int id)
@@ -900,6 +933,7 @@ bool format::CreateVarType(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 /*********
  * QString name - the associated VarType name.
@@ -943,6 +977,7 @@ bool format::CreateVarDef(QPointF point, int id, QString name, int seq)//varnode
 
     WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateCompute(QPointF point, int id)
@@ -962,6 +997,7 @@ bool format::CreateCompute(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateIO(QPointF point, int id)
@@ -981,6 +1017,7 @@ bool format::CreateIO(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateBattery(QPointF point, int id)
@@ -1000,8 +1037,28 @@ bool format::CreateBattery(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
+bool format::CreateGimbal(QPointF point, int id)
+{
+    GimbalNode* node=new GimbalNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="Gimbal";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
+}
 
 bool format::CreateLogic(QPointF point, int id)
 {
@@ -1020,6 +1077,7 @@ bool format::CreateLogic(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan)
@@ -1112,6 +1170,7 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
 
     WidgetWrap* tmp = new WidgetWrap(link);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 

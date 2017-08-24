@@ -14,7 +14,7 @@
 #include "rec.h"
 
 
-TakeoffNode::TakeoffNode()
+TakeOffNode::TakeOffNode()
 {
     identifier="TakeOff";
     time=0;
@@ -22,27 +22,27 @@ TakeoffNode::TakeoffNode()
     altitude = 0;
 }
 
-void TakeoffNode::setTime(double t)
+void TakeOffNode::setTime(double t)
 {
     time=t;
 }
 
-void TakeoffNode::setAltitude(double a)
+void TakeOffNode::setAltitude(double a)
 {
     altitude=a;
 }
 
-double TakeoffNode::myAltitude()
+double TakeOffNode::myAltitude()
 {
     return altitude;
 }
 
-double TakeoffNode::myTime()
+double TakeOffNode::myTime()
 {
     return time;
 }
 
-void TakeoffNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void TakeOffNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     double t = QInputDialog::getDouble(event->widget(),
                            tr("Edit Text"), tr("Enter new text:"),
@@ -52,7 +52,7 @@ void TakeoffNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
-QDataStream &operator <<(QDataStream &out,const TakeoffNode &node)
+QDataStream &operator <<(QDataStream &out,const TakeOffNode &node)
 {
     out<<node.controlsId<<node.identifier<<node.zValue()
       <<node.pos()<<node.time<<node.text()
@@ -61,7 +61,7 @@ QDataStream &operator <<(QDataStream &out,const TakeoffNode &node)
     return out;
 }
 
-QDataStream &operator >>(QDataStream &in,TakeoffNode &node)
+QDataStream &operator >>(QDataStream &in,TakeOffNode &node)
 {
     int controlsId;
     QString identifier;
@@ -91,24 +91,24 @@ QDataStream &operator >>(QDataStream &in,TakeoffNode &node)
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LandonNode::LandonNode()
+LandNode::LandNode()
 {
     identifier="Land";
     rank = 0;
     time=0;
 }
 
-void LandonNode::setTime(double t)
+void LandNode::setTime(double t)
 {
     time=t;
 }
 
-double LandonNode::myTime()
+double LandNode::myTime()
 {
     return time;
 }
 
-void LandonNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void LandNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     double t = QInputDialog::getDouble(event->widget(),
                            tr("Edit Time"), tr("Enter new time:"),
@@ -117,7 +117,7 @@ void LandonNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     setText(tr("Land on\n %1 s").arg(t));
 }
 
-QVariant LandonNode::itemChange(GraphicsItemChange change,
+QVariant LandNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {if (change & ItemPositionHasChanged){
          if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
@@ -144,10 +144,10 @@ QVariant LandonNode::itemChange(GraphicsItemChange change,
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int TranslationNode::riseNodeNum=0;      int TranslationNode::fallNodeNum=0;
-int TranslationNode::advanceNodeNum=0;   int TranslationNode::backNodeNum=0;
-int TranslationNode::rightNodeNum=0;     int TranslationNode::leftNodeNum=0;
-TranslationNode::TranslationNode()
+int GoNode::riseNodeNum=0;      int GoNode::fallNodeNum=0;
+int GoNode::advanceNodeNum=0;   int GoNode::backNodeNum=0;
+int GoNode::rightNodeNum=0;     int GoNode::leftNodeNum=0;
+GoNode::GoNode()
 {
     box=new QComboBox;
     time=0;
@@ -158,32 +158,32 @@ TranslationNode::TranslationNode()
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
 }
 
-TranslationNode::~TranslationNode()
+GoNode::~GoNode()
 {
     delete  box;
 }
 
-void TranslationNode::setTime(double t)
+void GoNode::setTime(double t)
 {
     time=t;
 }
 
-double TranslationNode::myTime()
+double GoNode::myTime()
 {
     return time;
 }
 
-void TranslationNode::setGroundSpeed(double s)
+void GoNode::setGroundSpeed(double s)
 {
     groundspeed=s;
 }
 
-double TranslationNode::myGroundSpeed()
+double GoNode::myGroundSpeed()
 {
     return groundspeed;
 }
 
-void TranslationNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void GoNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     double gs = QInputDialog::getDouble(event->widget(),
                            tr("Edit GroudSpeed"), tr("Enter new GroundSpeed:"),
@@ -195,7 +195,7 @@ void TranslationNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     setText(tr(" %1 m/s").arg(gs));
 }
 
-QVariant TranslationNode::itemChange(GraphicsItemChange change,
+QVariant GoNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
@@ -221,7 +221,7 @@ QVariant TranslationNode::itemChange(GraphicsItemChange change,
 
 }
 
-void TranslationNode::setNewIdentifier()
+void GoNode::setNewIdentifier()
 {
     int index=box->currentIndex();
     switch (index) {

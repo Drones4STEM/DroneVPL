@@ -42,6 +42,18 @@ WidgetWrap::WidgetWrap(BatteryNode* in)
     high = in->high;
     wide = in->wide;
 }
+WidgetWrap::WidgetWrap(GimbalNode* in)
+{
+    category = "IO";
+    identifier = "Gimbal"; //控件类型
+    controlsId = in->controlsId;
+    name = in->name;
+    mGimbalNode = in;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
+}
 //-------------------------------
 WidgetWrap::WidgetWrap(Rec* ln)
 {
@@ -56,7 +68,7 @@ WidgetWrap::WidgetWrap(Rec* ln)
     wide = ln->wide;
 }
 //---------Action--------------
-WidgetWrap::WidgetWrap(TakeoffNode *ton)
+WidgetWrap::WidgetWrap(TakeOffNode *ton)
 {
     category = "Action";
     identifier = "TakeOff"; //控件类型
@@ -69,7 +81,7 @@ WidgetWrap::WidgetWrap(TakeoffNode *ton)
     wide = ton->wide;
 }
 
-WidgetWrap::WidgetWrap(LandonNode *ln)
+WidgetWrap::WidgetWrap(LandNode *ln)
 {
     category = "Action";
     identifier = "Land"; //控件类型
@@ -82,7 +94,7 @@ WidgetWrap::WidgetWrap(LandonNode *ln)
     wide = ln->wide;
 }
 
-WidgetWrap::WidgetWrap(TranslationNode *tn)
+WidgetWrap::WidgetWrap(GoNode *tn)
 {
     category = "Action";
     identifier = "Go"; //控件类型
@@ -197,6 +209,7 @@ triYuan* WidgetWrap::get_yuan_out()
         return mBatteryNode->yuan;
     if(identifier == "Logic")
         return mLogicNode->yuan;
+    return 0;
 }
 bool WidgetWrap::check_yuan_in()
 {

@@ -57,6 +57,8 @@ newscene::newscene(WidgetMap* m, QMap<QString, LOGIC_Help *> *L)
     ComputeNodeNum = 0;
 
     IONodeNum = 0;
+    BatteryNodeNum = 0;
+    GimbalNodeNum = 0;
 
     linkNodeNum=0;
 
@@ -186,6 +188,12 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         this->BatteryNodeNum++;
         CreateBattery(new_event->scenePos(),this->BatteryNodeNum);
     }
+    if(need_to_set==1&&selected_Index==402){qDebug()<<"402.";
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->GimbalNodeNum++;
+        CreateGimbal(new_event->scenePos(),this->GimbalNodeNum);
+    }
     if(need_to_set==1&&selected_Index==19){qDebug()<<"19.";
         emit itemInserted(selected_Index);
         need_to_set = 0;
@@ -198,7 +206,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
 bool newscene::CreateTakeOff(QPointF point, int id)
 {
-    TakeoffNode *node=new TakeoffNode;
+    TakeOffNode *node=new TakeOffNode;
     node->setText(tr("take off\n %1 m").arg(node->time));
 
     node->setPos(point);
@@ -228,7 +236,7 @@ bool newscene::CreateTakeOff(QPointF point, int id)
 
 bool newscene::CreateLand(QPointF point, int id)
 {
-    LandonNode *node=new LandonNode;
+    LandNode *node=new LandNode;
     node->setText(tr("Land on\n %1 s").arg(node->time));
 
     node->setPos(point);
@@ -262,7 +270,7 @@ bool newscene::CreateLand(QPointF point, int id)
 
 bool newscene::CreateGo(QPointF point, int id)
 {
-    TranslationNode *node=new TranslationNode;
+    GoNode *node=new GoNode;
     node->setText(tr(" %1 m/s").arg(node->groundspeed));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
@@ -686,9 +694,9 @@ bool newscene::CreateIO(QPointF point, int id)
 bool newscene::CreateBattery(QPointF point, int id)
 {
     BatteryNode* node=new BatteryNode;
-    node->setText(tr("sensor"));
-    QGraphicsItem* item=this->addWidget(node->box);
-    node->item=item;
+    node->setText(tr("Battery"));
+    //QGraphicsItem* item=this->addWidget(node->box);
+    //node->item=item;
 
 
     node->setPos(point);
@@ -718,19 +726,95 @@ bool newscene::CreateBattery(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
+    node->node1->setText(tr("voltage"));
+    node->node2->setText(tr("current"));
+    node->node3->setText(tr("level"));
 
-
-    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("detection sensor"));
-    node->box->addItem(tr("A sensor"));
-    node->box->addItem(tr("B sensor"));
-    node->box->addItem(tr("delay"));
-    node->box->setCurrentIndex(0);
+//    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+//                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+//    item->setZValue(node->zValue()+1);
+    //node->box->addItem(tr("voltage"));
+   // node->box->addItem(tr("current"));
+    //node->box->addItem(tr("level"));
+    //node->box->setCurrentIndex(0);
 
     node->controlsId=id;
     node->identifier="Battery";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->node1->yuan->master = tmp;
+    node->node1->yuan->name = "n1yuan";
+    node->node2->yuan->master = tmp;
+    node->node2->yuan->name = "n2yuan";
+    node->node3->yuan->master = tmp;
+    node->node3->yuan->name = "n3yuan";
+    emit sig_connectItem(node);
+
+    return true;
+
+}
+
+bool newscene::CreateGimbal(QPointF point, int id)
+{
+    GimbalNode* node=new GimbalNode;
+    node->setText(tr("Gimbal"));
+//    QGraphicsItem* item=this->addWidget(node->box);
+//    node->item=item;
+
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    node->node1->setText(tr("pitch"));
+    node->node2->setText(tr("roll"));
+    node->node3->setText(tr("yaw"));
+
+
+//    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+//                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+//    item->setZValue(node->zValue()+1);
+//    node->box->addItem(tr("pitch"));
+//    node->box->addItem(tr("roll"));
+//    node->box->addItem(tr("yaw"));
+//    node->box->setCurrentIndex(0);
+
+    node->controlsId=id;
+    node->identifier="Gimbal";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";
@@ -846,7 +930,7 @@ Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 }
 
 //----------------从xml文件创建控件-----------------------
-bool newscene::CreateTakeOff(TakeoffNode* node)
+bool newscene::CreateTakeOff(TakeOffNode* node)
 {
     node->setText(tr("take off\n %1 s").arg(node->time));
 
@@ -867,7 +951,7 @@ bool newscene::CreateTakeOff(TakeoffNode* node)
     return true;
 
 }
-bool newscene::CreateLand(LandonNode* node)
+bool newscene::CreateLand(LandNode* node)
 {
     node->setText(tr("Land on\n %1 s").arg(node->time));
 
@@ -888,7 +972,7 @@ bool newscene::CreateLand(LandonNode* node)
 
     return true;
 }
-bool newscene::CreateGo(TranslationNode* node)
+bool newscene::CreateGo(GoNode* node)
 {
     node->setText(tr(" %1 m/s \n %2 s").arg(node->time));
     QGraphicsItem* item=this->addWidget(node->box);
@@ -1174,9 +1258,9 @@ bool newscene::CreateIO(IoNode* node)
 
 bool newscene::CreateBattery(BatteryNode* node)
 {
-    node->setText(tr("sensor"));
-    QGraphicsItem* item=this->addWidget(node->box);
-    node->item=item;
+    node->setText(tr("Battery"));
+    //QGraphicsItem* item=this->addWidget(node->box);
+    //node->item=item;
 
 
     node->setPos(node->lx,node->ly);
@@ -1206,16 +1290,74 @@ bool newscene::CreateBattery(BatteryNode* node)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
+    node->node1->setText(tr("voltage"));
+    node->node2->setText(tr("current"));
+    node->node3->setText(tr("level"));
     this->BatteryNodeNum++;
 
-    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("detection sensor"));
-    node->box->addItem(tr("A sensor"));
-    node->box->addItem(tr("B sensor"));
-    node->box->addItem(tr("delay"));
-    node->box->setCurrentIndex(0);
+//    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+//                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+//    item->setZValue(node->zValue()+1);
+    //node->box->addItem(tr("voltage"));
+    //node->box->addItem(tr("current"));
+    //node->box->addItem(tr("level"));
+    //node->box->setCurrentIndex(0);
+
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
+    return true;
+}
+
+bool newscene::CreateGimbal(GimbalNode* node)
+{
+    node->setText(tr("Gimbal"));
+//    QGraphicsItem* item=this->addWidget(node->box);
+//    node->item=item;
+
+
+    node->setPos(node->lx,node->ly);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    node->node1->setText(tr("pitch"));
+    node->node2->setText(tr("roll"));
+    node->node3->setText(tr("yaw"));
+    this->GimbalNodeNum++;
+
+//    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+//                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+//    item->setZValue(node->zValue()+1);
+//    node->box->addItem(tr("pitch"));
+//    node->box->addItem(tr("roll"));
+//    node->box->addItem(tr("yaw"));
+//    node->box->setCurrentIndex(0);
 
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
