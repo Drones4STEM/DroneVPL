@@ -25,11 +25,11 @@ class QFile;
 class Link;
 class Node;
 class NewNode;
-class TranslationNode;
+class GoNode;
 class SomeNode;
 class Yuan;
 class Rec;
-class TakeoffNode;
+class TakeOffNode;
 class WidgetCondition;
 class ColorWidget;
 class PositionWidget;
@@ -118,6 +118,8 @@ private slots:
     void addVardefNode();
     void addComputeNode();
     void addIoNode();
+    void addBatteryNode();
+    void addGimbalNode();
     void addLink();
     void addRec();
     void del();
@@ -168,7 +170,7 @@ private:
     void updateRecentFileActions();//update recent files
     QString strippedName( QString &fullFileName);//updateRecentFileActions()的帮助函数
 
-    void addTranslation(TranslationNode* node);//addTranslationNode()的帮助函数
+    void addTranslation(GoNode* node);//addTranslationNode()的帮助函数
     void addSome(SomeNode* node);//addSomeNode()的帮助函数
 
     void readSettings();
@@ -225,11 +227,19 @@ private:
 
     QAction *addVarNodeAction;
     QAction *addVardefNodeAction;
+
     QAction *addComputeNodeAction;
-    QAction *addIoNodeAction;
+
+    QAction *addIONodeAction;
+    QAction *addBatteryNodeAction;
+    QAction *addGimbalNodeAction;
+
     QAction *addTextNodeAction;
+
     QAction *addLinkAction;
+
     QAction *addRecAction;
+
     QAction *deleteAction;
     QAction *cutAction;
     QAction *copyAction;

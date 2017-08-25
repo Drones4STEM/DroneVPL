@@ -19,15 +19,17 @@ class WidgetWrap
 {
 public:
     WidgetWrap();
-    WidgetWrap(TakeoffNode* ton);
-    WidgetWrap(LandonNode* ln);
-    WidgetWrap(TranslationNode* tn);
+    WidgetWrap(TakeOffNode* ton);
+    WidgetWrap(LandNode* ln);
+    WidgetWrap(GoNode* tn);
     WidgetWrap(TurnNode *turnn);
     WidgetWrap(HoverNode *hn);
     WidgetWrap(DelayNode *dn);
 
     WidgetWrap(ComputeNode* cn);
     WidgetWrap(IoNode* in);
+    WidgetWrap(BatteryNode* in);
+    WidgetWrap(GimbalNode* in);
     WidgetWrap(Rec* ln);
 
     WidgetWrap(VardefNode* vdn);
@@ -53,15 +55,17 @@ public:
     ComputeNode* mComputeNode = NULL;
 
     IoNode* mIONode;
+    BatteryNode* mBatteryNode;
+    GimbalNode* mGimbalNode;
 
     Rec* mLogicNode;
 
     VardefNode* mVarDefNode;
     VarNode* mVarTypeNode;
 
-    TakeoffNode* mTakeOffNode;
-    LandonNode* mLandNode;
-    TranslationNode* mGoNode;
+    TakeOffNode* mTakeOffNode;
+    LandNode* mLandNode;
+    GoNode* mGoNode;
     TurnNode* mTurnNode;
     HoverNode* mHoverNode;
     DelayNode* mDelayNode;

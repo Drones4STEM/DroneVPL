@@ -70,6 +70,8 @@ private:
     bool CreateVarDef(QPointF point, int id, QString name, int seq);   //num表示VarDef是VarType的第几个节点
     bool CreateCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
+    bool CreateBattery(QPointF point, int id);
+    bool CreateGimbal(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
 
     bool CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan);

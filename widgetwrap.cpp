@@ -30,6 +30,30 @@ WidgetWrap::WidgetWrap(IoNode* in)
     high = in->high;
     wide = in->wide;
 }
+WidgetWrap::WidgetWrap(BatteryNode* in)
+{
+    category = "IO";
+    identifier = "Battery"; //控件类型
+    controlsId = in->controlsId;
+    name = in->name;
+    mBatteryNode = in;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
+}
+WidgetWrap::WidgetWrap(GimbalNode* in)
+{
+    category = "IO";
+    identifier = "Gimbal"; //控件类型
+    controlsId = in->controlsId;
+    name = in->name;
+    mGimbalNode = in;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
+}
 //-------------------------------
 WidgetWrap::WidgetWrap(Rec* ln)
 {
@@ -44,7 +68,7 @@ WidgetWrap::WidgetWrap(Rec* ln)
     wide = ln->wide;
 }
 //---------Action--------------
-WidgetWrap::WidgetWrap(TakeoffNode *ton)
+WidgetWrap::WidgetWrap(TakeOffNode *ton)
 {
     category = "Action";
     identifier = "TakeOff"; //控件类型
@@ -57,7 +81,7 @@ WidgetWrap::WidgetWrap(TakeoffNode *ton)
     wide = ton->wide;
 }
 
-WidgetWrap::WidgetWrap(LandonNode *ln)
+WidgetWrap::WidgetWrap(LandNode *ln)
 {
     category = "Action";
     identifier = "Land"; //控件类型
@@ -70,7 +94,7 @@ WidgetWrap::WidgetWrap(LandonNode *ln)
     wide = ln->wide;
 }
 
-WidgetWrap::WidgetWrap(TranslationNode *tn)
+WidgetWrap::WidgetWrap(GoNode *tn)
 {
     category = "Action";
     identifier = "Go"; //控件类型
@@ -181,8 +205,11 @@ triYuan* WidgetWrap::get_yuan_out()
         return mComputeNode->yuan;
     if(identifier == "IO")
         return mIONode->yuan;
+    if(identifier == "Battery")
+        return mBatteryNode->yuan;
     if(identifier == "Logic")
         return mLogicNode->yuan;
+    return 0;
 }
 bool WidgetWrap::check_yuan_in()
 {
@@ -282,13 +309,13 @@ bool WidgetWrap::check_yuan_in()
             }
 
         }
-    if(identifier == "IO")
-        if(mIONode->yuan2->myLinks.isEmpty())
+    if(identifier == "Battery")
+        if(mBatteryNode->yuan2->myLinks.isEmpty())
             return false;
         else{
-            QList<Link*> links = mIONode->yuan2->myLinks.values();
+            QList<Link*> links = mBatteryNode->yuan2->myLinks.values();
             for(int i=0;i<links.length();i++){
-                if(links[i]->fromYuan()->master->rank()>=mIONode->rank)
+                if(links[i]->fromYuan()->master->rank()>=mBatteryNode->rank)
                     //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
                     return true;
                 else return false;
@@ -334,6 +361,8 @@ QPointF WidgetWrap::pos()
         return mComputeNode->pos();
     if(identifier == "IO")
         return mIONode->pos();
+    if(identifier == "Battery")
+        return mBatteryNode->pos();
     if(identifier == "Logic")
         return mLogicNode->pos();
 }
@@ -360,6 +389,8 @@ int WidgetWrap::rank()
         return mComputeNode->rank;
     if(identifier == "IO")
         return mIONode->rank;
+    if(identifier == "Battery")
+        return mBatteryNode->rank;
     if(identifier == "Logic")
         return mLogicNode->rank;
 }
@@ -386,6 +417,8 @@ void WidgetWrap::rank(int r)
         mComputeNode->rank = r;
     if(identifier == "IO")
         mIONode->rank = r;
+    if(identifier == "Battery")
+        mBatteryNode->rank = r;
     if(identifier == "Logic")
         mLogicNode->rank = r;
 }

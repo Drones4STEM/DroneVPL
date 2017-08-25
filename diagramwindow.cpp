@@ -498,7 +498,7 @@ void DiagramWindow::readItems(QDataStream &in,int offset, bool select)
         switch (itemType) {
         case TakeoffNodeType:
         {
-            TakeoffNode* node=new TakeoffNode;
+            TakeOffNode* node=new TakeOffNode;
             in>>*node;
 
             node->setText(tr("take off\n %1 s").arg(node->time));
@@ -595,7 +595,7 @@ void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &i
          {
          case TakeoffNodeType:
          {
-             out<<*static_cast<TakeoffNode*>(item);
+             out<<*static_cast<TakeOffNode*>(item);
              break;
          }
          //default:
@@ -803,37 +803,6 @@ void DiagramWindow::addTranslationNode()
     //addTranslation(node);
 
     //setDirty(true);
-}
-
-/*******************************************************************
- * Function name: addTranslation()
- * Description: This function add a TranslationNode on the scene.
- * Callee:
- * Inputs: TranslationNode *node
- * Outputs:
-******************************************************************/
-void DiagramWindow::addTranslation(TranslationNode *node)
-{
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-    QGraphicsItem* item=scene->addWidget(node->box);
-    node->item=item;
-    setupNewNode(node);
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                      (node->pos().y() )));
-    scene->addItem(node->yuan);
-    scene->addItem(node->yuan2);
-
-    item->setPos(QPointF(node->pos().x()-40,
-                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("GoUp"));
-    node->box->addItem(tr("GoDown"));
-    node->box->addItem(tr("Forward"));
-    node->box->addItem(tr("Backward"));
-    node->box->addItem(tr("GoRight"));
-    node->box->addItem(tr("GoLeft"));
 }
 
 /*******************************************************************
@@ -1221,49 +1190,34 @@ void DiagramWindow::addComputeNode()
 ******************************************************************/
 void DiagramWindow::addIoNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 18;
-    //IoNode* node=new IoNode;
-    //node->setText(tr("sensor"));
-    // QGraphicsItem* item=scene->addWidget(node->box);
-    //node->item=item;
-    //setupNewNode(node);
+}
 
-    // node->yuan->setPos(QPointF(node->pos().x(),
-    //                   (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    // node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-    //                    (node->pos().y())));
-    // scene->addItem(node->yuan);
-    // scene->addItem(node->yuan2);
+/*******************************************************************
+ * Function name: addBatteryNode()
+ * Description: This function add an BatteryNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addBatteryNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 401;
+}
 
-    // node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
-    //                     node->pos().y());
-    // node->node1->setPos(node->node2->pos().x(),
-    //                     node->node2->pos().y() - node->node2->outlineRect().height());
-    // node->node3->setPos(node->node2->pos().x(),
-    //                     node->node2->pos().y() + node->node2->outlineRect().height());
-    // scene->addItem(node->node2);
-    // scene->addItem(node->node1);
-    // scene->addItem(node->node3);
-    // scene->addItem(node->node2->yuan);
-    // scene->addItem(node->node1->yuan);
-    // scene->addItem(node->node3->yuan);
-
-
-    // item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-    //              (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-    // item->setZValue(node->zValue()+1);
-    // node->box->addItem(tr("detection sensor"));
-    // node->box->addItem(tr("A sensor"));
-    // node->box->addItem(tr("B sensor"));
-    // node->box->addItem(tr("delay"));
-    // node->box->setCurrentIndex(0);
-
-    //ioNodeNum++;
-    // node->controlsId=ioNodeNum;
-
-    //setDirty();
+/*******************************************************************
+ * Function name: addGimbalNode()
+ * Description: This function add an BatteryNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addGimbalNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 402;
 }
 
 /*******************************************************************
@@ -1360,23 +1314,23 @@ void DiagramWindow::del()
         if(dynamic_cast<Link*>(items[i]))
             itemLinks<<dynamic_cast<Link*>(items[i]);
     }
-    QList<TakeoffNode*>itemTakeoffs;
+    QList<TakeOffNode*>itemTakeoffs;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<TakeoffNode*>(items[i]))
-            itemTakeoffs<<dynamic_cast<TakeoffNode*>(items[i]);
+        if(dynamic_cast<TakeOffNode*>(items[i]))
+            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
     }
-    QList<LandonNode*>itemLandons;
+    QList<LandNode*>itemLandons;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<LandonNode*>(items[i]))
-            itemLandons<<dynamic_cast<LandonNode*>(items[i]);
+        if(dynamic_cast<LandNode*>(items[i]))
+            itemLandons<<dynamic_cast<LandNode*>(items[i]);
     }
-    QList<TranslationNode*>itemTranslations;
+    QList<GoNode*>itemTranslations;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<TranslationNode*>(items[i]))
-            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
+        if(dynamic_cast<GoNode*>(items[i]))
+            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
     }
     QList<TurnNode*>itemTurn;
     for(i=0;i<itemsCount;i++)
@@ -1407,6 +1361,18 @@ void DiagramWindow::del()
     {
         if(dynamic_cast<IoNode*>(items[i]))
             itemIos<<dynamic_cast<IoNode*>(items[i]);
+    }
+    QList<BatteryNode*>itemBry;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<BatteryNode*>(items[i]))
+            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
+    }
+    QList<GimbalNode*>itemGim;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<GimbalNode*>(items[i]))
+            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
     }
     QList<Rec*>itemRecs;
     for(i=0;i<itemsCount;i++)
@@ -1449,7 +1415,7 @@ void DiagramWindow::del()
         }
         delete item;
     }
-    foreach (TakeoffNode* item, itemTakeoffs) {
+    foreach (TakeOffNode* item, itemTakeoffs) {
         /*qDebug()<<"In del():\n"<<"TakeOff: ";
         qDebug()<<"type: "<<item->identifier;
         qDebug()<<"id: "<<item->controlsId;
@@ -1460,13 +1426,13 @@ void DiagramWindow::del()
         scene->check_in_Logic(&tmp,"del");
         delete item;
     }
-    foreach (LandonNode* item, itemLandons) {
+    foreach (LandNode* item, itemLandons) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del");
         delete item;
     }
-    foreach (TranslationNode* item, itemTranslations) {
+    foreach (GoNode* item, itemTranslations) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del");
@@ -1497,6 +1463,18 @@ void DiagramWindow::del()
         delete item;
     }
     foreach (IoNode* item, itemIos) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
+        delete item;
+    }
+    foreach (BatteryNode* item, itemBry) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del");
+        delete item;
+    }
+    foreach (GimbalNode* item, itemGim) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del");
@@ -1951,7 +1929,8 @@ void DiagramWindow::createActions()
     exitAction->setShortcut(tr("Ctrl+Q"));
     connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
-    addActionNodeAction = new QAction(tr("action"),this);
+    addActionNodeAction = new QAction(tr("Action"),this);
+    addIONodeAction = new QAction(tr("IO"),this);
 
     addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
@@ -1990,8 +1969,10 @@ void DiagramWindow::createActions()
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
     addComputeNodeAction = new QAction(tr("Compute"),this);
     connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
-    addIoNodeAction = new QAction(tr("IO"),this);
-    connect(addIoNodeAction,SIGNAL(triggered()),this,SLOT(addIoNode()));
+    addBatteryNodeAction = new QAction(tr("Battery"),this);
+    connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
+    addGimbalNodeAction = new QAction(tr("Gimbal"),this);
+    connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
     addLinkAction = new QAction(tr("&Link"), this);
     addLinkAction->setIcon(QIcon(":/images/link.png"));
@@ -2137,11 +2118,18 @@ void DiagramWindow::createMenus()
         actionMenu->addAction(action);
     addActionNodeAction->setMenu(actionMenu);
 
+    QMenu *IOMenu = new QMenu(tr("IO"),this);
+    foreach(QAction *action,QList<QAction*>()
+            <<addBatteryNodeAction
+            <<addGimbalNodeAction)
+        IOMenu->addAction(action);
+    addIONodeAction->setMenu(IOMenu);
+
     editMenu->addAction(addActionNodeAction);
     editMenu->addAction(addVarNodeAction);
     editMenu->addAction(addVardefNodeAction);
     editMenu->addAction(addComputeNodeAction);
-    editMenu->addAction(addIoNodeAction);
+    editMenu->addAction(addIONodeAction);
     editMenu->addAction(addRecAction);
     editMenu->addSeparator();
     editMenu->addAction(deleteAction);
@@ -2212,7 +2200,7 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addVardefNodeAction);
     aToolBar->addSeparator();
     aToolBar->addAction(addComputeNodeAction);
-    aToolBar->addAction(addIoNodeAction);
+    aToolBar->addAction(addIONodeAction);
     aToolBar->addAction(addRecAction);
     aToolBar->addAction(addLinkAction);
     addToolBar(Qt::LeftToolBarArea,aToolBar);
