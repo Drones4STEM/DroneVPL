@@ -7,32 +7,38 @@
 #include "QObject"
 #include "itemtypes.h"
 
+
 /*******************************************************************
  * Class name: TakeoffNode
  * Base class: Node
  * Description: This is the declaration of class TakeoffNode.
  *       TakeoffNode is an action node stands for takeoff.
 ******************************************************************/
-class TakeoffNode:public Node
+class TakeOffNode:public Node
 {
+    Q_PROPERTY(double altitude READ myAltitude WRITE setAltitude)
 public:
     enum {Type = TakeoffNodeType};
-    TakeoffNode();
+    TakeOffNode();
 
     int type() const { return Type; }
 
 
     double time;
+    double altitude;
 
     void setTime(double t);
     double myTime();
+    void setAltitude(double a);
+    double myAltitude();
+
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 };
 
-QDataStream &operator <<(QDataStream &out,const TakeoffNode &node);
-QDataStream &operator >>(QDataStream &in,TakeoffNode &node);
+QDataStream &operator <<(QDataStream &out,const TakeOffNode &node);
+QDataStream &operator >>(QDataStream &in,TakeOffNode &node);
 
 /*******************************************************************
  * Class name: LandonNode
@@ -40,11 +46,12 @@ QDataStream &operator >>(QDataStream &in,TakeoffNode &node);
  * Description: This is the declaration of class LandNode.
  *       LandNode is an action node stands for takeoff.
 ******************************************************************/
-class LandonNode:public NewNode
+class LandNode:public NewNode
 {
+    Q_PROPERTY(double time READ mytime WRITE setTime)
 public:
     enum {Type = LandonNodeType};
-    LandonNode();
+    LandNode();
 
     int type() const { return Type; }
 
@@ -66,25 +73,27 @@ protected:
  * Description: This is the declaration of class TranslationNode.
  *     TranslateionNode represents some motions of translation.
 ******************************************************************/
-class TranslationNode:public NewNode
+class GoNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double groundspeed READ myGroundSpeed WRITE setGroundSpeed)
 public:
     enum {Type = TranslationNodeType};
-    TranslationNode();
-    ~TranslationNode();
+    GoNode();
+    ~GoNode();
 
     int type() const { return Type; }
 
-    double speed,time;
+    double time;
+    double groundspeed;
     QComboBox *box;
 
     QGraphicsItem *item;
 
     void setTime(double t);
     double myTime();
-    void setSpeed(double s);
-    double mySpeed();
+    void setGroundSpeed(double s);
+    double myGroundSpeed();
 
     static int riseNodeNum;     static int fallNodeNum;
     static int advanceNodeNum;  static int backNodeNum;
@@ -109,6 +118,7 @@ private slots:
 class TurnNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double speed READ mySpeed WRITE setSpeed)
 public:
     enum {Type = SomeNodeType};
     TurnNode();
@@ -146,6 +156,7 @@ private slots:
 class HoverNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double time READ myTime WRITE setTime)
 public:
     enum {Type = SomeNodeType};
     HoverNode();
@@ -172,7 +183,7 @@ private slots:
 };
 
 /*******************************************************************
- * Class name: HoverNode
+ * Class name: DelayNode
  * Base class: NewNode
  * Description: This is a class for developers, and determines some
  *     to follow. This class represents some actions including
@@ -181,6 +192,7 @@ private slots:
 class DelayNode:public NewNode
 {
     Q_OBJECT
+    Q_PROPERTY(double time READ myTime WRITE setTime)
 public:
     enum {Type = SomeNodeType};
     DelayNode();
