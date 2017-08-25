@@ -746,7 +746,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
               <<"   time.sleep(1)\n";
         //arm和takeoff之后可能还是分成两个控件好，所以现在写成两段代码
         stream<<"print \"Taking off!\"\n"
-              <<"aTargetAltitude = "<<w->mTakeOffNode->altitude;
+              <<"aTargetAltitude = "<<w->mTakeOffNode->altitude
               <<"vehicle.simple_takeoff(aTargetAltitude)\n"
               <<"while True:\n"
               <<"   print \" Altitude: \", vehicle.location.global_relative_frame.alt\n"
@@ -758,13 +758,13 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     }
     if(w->identifier=="Land"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"vehicle.mode = VehicleMode(\"RTL\")\n"
+        stream<<"vehicle.mode = VehicleMode(\"RTL\")\n";
     }
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         stream<<"print \"Going towards first point for 30 seconds ...\"\n"
               <<"point1 = LocationGlobalRelative(-35.361354, 149.165218, 20)\n"
-              <<"vehicle.simple_goto(point1,groundspeed)\n"
+              <<"vehicle.simple_goto(point1,groundspeed)\n";
 
 
     }
@@ -773,7 +773,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     }
     if(w->identifier=="Hover"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"time.sleep(t)\n"
+        stream<<"time.sleep(t)\n";
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
