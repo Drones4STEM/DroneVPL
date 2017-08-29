@@ -16,7 +16,8 @@
 ******************************************************************/
 class TakeOffNode:public Node
 {
-    Q_PROPERTY(double altitude READ myAltitude WRITE setAltitude)
+    Q_OBJECT
+    Q_PROPERTY(double myAltitude READ myAltitude WRITE setAltitude)
 public:
     enum {Type = TakeoffNodeType};
     TakeOffNode();
@@ -48,7 +49,9 @@ QDataStream &operator >>(QDataStream &in,TakeOffNode &node);
 ******************************************************************/
 class LandNode:public NewNode
 {
-    Q_PROPERTY(double time READ mytime WRITE setTime)
+    Q_OBJECT
+    Q_PROPERTY(double myTime READ myTime WRITE setTime)
+    //Q_PROPERTY(double myTime READ mytime WRITE setTime)
 public:
     enum {Type = LandonNodeType};
     LandNode();

@@ -12,6 +12,7 @@
 #include "node.h"
 #include "yuan.h"
 #include "rec.h"
+#include <math.h>
 
 /*******************************************************************
  * Function name: Node()
@@ -307,7 +308,7 @@ QRectF Node::outlineRect() const
 int Node::roundness(double size) const
 {
     const int Diameter = 12;
-    return 100 * Diameter / int(size);
+    return 100 * Diameter / (abs(int(size))+1);
 }
 
 triYuan* Node::myYuan()const

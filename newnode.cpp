@@ -32,6 +32,7 @@ NewNode::NewNode()
 
     setFlags(ItemIsMovable | ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
+    setFlag(ItemIsFocusable);
 
     identifier="NewNode";
     controlsId=0;
@@ -303,7 +304,7 @@ QRectF NewNode::outlineRect() const
 int NewNode::roundness(double size) const
 {
     const int Diameter = 12;
-    return 100 * Diameter / int(size);
+    return 100 * Diameter / (abs(int(size))+1);
 }
 
 Yuan* NewNode::myYuan()const
