@@ -17,6 +17,7 @@
 #include <QApplication>
 #include <QWidget>
 #include <QMainWindow>
+#include <QDesktopServices>
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -40,6 +41,7 @@
 #include "odescription.h"
 #include "format.h"
 #include "digraph.h"
+
 
 
 namespace {
@@ -172,7 +174,7 @@ DiagramWindow::DiagramWindow()
 
     QSettings settings("Software Inc.", "Page Designer");
     recentFiles = settings.value("recentFiles").toStringList();
-    viewShowGridAction->setChecked(settings.value(ShowGrid,true).toBool());
+    viewShowGridAction->setChecked(settings.value(ShowGrid,false).toBool());//在设置中找showgrid，默认false
 
     foreach (QWidget *win, QApplication::topLevelWidgets()) {
         if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
@@ -1679,6 +1681,16 @@ void DiagramWindow::systemInformation()
     description->show();
 }
 
+void DiagramWindow::help()
+{
+    //QDesktopServices::openUrl(QUrl("file:///C:/Users/ASUS/learngit/DroneVPL/help/help.chm"));
+    //打包就用下面这个方法，在编译情况下将文件放在debug或release文件夹下也可用下面的方法，或者用上面指定具体路径
+    QString strUrl=QCoreApplication::applicationDirPath();
+    strUrl=QString("file:///%1/help.chm").arg(strUrl);
+    QUrl url(strUrl);
+    qDebug()<<QDesktopServices::openUrl(url);
+}
+
 /*******************************************************************
  * Function name: updateActions()
  * Description: This function changes the state of actions according
@@ -1692,15 +1704,29 @@ void DiagramWindow::updateActions()
     bool isNode = (selectedNode() != 0||selectedNewNode()!=0);
     bool isYuanPair = (selectedYuanPair() != YuanPair());
     bool isRec = (selectedRec() != 0);
-    bool hasSelection = !scene->selectedItems().isEmpty();
 
-    cutAction->setEnabled(isNode);
-    copyAction->setEnabled(isNode);
+    fileSaveAction->setEnabled(isWindowModified());
+    bool hasItems=sceneHasItems();
+    fileSaveAsAction->setEnabled(hasItems);
+    fileExportAction->setEnabled(hasItems);
+    filePrintAction->setEnabled(hasItems);
+    int selected=scene->selectedItems().count();
+    cutAction->setEnabled(selected>=1);
+    copyAction->setEnabled(selected>=1);
+    deleteAction->setEnabled(selected>=1);
+    //pasteAction未写  以下为参考
+    /*QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    editPasteAction->setEnabled(mimeData &&
+            (mimeData->hasFormat(MimeType) || mimeData->hasHtml() ||
+             mimeData->hasText()));*/
     addLinkAction->setEnabled(isYuanPair);
-    deleteAction->setEnabled(hasSelection);
     bringToFrontAction->setEnabled(isNode||isRec);
     sendToBackAction->setEnabled(isNode||isRec);
-    propertiesAction->setEnabled(isNode);
+    //更新view菜单中的动作，不确定是否有用且必要，懒得看了;
+    showEditToolBarAction->setChecked(editToolBar->isVisible());
+    showNodeBarAction->setChecked(aToolBar->isVisible());
+    showNodeStatusBarAction->setChecked(widgetCondition->isVisible());
 
     foreach (QAction *action, view->actions())
         view->removeAction(action);
@@ -1709,6 +1735,15 @@ void DiagramWindow::updateActions()
         if (action->isEnabled())
         view->addAction(action);
     }
+}
+
+bool DiagramWindow::sceneHasItems() const
+{
+    foreach (QGraphicsItem *item, scene->items()) {
+        if(item!=gridGroup && item->group()!=gridGroup)
+            return true;
+    }
+    return false;
 }
 
 /*******************************************************************
@@ -1934,7 +1969,7 @@ void DiagramWindow::createActions()
 
     addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
-    addLandonNodeAction = new QAction(tr("Landon"),this);
+    addLandonNodeAction = new QAction(tr("LandOn"),this);
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Translation"),this);
@@ -2015,23 +2050,26 @@ void DiagramWindow::createActions()
     showEditToolBarAction = new QAction(tr("EditToolBar"), this);
     showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
     showEditToolBarAction->setCheckable(true);
+    showEditToolBarAction->setChecked(true);
     connect(showEditToolBarAction, SIGNAL(triggered()),
             this, SLOT(showEditToolBar()));
     showNodeBarAction = new QAction(tr("NodeBar"), this);
     showNodeBarAction->setStatusTip(tr("show or hide the node bar"));
     showNodeBarAction->setCheckable(true);
+    showNodeBarAction->setChecked(true);
     connect(showNodeBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeBar()));
     showNodeStatusBarAction = new QAction(tr("ToolStatusBar"), this);
     showNodeStatusBarAction->setStatusTip(tr("show or hide the tool status bar"));
     showNodeStatusBarAction->setCheckable(true);
+    showNodeStatusBarAction->setChecked(true);
     connect(showNodeStatusBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeStatusBar()));
     viewShowGridAction = new QAction(tr("show grid"),this);
     viewShowGridAction->setIcon(QIcon(":/images/showgrid.png"));
     viewShowGridAction->setStatusTip((tr("show or hide grid")));
     viewShowGridAction->setCheckable(true);
-    viewShowGridAction->setChecked(true);
+    viewShowGridAction->setChecked(false);
     connect(viewShowGridAction,SIGNAL(toggled(bool)),
              this,SLOT(viewShowGrid(bool)));
 
@@ -2058,6 +2096,9 @@ void DiagramWindow::createActions()
 
     systemInformationAction = new QAction(tr("&System information"),this);
     connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
+
+    openHelpAction = new QAction(tr("Help"),this);
+    connect(openHelpAction,SIGNAL(triggered()),this,SLOT(help()));
 
     viewZoomInAction = new QAction(QIcon(":/images/zoom-in.png"),
                                    tr("Zoom In"),this);
@@ -2100,6 +2141,7 @@ void DiagramWindow::createMenus()
     //helpmenu
     helpMenu->addAction(openDocumentationAction);
     helpMenu->addAction(systemInformationAction);
+    helpMenu->addAction(openHelpAction);
     //editmenu
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()

@@ -19,6 +19,8 @@ class NewNode;
 class DiagramWindow;
 class Yuan;
 class Link;
+class QGraphicsSceneMouseEvent;
+class QKeyEvent;
 
 /*******************************************************************
  * Class name: Rec
@@ -57,12 +59,18 @@ public:
 private:
     QRectF mBoundingRect;
 
-protected slots:
-    void slot_changeRect();
+    bool m_resizing;
+
+/*protected slots:
+    void slot_changeRect();*/
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    //void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 
 private slots:

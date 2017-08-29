@@ -852,14 +852,17 @@ bool newscene::CreateLogic(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
+    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
     this->addItem(rec->yuan2);
     this->addItem(rec->yuan);
 
-    item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-                         (rec->pos().y() - rec->outlineRect().height()/2)));
+    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
+                         (rec->pos().y() - rec->boundingRect().height()/2)));
     item->setZValue(rec->zValue()+1);
     rec->box->addItem(tr("if"));
     rec->box->addItem(tr("else"));
@@ -1381,8 +1384,10 @@ bool newscene::CreateLogic(Rec *rec)
     this->clearSelection();
     rec->setSelected(true);
 
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));*/
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
     this->addItem(rec->yuan2);
 
     item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
