@@ -111,11 +111,13 @@ void Link::trackYuans()
  * Inputs:
  * Outputs:
 ******************************************************************/
-void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     QLineF line(myFromYuan->pos(), myToYuan->pos());
 
-    painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter->setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    if (option->state &QStyle::State_Selected)
+        painter->setPen(QPen(Qt::black, 2, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin));
     painter->drawLine(line);
 
     // Draw the arrows
@@ -123,10 +125,6 @@ void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
     if (line.dy() >= 0)
         angle = TwoPi - angle;
 
-    //QPointF sourceArrowP1 = sourcePoint + QPointF(sin(angle + Pi / 3) * arrowSize,
-    //                                              cos(angle + Pi / 3) * arrowSize);
-    //QPointF sourceArrowP2 = sourcePoint + QPointF(sin(angle + Pi - Pi / 3) * arrowSize,
-    //                                              cos(angle + Pi - Pi / 3) * arrowSize);
     QPointF destArrowP1 = myToYuan->pos() + QPointF(sin(angle - Pi / 3) * arrowSize,
                                               cos(angle - Pi / 3) * arrowSize);
     QPointF destArrowP2 = myToYuan->pos() + QPointF(sin(angle - Pi + Pi / 3) * arrowSize,
