@@ -128,7 +128,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 
         need_to_set = 0;
     }
-    if((selected_Index>=103&&selected_Index<=109)&&need_to_set==1){
+    if((selected_Index>=103&&selected_Index<=108)&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->GoNodeNum++;
         need_to_set = 0;

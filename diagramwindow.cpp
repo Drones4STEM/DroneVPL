@@ -797,7 +797,7 @@ void DiagramWindow::addLandonNode()
 void DiagramWindow::addTranslationNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index=103;
+    scene->selected_Index=100;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -815,7 +815,7 @@ void DiagramWindow::addTranslationNode()
 void DiagramWindow::addRiseNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index = 104;
+    scene->selected_Index = 103;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -834,7 +834,7 @@ void DiagramWindow::addRiseNode()
 void DiagramWindow::addFallNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index = 105;
+    scene->selected_Index = 104;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -853,7 +853,7 @@ void DiagramWindow::addFallNode()
 void DiagramWindow::addAdvanceNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index = 106;
+    scene->selected_Index = 105;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -873,7 +873,7 @@ void DiagramWindow::addBackNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 107;
+    scene->selected_Index = 106;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(3);
@@ -892,7 +892,7 @@ void DiagramWindow::addRightNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 108;
+    scene->selected_Index = 107;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(4);
@@ -911,7 +911,7 @@ void DiagramWindow::addLeftNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 109;
+    scene->selected_Index = 108;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(5);
