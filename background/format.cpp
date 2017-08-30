@@ -684,31 +684,31 @@ bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in)
  *****************************************************/
 bool format::SavePyFile(QString filename)
 {
-    qDebug()<<filename;
-    QFile file(filename);
-    file.open(QIODevice::WriteOnly);
-    QTextStream in(&file);
 
-    in<<"from dronekit import connect, VehicleMode, LocationGlobalRelative\n"
-      <<"import time\n"<<"import argparse\n"
-      <<"parser = argparse.ArgumentParser(description='Commands vehicle using vehicle.simple_goto.')\n"
-      <<"parser.add_argument('--connect', "
-      <<"help=\"Vehicle connection target string. If not specified, SITL automatically started and used.\")\n"
-      <<"args = parser.parse_args()\n"
-      <<"connection_string = args.connect\n"
-      <<"sitl = None\n\n"
-      <<"if not connection_string:\n"
-      <<"   import dronekit_sitl\n"
-      <<"   sitl = dronekit_sitl.start_default()\n"
-      <<"   connection_string = sitl.connection_string()\n"
-      <<"print 'Connecting to vehicle on: %s' % connection_string\n"
-      <<"vehicle = connect(connection_string, wait_ready=True)\n";
+    QFile file(filename);
+    if(file.exists()){
+        qDebug()<<"fiel exists";
+        file.open(QIODevice::WriteOnly);
+        QTextStream tmp(&file);
+        tmp<<"";
+        qDebug()<<"file remove "<<file.remove();
+    }
+
+    qDebug()<<"file copy "
+            <<QFile::copy("../DroneVPL/pycode/FlightController.py",filename);
+    qDebug()<<filename;
+    file.open(QIODevice::Append);
+    QTextStream in(&file);
+    in<<"\n\n\n#========specified code=============\n";
+
+
 
     QMap<QString, widget*>* m = &(Map);
     std::stack<widget*>* stk = digrapher->get_topology(0);
     save_py_file(stk,in);
 
     file.close();
+    return true;
 }
 
 /*****************************************************
@@ -738,45 +738,65 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
 
     if(w->identifier=="TakeOff"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"print \"Arming motors\"\n"
-              <<"vehicle.mode = VehicleMode(\"GUIDED\")\n"
-              <<"vehicle.armed = True\n"
-              <<"while not vehicle.armed:\n"
-              <<"   print \" Waiting for arming...\"\n"
-              <<"   time.sleep(1)\n";
-        //arm和takeoff之后可能还是分成两个控件好，所以现在写成两段代码
-        stream<<"print \"Taking off!\"\n"
-              <<"aTargetAltitude = "<<w->mTakeOffNode->altitude;
-              <<"vehicle.simple_takeoff(aTargetAltitude)\n"
-              <<"while True:\n"
-              <<"   print \" Altitude: \", vehicle.location.global_relative_frame.alt\n"
-              <<"   if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.95:\n "
-              <<"       print \"Reached target altitude\"\n"
-              <<"       break\n"
-              <<"   time.sleep(1)\n";
+        stream<<"if not myCopter.takeoff(1):\n"
+              <<"   sys.exit(1)\n";
 
     }
     if(w->identifier=="Land"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"vehicle.mode = VehicleMode(\"RTL\")\n"
+        stream<<"timeoutCounter = 0\n"
+              <<"while not myCopter.land():\n"
+              <<"    timeoutCounter += 1\n"
+              <<"    if timeoutCounter > 3:\n"
+              <<"        print \"Critical: Cannot land the vehicle after 3 retries.\"\n"
+              <<"        sys.exit(1)";
     }
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"print \"Going towards first point for 30 seconds ...\"\n"
-              <<"point1 = LocationGlobalRelative(-35.361354, 149.165218, 20)\n"
-              <<"vehicle.simple_goto(point1,groundspeed)\n"
-
+        if(w->mGoNode->direction=="GoUp"){
+            stream<<"print \"Going upward for 0.2m/s for 5 seconds\""
+                  <<"myCopter.send_nav_velocity(0, 0, -0.2)"
+                  <<"time.sleep(5)";
+        }
+        if(w->mGoNode->direction=="GoDown"){
+            stream<<"print \"Going upward for 0.2m/s for 5 seconds\""
+                  <<"myCopter.send_nav_velocity(0, 0, 0.2)"
+                  <<"time.sleep(5)";
+        }
+        if(w->mGoNode->direction=="GoRight"){
+            stream<<"print \"Going rightward at 1m/s for 5s\""
+                  <<"myCopter.send_nav_velocity(1, 0, 0)"
+                  <<"time.sleep(5)";
+        }
+        if(w->mGoNode->direction=="GoLeft"){
+            stream<<"print \"Going rightward at 1m/s for 5s\""
+                  <<"myCopter.send_nav_velocity(-1, 0, 0)"
+                  <<"time.sleep(5)";
+        }
+        if(w->mGoNode->direction=="Forward"){
+            stream<<"print \"Going forward at 1m/s for 5s\""
+                  <<"myCopter.send_nav_velocity(0, -1, 0)"
+                  <<"time.sleep(5)";
+        }
+        if(w->mGoNode->direction=="Backward"){
+            stream<<"Going forward at 1m/s for 5s\""
+                  <<"myCopter.send_nav_velocity(0, 1, 0)"
+                  <<"time.sleep(5)";
+        }
 
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        //turn目前没有要对应的代码
+
     }
     if(w->identifier=="Hover"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"time.sleep(t)\n"
+        stream<<"time.sleep(5)\n";
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        //目前没有要对应的代码
     }
 
     if(w->identifier=="Compute"){    //如果传入的控件是Compute
@@ -837,6 +857,7 @@ bool format::CreateLand(QPointF point, int id)
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     node->yuan2->master = tmp;
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateGo(QPointF point, int id)

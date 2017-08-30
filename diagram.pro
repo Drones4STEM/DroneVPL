@@ -1,4 +1,5 @@
 INCLUDEPATH += ../DroneVPL/background/
+INCLUDEPATH += ../DroneVPL/pycode/
 
 TEMPLATE      = app
 HEADERS       = diagramwindow.h \

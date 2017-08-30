@@ -114,75 +114,70 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     if(need_to_set==1&&new_event->button()==Qt::RightButton){
         need_to_set = 0;
     }
-    if(selected_Index==1&&need_to_set==1){
+    if(selected_Index==101&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->takeoffNodeNum++;
         CreateTakeOff(new_event->scenePos(),this->takeoffNodeNum);
 
         need_to_set = 0;
 }
-    if(selected_Index==2&&need_to_set==1){
+    if(selected_Index==102&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->landonNodeNum++;
         CreateLand(new_event->scenePos(),this->landonNodeNum);
 
         need_to_set = 0;
-        //setCursor(Qt::ArrowCursor);
     }
-    if((selected_Index>=3&&selected_Index<=9)&&need_to_set==1){
+    if((selected_Index>=103&&selected_Index<=109)&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->GoNodeNum++;
         need_to_set = 0;
-        CreateGo(new_event->scenePos(),this->GoNodeNum);
-        //setCursor(Qt::ArrowCursor);
+        CreateGo(new_event->scenePos(),this->GoNodeNum,selected_Index);
     }
-    if(need_to_set==1&&selected_Index==10){qDebug()<<"10.";
-
-    }
-    if(need_to_set==1&&(selected_Index>=11&&selected_Index<=12)){qDebug()<<"11.12";
+    if(need_to_set==1&&(selected_Index>=110&&selected_Index<=111)){
         emit itemInserted(selected_Index);
         this->TurnNodeNum++;
         need_to_set = 0;
-        CreateTurn(new_event->scenePos(),this->TurnNodeNum);
+        CreateTurn(new_event->scenePos(),this->TurnNodeNum,selected_Index);
     }
-    if(need_to_set==1&&selected_Index==13){qDebug()<<"13.";
+    if(need_to_set==1&&selected_Index==112){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->HoverNodeNum++;
         CreateHover(new_event->scenePos(),this->HoverNodeNum);
     }
-    if(need_to_set==1&&selected_Index==14){qDebug()<<"14.";
+    if(need_to_set==1&&selected_Index==113){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->DelayNodeNum++;
         CreateDelay(new_event->scenePos(),this->DelayNodeNum);
     }
-    if(need_to_set==1&&selected_Index==15){qDebug()<<"15.";
+    if(need_to_set==1&&selected_Index==201){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarTypeNodeNum++;
         CreateVarType(new_event->scenePos(),this->VarTypeNodeNum);
     }
-    if(need_to_set==1&&selected_Index==16){qDebug()<<"16.";
+    if(need_to_set==1&&selected_Index==202){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->VarDefNodeNum++;
         bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
         if(flag == false)   this->VarDefNodeNum--;
     }
-    if(need_to_set==1&&selected_Index==17){qDebug()<<"17.";
+    if(need_to_set==1&&selected_Index==301){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->ComputeNodeNum++;
         CreateCompute(new_event->scenePos(),this->ComputeNodeNum);
     }
-    if(need_to_set==1&&selected_Index==18){qDebug()<<"18.";
+    if(need_to_set==1&&selected_Index==400){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->IONodeNum++;
         CreateIO(new_event->scenePos(),this->IONodeNum);
     }
-    if(need_to_set==1&&selected_Index==401){qDebug()<<"401.";
+    if(need_to_set==1&&selected_Index==401){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->BatteryNodeNum++;
@@ -194,7 +189,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         this->GimbalNodeNum++;
         CreateGimbal(new_event->scenePos(),this->GimbalNodeNum);
     }
-    if(need_to_set==1&&selected_Index==19){qDebug()<<"19.";
+    if(need_to_set==1&&selected_Index==501){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->LogicNodeNum++;
@@ -237,7 +232,7 @@ bool newscene::CreateTakeOff(QPointF point, int id)
 bool newscene::CreateLand(QPointF point, int id)
 {
     LandNode *node=new LandNode;
-    node->setText(tr("Land on\n %1 s").arg(node->time));
+    node->setText(tr("Land\n %1 s").arg(node->time));
 
     node->setPos(point);
     this->addItem(node);
@@ -268,7 +263,7 @@ bool newscene::CreateLand(QPointF point, int id)
     return true;
 }
 
-bool newscene::CreateGo(QPointF point, int id)
+bool newscene::CreateGo(QPointF point, int id, int index)
 {
     GoNode *node=new GoNode;
     node->setText(tr(" %1 m/s").arg(node->groundspeed));
@@ -300,7 +295,9 @@ bool newscene::CreateGo(QPointF point, int id)
     node->box->addItem(tr("Backward"));
     node->box->addItem(tr("GoRight"));
     node->box->addItem(tr("GoLeft"));
-    node->box->setCurrentIndex(0);
+    node->box->setCurrentIndex(index-103);
+    node->setDirection();
+    connect(node->box,SIGNAL(currentIndexChanged(int)),node,SLOT(setDirection()));
 
     node->controlsId=id;
     node->identifier="Go";
@@ -323,7 +320,7 @@ bool newscene::CreateGo(QPointF point, int id)
     return true;
 }
 
-bool newscene::CreateTurn(QPointF point, int id)
+bool newscene::CreateTurn(QPointF point, int id, int index)
 {
     TurnNode *node=new TurnNode;
 
@@ -350,9 +347,9 @@ bool newscene::CreateTurn(QPointF point, int id)
     item->setZValue(node->zValue()+1);
     node->box->addItem(tr("TurnLeft"));
     node->box->addItem(tr("TurnRight"));
-    //node->box->addItem(tr("Hover"));
-    //node->box->addItem(tr("Delay"));
-    node->box->setCurrentIndex(0);
+    node->box->setCurrentIndex(index-110);
+    node->setDirection();
+    connect(node->box,SIGNAL(currentIndexChanged(int)),node,SLOT(setDirection()));
 
     node->controlsId=id;
     node->identifier="Turn";

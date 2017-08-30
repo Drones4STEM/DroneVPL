@@ -16,6 +16,7 @@
 ******************************************************************/
 class TakeOffNode:public Node
 {
+    Q_OBJECT
     Q_PROPERTY(double altitude READ myAltitude WRITE setAltitude)
 public:
     enum {Type = TakeoffNodeType};
@@ -48,7 +49,8 @@ QDataStream &operator >>(QDataStream &in,TakeOffNode &node);
 ******************************************************************/
 class LandNode:public NewNode
 {
-    Q_PROPERTY(double time READ mytime WRITE setTime)
+    Q_OBJECT
+    Q_PROPERTY(double time READ myTime WRITE setTime)
 public:
     enum {Type = LandonNodeType};
     LandNode();
@@ -86,6 +88,7 @@ public:
 
     double time;
     double groundspeed;
+    QString direction;
     QComboBox *box;
 
     QGraphicsItem *item;
@@ -94,6 +97,7 @@ public:
     double myTime();
     void setGroundSpeed(double s);
     double myGroundSpeed();
+
 
     static int riseNodeNum;     static int fallNodeNum;
     static int advanceNodeNum;  static int backNodeNum;
@@ -105,7 +109,9 @@ protected:
                         const QVariant &value);
 
 private slots:
-    void setNewIdentifier();
+
+public slots:
+    void setDirection();
 };
 
 /*******************************************************************
@@ -127,6 +133,7 @@ public:
     int type() const { return Type; }
 
     double time,speed,angel;
+    QString direction;
     QComboBox*box;
     QGraphicsItem *item;
 
@@ -143,7 +150,9 @@ protected:
                         const QVariant &value);
 private slots:
     void setNewText();
-    void setNewIdentifier();
+
+public slots:
+    void setDirection();
 };
 
 /*******************************************************************

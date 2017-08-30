@@ -27,10 +27,8 @@ TakeOff(double? aTargetAltitude)
             break
         time.sleep(1)
 
-Turn()
-
-Go(double groundspeed) 
-	//vehicle.airspeed = airspeed
+Go(double airspeed,double groundspeed) 
+	vehicle.airspeed = airspeed
 
 	print "Going towards first point for 30 seconds ..."
 	point1 = LocationGlobalRelative(-35.361354, 149.165218, 20)

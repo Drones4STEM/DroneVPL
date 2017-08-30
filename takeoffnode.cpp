@@ -153,7 +153,7 @@ GoNode::GoNode()
     time=0;
     groundspeed = 0;
 
-    identifier="RiseNode";
+    identifier="Go";
     rank = 0;
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
 }
@@ -221,50 +221,50 @@ QVariant GoNode::itemChange(GraphicsItemChange change,
 
 }
 
-void GoNode::setNewIdentifier()
+void GoNode::setDirection()
 {
     int index=box->currentIndex();
     switch (index) {
     case 0:
     {
-        identifier="RiseNode";
+        direction="GoUp";
         riseNodeNum++;
-        controlsId=riseNodeNum;
+        //controlsId=riseNodeNum;
         break;
     }
     case 1:
     {
-        identifier="FallNode";
+        direction="GoDown";
         fallNodeNum++;
-        controlsId=fallNodeNum;
+        //controlsId=fallNodeNum;
         break;
     }
     case 2:
     {
-        identifier="AdvanceNode";
+        direction="Forward";
         advanceNodeNum++;
-        controlsId=advanceNodeNum;
+        //controlsId=advanceNodeNum;
         break;
     }
     case 3:
     {
-        identifier="BackNode";
+        direction="Backward";
         backNodeNum++;
-        controlsId=backNodeNum;
+        //controlsId=backNodeNum;
         break;
     }
     case 4:
     {
-        identifier="RightNode";
+        direction="GoRight";
         rightNodeNum++;
-        controlsId=rightNodeNum;
+        //controlsId=rightNodeNum;
         break;
     }
     case 5:
     {
-        identifier="LeftNode";
+        direction="GoLeft";
         leftNodeNum++;
-        controlsId=leftNodeNum;
+        //controlsId=leftNodeNum;
         break;
     }
     default:
@@ -554,18 +554,18 @@ void TurnNode::setNewText()
         setText(tr(" %1 s").arg(time));
 }
 
-void TurnNode::setNewIdentifier()
+void TurnNode::setDirection()
 {
     int index=box->currentIndex();
     switch (index) {
     case 0:
     {
-        identifier="TurnLeftNode";
+        direction="TurnLeft";
         break;
     }
     case 1:
     {
-        identifier="TurnRightNode";
+        direction="TurnRight";
         break;
     }
     default:
