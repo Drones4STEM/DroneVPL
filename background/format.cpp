@@ -693,9 +693,9 @@ bool format::SavePyFile(QString filename)
         tmp<<"";
         qDebug()<<"file remove "<<file.remove();
     }
-
     qDebug()<<"file copy "
-            <<QFile::copy("../DroneVPL/pycode/FlightController.py",filename);
+            <<QFile::copy("../DroneVPL/pycode/prepare.py",filename);
+
     qDebug()<<filename;
     file.open(QIODevice::Append);
     QTextStream in(&file);
