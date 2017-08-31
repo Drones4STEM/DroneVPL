@@ -665,8 +665,10 @@ bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in)
         if(tmp->identifier=="Logic"){
             std::stack<widget*>* s = digrapher->get_topology(tmp->mLogicNode);
             save_py_file(s,in);
+        }else{  //Logic转化成代码的过程不在这里进行
+            widget_convert_to_py(tmp, in);
         }
-        widget_convert_to_py(tmp, in);
+
     }
 
 
