@@ -33,6 +33,7 @@ class TakeOffNode;
 class WidgetCondition;
 class ColorWidget;
 class PositionWidget;
+class MutableWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -140,6 +141,7 @@ private slots:
     void checkupAndCompile();
     void openDocumentation();
     void systemInformation();
+    void help();
 
     void connectItem(QObject *item);//建立属性框与item之间的连接
     void selectionChanged();//确保工具箱窗口部件正确显示选中项的属性
@@ -160,9 +162,6 @@ private:
     void selectItems( QSet<QGraphicsItem*>&items);
     void copyItems( QList<QGraphicsItem*>&items);
 
-    void readItems(QDataStream &in,int offset,bool select);
-    void writeItems(QDataStream &out,
-                     const QList<QGraphicsItem*> &items);
     bool okToClearData();
     bool openPageDesignerFile(QFile *file, QDataStream &in);
 
@@ -180,6 +179,9 @@ private:
     Yuan *selectedYuan() const;
     YuanPair selectedYuanPair() const;
     Rec *selectedRec() const;
+    bool sceneHasItems() const;
+    void getSelectionProperties(bool *hasAltitudeProperty,bool *hasTimeProperty,
+                                bool *hasSpeedProperty,bool *hasGroundSpeedProperty) const;
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -256,6 +258,7 @@ private:
     QAction *checkupAndCompileAction;
     QAction *openDocumentationAction;
     QAction *systemInformationAction;
+    QAction *openHelpAction;
 
     QAction *viewZoomInAction;
     QAction *viewZoomOutAction;
@@ -263,6 +266,7 @@ private:
 
     ColorWidget *colorWidget;
     PositionWidget *positionWidget;
+    MutableWidget *mutableWidget;
 
 
     QPrinter *printer;

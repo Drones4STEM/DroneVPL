@@ -17,6 +17,7 @@
 #include <QApplication>
 #include <QWidget>
 #include <QMainWindow>
+#include <QDesktopServices>
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -40,6 +41,7 @@
 #include "odescription.h"
 #include "format.h"
 #include "digraph.h"
+
 
 
 namespace {
@@ -148,7 +150,7 @@ DiagramWindow::DiagramWindow()
     createActions();
     createMenus();
     createToolBars();
-    createWidgetConditionBar(widgetCondition);
+    //createWidgetConditionBar(widgetCondition);
     createDockWidgets();
 
     connect(scene, SIGNAL(selectionChanged()),
@@ -172,7 +174,7 @@ DiagramWindow::DiagramWindow()
 
     QSettings settings("Software Inc.", "Page Designer");
     recentFiles = settings.value("recentFiles").toStringList();
-    viewShowGridAction->setChecked(settings.value(ShowGrid,true).toBool());
+    viewShowGridAction->setChecked(settings.value(ShowGrid,false).toBool());//在设置中找showgrid，默认false
 
     foreach (QWidget *win, QApplication::topLevelWidgets()) {
         if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
@@ -335,7 +337,7 @@ void DiagramWindow::fileOpen()
 /*******************************************************************
  * Function name: loadFile()
  * Description: This function loads the data of an existing file
- * Callee:selectAllItems(),del(), readItems(),setDirty(),
+ * Callee:selectAllItems(),del(),setDirty(),
     updateRecentFileActions()
  * Inputs:
  * Outputs:
@@ -481,53 +483,6 @@ QString DiagramWindow::strippedName(QString &fullFileName)
 }
 
 /*******************************************************************
- * Function name: readItems()
- * Description: This function reads the data of an existing file
- * Callee:
- * Inputs: QDataStream &in, int offset, bool select
- * Outputs:
-******************************************************************/
-void DiagramWindow::readItems(QDataStream &in,int offset, bool select)
-{
-    QSet<QGraphicsItem*>items;
-    qint32 itemType;
-    QGraphicsItem *item=0;
-    while(!in.atEnd())
-    {
-        in>>itemType;
-        switch (itemType) {
-        case TakeoffNodeType:
-        {
-            TakeOffNode* node=new TakeOffNode;
-            in>>*node;
-
-            node->setText(tr("take off\n %1 s").arg(node->time));
-            // node->yuan->setPos(QPointF((node->pos().x()),
-            //(node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
-            node->setPos(node->pos());
-            scene->addItem(node);
-            scene->addItem(node->yuan);
-            update();
-            item=node;
-            break;
-        }
-        }
-        if(item)
-        {
-            item->moveBy(offset,offset);
-            if(select)
-                items<<item;
-            item=0;
-        }
-    }
-    if(select)
-    {
-        selectItems(items);
-    }
-
-}
-
-/*******************************************************************
  * Function name: selectItems()
  * Description: This function set some items selected.
  * Callee:
@@ -575,34 +530,6 @@ bool DiagramWindow::fileSave()
     return true;
 }
 
-/*******************************************************************
- * Function name: writeItems()
- * Description: This function writes datas to a QDataStream.
- * Callee:
- * Inputs: QDataStream &out, const QList<QGraphicsItem *> &items
- * Outputs:
-******************************************************************/
-
-void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &items)
-{
-     foreach(QGraphicsItem*item,items)
-     {
-         if(item==gridGroup||item->group()==gridGroup)
-             continue;    //先检查每个项是不是一个gridGroup或者是否属于参考网格所属的gridGroup
-         qint32 type=static_cast<qint32>(item->type());
-         out<<type;
-         switch(type)
-         {
-         case TakeoffNodeType:
-         {
-             out<<*static_cast<TakeOffNode*>(item);
-             break;
-         }
-         //default:
-         //    Q_ASSERT(false);
-         }
-     }
-}
 /*******************************************************************
  * Function name: fileSaveAs()
  * Description: This function saves an unexisting file.
@@ -723,6 +650,7 @@ void DiagramWindow::connectItem(QObject *item)
 {
     connect(item,SIGNAL(dirty()),this,SLOT(setDirty()));
     connect(item,SIGNAL(positionChanged(QPoint)),positionWidget,SLOT(setPosition(QPoint)));
+
     const QMetaObject *metaObject = item->metaObject();
     if(metaObject->indexOfProperty("textColor")>-1)
         connect(colorWidget,SIGNAL(textColorChanged(QColor)),
@@ -736,6 +664,35 @@ void DiagramWindow::connectItem(QObject *item)
     if(metaObject->indexOfProperty("position")>-1)
         connect(positionWidget,SIGNAL(positionChanged(QPoint)),
                  item,SLOT(setPosition(QPoint)));
+    //特有的属性
+    if(metaObject->indexOfProperty("myAltitude")>-1)    //TakeOff
+    {
+        connect(mutableWidget,SIGNAL(altitudeChanged(double)),
+                item,SLOT(setAltitude(double)));
+        connect(item,SIGNAL(altitudeChanged(double)),
+                mutableWidget,SLOT(setAltitude(double)));
+    }
+    if(metaObject->indexOfProperty("myTime")>-1)        //LandOn,Hover,Delay
+    {
+        connect(mutableWidget,SIGNAL(timeChanged(double)),
+                item,SLOT(setTime(double)));
+        connect(item,SIGNAL(timeChanged(double)),
+                mutableWidget,SLOT(setTime(double)));
+    }
+    if(metaObject->indexOfProperty("myGroundSpeed")>-1) //Go
+    {
+        connect(mutableWidget,SIGNAL(groundSpeedChanged(double)),
+                item,SLOT(setGroundSpeed(double)));
+        connect(item,SIGNAL(groundSpeedChanged(double)),
+                mutableWidget,SLOT(setGroundSpeed(double)));
+    }
+    if(metaObject->indexOfProperty("mySpeed")>-1)       //Turn
+    {
+        connect(mutableWidget,SIGNAL(speedChanged(double)),
+                item,SLOT(setSpeed(double)));
+        connect(item,SIGNAL(speedChanged(double)),
+                mutableWidget,SLOT(setSpeed(double)));
+    }
 
 }
 
@@ -1447,7 +1404,6 @@ void DiagramWindow::copyItems( QList<QGraphicsItem *> &items)//const?
 {
     QByteArray copiedItems;
     QDataStream out(&copiedItems,QIODevice::WriteOnly);
-    writeItems(out,items);
     QMimeData *mimeData = new QMimeData;
     mimeData->setData(MimeType,copiedItems);
     QClipboard*clipboard = QApplication::clipboard();
@@ -1471,7 +1427,6 @@ void DiagramWindow::paste()
     {
         QByteArray copiedItems = mimeData->data(MimeType);
         QDataStream in(&copiedItems,QIODevice::ReadOnly);
-        readItems(in,pasteOffset,true);
         pasteOffset+=OffsetIncrement;
     }
     else return;
@@ -1586,6 +1541,16 @@ void DiagramWindow::systemInformation()
     description->show();
 }
 
+void DiagramWindow::help()
+{
+    //QDesktopServices::openUrl(QUrl("file:///C:/Users/ASUS/learngit/DroneVPL/help/help.chm"));
+    //打包就用下面这个方法，在编译情况下将文件放在debug或release文件夹下也可用下面的方法，或者用上面指定具体路径
+    QString strUrl=QCoreApplication::applicationDirPath();
+    strUrl=QString("file:///%1/help.chm").arg(strUrl);
+    QUrl url(strUrl);
+    qDebug()<<QDesktopServices::openUrl(url);
+}
+
 /*******************************************************************
  * Function name: updateActions()
  * Description: This function changes the state of actions according
@@ -1599,15 +1564,40 @@ void DiagramWindow::updateActions()
     bool isNode = (selectedNode() != 0||selectedNewNode()!=0);
     bool isYuanPair = (selectedYuanPair() != YuanPair());
     bool isRec = (selectedRec() != 0);
-    bool hasSelection = !scene->selectedItems().isEmpty();
 
-    cutAction->setEnabled(isNode);
-    copyAction->setEnabled(isNode);
+    fileSaveAction->setEnabled(isWindowModified());
+    bool hasItems=sceneHasItems();
+    fileSaveAsAction->setEnabled(hasItems);
+    fileExportAction->setEnabled(hasItems);
+    filePrintAction->setEnabled(hasItems);
+    int selected=scene->selectedItems().count();
+    cutAction->setEnabled(selected>=1);
+    copyAction->setEnabled(selected>=1);
+    deleteAction->setEnabled(selected>=1);
+    //pasteAction未写  以下为参考
+    /*QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    editPasteAction->setEnabled(mimeData &&
+            (mimeData->hasFormat(MimeType) || mimeData->hasHtml() ||
+             mimeData->hasText()));*/
     addLinkAction->setEnabled(isYuanPair);
-    deleteAction->setEnabled(hasSelection);
     bringToFrontAction->setEnabled(isNode||isRec);
     sendToBackAction->setEnabled(isNode||isRec);
-    propertiesAction->setEnabled(isNode);
+    //更新view菜单中的动作
+    showEditToolBarAction->setChecked(editToolBar->isVisible());
+    showNodeBarAction->setChecked(aToolBar->isVisible());
+    showNodeStatusBarAction->setChecked(widgetCondition->isVisible());
+
+    bool hasAltitudeProperty;
+    bool hasTimeProperty;
+    bool hasSpeedProperty;
+    bool hasGroundSpeedProperty;
+    getSelectionProperties(&hasAltitudeProperty,&hasTimeProperty,
+                           &hasSpeedProperty,&hasGroundSpeedProperty);
+    mutableWidget->altitudeLineEdit->setEnabled(hasAltitudeProperty);
+    mutableWidget->timeLineEdit->setEnabled(hasTimeProperty);
+    mutableWidget->speedLineEdit->setEnabled(hasSpeedProperty);
+    mutableWidget->groundSpeedLineEdit->setEnabled(hasGroundSpeedProperty);
 
     foreach (QAction *action, view->actions())
         view->removeAction(action);
@@ -1616,6 +1606,41 @@ void DiagramWindow::updateActions()
         if (action->isEnabled())
         view->addAction(action);
     }
+}
+
+void DiagramWindow::getSelectionProperties(bool *hasAltitudeProperty,bool *hasTimeProperty,
+                            bool *hasSpeedProperty,bool *hasGroundSpeedProperty) const
+{
+    *hasAltitudeProperty = false;
+    *hasTimeProperty = false;
+    *hasSpeedProperty = false;
+    *hasGroundSpeedProperty = false;
+    foreach (QGraphicsItem *item, scene->selectedItems()) {
+        if(QObject *object = dynamic_cast<QObject *>(item))
+        {
+            const QMetaObject *metaObject = object->metaObject();
+            if(metaObject->indexOfProperty("myAltitude")>-1)
+                *hasAltitudeProperty = true;
+            if(metaObject->indexOfProperty("myTime")>-1)
+                *hasTimeProperty = true;
+            if(metaObject->indexOfProperty("mySpeed")>-1)
+                *hasSpeedProperty = true;
+            if(metaObject->indexOfProperty("myGroundSpeed")>-1)
+                *hasGroundSpeedProperty = true;
+            if(*hasAltitudeProperty&&*hasGroundSpeedProperty&&
+                    *hasSpeedProperty&&*hasTimeProperty)
+                break;
+        }
+    }
+}
+
+bool DiagramWindow::sceneHasItems() const
+{
+    foreach (QGraphicsItem *item, scene->items()) {
+        if(item!=gridGroup && item->group()!=gridGroup)
+            return true;
+    }
+    return false;
 }
 
 /*******************************************************************
@@ -1841,7 +1866,7 @@ void DiagramWindow::createActions()
 
     addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
-    addLandonNodeAction = new QAction(tr("Landon"),this);
+    addLandonNodeAction = new QAction(tr("LandOn"),this);
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Translation"),this);
@@ -1922,23 +1947,26 @@ void DiagramWindow::createActions()
     showEditToolBarAction = new QAction(tr("EditToolBar"), this);
     showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
     showEditToolBarAction->setCheckable(true);
+    showEditToolBarAction->setChecked(true);
     connect(showEditToolBarAction, SIGNAL(triggered()),
             this, SLOT(showEditToolBar()));
     showNodeBarAction = new QAction(tr("NodeBar"), this);
     showNodeBarAction->setStatusTip(tr("show or hide the node bar"));
     showNodeBarAction->setCheckable(true);
+    showNodeBarAction->setChecked(true);
     connect(showNodeBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeBar()));
     showNodeStatusBarAction = new QAction(tr("ToolStatusBar"), this);
     showNodeStatusBarAction->setStatusTip(tr("show or hide the tool status bar"));
     showNodeStatusBarAction->setCheckable(true);
+    showNodeStatusBarAction->setChecked(true);
     connect(showNodeStatusBarAction, SIGNAL(triggered()),
             this, SLOT(showNodeStatusBar()));
     viewShowGridAction = new QAction(tr("show grid"),this);
     viewShowGridAction->setIcon(QIcon(":/images/showgrid.png"));
     viewShowGridAction->setStatusTip((tr("show or hide grid")));
     viewShowGridAction->setCheckable(true);
-    viewShowGridAction->setChecked(true);
+    viewShowGridAction->setChecked(false);
     connect(viewShowGridAction,SIGNAL(toggled(bool)),
              this,SLOT(viewShowGrid(bool)));
 
@@ -1965,6 +1993,9 @@ void DiagramWindow::createActions()
 
     systemInformationAction = new QAction(tr("&System information"),this);
     connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
+
+    openHelpAction = new QAction(tr("Help"),this);
+    connect(openHelpAction,SIGNAL(triggered()),this,SLOT(help()));
 
     viewZoomInAction = new QAction(QIcon(":/images/zoom-in.png"),
                                    tr("Zoom In"),this);
@@ -2007,6 +2038,7 @@ void DiagramWindow::createMenus()
     //helpmenu
     helpMenu->addAction(openDocumentationAction);
     helpMenu->addAction(systemInformationAction);
+    helpMenu->addAction(openHelpAction);
     //editmenu
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
@@ -2147,11 +2179,18 @@ void DiagramWindow::createDockWidgets()
     colorDockWidget->setFeatures(features);
     colorDockWidget->setWidget(colorWidget);
     addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
+
     positionWidget = new PositionWidget;
     QDockWidget *positionDockWidget = new QDockWidget(
                 tr("Position"),this);
     positionDockWidget->setWidget(positionWidget);
     addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+
+    mutableWidget = new MutableWidget;
+    QDockWidget *mutableDockWidget = new QDockWidget(
+                tr("Mutable"),this);
+    mutableDockWidget->setWidget(mutableWidget);
+    addDockWidget(Qt::RightDockWidgetArea,mutableDockWidget);
 }
 
 /*******************************************************************
@@ -2370,6 +2409,15 @@ void DiagramWindow::selectionChanged()
                             item->property("myIdentifier").value<QString>());
             if(item->property("position").isValid())
                 positionWidget->setPosition(item->property("position").value<QPoint>());
+            //特有的属性
+            if(item->property("myAltitude").isValid())
+                mutableWidget->setAltitude(item->property("myAltitude").value<double>());
+            if(item->property("myTime").isValid())
+                mutableWidget->setTime(item->property("myTime").value<double>());
+            if(item->property("myGroundSpeed").isValid())
+                mutableWidget->setGroundSpeed(item->property("myGroundSpeed").value<double>());
+            if(item->property("mySpeed").isValid())
+                mutableWidget->setSpeed(item->property("mySpeed").value<double>());
         }
     }
 }

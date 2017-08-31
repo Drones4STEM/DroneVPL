@@ -20,5 +20,6 @@
 		<file>images/zoom-in.png</file>
 		<file>images/zoom-out.png</file>
 		<file>images/showgrid.png</file>
+		<file>help/help.chm</file>
     </qresource>
 </RCC>
