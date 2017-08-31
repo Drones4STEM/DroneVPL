@@ -1586,12 +1586,14 @@ void DiagramWindow::updateActions()
     bool hasTimeProperty;
     bool hasSpeedProperty;
     bool hasGroundSpeedProperty;
+    bool hasDirectionProperty;
     getSelectionProperties(&hasAltitudeProperty,&hasTimeProperty,
-                           &hasSpeedProperty,&hasGroundSpeedProperty);
+                           &hasSpeedProperty,&hasGroundSpeedProperty,&hasDirectionProperty);
     mutableWidget->altitudeLineEdit->setEnabled(hasAltitudeProperty);
     mutableWidget->timeLineEdit->setEnabled(hasTimeProperty);
     mutableWidget->speedLineEdit->setEnabled(hasSpeedProperty);
     mutableWidget->groundSpeedLineEdit->setEnabled(hasGroundSpeedProperty);
+    colorWidget->directionLabel->setEnabled(hasDirectionProperty);
 
     foreach (QAction *action, view->actions())
         view->removeAction(action);
@@ -1603,12 +1605,14 @@ void DiagramWindow::updateActions()
 }
 
 void DiagramWindow::getSelectionProperties(bool *hasAltitudeProperty,bool *hasTimeProperty,
-                            bool *hasSpeedProperty,bool *hasGroundSpeedProperty) const
+                            bool *hasSpeedProperty,bool *hasGroundSpeedProperty,
+                                           bool *hasDirectionProperty) const
 {
     *hasAltitudeProperty = false;
     *hasTimeProperty = false;
     *hasSpeedProperty = false;
     *hasGroundSpeedProperty = false;
+    *hasDirectionProperty = false;
     foreach (QGraphicsItem *item, scene->selectedItems()) {
         if(QObject *object = dynamic_cast<QObject *>(item))
         {
@@ -1621,8 +1625,10 @@ void DiagramWindow::getSelectionProperties(bool *hasAltitudeProperty,bool *hasTi
                 *hasSpeedProperty = true;
             if(metaObject->indexOfProperty("myGroundSpeed")>-1)
                 *hasGroundSpeedProperty = true;
+            if(metaObject->indexOfProperty("myDirection")>-1)
+                *hasDirectionProperty = true;
             if(*hasAltitudeProperty&&*hasGroundSpeedProperty&&
-                    *hasSpeedProperty&&*hasTimeProperty)
+                    *hasSpeedProperty&&*hasTimeProperty&&*hasDirectionProperty)
                 break;
         }
     }
@@ -2401,6 +2407,11 @@ void DiagramWindow::selectionChanged()
             if(item->property("myIdentifier").isValid())
                 colorWidget->setIdentifier(
                             item->property("myIdentifier").value<QString>());
+            if(item->property("myDirection").isValid())
+                colorWidget->setDirection(
+                            item->property("myDirection").value<QString>());
+            else
+                colorWidget->setDirection(QString("None"));
             if(item->property("position").isValid())
                 positionWidget->setPosition(item->property("position").value<QPoint>());
             //特有的属性

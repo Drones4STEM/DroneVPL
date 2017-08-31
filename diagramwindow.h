@@ -181,7 +181,8 @@ private:
     Rec *selectedRec() const;
     bool sceneHasItems() const;
     void getSelectionProperties(bool *hasAltitudeProperty,bool *hasTimeProperty,
-                                bool *hasSpeedProperty,bool *hasGroundSpeedProperty) const;
+                                bool *hasSpeedProperty,bool *hasGroundSpeedProperty,
+                                bool *hasDirectionProperty) const;
 
     QMenu *fileMenu;
     QMenu *editMenu;
