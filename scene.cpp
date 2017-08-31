@@ -207,7 +207,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 bool newscene::CreateTakeOff(QPointF point, int id)
 {
     TakeOffNode *node=new TakeOffNode;
-    node->setText(tr("take off\n %1 m").arg(node->time));
+    node->setText(tr("take off\n %1 m").arg(node->altitude));
 
     node->setPos(point);
     node->setxy(point);
@@ -379,7 +379,7 @@ bool newscene::CreateHover(QPointF point, int id)
 {
     HoverNode *node=new HoverNode;
 
-    node->setText(tr(" Hover \n %2 s").arg(node->time));
+    node->setText(tr(" Hover \n %1 s").arg(node->time));
 
     node->setPos(point);
     this->addItem(node);
@@ -420,7 +420,7 @@ bool newscene::CreateDelay(QPointF point, int id)
 {
     DelayNode *node=new DelayNode;
 
-    node->setText(tr(" Delay \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Delay \n %1 s").arg(node->time));
 
     node->setPos(point);
     this->addItem(node);
@@ -935,7 +935,7 @@ Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 //----------------从xml文件创建控件-----------------------
 bool newscene::CreateTakeOff(TakeOffNode* node)
 {
-    node->setText(tr("take off\n %1 s").arg(node->time));
+    node->setText(tr("take off\n %1 s").arg(node->altitude));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1057,7 +1057,7 @@ bool newscene::CreateTurn(TurnNode* node)
 }
 bool newscene::CreateHover(HoverNode* node)
 {
-    node->setText(tr(" Hover \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Hover \n %1 s").arg(node->time));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1085,7 +1085,7 @@ bool newscene::CreateHover(HoverNode* node)
 }
 bool newscene::CreateDelay(DelayNode *node)
 {
-    node->setText(tr(" Delay \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Delay \n %1 s").arg(node->time));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);

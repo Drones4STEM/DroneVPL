@@ -24,22 +24,18 @@ public:
 
     int type() const { return Type; }
 
-
-    double time;
     double altitude;
-
-    void setTime(double t);
-    double myTime();
-    void setAltitude(double a);
     double myAltitude();
+
+signals:
+    void altitudeChanged(double);
+public slots:
+    void setAltitude(double a);
 
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 };
-
-QDataStream &operator <<(QDataStream &out,const TakeOffNode &node);
-QDataStream &operator >>(QDataStream &in,TakeOffNode &node);
 
 /*******************************************************************
  * Class name: LandonNode
@@ -51,7 +47,6 @@ class LandNode:public NewNode
 {
     Q_OBJECT
     Q_PROPERTY(double myTime READ myTime WRITE setTime)
-    //Q_PROPERTY(double myTime READ mytime WRITE setTime)
 public:
     enum {Type = LandonNodeType};
     LandNode();
@@ -59,9 +54,12 @@ public:
     int type() const { return Type; }
 
     double time;
-
-    void setTime(double t);
     double myTime();
+
+signals:
+    void timeChanged(double t);
+public slots:
+    void setTime(double t);
 
 
 protected:
@@ -79,7 +77,7 @@ protected:
 class GoNode:public NewNode
 {
     Q_OBJECT
-    Q_PROPERTY(double groundspeed READ myGroundSpeed WRITE setGroundSpeed)
+    Q_PROPERTY(double myGroundSpeed READ myGroundSpeed WRITE setGroundSpeed)
 public:
     enum {Type = TranslationNodeType};
     GoNode();
@@ -95,12 +93,16 @@ public:
 
     void setTime(double t);
     double myTime();
-    void setGroundSpeed(double s);
     double myGroundSpeed();
 
     static int riseNodeNum;     static int fallNodeNum;
     static int advanceNodeNum;  static int backNodeNum;
     static int rightNodeNum;    static int leftNodeNum;
+
+signals:
+    void groundSpeedChanged(double s);
+public slots:
+    void setGroundSpeed(double s);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -121,7 +123,7 @@ private slots:
 class TurnNode:public NewNode
 {
     Q_OBJECT
-    Q_PROPERTY(double speed READ mySpeed WRITE setSpeed)
+    Q_PROPERTY(double mySpeed READ mySpeed WRITE setSpeed)
 public:
     enum {Type = SomeNodeType};
     TurnNode();
@@ -135,17 +137,20 @@ public:
 
     void setTime(double t);
     double myTime();
-    void setSpeed(double s);
     double mySpeed();
     void setAngel(double a);
     double myAngel();
+
+signals:
+    void speedChanged(double s);
+public slots:
+    void setSpeed(double s);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
 private slots:
-    void setNewText();
     void setNewIdentifier();
 };
 
@@ -159,7 +164,7 @@ private slots:
 class HoverNode:public NewNode
 {
     Q_OBJECT
-    Q_PROPERTY(double time READ myTime WRITE setTime)
+    Q_PROPERTY(double myTime READ myTime WRITE setTime)
 public:
     enum {Type = SomeNodeType};
     HoverNode();
@@ -167,22 +172,20 @@ public:
 
     int type() const { return Type; }
 
-    double time,speed,angel;
+    double time;
     //QGraphicsItem *item;
 
-    void setTime(double t);
     double myTime();
-    void setSpeed(double s);
-    double mySpeed();
-    void setAngel(double a);
-    double myAngel();
+
+signals:
+    void timeChanged(double t);
+public slots:
+    void setTime(double t);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
-private slots:
-    void setNewText();
 };
 
 /*******************************************************************
@@ -195,7 +198,7 @@ private slots:
 class DelayNode:public NewNode
 {
     Q_OBJECT
-    Q_PROPERTY(double time READ myTime WRITE setTime)
+    Q_PROPERTY(double myTime READ myTime WRITE setTime)
 public:
     enum {Type = SomeNodeType};
     DelayNode();
@@ -203,22 +206,20 @@ public:
 
     int type() const { return Type; }
 
-    double time,speed,angel;
+    double time;
     //QGraphicsItem *item;
 
-    void setTime(double t);
     double myTime();
-    void setSpeed(double s);
-    double mySpeed();
-    void setAngel(double a);
-    double myAngel();
+
+signals:
+    void timeChanged(double t);
+public slots:
+    void setTime(double t);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
-private slots:
-    void setNewText();
 };
 
 

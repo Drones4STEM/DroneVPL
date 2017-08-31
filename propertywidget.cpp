@@ -170,3 +170,106 @@ void PositionWidget::updateYPosition(QString y)
 }
 
 
+/*/////////////////////    MutableWidget       /////////////////*/
+MutableWidget::MutableWidget(QWidget *parent)
+    :QWidget(parent)
+{
+    createWidgets();
+    setAltitude(0.0);
+    setTime(0.0);
+    setSpeed(0.0);
+    setGroundSpeed(0.0);
+    createLayouts();
+    createConnections();
+    setFixedSize(minimumSizeHint());
+}
+
+void MutableWidget::createWidgets()
+{
+    altitudeLineEdit = new QLineEdit;
+    timeLineEdit = new QLineEdit;
+    speedLineEdit = new QLineEdit;
+    groundSpeedLineEdit = new QLineEdit;
+}
+
+void MutableWidget::createLayouts()
+{
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("altitude:"),altitudeLineEdit);
+    layout->addRow(tr("time:"),timeLineEdit);
+    layout->addRow(tr("speed"),speedLineEdit);
+    layout->addRow(tr("groundSpeed"),groundSpeedLineEdit);
+    setLayout(layout);
+}
+
+void MutableWidget::createConnections()
+{
+    connect(altitudeLineEdit,SIGNAL(textChanged(QString)),
+            this,SLOT(updateAltitude(QString)));
+    connect(timeLineEdit,SIGNAL(textChanged(QString)),
+            this,SLOT(updateTime(QString)));
+    connect(speedLineEdit,SIGNAL(textChanged(QString)),
+            this,SLOT(updateSpeed(QString)));
+    connect(groundSpeedLineEdit,SIGNAL(textChanged(QString)),
+            this,SLOT(updateGroundSpeed(QString)));
+}
+
+void MutableWidget::setAltitude(const double a)
+{
+    if(m_altitude!=a)
+    {
+        m_altitude=a;
+        altitudeLineEdit->setText(QString::number(a));
+    }
+}
+
+void MutableWidget::setTime(const double t)
+{
+    if(m_time!=t)
+    {
+        m_time=t;
+        timeLineEdit->setText(QString::number(t));
+    }
+}
+
+void MutableWidget::setSpeed(const double s)
+{
+    if(m_speed!=s)
+    {
+        m_speed=s;
+        speedLineEdit->setText(QString::number(s));
+    }
+}
+
+void MutableWidget::setGroundSpeed(const double s)
+{
+    if(m_groundSpeed!=s)
+    {
+        m_groundSpeed=s;
+        groundSpeedLineEdit->setText(QString::number(s));
+    }
+}
+
+void MutableWidget::updateAltitude(QString str)
+{
+    m_altitude=str.toDouble();
+    emit altitudeChanged(m_altitude);
+}
+
+void MutableWidget::updateTime(QString str)
+{
+    m_time=str.toDouble();
+    emit timeChanged(m_time);
+}
+
+void MutableWidget::updateSpeed(QString str)
+{
+    m_speed=str.toDouble();
+    emit speedChanged(m_speed);
+}
+
+void MutableWidget::updateGroundSpeed(QString str)
+{
+    m_groundSpeed=str.toDouble();
+    emit groundSpeedChanged(m_groundSpeed);
+}
