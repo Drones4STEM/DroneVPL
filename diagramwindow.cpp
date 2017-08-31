@@ -1312,6 +1312,12 @@ void DiagramWindow::del()
                     lh->LOG->tlink.removeOne(link);
                 }
             }
+            for(int i=0;i<lh->LOG->flink.length();i++){
+                link = lh->LOG->flink[i];
+                if(link->name==item->name){
+                    lh->LOG->flink.removeOne(link);
+                }
+            }
 
         }
         delete item;

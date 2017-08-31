@@ -24,6 +24,8 @@ Rec::Rec()
     identifier="Rec";
     controlsId=0;
     rank = 0;
+    flink.clear();
+    tlink.clear();
 
     mBoundingRect = QRectF(0,0,400,400);
     mBoundingRect.translate(-mBoundingRect.center());

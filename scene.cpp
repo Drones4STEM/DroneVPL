@@ -1475,6 +1475,7 @@ Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
     for(iter=LHM->begin();iter!=LHM->end();iter++){
         lh = iter.value();
         flag = lh->in_LOGIC(tmp);
+        if(lh->LOG==tmp->mLogicNode)    flag = true;
 
         qDebug()<<"scene::check_in_Logic():";
         qDebug()<<operate<<" "<<flag;

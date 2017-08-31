@@ -701,12 +701,11 @@ bool format::SavePyFile(QString filename)
     QTextStream in(&file);
     in<<"\n\n\n#========specified code=============\n";
 
-
-
     QMap<QString, widget*>* m = &(Map);
     std::stack<widget*>* stk = digrapher->get_topology(0);
     save_py_file(stk,in);
 
+    in<<"\nmyCopter.exit()\n";
     file.close();
     return true;
 }
