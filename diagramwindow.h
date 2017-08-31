@@ -33,6 +33,7 @@ class TakeOffNode;
 class WidgetCondition;
 class ColorWidget;
 class PositionWidget;
+class MutableWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -161,9 +162,6 @@ private:
     void selectItems( QSet<QGraphicsItem*>&items);
     void copyItems( QList<QGraphicsItem*>&items);
 
-    void readItems(QDataStream &in,int offset,bool select);
-    void writeItems(QDataStream &out,
-                     const QList<QGraphicsItem*> &items);
     bool okToClearData();
     bool openPageDesignerFile(QFile *file, QDataStream &in);
 
@@ -182,6 +180,8 @@ private:
     YuanPair selectedYuanPair() const;
     Rec *selectedRec() const;
     bool sceneHasItems() const;
+    void getSelectionProperties(bool *hasAltitudeProperty,bool *hasTimeProperty,
+                                bool *hasSpeedProperty,bool *hasGroundSpeedProperty) const;
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -266,6 +266,7 @@ private:
 
     ColorWidget *colorWidget;
     PositionWidget *positionWidget;
+    MutableWidget *mutableWidget;
 
 
     QPrinter *printer;
