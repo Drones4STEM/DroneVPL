@@ -14,6 +14,9 @@
 #include "rec.h"
 #include "diagramwindow.h"
 #include "wqDragItem.h"
+#include <QGraphicsSceneMouseEvent>
+#include <QKeyEvent>
+#include <QDebug>
 
 Rec::Rec()
 {
@@ -29,7 +32,7 @@ Rec::Rec()
     mBoundingRect.translate(-mBoundingRect.center());
     setLogichw();
 
-    QRectF curRect = boundingRect().adjusted(0,10,0,-10);
+    /*QRectF curRect = boundingRect().adjusted(0,10,0,-10);
 
     // Drags
     wqDragItem* drag1 = new wqDragItem(this);
@@ -45,7 +48,7 @@ Rec::Rec()
     connect(drag1, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
     connect(drag2, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
     connect(drag3, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
-    connect(drag4, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
+    connect(drag4, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));*/
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(showYuan()));
 
@@ -154,15 +157,21 @@ QVariant Rec::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged) {
-        yuan2->setPos(pos().x() - outlineRect().width()/2 + item->boundingRect().width()/2,
+        /*yuan2->setPos(pos().x() - outlineRect().width()/2 + item->boundingRect().width()/2,
                      pos().y() - outlineRect().height()/2 + item->boundingRect().height()*1.5);
-        yuan->setPos(QPointF(pos().x(), pos().y() + outlineRect().height()*0.5));
+        yuan->setPos(QPointF(pos().x(), pos().y() + outlineRect().height()*0.5));*/
+        yuan2->setPos(/*pos().x()*/ scenePos().x() - mBoundingRect.width()/2 + item->boundingRect().width()/2,
+                      /*pos().y()*/ scenePos().y() - mBoundingRect.height()/2 + item->boundingRect().height()*1.5);
+        qDebug()<<scenePos();
+        yuan->setPos(QPointF(pos().x(), pos().y() + mBoundingRect.height()*0.5));
 
         foreach (Link *link, yuan->myLinks)
         {link->trackYuans();update();}
 
-        item->setPos(QPointF(pos().x()-outlineRect().width()/2,
-                     (pos().y() - outlineRect().height()/2)));
+        /*item->setPos(QPointF(pos().x()-outlineRect().width()/2,
+                     (pos().y() - outlineRect().height()/2)));*/
+        item->setPos(QPointF(pos().x() - mBoundingRect.width()/2,
+                            pos().y() - mBoundingRect.height()/2));
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -200,7 +209,7 @@ void Rec::showYuan()
     }
 }
 
-void Rec::slot_changeRect()
+/*void Rec::slot_changeRect()
 {
     QRectF rect(0,0,0,0);
     QList<QGraphicsItem*> allItems = childItems();
@@ -216,7 +225,7 @@ void Rec::slot_changeRect()
 
     prepareGeometryChange();
     mBoundingRect = mapRectFromScene(rect);
-}
+}*/
 
 
 void Rec::setLogichw()
@@ -224,3 +233,100 @@ void Rec::setLogichw()
     high = mBoundingRect.height();
     wide = mBoundingRect.width();
 }
+
+/*void Rec::keyPressEvent(QKeyEvent *event)
+{
+    if(event->modifiers() & Qt::ShiftModifier ||
+       event->modifiers() & Qt::ControlModifier)
+    {
+        bool move = event->modifiers() & Qt::ControlModifier;
+        bool changed = true;
+        double dx1 = 0.0;
+        double dy1 = 0.0;
+        double dx2 = 0.0;
+        double dy2 = 0.0;
+        switch (event->key()) {
+        case Qt::Key_Left:
+            if(move)
+                dx1 = -1.0;
+            dx2 = -1.0;
+            break;
+        case Qt::Key_Right:
+            if(move)
+                dx1 = 1.0;
+            dx2 =1.0;
+            break;
+        case Qt::Key_Up:
+            if(move)
+                dy1 = -1.0;
+            dy2 = 1.0;
+            break;
+        case Qt::Key_Down:
+            if(move)
+                dy1 = 1.0;
+            dy2 = 1.0;
+            break;
+        default:
+            changed = false;
+        }
+        if(changed)
+        {
+            prepareGeometryChange();
+            mBoundingRect.adjusted(dx1,dy1,dx2,dy2);
+            scene()->update();
+            emit dirty();
+            return;
+        }
+    }
+    QGraphicsItem::keyPressEvent(event);
+}*/
+
+void Rec::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->modifiers() & Qt::ShiftModifier)
+    {
+        m_resizing = true;
+        setCursor(Qt::SizeAllCursor);
+    }
+    else
+        QGraphicsItem::mousePressEvent(event);
+}
+
+void Rec::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(m_resizing)
+    {
+        QRectF rectangle(mBoundingRect);
+        double dx = rectangle.width();
+        double dy = rectangle.height();
+        //if(dx<=10||dy<=10)
+        //    QGraphicsItem::mouseMoveEvent(event);
+        //else
+        //{
+            if(event->pos().x()<rectangle.x())
+                rectangle.setBottomLeft(event->pos());
+            else
+                rectangle.setBottomRight(event->pos());
+            mBoundingRect=rectangle;
+            mBoundingRect.translate(-mBoundingRect.center());
+            scene()->update();
+        //}
+    }
+    else
+        QGraphicsItem::mouseMoveEvent(event);
+}
+
+void Rec::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(m_resizing)
+    {
+        m_resizing = false;
+        setCursor(Qt::ArrowCursor);
+        emit dirty();
+    }
+    else
+        QGraphicsItem::mouseReleaseEvent(event);
+}
+
+
+

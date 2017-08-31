@@ -32,6 +32,7 @@ NewNode::NewNode()
 
     setFlags(ItemIsMovable | ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
+    setFlag(ItemIsFocusable);
 
     identifier="NewNode";
     controlsId=0;
@@ -58,6 +59,7 @@ void NewNode::setText(const QString &text)
 {
     prepareGeometryChange();
     myText = text;
+    emit dirty();
     update();
     sethw();
 }
@@ -132,6 +134,7 @@ QPoint NewNode::position()const
 void NewNode::setPosition()           //在控件移动时，改变myPosition变量
 {
     myPosition = pos().toPoint();
+    emit dirty();
 }
 /*
 bool NewNode::set_controlsId(int id)
@@ -301,7 +304,7 @@ QRectF NewNode::outlineRect() const
 int NewNode::roundness(double size) const
 {
     const int Diameter = 12;
-    return 100 * Diameter / int(size);
+    return 100 * Diameter / (abs(int(size))+1);
 }
 
 Yuan* NewNode::myYuan()const

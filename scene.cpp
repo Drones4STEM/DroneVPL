@@ -202,7 +202,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 bool newscene::CreateTakeOff(QPointF point, int id)
 {
     TakeOffNode *node=new TakeOffNode;
-    node->setText(tr("take off\n %1 m").arg(node->time));
+    node->setText(tr("take off\n %1 m").arg(node->altitude));
 
     node->setPos(point);
     node->setxy(point);
@@ -376,7 +376,7 @@ bool newscene::CreateHover(QPointF point, int id)
 {
     HoverNode *node=new HoverNode;
 
-    node->setText(tr(" Hover \n %2 s").arg(node->time));
+    node->setText(tr(" Hover \n %1 s").arg(node->time));
 
     node->setPos(point);
     this->addItem(node);
@@ -417,7 +417,7 @@ bool newscene::CreateDelay(QPointF point, int id)
 {
     DelayNode *node=new DelayNode;
 
-    node->setText(tr(" Delay \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Delay \n %1 s").arg(node->time));
 
     node->setPos(point);
     this->addItem(node);
@@ -849,14 +849,17 @@ bool newscene::CreateLogic(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
+    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
     this->addItem(rec->yuan2);
     this->addItem(rec->yuan);
 
-    item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-                         (rec->pos().y() - rec->outlineRect().height()/2)));
+    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
+                         (rec->pos().y() - rec->boundingRect().height()/2)));
     item->setZValue(rec->zValue()+1);
     rec->box->addItem(tr("if"));
     rec->box->addItem(tr("else"));
@@ -929,7 +932,7 @@ Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 //----------------从xml文件创建控件-----------------------
 bool newscene::CreateTakeOff(TakeOffNode* node)
 {
-    node->setText(tr("take off\n %1 s").arg(node->time));
+    node->setText(tr("take off\n %1 s").arg(node->altitude));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1051,7 +1054,7 @@ bool newscene::CreateTurn(TurnNode* node)
 }
 bool newscene::CreateHover(HoverNode* node)
 {
-    node->setText(tr(" Hover \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Hover \n %1 s").arg(node->time));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1079,7 +1082,7 @@ bool newscene::CreateHover(HoverNode* node)
 }
 bool newscene::CreateDelay(DelayNode *node)
 {
-    node->setText(tr(" Delay \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" Delay \n %1 s").arg(node->time));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1378,8 +1381,10 @@ bool newscene::CreateLogic(Rec *rec)
     this->clearSelection();
     rec->setSelected(true);
 
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));*/
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
     this->addItem(rec->yuan2);
 
     item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,

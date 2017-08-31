@@ -12,6 +12,7 @@
 #include "node.h"
 #include "yuan.h"
 #include "rec.h"
+#include <math.h>
 
 /*******************************************************************
  * Function name: Node()
@@ -59,6 +60,7 @@ void Node::setText(const QString &text)
     prepareGeometryChange();
     myText = text;
     update();
+    emit dirty();
     sethw();
 }
 
@@ -131,6 +133,7 @@ QPoint Node::position()const
 void Node::setPosition()           //在控件移动时，改变myPosition变量
 {
     myPosition = pos().toPoint();
+    emit dirty();
 }
 
 /*
@@ -271,7 +274,8 @@ QVariant Node::itemChange(GraphicsItemChange change,
         else{
             setPos(yuan->pos().x(),
                           yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
-        }}
+        }
+    }
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -304,7 +308,7 @@ QRectF Node::outlineRect() const
 int Node::roundness(double size) const
 {
     const int Diameter = 12;
-    return 100 * Diameter / int(size);
+    return 100 * Diameter / (abs(int(size))+1);
 }
 
 triYuan* Node::myYuan()const

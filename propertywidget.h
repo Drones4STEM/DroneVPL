@@ -72,5 +72,46 @@ private:
     QLineEdit *yLineEdit;
 };
 
+class MutableWidget :public QWidget
+{
+    Q_OBJECT
+public:
+    explicit MutableWidget(QWidget *parent=0);
+
+    double altitude() const{return m_altitude;}
+    double time() const{return m_time;}
+    double speed() const{return m_speed;}
+    double groundSpeed() const{return m_groundSpeed;}
+    double m_altitude;
+    double m_time;
+    double m_speed;
+    double m_groundSpeed;
+
+    QLineEdit *altitudeLineEdit;
+    QLineEdit *timeLineEdit;
+    QLineEdit *speedLineEdit;
+    QLineEdit *groundSpeedLineEdit;
+public slots:
+    void setAltitude(const double a);
+    void setTime(const double t);
+    void setSpeed(const double s);
+    void setGroundSpeed(const double s);
+signals:
+    void altitudeChanged(const double a);
+    void timeChanged(const double t);
+    void speedChanged(const double s);
+    void groundSpeedChanged(const double s);
+private slots:
+    void updateAltitude(QString str);
+    void updateTime(QString str);
+    void updateSpeed(QString str);
+    void updateGroundSpeed(QString str);
+
+private:
+    void createWidgets();
+    void createLayouts();
+    void createConnections();
+};
+
 
 #endif // PROPERTYWIDGET_H

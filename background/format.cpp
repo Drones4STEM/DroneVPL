@@ -740,7 +740,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         stream<<"if not myCopter.takeoff(1):\n"
               <<"   sys.exit(1)\n";
-
     }
     if(w->identifier=="Land"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -783,7 +782,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"myCopter.send_nav_velocity(0, 1, 0)"
                   <<"time.sleep(5)";
         }
-
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
