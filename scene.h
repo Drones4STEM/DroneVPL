@@ -30,8 +30,8 @@ public:
     //从用户鼠标事件创建控件
     bool CreateTakeOff(QPointF point, int id);
     bool CreateLand(QPointF point, int id);
-    bool CreateGo(QPointF point, int id);
-    bool CreateTurn(QPointF point, int id);
+    bool CreateGo(QPointF point, int id, int index);
+    bool CreateTurn(QPointF point, int id, int index);
     bool CreateHover(QPointF point, int id);
     bool CreateDelay(QPointF point, int id);
     bool CreateVarType(QPointF point, int id);

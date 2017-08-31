@@ -87,6 +87,7 @@ public:
 
     double time;
     double groundspeed;
+    QString direction;
     QComboBox *box;
 
     QGraphicsItem *item;
@@ -94,6 +95,7 @@ public:
     void setTime(double t);
     double myTime();
     double myGroundSpeed();
+
 
     static int riseNodeNum;     static int fallNodeNum;
     static int advanceNodeNum;  static int backNodeNum;
@@ -109,8 +111,8 @@ protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
 
-private slots:
-    void setNewIdentifier();
+public slots:
+    void setDirection();
 };
 
 /*******************************************************************
@@ -132,6 +134,7 @@ public:
     int type() const { return Type; }
 
     double time,speed,angel;
+    QString direction;
     QComboBox*box;
     QGraphicsItem *item;
 
@@ -150,8 +153,9 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
-private slots:
-    void setNewIdentifier();
+public slots:
+    void setDirection();
+
 };
 
 /*******************************************************************

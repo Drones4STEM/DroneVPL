@@ -705,7 +705,7 @@ void DiagramWindow::connectItem(QObject *item)
 ******************************************************************/
 void DiagramWindow::addTakeoffNode()
 {
-    scene->selected_Index=1;//1 means the 1st object
+    scene->selected_Index=101;//1 means the 1st object
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     scene->need_to_set=1;
    // TakeoffNode *node=new TakeoffNode;
@@ -729,7 +729,7 @@ void DiagramWindow::addTakeoffNode()
 void DiagramWindow::addLandonNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index=2;
+    scene->selected_Index=102;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //LandonNode *node=new LandonNode;
     //node->setText(tr("Land on\n %1 s").arg(node->time));
@@ -754,7 +754,7 @@ void DiagramWindow::addLandonNode()
 void DiagramWindow::addTranslationNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index=3;
+    scene->selected_Index=100;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -772,7 +772,7 @@ void DiagramWindow::addTranslationNode()
 void DiagramWindow::addRiseNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index = 4;
+    scene->selected_Index = 103;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -791,7 +791,7 @@ void DiagramWindow::addRiseNode()
 void DiagramWindow::addFallNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index = 5;
+    scene->selected_Index = 104;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -810,7 +810,7 @@ void DiagramWindow::addFallNode()
 void DiagramWindow::addAdvanceNode()
 {
     scene->need_to_set = 1;
-    scene->selected_Index = 6;
+    scene->selected_Index = 105;
     //setCursor(Qt::CrossCursor);//设置鼠标为十字星
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
@@ -830,7 +830,7 @@ void DiagramWindow::addBackNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 7;
+    scene->selected_Index = 106;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(3);
@@ -849,7 +849,7 @@ void DiagramWindow::addRightNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 8;
+    scene->selected_Index = 107;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(4);
@@ -868,7 +868,7 @@ void DiagramWindow::addLeftNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 9;
+    scene->selected_Index = 108;
     //TranslationNode *node=new TranslationNode;
     //addTranslation(node);
     //node->box->setCurrentIndex(5);
@@ -936,7 +936,7 @@ void DiagramWindow::addTurnLeftNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 11;
+    scene->selected_Index = 110;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(0);
@@ -955,7 +955,7 @@ void DiagramWindow::addTurnRightNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 12;
+    scene->selected_Index = 111;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(1);
@@ -974,7 +974,7 @@ void DiagramWindow::addHangingNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 13;
+    scene->selected_Index = 112;
     //SomeNode *node=new SomeNode;
     //addSome(node);
     //node->box->setCurrentIndex(2);
@@ -991,14 +991,9 @@ void DiagramWindow::addHangingNode()
 ******************************************************************/
 void DiagramWindow::addDelayNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 14;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(3);
+    scene->selected_Index = 113;
 
-    //setDirty();
 }
 
 /*******************************************************************
@@ -1010,17 +1005,9 @@ void DiagramWindow::addDelayNode()
 ******************************************************************/
 void DiagramWindow::addVarNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 15;
-    //VarNode* node=new VarNode;
-    //node->setText(tr("int"));
-    //setupNode(node);
+    scene->selected_Index = 201;
 
-    //varNodeNum++;
-    //node->controlsId=varNodeNum;
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -1034,59 +1021,7 @@ void DiagramWindow::addVardefNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 16;
-    //QList<QGraphicsItem *> items = scene->selectedItems();
-    //if(items.count()==0)
-    //{
-    //    VardefNode* node=new VardefNode;
-    //    node->node=0;
-    //    node->setPos(QPoint(80 + (100 * (seqNumber % 5)),
-    //                        80 + (50 * ((seqNumber / 5) % 7))));
-    //   scene->addItem(node);
-    //    ++seqNumber;
-    //    node->yuan2->setPos(node->pos().x(),
-    //                       node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
-    //    node->yuan->setPos(node->pos().x(),
-    //                       node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
-    //    scene->addItem(node->yuan);
-    //    scene->addItem(node->yuan2);
-
-    //   vardefNodeNum++;
-    //    node->controlsId=vardefNodeNum;
-    // }
-    // else if(items.count()==1)
-    // {
-    //    VarNode* node=dynamic_cast<VarNode*>(scene->selectedItems().first());
-    //   if(!node)return;
-
-    //    int flag=0;
-    //    while(node->flags[node->num])//这个位置已经有了vardefnode
-    //    {
-    //        if(flag==6)return;
-    //        node->num=node->num%6+1;
-    //        flag++;
-    //   }
-
-    //计算添加的位置
-    //   int i=node->num%3;
-    //   int j;
-    //    if(node->num==0||node->num==2)j=-17;
-    //   else if(node->num==3||node->num==5)j=17;
-    //    else if(node->num==1)j=-35;
-    //    else j=35;
-
-    //     node->array[node->num]->node=node;//使vardefnode知道它属于varnode
-
-    //   node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
-    //                        node->pos().y() + j);
-    //    node->flags[node->num]=true;
-    //    scene->addItem(node->array[node->num]);
-    //    node->num=node->num%6+1;
-
-    //    vardefNodeNum++;
-    //   node->controlsId=vardefNodeNum;
-    //    }
-    // setDirty();
+    scene->selected_Index = 202;
 }
 
 /*******************************************************************
@@ -1100,42 +1035,8 @@ void DiagramWindow::addComputeNode()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 17;
-    //ComputeNode *node=new ComputeNode;
-    //node->setText(tr("Compute"));
-    //QGraphicsItem* item=scene->addWidget(node->box);
-    //node->item=item;
-    //setupNode(node);
-    //node->yuan->setPos(QPointF(node->pos().x(),
-    //                           node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-   // node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-    //                            node->pos().y()));
-    //node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
-    //                            node->pos().y()));
-    //scene->addItem(node->yuan);
-   // scene->addItem(node->yuan2);
-    //scene->addItem(node->yuan3);
+    scene->selected_Index = 301;
 
-    //item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
-   //              node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
-   // item->setZValue(node->zValue()+1);
-   // node->box->addItem(tr("+"));
-   // node->box->addItem(tr("-"));
-   // node->box->addItem(tr("*"));
-   // node->box->addItem(tr("/"));
-   // node->box->addItem(tr("cos"));
-   // node->box->addItem(tr("sin"));
-   // node->box->addItem(tr("tan"));
-   // node->box->addItem(tr("log"));
-   // node->box->addItem(tr("e"));
-   // node->box->addItem(tr("="));
-   // node->box->addItem(tr(">"));
-   // node->box->addItem(tr("<"));
-
-   // computeNodeNum++;
-   // node->controlsId=computeNodeNum;
-
-   // setDirty();
 }
 
 /*******************************************************************
@@ -1148,7 +1049,7 @@ void DiagramWindow::addComputeNode()
 void DiagramWindow::addIoNode()
 {
     scene->need_to_set=1;
-    scene->selected_Index = 18;
+    scene->selected_Index = 400;
 }
 
 /*******************************************************************
@@ -1227,7 +1128,7 @@ void DiagramWindow::addRec()
 {
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
-    scene->selected_Index = 19;
+    scene->selected_Index = 501;
     //Rec *rec=new Rec;
     //QGraphicsItem* item= scene->addWidget(rec->box);
     //rec->item=item;
@@ -1883,7 +1784,7 @@ void DiagramWindow::compile()
     format formater;
     formater.set_map(m);
     formater.set_digraph(m,LHM);
-    formater.SavePyFile("Compile.py");
+    formater.SavePyFile("../Compile.py");
     /*
     digraph digrapher(m);
     std::stack<widget*> stk = digrapher.get_topology();
