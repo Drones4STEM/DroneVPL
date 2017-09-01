@@ -312,6 +312,8 @@ void Rec::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             mBoundingRect=rectangle;
             mBoundingRect.translate(-mBoundingRect.center());
             scene()->update();
+        high = rectangle.height();
+        wide = rectangle.width();
         //}
     }
     else

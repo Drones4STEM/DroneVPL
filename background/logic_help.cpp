@@ -43,6 +43,9 @@ bool LOGIC_Help::in_LOGIC(widget* w)
     qDebug()<<"LOG->wide " <<LOG->wide;
     qDebug()<<"LOG->high " <<LOG->high;
 
+    if(w->mLogicNode == LOG) return false;
+    //在拖动logic边框的时候，由于速度原因会导致in_LOGIC函数判定自身被包含，所以手动设定为false
+
     if( w->pos().x() - w->wide/2 > LOG->pos().x() - LOG->wide/2   //横坐标包含
          && w->pos().x() + w->wide/2 < LOG->pos().x() + LOG->wide/2
          && w->pos().y() - w->high/2 > LOG->pos().y() - LOG->high/2  //纵坐标包含

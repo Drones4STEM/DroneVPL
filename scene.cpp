@@ -1479,8 +1479,8 @@ Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
     LOGIC* l = 0;   int r=1000;
     for(iter=LHM->begin();iter!=LHM->end();iter++){
         lh = iter.value();
-        flag = lh->in_LOGIC(tmp);
-        if(lh->LOG==tmp->mLogicNode)    flag = true;
+        flag = lh->in_LOGIC(tmp);   //logic不被自己包含
+
 
         qDebug()<<"scene::check_in_Logic():";
         qDebug()<<operate<<" "<<flag;
@@ -1491,7 +1491,10 @@ Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
                 tmp->rank(lh->LOG->rank+1); //设置rank
             }else if(operate=="del")
                 lh->WidgetsInLOGIC.remove(tmp->name);
-            l = (r<lh->LOG->rank)?l:lh->LOG;
+            if(r>lh->LOG->rank){    //向rank更小的图更新
+                l = lh->LOG;
+                r = lh->LOG->rank;
+            }
         }
 
     }
@@ -1538,14 +1541,22 @@ bool newscene::CheckInLogic()
 bool newscene::CheckLinkOverLogic(Link *link)
 {
     if(link==0) return false;
-    Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
-    Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
-    if(rec1!=rec2){
-        link->toLogic = (rec2!=0)?rec2:0;
-        link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
-        if(rec1!=0)  rec1->tlink<<link; //从logic指出
-        if(rec1==0)  rec2->flink<<link; //向logic指入
+    //若是从compute指向logic的情况
+    if(link->toYuan()->master->identifier=="Logic"){
+        link->toLogic = link->toYuan()->master->mLogicNode;
+        //flink记录的是跨越logic的link，所以compute指向logic不算
+        //link->toLogic->flink<<link;
+    }else{
+        Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
+        Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
+        if(rec1!=rec2){
+            link->toLogic = rec2;
+            link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
+            if(rec1!=0)  rec1->tlink<<link; //从logic指出
+            if(rec1==0)  rec2->flink<<link; //向logic指入
 
+        }
     }
+
     return true;
 }
