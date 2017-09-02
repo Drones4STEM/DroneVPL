@@ -1287,61 +1287,61 @@ void DiagramWindow::del()
         qDebug()<<"location_y: "<<item->pos().y();*/
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (LandNode* item, itemLandons) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (GoNode* item, itemTranslations) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (TurnNode* item, itemTurn) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (HoverNode* item, itemHover) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (DelayNode* item, itemDelay) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (IoNode* item, itemIos) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (BatteryNode* item, itemBry) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (GimbalNode* item, itemGim) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (Rec* item, itemRecs) {
@@ -1361,13 +1361,13 @@ void DiagramWindow::del()
     foreach (VardefNode* item, itemVardefs) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (VarNode* item, itemVars) {
         WidgetWrap tmp(item);
         wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del");
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (SomeNode* item, itemSomes) {

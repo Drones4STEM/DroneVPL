@@ -60,7 +60,7 @@ public:
     bool CreateLink(Link* link);
 
     bool CheckInLogic();    //调用方法
-    Rec *check_in_Logic(WidgetWrap *tmp, QString operate);  //调用方法的内部工具
+    Rec *check_in_Logic(WidgetWrap *tmp, QString operate, int maxrank);  //调用方法的内部工具
     bool CheckLinkOverLogic(Link* link);
 
 
