@@ -710,6 +710,7 @@ bool format::SavePyFile(QString filename)
     in<<"\nmyCopter.exit()\n";
     file.close();
     return true;
+
 }
 
 /*****************************************************
