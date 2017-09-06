@@ -1036,7 +1036,67 @@ void DiagramWindow::addComputeNode()
     //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 301;
+}
 
+void DiagramWindow::addAddNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 301;
+}
+
+void DiagramWindow::addSubNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addMulNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addDivNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addCosNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addSinNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addTanNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addLogNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addENode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addEqualNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addMoreNode()
+{
+    scene->need_to_set=1;
+}
+
+void DiagramWindow::addLessNode()
+{
+    scene->need_to_set=1;
 }
 
 /*******************************************************************
@@ -1899,8 +1959,34 @@ void DiagramWindow::createActions()
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
     addVardefNodeAction = new QAction(tr("VarDef"),this);
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
+
     addComputeNodeAction = new QAction(tr("Compute"),this);
-    connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
+    //connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
+    addAddNodeAction = new QAction(tr("+"),this);
+    connect(addAddNodeAction,SIGNAL(triggered()),this,SLOT(addAddNode()));
+    addSubNodeAction = new QAction(tr("-"),this);
+    connect(addSubNodeAction,SIGNAL(triggered()),this,SLOT(addSubNode()));
+    addMulNodeAction = new QAction(tr("*"),this);
+    connect(addMulNodeAction,SIGNAL(triggered()),this,SLOT(addMulNode()));
+    addDivNodeAction = new QAction(tr("/"),this);
+    connect(addDivNodeAction,SIGNAL(triggered()),this,SLOT(addDivNode()));
+    addCosNodeAction = new QAction(tr("cos"),this);
+    connect(addCosNodeAction,SIGNAL(triggered()),this,SLOT(addCosNode()));
+    addSinNodeAction = new QAction(tr("sin"),this);
+    connect(addSinNodeAction,SIGNAL(triggered()),this,SLOT(addSinNode()));
+    addTanNodeAction = new QAction(tr("tan"),this);
+    connect(addTanNodeAction,SIGNAL(triggered()),this,SLOT(addTanNode()));
+    addLogNodeAction = new QAction(tr("log"),this);
+    connect(addLogNodeAction,SIGNAL(triggered()),this,SLOT(addLogNode()));
+    addENodeAction = new QAction(tr("e"),this);
+    connect(addENodeAction,SIGNAL(triggered()),this,SLOT(addENode()));
+    addEqualNodeAction = new QAction(tr("="),this);
+    connect(addEqualNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
+    addMoreNodeAction = new QAction(tr(">"),this);
+    connect(addMoreNodeAction,SIGNAL(triggered()),this,SLOT(addMoreNode()));
+    addLessNodeAction = new QAction(tr("<"),this);
+    connect(addLessNodeAction,SIGNAL(triggered()),this,SLOT(addLessNode()));
+
     addBatteryNodeAction = new QAction(tr("Battery"),this);
     connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
     addGimbalNodeAction = new QAction(tr("Gimbal"),this);
@@ -2063,6 +2149,16 @@ void DiagramWindow::createMenus()
             <<addGimbalNodeAction)
         IOMenu->addAction(action);
     addIONodeAction->setMenu(IOMenu);
+    QMenu *computeMenu = new QMenu(tr("Compute"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addAddNodeAction<<addSubNodeAction
+             <<addMulNodeAction<<addDivNodeAction
+             <<addCosNodeAction<<addSinNodeAction
+             <<addTanNodeAction<<addLogNodeAction
+             <<addENodeAction<<addEqualNodeAction
+             <<addMoreNodeAction<<addDivNodeAction)
+        computeMenu->addAction(action);
+    addComputeNodeAction->setMenu(computeMenu);
 
     editMenu->addAction(addActionNodeAction);
     editMenu->addAction(addVarNodeAction);

@@ -118,6 +118,18 @@ private slots:
     void addVarNode();
     void addVardefNode();
     void addComputeNode();
+    void addAddNode();
+    void addSubNode();
+    void addMulNode();
+    void addDivNode();
+    void addCosNode();
+    void addSinNode();
+    void addTanNode();
+    void addLogNode();
+    void addENode();
+    void addEqualNode();
+    void addMoreNode();
+    void addLessNode();
     void addIoNode();
     void addBatteryNode();
     void addGimbalNode();
@@ -232,6 +244,18 @@ private:
     QAction *addVardefNodeAction;
 
     QAction *addComputeNodeAction;
+    QAction *addAddNodeAction;
+    QAction *addSubNodeAction;
+    QAction *addMulNodeAction;
+    QAction *addDivNodeAction;
+    QAction *addCosNodeAction;
+    QAction *addSinNodeAction;
+    QAction *addTanNodeAction;
+    QAction *addLogNodeAction;
+    QAction *addENodeAction;
+    QAction *addEqualNodeAction;
+    QAction *addMoreNodeAction;
+    QAction *addLessNodeAction;
 
     QAction *addIONodeAction;
     QAction *addBatteryNodeAction;
