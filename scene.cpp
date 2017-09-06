@@ -1471,7 +1471,7 @@ bool newscene::CreateLink(Link* link)
 }
 //------------------------------------------------------
 
-Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
+Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate,int maxrank)
 {
     bool flag;
     typename QMap<QString, LOGIC_Help*>::iterator iter;
@@ -1479,7 +1479,9 @@ Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
     LOGIC* l = 0;   int r=1000;
     for(iter=LHM->begin();iter!=LHM->end();iter++){
         lh = iter.value();
-        flag = lh->in_LOGIC(tmp);
+        if(lh->LOG->rank<=maxrank) continue;    //遇到高级的图就略过，在限定等级的图中遍历
+        flag = lh->in_LOGIC(tmp);   //logic不被自己包含
+
 
         qDebug()<<"scene::check_in_Logic():";
         qDebug()<<operate<<" "<<flag;
@@ -1490,16 +1492,20 @@ Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate)
                 tmp->rank(lh->LOG->rank+1); //设置rank
             }else if(operate=="del")
                 lh->WidgetsInLOGIC.remove(tmp->name);
-            l = (r<lh->LOG->rank)?l:lh->LOG;
+            if(r>lh->LOG->rank){    //向rank更小的图更新
+                l = lh->LOG;
+                r = lh->LOG->rank;
+            }
         }
 
     }
-    if(l==0)    tmp->rank(1);
+    if(l==0)    tmp->rank(maxrank+1);   //如果在maxrank的等级下没有搜到对应的父logic，说明这个控件至少是maxrank的等级
     return l;
 }
 
 bool newscene::CheckInLogic()
-{
+{//生成控件时检验控件被哪些logic包含（也可能生成的是logic），综合了情况分类的工作。
+ //相应的check_in_logic只负责纯粹的检测父logic的最外层
     QList<QGraphicsItem *> items = this->selectedItems();
     typename QList<QGraphicsItem *>::iterator liter;
     typename QMap<QString, widget*>::iterator miter;
@@ -1513,12 +1519,12 @@ bool newscene::CheckInLogic()
             if(n1->identifier=="Logic"){
                 for(miter=m.begin();miter!=m.end();miter++){
                     //这个函数会遍历所有Logic进行检查
-                    check_in_Logic(miter.value(),"add");
+                    check_in_Logic(miter.value(),"add",0);
                 }
             }else{
                 for(miter=m.begin();miter!=m.end();miter++){
                     if(n1->name == miter.value()->name){
-                        check_in_Logic(miter.value(),"add");
+                        check_in_Logic(miter.value(),"add",0);
                     }
                 }
             }
@@ -1526,7 +1532,7 @@ bool newscene::CheckInLogic()
         }else if(n2!=0){
             for(miter=m.begin();miter!=m.end();miter++){
                 if(n2->name == miter.value()->name){
-                    check_in_Logic(miter.value(),"add");
+                    check_in_Logic(miter.value(),"add",0);
                 }
             }
         }
@@ -1534,17 +1540,42 @@ bool newscene::CheckInLogic()
     return true;
 }
 
-bool newscene::CheckLinkOverLogic(Link *link)
-{
-    if(link==0) return false;
-    Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none");
-    Rec* rec2 = check_in_Logic(link->toYuan()->master,"none");
-    if(rec1!=rec2){
-        link->toLogic = (rec2!=0)?rec2:0;
-        link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
-        if(rec1!=0)  rec1->tlink<<link; //从logic指出
-        if(rec1==0)  rec2->flink<<link; //向logic指入
 
+bool newscene::CheckLinkOverLogic(Link *link)
+{//说明：设定上，找一个控件的父logic只能找到最外层的那个，而一个link是否跨越logic，
+ //     依靠所连接的控件的父logic的指针是否相同来判断。这导致只要在同一个大logic里，
+ //     跨越子logic的link无法知道自己跨越了子logic，而这是遍历多层级的图需要的。
+ //     因此采用了不断识别共同父logic，并设置搜索的rank等级的办法。
+    if(link==0) return false;
+    //若是从compute指向logic的情况
+    if(link->toYuan()->master->identifier=="Logic"){
+        link->toLogic = link->toYuan()->master->mLogicNode;
+        //flink记录的是跨越logic的link，所以compute指向logic不算
+        //link->toLogic->flink<<link;
+    }else{
+        Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none",0);
+        Rec* rec2 = check_in_Logic(link->toYuan()->master,"none",0);
+        while(rec1==rec2){
+            rec1 = check_in_Logic(link->fromYuan()->master,"none",rec1->rank);
+            rec2 = check_in_Logic(link->toYuan()->master,"none",rec2->rank);
+        }
+        if(rec1!=rec2){
+            link->toLogic = rec2;
+            link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
+            if(rec1!=0&&rec2!=0){
+                rec1->tlink<<link; //从logic指出
+                rec2->flink<<link;
+            }
+            if(rec1!=0&&rec2==0){
+                rec1->tlink<<link; //从logic指出
+            }
+            if(rec1==0&&rec2!=0){
+                rec2->flink<<link;  //向logic指入
+            }
+            //不可能同时等于0
+
+        }
     }
+
     return true;
 }

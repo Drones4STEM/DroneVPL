@@ -665,8 +665,10 @@ bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in)
         if(tmp->identifier=="Logic"){
             std::stack<widget*>* s = digrapher->get_topology(tmp->mLogicNode);
             save_py_file(s,in);
+        }else{  //Logic转化成代码的过程不在这里进行
+            widget_convert_to_py(tmp, in);
         }
-        widget_convert_to_py(tmp, in);
+
     }
 
 
@@ -701,14 +703,14 @@ bool format::SavePyFile(QString filename)
     QTextStream in(&file);
     in<<"\n\n\n#========specified code=============\n";
 
-
-
     QMap<QString, widget*>* m = &(Map);
     std::stack<widget*>* stk = digrapher->get_topology(0);
     save_py_file(stk,in);
 
+    in<<"\nmyCopter.exit()\n";
     file.close();
     return true;
+
 }
 
 /*****************************************************
@@ -753,34 +755,34 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         if(w->mGoNode->direction=="GoUp"){
-            stream<<"print \"Going upward for 0.2m/s for 5 seconds\""
-                  <<"myCopter.send_nav_velocity(0, 0, -0.2)"
-                  <<"time.sleep(5)";
+            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n"
+                  <<"myCopter.send_nav_velocity(0, 0, -0.2)\n"
+                  <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            stream<<"print \"Going upward for 0.2m/s for 5 seconds\""
-                  <<"myCopter.send_nav_velocity(0, 0, 0.2)"
-                  <<"time.sleep(5)";
+            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n"
+                  <<"myCopter.send_nav_velocity(0, 0, 0.2)\n"
+                  <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoRight"){
-            stream<<"print \"Going rightward at 1m/s for 5s\""
-                  <<"myCopter.send_nav_velocity(1, 0, 0)"
-                  <<"time.sleep(5)";
+            stream<<"print \"Going rightward at 1m/s for 5s\"\n"
+                  <<"myCopter.send_nav_velocity(1, 0, 0)\n"
+                  <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
-            stream<<"print \"Going rightward at 1m/s for 5s\""
-                  <<"myCopter.send_nav_velocity(-1, 0, 0)"
-                  <<"time.sleep(5)";
+            stream<<"print \"Going rightward at 1m/s for 5s\"\n"
+                  <<"myCopter.send_nav_velocity(-1, 0, 0)\n"
+                  <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Forward"){
-            stream<<"print \"Going forward at 1m/s for 5s\""
-                  <<"myCopter.send_nav_velocity(0, -1, 0)"
-                  <<"time.sleep(5)";
+            stream<<"print \"Going forward at 1m/s for 5s\"\n"
+                  <<"myCopter.send_nav_velocity(0, -1, 0)\n"
+                  <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Backward"){
-            stream<<"Going forward at 1m/s for 5s\""
-                  <<"myCopter.send_nav_velocity(0, 1, 0)"
-                  <<"time.sleep(5)";
+            stream<<"Going forward at 1m/s for 5s\"\n"
+                  <<"myCopter.send_nav_velocity(0, 1, 0)\n"
+                  <<"time.sleep(5)\n";
         }
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
@@ -874,7 +876,7 @@ bool format::CreateGo(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
-
+    return true;
 }
 
 bool format::CreateTurn(QPointF point, int id)
@@ -894,6 +896,7 @@ bool format::CreateTurn(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateHover(QPointF point, int id)

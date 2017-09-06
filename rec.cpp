@@ -27,6 +27,8 @@ Rec::Rec()
     identifier="Rec";
     controlsId=0;
     rank = 0;
+    flink.clear();
+    tlink.clear();
 
     mBoundingRect = QRectF(0,0,400,400);
     mBoundingRect.translate(-mBoundingRect.center());
@@ -310,6 +312,8 @@ void Rec::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             mBoundingRect=rectangle;
             mBoundingRect.translate(-mBoundingRect.center());
             scene()->update();
+        high = rectangle.height();
+        wide = rectangle.width();
         //}
     }
     else

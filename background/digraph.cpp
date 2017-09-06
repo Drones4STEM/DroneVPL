@@ -89,7 +89,7 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
     QMap<QString, widget*>* map;
     if(l==0){
         map = Map;
-     }else{
+    }else{
         for(iter=LHM->begin();iter!=LHM->end();iter++){
             if(iter.value()->LOG==l)    map = &(iter.value()->WidgetsInLOGIC);
         }
