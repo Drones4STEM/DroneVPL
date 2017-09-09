@@ -19,12 +19,16 @@ public:
     QColor m_outlineColor;
     QColor m_backgroundColor;
     QString m_identifier;
+    QString m_direction;
+
+    QLabel *directionLabel;
 
 public slots:
     void setTextColor(const QColor &color);
     void setOutlineColor(const QColor &color);
     void setBackgroundColor(const QColor &color);
     void setIdentifier(const QString str);
+    void setDirection(const QString str);
 signals:
     void textColorChanged(const QColor &color);
     void outlineColorChanged(const QColor &color);

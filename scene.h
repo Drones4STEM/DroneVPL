@@ -37,6 +37,7 @@ public:
     bool CreateVarType(QPointF point, int id);
     bool CreateVarDef(QPointF point, int id);
     bool CreateCompute(QPointF point, int id);
+    bool CreateTriCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateBattery(QPointF point, int id);
     bool CreateGimbal(QPointF point, int id);

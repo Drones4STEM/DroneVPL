@@ -118,7 +118,7 @@ GoNode::GoNode()
 
     identifier="Go";
     rank = 0;
-    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
+    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
 }
 
 GoNode::~GoNode()
@@ -407,7 +407,7 @@ TurnNode::TurnNode()
     time=0;
     angel=0;
 
-    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
+    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
 
     identifier="TurnLeftNode";
     rank = 0;

@@ -170,6 +170,7 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         need_to_set = 0;
         this->ComputeNodeNum++;
         CreateCompute(new_event->scenePos(),this->ComputeNodeNum);
+        //CreateTriCompute(new_event->scenePos(),++this->ComputeNodeNum);
     }
     if(need_to_set==1&&selected_Index==400){
         emit itemInserted(selected_Index);
@@ -563,18 +564,25 @@ bool newscene::CreateCompute(QPointF point, int id)
     this->clearSelection();
     node->setSelected(true);
     bringToFront();
-    //setCursor(Qt::ArrowCursor);
-
 
     node->yuan->setPos(QPointF(node->pos().x(),
                                node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2
+                                - node->rect1->boundingRect().width(),
                                 node->pos().y()));
-    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2
+                                + node->rect2->boundingRect().width(),
                                 node->pos().y()));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
     this->addItem(node->yuan3);
+
+    node->rect1->setPos(QPointF(node->pos().x() - node->boundingRect().width(),
+                                node->pos().y()));
+    node->rect2->setPos(QPointF(node->pos().x() + node->boundingRect().width(),
+                                node->pos().y()));
+    addItem(node->rect1);
+    addItem(node->rect2);
 
     item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
                  node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
@@ -593,6 +601,7 @@ bool newscene::CreateCompute(QPointF point, int id)
     node->box->addItem(tr("<"));
     node->box->setCurrentIndex(0);
 
+
     node->controlsId=id;
     node->identifier="Compute";
     QString cid = QString::number(node->controlsId,10);
@@ -610,8 +619,62 @@ bool newscene::CreateCompute(QPointF point, int id)
     node->yuan3->master = tmp;
     node->yuan3->name = "yuan3";
 
-    emit sig_connectItem(node);
 
+    emit sig_connectItem(node);
+    return true;
+}
+
+bool newscene::CreateTriCompute(QPointF point, int id)
+{
+    ComputeNode *node=new ComputeNode;
+    node->setText(tr("Compute"));
+    QGraphicsItem* item=this->addWidget(node->box);
+    node->item=item;
+    node->setPos(point);
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2
+                                + node->rect2->boundingRect().width(),
+                                node->pos().y()));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan3);
+
+    node->rect2->setPos(QPointF(node->pos().x() + node->boundingRect().width(),
+                                node->pos().y()));
+    addItem(node->rect2);
+
+    item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
+                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
+    item->setZValue(node->zValue()+1);
+    node->box->addItem(tr("cos"));
+    node->box->addItem(tr("sin"));
+    node->box->addItem(tr("tan"));
+    node->box->setCurrentIndex(0);
+
+    /*node->controlsId=id;
+    node->identifier="Compute";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";*/
+
+
+    emit sig_connectItem(node);
     return true;
 }
 
@@ -1165,13 +1228,22 @@ bool newscene::CreateCompute(ComputeNode *node)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                                node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2
+                                - node->rect1->boundingRect().width(),
                                 node->pos().y()));
-    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2
+                                + node->rect2->boundingRect().width(),
                                 node->pos().y()));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
     this->addItem(node->yuan3);
+
+    node->rect1->setPos(QPointF(node->pos().x() - node->boundingRect().width(),
+                                node->pos().y()));
+    node->rect2->setPos(QPointF(node->pos().x() + node->boundingRect().width(),
+                                node->pos().y()));
+    addItem(node->rect1);
+    addItem(node->rect2);
 
     item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
                  node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
@@ -1198,15 +1270,14 @@ bool newscene::CreateCompute(ComputeNode *node)
     emit sig_connectItem(node);
 
     return true;
-    
-
 }
+
+
 bool newscene::CreateIO(IoNode* node)
 {
     node->setText(tr("sensor"));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
-
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
