@@ -760,7 +760,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n"
+            stream<<"print \"Going down for 0.2m/s for 5 seconds\"\n"
                   <<"myCopter.send_nav_velocity(0, 0, 0.2)\n"
                   <<"time.sleep(5)\n";
         }
@@ -770,7 +770,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
-            stream<<"print \"Going rightward at 1m/s for 5s\"\n"
+            stream<<"print \"Going leftward at 1m/s for 5s\"\n"
                   <<"myCopter.send_nav_velocity(-1, 0, 0)\n"
                   <<"time.sleep(5)\n";
         }
@@ -780,7 +780,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Backward"){
-            stream<<"Going forward at 1m/s for 5s\"\n"
+            stream<<"Going backward at 1m/s for 5s\"\n"
                   <<"myCopter.send_nav_velocity(0, 1, 0)\n"
                   <<"time.sleep(5)\n";
         }

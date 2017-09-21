@@ -1558,10 +1558,11 @@ bool newscene::CheckLinkOverLogic(Link *link)
         while(rec1==rec2){
             rec1 = check_in_Logic(link->fromYuan()->master,"none",rec1->rank);
             rec2 = check_in_Logic(link->toYuan()->master,"none",rec2->rank);
+            if(rec1==0&&rec2==0) break;
         }
         if(rec1!=rec2){
             link->toLogic = rec2;
-            link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
+            link->fromLogic = rec1;   //fromLogic其实用不到，顺手写了
             if(rec1!=0&&rec2!=0){
                 rec1->tlink<<link; //从logic指出
                 rec2->flink<<link;
