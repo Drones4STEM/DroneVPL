@@ -12,6 +12,7 @@ ColorWidget::ColorWidget(QWidget *parent)
     setOutlineColor(QColor());
     setBackgroundColor(QColor());
     setIdentifier(NULL);
+    setDirection(NULL);
     createLayout();
     createConnections();
     setFixedSize(minimumSizeHint());
@@ -35,6 +36,7 @@ void ColorWidget::createWidgets()
         backgroundColorComboBox->addItem(colorSwatch(color),name,color);
     }
     identifierLabel = new QLabel;
+    directionLabel = new QLabel;
 }
 
 
@@ -42,6 +44,7 @@ void ColorWidget::createLayout()
 {
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("type"),identifierLabel);
+    layout->addRow(tr("Direction"),directionLabel);
     layout->addRow(tr("textColor"),textColorComboBox);
     layout->addRow(tr("outlineColor"),outlineColorComboBox);
     layout->addRow(tr("backgroundColor"),backgroundColorComboBox);
@@ -91,6 +94,13 @@ void ColorWidget::setIdentifier(const QString str)
     if(m_identifier!=str)
         m_identifier=str;
     identifierLabel->setText(m_identifier);
+}
+
+void ColorWidget::setDirection(const QString str)
+{
+    if(m_direction!=str)
+        m_direction=str;
+    directionLabel->setText(m_direction);
 }
 
 void ColorWidget::updateTextColor(int index)

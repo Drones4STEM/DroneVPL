@@ -78,6 +78,7 @@ class GoNode:public NewNode
 {
     Q_OBJECT
     Q_PROPERTY(double myGroundSpeed READ myGroundSpeed WRITE setGroundSpeed)
+    Q_PROPERTY(QString myDirection READ myDirection)
 public:
     enum {Type = TranslationNodeType};
     GoNode();
@@ -95,6 +96,7 @@ public:
     void setTime(double t);
     double myTime();
     double myGroundSpeed();
+    QString myDirection() const {return direction;}
 
 
     static int riseNodeNum;     static int fallNodeNum;
@@ -126,6 +128,7 @@ class TurnNode:public NewNode
 {
     Q_OBJECT
     Q_PROPERTY(double mySpeed READ mySpeed WRITE setSpeed)
+    Q_PROPERTY(QString myDirection READ myDirection)
 public:
     enum {Type = SomeNodeType};
     TurnNode();
@@ -143,6 +146,7 @@ public:
     double mySpeed();
     void setAngel(double a);
     double myAngel();
+    QString myDirection() const{return direction;}
 
 signals:
     void speedChanged(double s);
