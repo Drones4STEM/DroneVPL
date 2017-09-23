@@ -41,6 +41,7 @@
 #include "odescription.h"
 #include "format.h"
 #include "digraph.h"
+#include <QProcess>
 
 
 
@@ -1865,6 +1866,16 @@ void DiagramWindow::compile()
     }*/
 }
 
+void DiagramWindow::upload()
+{
+    system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+}
+
+void DiagramWindow::run()
+{
+    system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+}
+
 void DiagramWindow::checkupAndCompile()
 {
 
@@ -1999,6 +2010,12 @@ void DiagramWindow::createActions()
 
     addRecAction = new QAction(tr("Logic"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
+
+    uploadAction = new QAction(tr("upload"),this);
+    connect(uploadAction,SIGNAL(triggered()),this,SLOT(upload()));
+    runAction = new QAction(tr("run"),this);
+    connect(runAction,SIGNAL(triggered()),this,SLOT(run()));
+
 
     deleteAction = new QAction(tr("&Delete"), this);
     deleteAction->setIcon(QIcon(":/images/delete.png"));
@@ -2190,6 +2207,8 @@ void DiagramWindow::createMenus()
     compileMenu->addAction(checkupAction);
     compileMenu->addAction(compileAction);
     compileMenu->addAction(checkupAndCompileAction);
+    compileMenu->addAction(uploadAction);
+    compileMenu->addAction(runAction);
 }
 
 /*******************************************************************

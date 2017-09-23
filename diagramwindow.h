@@ -135,6 +135,8 @@ private slots:
     void addGimbalNode();
     void addLink();
     void addRec();
+    void upload();
+    void run();
     void del();
     void cut();
     void copy();
@@ -264,8 +266,10 @@ private:
     QAction *addTextNodeAction;
 
     QAction *addLinkAction;
-
     QAction *addRecAction;
+
+    QAction *uploadAction;
+    QAction *runAction;
 
     QAction *deleteAction;
     QAction *cutAction;
