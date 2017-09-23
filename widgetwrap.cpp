@@ -54,6 +54,42 @@ WidgetWrap::WidgetWrap(GimbalNode* in)
     high = in->high;
     wide = in->wide;
 }
+WidgetWrap::WidgetWrap(AttitudeNode* in)
+{
+    category = "IO";
+    identifier = "Attitude"; //控件类型
+    controlsId = in->controlsId;
+    name = in->name;
+    mAttitudeNode = in;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
+}
+WidgetWrap::WidgetWrap(ChannelNode* in)
+{
+    category = "IO";
+    identifier = "Channel"; //控件类型
+    controlsId = in->controlsId;
+    name = in->name;
+    mChannelNode = in;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
+}
+WidgetWrap::WidgetWrap(RangeFinderNode* in)
+{
+    category = "IO";
+    identifier = "RangeFinder"; //控件类型
+    controlsId = in->controlsId;
+    name = in->name;
+    mRangeFinderNode = in;
+    lx = in->lx;
+    ly = in->ly;
+    high = in->high;
+    wide = in->wide;
+}
 //-------------------------------
 WidgetWrap::WidgetWrap(Rec* ln)
 {
@@ -207,6 +243,12 @@ triYuan* WidgetWrap::get_yuan_out()
         return mIONode->yuan;
     if(identifier == "Battery")
         return mBatteryNode->yuan;
+    if(identifier == "Attitude")
+        return mAttitudeNode->yuan;
+    if(identifier == "Channel")
+        return mChannelNode->yuan;
+    if(identifier == "RangeFinder")
+        return mRangeFinderNode->yuan;
     if(identifier == "Logic")
         return mLogicNode->yuan;
     return 0;
@@ -322,6 +364,45 @@ bool WidgetWrap::check_yuan_in()
             }
 
         }
+    if(identifier == "Attitude")
+        if(mAttitudeNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mAttitudeNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mAttitudeNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
+    if(identifier == "Channel")
+        if(mChannelNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mChannelNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mChannelNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
+    if(identifier == "RangeFinder")
+        if(mRangeFinderNode->yuan2->myLinks.isEmpty())
+            return false;
+        else{
+            QList<Link*> links = mRangeFinderNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mRangeFinderNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
     if(identifier == "Logic")
         if(mLogicNode->flink.isEmpty())
             return false;
@@ -363,6 +444,12 @@ QPointF WidgetWrap::pos()
         return mIONode->pos();
     if(identifier == "Battery")
         return mBatteryNode->pos();
+    if(identifier == "Attitude")
+        return mAttitudeNode->pos();
+    if(identifier == "Channel")
+        return mChannelNode->pos();
+    if(identifier == "RangeFinder")
+        return mRangeFinderNode->pos();
     if(identifier == "Logic")
         return mLogicNode->pos();
 }
@@ -391,8 +478,15 @@ int WidgetWrap::rank()
         return mIONode->rank;
     if(identifier == "Battery")
         return mBatteryNode->rank;
+    if(identifier == "Attitude")
+        return mAttitudeNode->rank;
+    if(identifier == "Channel")
+        return mChannelNode->rank;
+    if(identifier == "RangeFinder")
+        return mRangeFinderNode->rank;
     if(identifier == "Logic")
         return mLogicNode->rank;
+    return -1;
 }
 
 void WidgetWrap::rank(int r)
@@ -419,6 +513,12 @@ void WidgetWrap::rank(int r)
         mIONode->rank = r;
     if(identifier == "Battery")
         mBatteryNode->rank = r;
+    if(identifier == "Attitude")
+        mAttitudeNode->rank = r;
+    if(identifier == "Channel")
+        mChannelNode->rank = r;
+    if(identifier == "RangeFinder")
+        mRangeFinderNode->rank = r;
     if(identifier == "Logic")
         mLogicNode->rank = r;
 }

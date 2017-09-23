@@ -36,11 +36,14 @@ public:
     bool CreateDelay(QPointF point, int id);
     bool CreateVarType(QPointF point, int id);
     bool CreateVarDef(QPointF point, int id);
-    bool CreateCompute(QPointF point, int id);
+    bool CreateCompute(QPointF point, int id,int selected_Index);
     bool CreateTriCompute(QPointF point, int id);
     bool CreateIO(QPointF point, int id);
     bool CreateBattery(QPointF point, int id);
     bool CreateGimbal(QPointF point, int id);
+    bool CreateAttitude(QPointF point, int id);
+    bool CreateChannel(QPointF point, int id);
+    bool CreateRangeFinder(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
     Link* CreateLink(QGraphicsSceneMouseEvent* event);
 
@@ -57,6 +60,9 @@ public:
     bool CreateIO(IoNode* ion);
     bool CreateBattery(BatteryNode* ion);
     bool CreateGimbal(GimbalNode* ion);
+    bool CreateAttitude(AttitudeNode* ion);
+    bool CreateChannel(ChannelNode* ion);
+    bool CreateRangeFinder(RangeFinderNode* ion);
     bool CreateLogic(Rec* ln);
     bool CreateLink(Link* link);
 
@@ -85,6 +91,9 @@ public:
     int IONodeNum;
     int BatteryNodeNum;
     int GimbalNodeNum;
+    int AttitudeNodeNum;
+    int ChannelNodeNum;
+    int RangeFinderNodeNum;
 
     int linkNodeNum;
 

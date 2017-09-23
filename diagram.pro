@@ -33,6 +33,7 @@ HEADERS       = diagramwindow.h \
     swatch.h \
     background/logic_help.h \
     background/digraph.h \
+    pycodes.h
 
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
