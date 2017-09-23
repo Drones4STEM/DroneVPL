@@ -196,6 +196,9 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         if(ww->mComputeNode->box->currentText()=="+"){ //如果加法
             stream.writeAttribute("operator","add");
         }
+        if(ww->mComputeNode->box->currentText()=="-"){ //如果加法
+            stream.writeAttribute("operator","substract");
+        }
         stream.writeEndElement();
         stream.writeEndElement();   //correspond to writeStartElement("Compute")
         qDebug()<<"category: "<<ww->category;
@@ -223,6 +226,24 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             y = QString::number((long)ww->mGimbalNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
             //stream.writeStartElement("arrow_out");
+        }
+        if(identifier == "Attitude"){
+            x = QString::number((long)ww->mAttitudeNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)ww->mAttitudeNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+        }
+        if(identifier == "Channel"){
+            x = QString::number((long)ww->mChannelNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)ww->mChannelNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
+        }
+        if(identifier == "RangeFinder"){
+            x = QString::number((long)ww->mRangeFinderNode->pos().x(),10);
+            stream.writeTextElement("location_x",x);
+            y = QString::number((long)ww->mRangeFinderNode->pos().y(),10);
+            stream.writeTextElement("location_y",y);
         }/*
           if(){ //有输出
               stream.writeStartElement("arrow_out");
@@ -390,6 +411,7 @@ bool format::read_frame_file(QString filename)
     QXmlStreamReader stream(&file);
     QString category,type;
     qint16 location_x,location_y,id;
+    QString math;
 
     //qDebug()<<stream.hasError();
     while(!stream.atEnd()){ //exit if at end or has error
@@ -514,11 +536,17 @@ bool format::read_frame_file(QString filename)
                     location_y = stream.readElementText().toInt();
                     qDebug()<<"location_y: "<<location_y;
                 }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="math"){
+                    math = stream.readElementText();
+                    qDebug()<<"math: "<<math;
+                }
 
                 QPointF point(location_x,location_y);
                 try{
                     if(type=="Compute"){
-                        CreateCompute(point,id); //在窗口中生成compute控件
+                        CreateCompute(point,id,math); //在map中生成compute控件
                     }
                 }catch(exception e){
                    ;
@@ -549,10 +577,19 @@ bool format::read_frame_file(QString filename)
                 QPointF point(location_x,location_y);
                 try{
                     if(type=="Battery"){
-                        CreateBattery(point,id); //在窗口中生成IO控件
+                        CreateBattery(point,id); //在map中生成IO控件
                     }
                     if(type=="Gimbal"){
-                        CreateGimbal(point,id); //在窗口中生成IO控件
+                        CreateGimbal(point,id);
+                    }
+                    if(type=="Attitude"){
+                        CreateAttitude(point,id);
+                    }
+                    if(type=="Channel"){
+                        CreateChannel(point,id);
+                    }
+                    if(type=="RangeFinder"){
+                        CreateRangeFinder(point,id);
                     }
                 }catch(exception e){
                    ;
@@ -760,7 +797,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n"
+            stream<<"print \"Going down for 0.2m/s for 5 seconds\"\n"
                   <<"myCopter.send_nav_velocity(0, 0, 0.2)\n"
                   <<"time.sleep(5)\n";
         }
@@ -770,7 +807,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
-            stream<<"print \"Going rightward at 1m/s for 5s\"\n"
+            stream<<"print \"Going leftward at 1m/s for 5s\"\n"
                   <<"myCopter.send_nav_velocity(-1, 0, 0)\n"
                   <<"time.sleep(5)\n";
         }
@@ -780,7 +817,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
                   <<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Backward"){
-            stream<<"Going forward at 1m/s for 5s\"\n"
+            stream<<"Going backward at 1m/s for 5s\"\n"
                   <<"myCopter.send_nav_velocity(0, 1, 0)\n"
                   <<"time.sleep(5)\n";
         }
@@ -1002,7 +1039,7 @@ bool format::CreateVarDef(QPointF point, int id, QString name, int seq)//varnode
     return true;
 }
 
-bool format::CreateCompute(QPointF point, int id)
+bool format::CreateCompute(QPointF point, int id, QString math)
 {
     ComputeNode *node=new ComputeNode;
     node->lx = point.x();
@@ -1070,6 +1107,66 @@ bool format::CreateGimbal(QPointF point, int id)
 
     node->controlsId=id;
     node->identifier="Gimbal";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
+}
+
+bool format::CreateAttitude(QPointF point, int id)
+{
+    AttitudeNode* node=new AttitudeNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="Attitude";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
+}
+
+bool format::CreateChannel(QPointF point, int id)
+{
+    ChannelNode* node=new ChannelNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="Channel";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
+}
+
+bool format::CreateRangeFinder(QPointF point, int id)
+{
+    RangeFinderNode* node=new RangeFinderNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->controlsId=id;
+    node->identifier="RangeFinder";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";

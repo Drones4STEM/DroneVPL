@@ -59,6 +59,9 @@ newscene::newscene(WidgetMap* m, QMap<QString, LOGIC_Help *> *L)
     IONodeNum = 0;
     BatteryNodeNum = 0;
     GimbalNodeNum = 0;
+    AttitudeNodeNum = 0;
+    ChannelNodeNum = 0;
+    RangeFinderNodeNum = 0;
 
     linkNodeNum=0;
 
@@ -118,9 +121,8 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         emit itemInserted(selected_Index);
         this->takeoffNodeNum++;
         CreateTakeOff(new_event->scenePos(),this->takeoffNodeNum);
-
         need_to_set = 0;
-}
+    }
     if(selected_Index==102&&need_to_set==1){
         emit itemInserted(selected_Index);
         this->landonNodeNum++;
@@ -165,12 +167,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
         if(flag == false)   this->VarDefNodeNum--;
     }
-    if(need_to_set==1&&selected_Index==301){
+    if(need_to_set==1&&selected_Index>=301&&selected_Index<400){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->ComputeNodeNum++;
-        CreateCompute(new_event->scenePos(),this->ComputeNodeNum);
-        //CreateTriCompute(new_event->scenePos(),++this->ComputeNodeNum);
+        CreateCompute(new_event->scenePos(),this->ComputeNodeNum,selected_Index);
     }
     if(need_to_set==1&&selected_Index==400){
         emit itemInserted(selected_Index);
@@ -189,6 +190,24 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         need_to_set = 0;
         this->GimbalNodeNum++;
         CreateGimbal(new_event->scenePos(),this->GimbalNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==403){
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->AttitudeNodeNum++;
+        CreateAttitude(new_event->scenePos(),this->AttitudeNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==404){
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->ChannelNodeNum++;
+        CreateChannel(new_event->scenePos(),this->ChannelNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==405){
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->RangeFinderNodeNum++;
+        CreateRangeFinder(new_event->scenePos(),this->RangeFinderNodeNum);
     }
     if(need_to_set==1&&selected_Index==501){
         emit itemInserted(selected_Index);
@@ -553,7 +572,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
     return true;
 }
 
-bool newscene::CreateCompute(QPointF point, int id)
+bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
 {
     ComputeNode *node=new ComputeNode;
     node->setText(tr("Compute"));
@@ -599,7 +618,7 @@ bool newscene::CreateCompute(QPointF point, int id)
     node->box->addItem(tr("="));
     node->box->addItem(tr(">"));
     node->box->addItem(tr("<"));
-    node->box->setCurrentIndex(0);
+    node->box->setCurrentIndex(selected_Index-301);
 
 
     node->controlsId=id;
@@ -899,6 +918,227 @@ bool newscene::CreateGimbal(QPointF point, int id)
     return true;
 
 }
+
+bool newscene::CreateAttitude(QPointF point, int id)
+{
+    AttitudeNode* node=new AttitudeNode;
+    node->setText(tr("Attitude"));
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    node->node1->setText(tr("roll"));
+    node->node2->setText(tr("pitch"));
+    node->node3->setText(tr("yaw"));
+
+    node->controlsId=id;
+    node->identifier="Attitude";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->node1->yuan->master = tmp;
+    node->node1->yuan->name = "n1yuan";
+    node->node2->yuan->master = tmp;
+    node->node2->yuan->name = "n2yuan";
+    node->node3->yuan->master = tmp;
+    node->node3->yuan->name = "n3yuan";
+    emit sig_connectItem(node);
+
+    return true;
+
+}
+
+bool newscene::CreateChannel(QPointF point, int id)
+{
+    ChannelNode* node=new ChannelNode;
+    node->setText(tr("Channel"));
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node1->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node1->outlineRect().width()/2,
+                        node->pos().y() + node->outlineRect().height()/2);
+    node->node2->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + node->node1->outlineRect().height());
+    node->node3->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 2*node->node1->outlineRect().height());
+    node->node4->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 3*node->node1->outlineRect().height());
+    node->node5->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 4*node->node1->outlineRect().height());
+    node->node6->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 5*node->node1->outlineRect().height());
+    node->node7->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 6*node->node1->outlineRect().height());
+    node->node8->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 7*node->node1->outlineRect().height());
+    node->node9->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 8*node->node1->outlineRect().height());
+
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node4);
+    this->addItem(node->node5);
+    this->addItem(node->node6);
+    this->addItem(node->node7);
+    this->addItem(node->node8);
+    this->addItem(node->node9);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    this->addItem(node->node4->yuan);
+    this->addItem(node->node5->yuan);
+    this->addItem(node->node6->yuan);
+    this->addItem(node->node7->yuan);
+    this->addItem(node->node8->yuan);
+    this->addItem(node->node9->yuan);
+    node->node1->setText(tr("one"));
+    node->node2->setText(tr("two"));
+    node->node3->setText(tr("three"));
+    node->node4->setText(tr("four"));
+    node->node5->setText(tr("five"));
+    node->node6->setText(tr("six"));
+    node->node7->setText(tr("seven"));
+    node->node8->setText(tr("eight"));
+    node->node9->setText(tr("nine"));
+
+    node->controlsId=id;
+    node->identifier="Channel";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->node1->yuan->master = tmp;
+    node->node1->yuan->name = "n1yuan";
+    node->node2->yuan->master = tmp;
+    node->node2->yuan->name = "n2yuan";
+    node->node3->yuan->master = tmp;
+    node->node3->yuan->name = "n3yuan";
+    node->node4->yuan->master = tmp;
+    node->node4->yuan->name = "n4yuan";
+    node->node5->yuan->master = tmp;
+    node->node5->yuan->name = "n5yuan";
+    node->node6->yuan->master = tmp;
+    node->node6->yuan->name = "n6yuan";
+    node->node7->yuan->master = tmp;
+    node->node7->yuan->name = "n7yuan";
+    node->node8->yuan->master = tmp;
+    node->node8->yuan->name = "n8yuan";
+    node->node9->yuan->master = tmp;
+    node->node9->yuan->name = "n9yuan";
+    emit sig_connectItem(node);
+
+    return true;
+
+}
+
+bool newscene::CreateRangeFinder(QPointF point, int id)
+{
+    RangeFinderNode* node=new RangeFinderNode;
+    node->setText(tr("RangeFinder"));
+
+    node->setPos(point);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+
+    this->addItem(node->node2);
+    this->addItem(node->node2->yuan);
+    node->node2->setText(tr("distance"));
+
+
+    node->controlsId=id;
+    node->identifier="RangeFinder";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->node2->yuan->master = tmp;
+    node->node2->yuan->name = "n2yuan";
+    emit sig_connectItem(node);
+
+    return true;
+
+}
+
 
 bool newscene::CreateLogic(QPointF point, int id)
 {
@@ -1366,13 +1606,50 @@ bool newscene::CreateBattery(BatteryNode* node)
     node->node3->setText(tr("level"));
     this->BatteryNodeNum++;
 
-//    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-//                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-//    item->setZValue(node->zValue()+1);
-    //node->box->addItem(tr("voltage"));
-    //node->box->addItem(tr("current"));
-    //node->box->addItem(tr("level"));
-    //node->box->setCurrentIndex(0);
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
+    return true;
+}
+
+bool newscene::CreateAttitude(AttitudeNode* node)
+{
+    node->setText(tr("Attitude"));
+
+    node->setPos(node->lx,node->ly);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    node->node1->setText(tr("roll"));
+    node->node2->setText(tr("pitch"));
+    node->node3->setText(tr("yaw"));
+    this->AttitudeNodeNum++;
 
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
@@ -1429,6 +1706,119 @@ bool newscene::CreateGimbal(GimbalNode* node)
 //    node->box->addItem(tr("roll"));
 //    node->box->addItem(tr("yaw"));
 //    node->box->setCurrentIndex(0);
+
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
+    return true;
+}
+
+bool newscene::CreateChannel(ChannelNode* node)
+{
+    node->setText(tr("Channel"));
+
+    node->setPos(node->lx,node->ly);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node1->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node1->outlineRect().width()/2,
+                        node->pos().y() + node->outlineRect().height()/2);
+    node->node2->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + node->node1->outlineRect().height());
+    node->node3->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 2*node->node1->outlineRect().height());
+    node->node4->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 3*node->node1->outlineRect().height());
+    node->node5->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 4*node->node1->outlineRect().height());
+    node->node6->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 5*node->node1->outlineRect().height());
+    node->node7->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 6*node->node1->outlineRect().height());
+    node->node8->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 7*node->node1->outlineRect().height());
+    node->node9->setPos(node->node1->pos().x(),
+                        node->node1->pos().y() + 8*node->node1->outlineRect().height());
+
+    this->addItem(node->node2);
+    this->addItem(node->node1);
+    this->addItem(node->node3);
+    this->addItem(node->node4);
+    this->addItem(node->node5);
+    this->addItem(node->node6);
+    this->addItem(node->node7);
+    this->addItem(node->node8);
+    this->addItem(node->node9);
+    this->addItem(node->node2->yuan);
+    this->addItem(node->node1->yuan);
+    this->addItem(node->node3->yuan);
+    this->addItem(node->node4->yuan);
+    this->addItem(node->node5->yuan);
+    this->addItem(node->node6->yuan);
+    this->addItem(node->node7->yuan);
+    this->addItem(node->node8->yuan);
+    this->addItem(node->node9->yuan);
+    node->node1->setText(tr("one"));
+    node->node2->setText(tr("two"));
+    node->node3->setText(tr("three"));
+    node->node4->setText(tr("four"));
+    node->node5->setText(tr("five"));
+    node->node6->setText(tr("six"));
+    node->node7->setText(tr("seven"));
+    node->node8->setText(tr("eight"));
+    node->node9->setText(tr("nine"));
+
+    this->ChannelNodeNum++;
+
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    emit sig_connectItem(node);
+
+    return true;
+}
+
+bool newscene::CreateRangeFinder(RangeFinderNode* node)
+{
+    node->setText(tr("RangeFinder"));
+
+    node->setPos(node->lx,node->ly);
+    this->addItem(node);
+
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+
+    node->yuan->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+                       (node->pos().y())));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+
+    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        node->pos().y());
+
+    this->addItem(node->node2);
+    this->addItem(node->node2->yuan);
+    node->node2->setText(tr("two"));
+    this->RangeFinderNodeNum++;
 
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
@@ -1522,6 +1912,18 @@ bool newscene::CreateWidgets()
         if(ww->identifier=="IO"){
             //QPointF point(iter->mIONode->lx,iter->mIONode->ly);
             CreateIO(ww->mIONode);
+        }
+        if(ww->identifier=="Battery"){
+            CreateBattery(ww->mBatteryNode);
+        }
+        if(ww->identifier=="Attitude"){
+            CreateAttitude(ww->mAttitudeNode);
+        }
+        if(ww->identifier=="Channel"){
+            CreateChannel(ww->mChannelNode);
+        }
+        if(ww->identifier=="RangeFinder"){
+            CreateRangeFinder(ww->mRangeFinderNode);
         }
         if(ww->identifier=="Logic"){
             //QPointF point(iter->mLogicNode->lx,iter->mLogicNode->ly);
@@ -1627,12 +2029,13 @@ bool newscene::CheckLinkOverLogic(Link *link)
         Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none",0);
         Rec* rec2 = check_in_Logic(link->toYuan()->master,"none",0);
         while(rec1==rec2){
+            if(rec1==0&&rec2==0) break;
             rec1 = check_in_Logic(link->fromYuan()->master,"none",rec1->rank);
             rec2 = check_in_Logic(link->toYuan()->master,"none",rec2->rank);
         }
         if(rec1!=rec2){
             link->toLogic = rec2;
-            link->fromLogic = (rec1!=0)?rec1:0;   //fromLogic其实用不到，顺手写了
+            link->fromLogic = rec1;   //fromLogic其实用不到，顺手写了
             if(rec1!=0&&rec2!=0){
                 rec1->tlink<<link; //从logic指出
                 rec2->flink<<link;

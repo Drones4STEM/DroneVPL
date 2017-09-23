@@ -135,11 +135,13 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
         }else{
             if(!w->mLogicNode->tlink.empty()){
                 QListIterator<Link*> it = (w->mLogicNode->tlink);   //Qset的迭代器,传入迭代对象
-                for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
-                    if(it.next()->toLogic!=0){  //若link穿过了Logic，则访问Logic
+                for(;it.hasNext();it.next()){      //遍历每个从当前控件节点指向的节点
+                    if(it.peekNext()->toLogic!=0){  //若link穿过了Logic，则访问Logic
                         DFS(new WidgetWrap(it.peekNext()->toLogic),rank,stack);
-                    }else
-                        DFS(it.next()->toYuan()->master,rank,stack);
+                    }else{
+                        DFS(it.peekNext()->toYuan()->master,rank,stack);
+                    }
+
                 }
             }else if(!w->mLogicNode->yuan->myLinks.empty()){    //Logic只有if一种可以指出的情况，这种情况下只能有一个指出的箭头
                 DFS(w->mLogicNode->yuan->myLinks.values()[0]->toYuan()->master,rank,stack);

@@ -30,6 +30,9 @@ public:
     WidgetWrap(IoNode* in);
     WidgetWrap(BatteryNode* in);
     WidgetWrap(GimbalNode* in);
+    WidgetWrap(AttitudeNode* in);
+    WidgetWrap(ChannelNode* in);
+    WidgetWrap(RangeFinderNode* in);
     WidgetWrap(Rec* ln);
 
     WidgetWrap(VardefNode* vdn);
@@ -57,6 +60,9 @@ public:
     IoNode* mIONode;
     BatteryNode* mBatteryNode;
     GimbalNode* mGimbalNode;
+    AttitudeNode* mAttitudeNode;
+    ChannelNode* mChannelNode;
+    RangeFinderNode* mRangeFinderNode;
 
     Rec* mLogicNode;
 

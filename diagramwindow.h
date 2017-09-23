@@ -133,6 +133,9 @@ private slots:
     void addIoNode();
     void addBatteryNode();
     void addGimbalNode();
+    void addAttitudeNode();
+    void addChannelNode();
+    void addRangeFinderNode();
     void addLink();
     void addRec();
     void del();
@@ -260,6 +263,9 @@ private:
     QAction *addIONodeAction;
     QAction *addBatteryNodeAction;
     QAction *addGimbalNodeAction;
+    QAction *addAttitudeNodeAction;
+    QAction *addChannelNodeAction;
+    QAction *addRangeFinderNodeAction;
 
     QAction *addTextNodeAction;
 

@@ -1047,56 +1047,67 @@ void DiagramWindow::addAddNode()
 void DiagramWindow::addSubNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 302;
 }
 
 void DiagramWindow::addMulNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 303;
 }
 
 void DiagramWindow::addDivNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 304;
 }
 
 void DiagramWindow::addCosNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 305;
 }
 
 void DiagramWindow::addSinNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 306;
 }
 
 void DiagramWindow::addTanNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 307;
 }
 
 void DiagramWindow::addLogNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 308;
 }
 
 void DiagramWindow::addENode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 309;
 }
 
 void DiagramWindow::addEqualNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 310;
 }
 
 void DiagramWindow::addMoreNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 311;
 }
 
 void DiagramWindow::addLessNode()
 {
     scene->need_to_set=1;
+    scene->selected_Index = 312;
 }
 
 /*******************************************************************
@@ -1127,7 +1138,7 @@ void DiagramWindow::addBatteryNode()
 
 /*******************************************************************
  * Function name: addGimbalNode()
- * Description: This function add an BatteryNode on the scene.
+ * Description: This function add an GimbalNode on the scene.
  * Callee:
  * Inputs:
  * Outputs:
@@ -1136,6 +1147,45 @@ void DiagramWindow::addGimbalNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 402;
+}
+
+/*******************************************************************
+ * Function name: addAttitudeNode()
+ * Description: This function add an AttitudeNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addAttitudeNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 403;
+}
+
+/*******************************************************************
+ * Function name: addChannelNode()
+ * Description: This function add an ChannelNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addChannelNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 404;
+}
+
+/*******************************************************************
+ * Function name: addRangeFinderNode()
+ * Description: This function add an RangeFinderNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addRangeFinderNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 405;
 }
 
 /*******************************************************************
@@ -1292,6 +1342,24 @@ void DiagramWindow::del()
         if(dynamic_cast<GimbalNode*>(items[i]))
             itemGim<<dynamic_cast<GimbalNode*>(items[i]);
     }
+    QList<AttitudeNode*>itemAtd;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<AttitudeNode*>(items[i]))
+            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
+    }
+    QList<ChannelNode*>itemChn;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<ChannelNode*>(items[i]))
+            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
+    }
+    QList<RangeFinderNode*>itemRF;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<RangeFinderNode*>(items[i]))
+            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
+    }
     QList<Rec*>itemRecs;
     for(i=0;i<itemsCount;i++)
     {
@@ -1399,6 +1467,24 @@ void DiagramWindow::del()
         delete item;
     }
     foreach (GimbalNode* item, itemGim) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (AttitudeNode* item, itemAtd) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (ChannelNode* item, itemChn) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (RangeFinderNode* item, itemRF) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del",0);
@@ -1995,6 +2081,12 @@ void DiagramWindow::createActions()
 
     addBatteryNodeAction = new QAction(tr("Battery"),this);
     connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
+    addAttitudeNodeAction = new QAction(tr("Attitude"),this);
+    connect(addAttitudeNodeAction,SIGNAL(triggered()),this,SLOT(addAttitudeNode()));
+    addRangeFinderNodeAction = new QAction(tr("RangeFinder"),this);
+    connect(addRangeFinderNodeAction,SIGNAL(triggered()),this,SLOT(addRangeFinderNode()));
+    addChannelNodeAction = new QAction(tr("Channel"),this);
+    connect(addChannelNodeAction,SIGNAL(triggered()),this,SLOT(addChannelNode()));
     addGimbalNodeAction = new QAction(tr("Gimbal"),this);
     connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
@@ -2152,7 +2244,10 @@ void DiagramWindow::createMenus()
     QMenu *IOMenu = new QMenu(tr("IO"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addBatteryNodeAction
-            <<addGimbalNodeAction)
+            <<addGimbalNodeAction
+            <<addAttitudeNodeAction
+            <<addChannelNodeAction
+            <<addRangeFinderNodeAction)
         IOMenu->addAction(action);
     addIONodeAction->setMenu(IOMenu);
     QMenu *computeMenu = new QMenu(tr("Compute"),this);
