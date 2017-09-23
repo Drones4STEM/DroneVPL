@@ -10,6 +10,7 @@
 #include "varnode.h"
 #include "yuan.h"
 #include "link.h"
+#include "rec.h"
 
 VardefNode::VardefNode()
 {
@@ -18,14 +19,19 @@ VardefNode::VardefNode()
     myInt=0;
     myDouble=0.0;
     myString="NULL";
-    identifier="VardefNode";
+    identifier="VarDef";
+    node = 0;
+    seq = -1;
+    rank = 0;
+    sethw();
 }
 
-QPolygonF VardefNode::outlineRect() const
+QPolygonF VardefNode::outlineRect()const
 {
     QPolygonF poly;
     poly<<QPointF(10,16)<<QPointF(20,0)<<QPointF(10,-16)
        <<QPointF(-10,-16)<<QPointF(-20,0)<<QPointF(-10,16);
+
     return poly;
 }
 
@@ -110,16 +116,22 @@ void VardefNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 QVariant VardefNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
-    if (change & ItemPositionHasChanged) {
-        yuan2->setPos(pos().x(),
-                     pos().y() - 16 - yuan2->outlineRect().height()/2);
-        foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
-        yuan->setPos(pos().x(),
-                     pos().y() + 16 + yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan->myLinks)
-        {link->trackYuans();update();}
-    }
+    if (change & ItemPositionHasChanged){
+       if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            yuan2->setPos(pos().x(),
+                         pos().y() - 16 - yuan2->outlineRect().height()/2);
+            foreach (Link *link, yuan2->myLinks)
+            {link->trackYuans();update();}
+            yuan->setPos(pos().x(),
+                         pos().y() + 16 + yuan->boundingRect().height()/2);
+            foreach (Link *link, yuan->myLinks)
+            {link->trackYuans();update();}
+       }
+        else{
+            setPos(yuan2->pos().x(),
+                           yuan2->pos().y()+ 16 + yuan2->outlineRect().height()/2);
+        }}
     return QGraphicsItem::itemChange(change, value);
 }
 

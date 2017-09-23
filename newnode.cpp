@@ -25,16 +25,21 @@ NewNode::NewNode()
     myOutlineColor = Qt::darkBlue;
     myBackgroundColor = Qt::white;
 
-    QGraphicsItem*p=dynamic_cast<QGraphicsItem*>(this);
-    yuan=new triYuan(p);
-    yuan2=new Yuan(p);
+    //QGraphicsItem*p=dynamic_cast<QGraphicsItem*>(this);
+    yuan=new triYuan();
+    yuan2=new Yuan();
     yuan2->setInout(1);
 
     setFlags(ItemIsMovable | ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
+    setFlag(ItemIsFocusable);
 
     identifier="NewNode";
     controlsId=0;
+
+    connect(this,SIGNAL(xChanged()),this,SLOT(emitSignal()));
+    connect(this,SIGNAL(yChanged()),this,SLOT(emitSignal()));
+    connect(this,SIGNAL(positionChanged(QPoint)),this,SLOT(setPosition()));
 }
 
 /*******************************************************************
@@ -54,7 +59,9 @@ void NewNode::setText(const QString &text)
 {
     prepareGeometryChange();
     myText = text;
+    emit dirty();
     update();
+    sethw();
 }
 
 QString NewNode::text() const
@@ -64,8 +71,12 @@ QString NewNode::text() const
 
 void NewNode::setTextColor(const QColor &color)
 {
-    myTextColor = color;
-    update();
+    if(isSelected()&&color!=textColor())
+    {
+        myTextColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor NewNode::textColor() const
@@ -75,8 +86,12 @@ QColor NewNode::textColor() const
 
 void NewNode::setOutlineColor(const QColor &color)
 {
-    myOutlineColor = color;
-    update();
+    if(isSelected()&&color!=outlineColor())
+    {
+        myOutlineColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor NewNode::outlineColor() const
@@ -86,8 +101,12 @@ QColor NewNode::outlineColor() const
 
 void NewNode::setBackgroundColor(const QColor &color)
 {
-    myBackgroundColor = color;
-    update();
+    if(isSelected()&&color!=backgroundColor())
+    {
+        myBackgroundColor = color;
+        emit dirty();
+        update();
+    }
 }
 
 QColor NewNode::backgroundColor() const
@@ -95,6 +114,53 @@ QColor NewNode::backgroundColor() const
     return myBackgroundColor;
 }
 
+void NewNode::setPosition(QPoint pos)   //根据lineEdit的改变移动node
+{
+    if(isSelected()&&pos!=position())
+    {
+        myPosition = pos;
+        setPos(pos);
+        emit dirty();
+        update();
+    }
+
+}
+
+QPoint NewNode::position()const
+{
+    return myPosition;
+}
+
+void NewNode::setPosition()           //在控件移动时，改变myPosition变量
+{
+    myPosition = pos().toPoint();
+    emit dirty();
+}
+/*
+bool NewNode::set_controlsId(int id)
+{
+    if(controlsId = id) return true;
+    else return false;
+}
+bool NewNode::set_identifier(QString idtf)
+{
+    identifier = idtf;
+    if(identifier != "") return true;
+    else return false;
+}
+bool NewNode::set_name()
+{
+    QString id = QString::number(controlsId,10);
+    this->name = identifier + id;
+    if(name!="") return true;
+    else return false;
+}
+bool NewNode::set_master(WidgetWrap* w)
+{
+    yuan->master = w;
+    yuan2->master = w;
+    return true;
+}*/
 /*******************************************************************
  * Function name: boundingRect()
  * Description: This function defines the outer bounds of the item
@@ -165,6 +231,7 @@ void NewNode::paint(QPainter *painter,
 
     painter->setPen(myTextColor);
     painter->drawText(rect, Qt::AlignCenter, myText);
+
 }
 
 /*******************************************************************
@@ -196,8 +263,8 @@ void NewNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 ******************************************************************/
 QVariant NewNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
-{
-    if (change & ItemPositionHasChanged) {
+{   
+    if (change & ItemPositionHasChanged)   {    
         yuan->setPos(pos().x(),
                      pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
         foreach (Link *link, yuan->myLinks)
@@ -205,9 +272,7 @@ QVariant NewNode::itemChange(GraphicsItemChange change,
         yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
                      pos().y());
         foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
-
-    }
+        {link->trackYuans();update();}     }
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -239,10 +304,28 @@ QRectF NewNode::outlineRect() const
 int NewNode::roundness(double size) const
 {
     const int Diameter = 12;
-    return 100 * Diameter / int(size);
+    return 100 * Diameter / (abs(int(size))+1);
 }
 
 Yuan* NewNode::myYuan()const
 {
     return yuan;
+}
+
+void NewNode::emitSignal()
+{
+    emit positionChanged(pos().toPoint());
+}
+
+void NewNode::sethw()
+{
+    QRectF rect = outlineRect();
+    high = rect.height();
+    wide = rect.width();
+}
+
+void NewNode::setxy(QPointF point)
+{
+    lx = point.x();
+    ly = point.y();
 }

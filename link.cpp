@@ -50,6 +50,9 @@ Link::Link(Yuan *fromYuan, Yuan *toYuan)
 
     identifier="Link";
     controlsId=0;
+
+    toLogic = 0;
+    fromLogic = 0;
 }
 
 Link::~Link()
@@ -78,6 +81,16 @@ QColor Link::color() const
     return pen().color();
 }
 
+QString Link::from_master_name()
+{
+    return myFromYuan->master->name;
+}
+
+QString Link::to_master_name()
+{
+    return myToYuan->master->name;
+}
+
 /*******************************************************************
  * Function name: trackYuans()
  * Description: This function sets the ends of the Link.
@@ -98,11 +111,13 @@ void Link::trackYuans()
  * Inputs:
  * Outputs:
 ******************************************************************/
-void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     QLineF line(myFromYuan->pos(), myToYuan->pos());
 
-    painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter->setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    if (option->state &QStyle::State_Selected)
+        painter->setPen(QPen(Qt::black, 2, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin));
     painter->drawLine(line);
 
     // Draw the arrows
@@ -110,10 +125,6 @@ void Link::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
     if (line.dy() >= 0)
         angle = TwoPi - angle;
 
-    //QPointF sourceArrowP1 = sourcePoint + QPointF(sin(angle + Pi / 3) * arrowSize,
-    //                                              cos(angle + Pi / 3) * arrowSize);
-    //QPointF sourceArrowP2 = sourcePoint + QPointF(sin(angle + Pi - Pi / 3) * arrowSize,
-    //                                              cos(angle + Pi - Pi / 3) * arrowSize);
     QPointF destArrowP1 = myToYuan->pos() + QPointF(sin(angle - Pi / 3) * arrowSize,
                                               cos(angle - Pi / 3) * arrowSize);
     QPointF destArrowP2 = myToYuan->pos() + QPointF(sin(angle - Pi + Pi / 3) * arrowSize,

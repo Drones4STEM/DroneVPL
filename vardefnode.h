@@ -27,6 +27,9 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void sethw(){wide = 40; high = 32;}
+    //为了方便，直接在头文件里定死长宽，若修改outlineRect()中的六边形长宽，
+    //则这里的数据也要改
 
     //用来存储变量的值
     QString varName;// 变量名
@@ -37,6 +40,7 @@ public:
 
     //存储varnode
     VarNode* node;
+    int seq;//记录自己是node的第几个vardef节点
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

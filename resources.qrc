@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
+        <file>images/background1.png</file>
+        <file>images/background2.png</file>
         <file>images/bringtofront.png</file>
         <file>images/colors.png</file>
         <file>images/copy.png</file>
@@ -15,5 +17,9 @@
         <file>images/filenew.png</file>
         <file>images/fileexport.png</file>
         <file>images/filesave.png</file>
+		<file>images/zoom-in.png</file>
+		<file>images/zoom-out.png</file>
+		<file>images/showgrid.png</file>
+		<file>help/help.chm</file>
     </qresource>
 </RCC>

@@ -11,6 +11,7 @@
 #include "link.h"
 #include <QtGui>
 #include "computenode.h"
+#include "rec.h"
 
 
 int ComputeNode::ComputeNodeAddNum=0;  int ComputeNode::ComputeNodeSubNum=0;
@@ -29,14 +30,20 @@ int ComputeNode::ComputeNodeMoreNum=0; int ComputeNode::ComputeNodeLessNum=0;
 ******************************************************************/
 ComputeNode::ComputeNode()
 {
-    yuan = new triYuan(this);
-    yuan2 = new Yuan(this);
-    yuan3 = new Yuan(this);
+    //yuan->master = new WidgetWrap(this);
+    //yuan2->master = new WidgetWrap(this);
+    //yuan3->master = new WidgetWrap(this);
+    //yuan = new triYuan();
+    yuan2 = new Yuan();
+    yuan3 = new Yuan();
     yuan2->setInout(1);
     yuan3->setInout(1);
     box = new QComboBox;
+    rect1 = new ComputeSmallNode;
+    rect2 = new ComputeSmallNode;
 
-    identifier="ComputeNodeAdd";
+    identifier="Compute";
+    rank = 0;
 }
 
 /*******************************************************************
@@ -51,6 +58,8 @@ ComputeNode::~ComputeNode()
     delete yuan2;
     delete yuan3;
     delete box;
+    delete rect1;
+    delete rect2;
 }
 
 /*******************************************************************
@@ -78,25 +87,39 @@ QRectF ComputeNode::outlineRect() const
 ******************************************************************/
 QVariant ComputeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change & ItemPositionHasChanged) {
-        yuan->setPos(pos().x(),
-                     pos().y() + outlineRect().height()/2 +yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan->myLinks)
-        {link->trackYuans();update();}
+    if (change & ItemPositionHasChanged){
+        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            yuan->setPos(pos().x(),
+                         pos().y() + outlineRect().height()/2 +yuan->boundingRect().height()/2);
+            foreach (Link *link, yuan->myLinks)
+            {link->trackYuans();update();}
 
-        yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                     pos().y());
-        foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
+            yuan2->setPos(pos().x() - outlineRect().width()/2 - rect1->boundingRect().width()
+                          - yuan2->outlineRect().width()/2,
+                         pos().y());
+            foreach (Link *link, yuan2->myLinks)
+            {link->trackYuans();update();}
 
-        yuan3->setPos(pos().x() + outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                     pos().y());
-        foreach (Link *link, yuan3->myLinks)
-        {link->trackYuans();update();}
+            yuan3->setPos(pos().x() + outlineRect().width()/2 + rect2->boundingRect().width()
+                          + yuan3->outlineRect().width()/2,
+                         pos().y());
+            foreach (Link *link, yuan3->myLinks)
+            {link->trackYuans();update();}
 
-        item->setPos(QPointF(pos().x()- item->boundingRect().width()/2,
-                             pos().y() - outlineRect().height()/2 - item->boundingRect().height()/2));
-    }
+            item->setPos(QPointF(pos().x()- item->boundingRect().width()/2,
+                                 pos().y() - outlineRect().height()/2 - item->boundingRect().height()));
+
+            rect1->setPos(pos().x() - outlineRect().width(),
+                          pos().y());
+            rect2->setPos(pos().x() + outlineRect().width(),
+                          pos().y());
+
+       }
+        else{
+            setPos(yuan->x(),
+                   yuan->y() - outlineRect().height()/2 -yuan->boundingRect().height()/2);
+        }}
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -236,6 +259,62 @@ void ComputeNode::setNewIdentifier()
         break;
     }
 }
+
+
+
+//-------------------ComputeSmallNode-----------------------//
+ComputeSmallNode::ComputeSmallNode()
+{
+    identifier="Compute";
+    setFlag(ItemIsMovable,false);
+}
+
+QRectF ComputeSmallNode::outlineRect() const
+{
+    QRectF rect(0,0,40,40);
+    rect.translate(-rect.center());
+    return rect;
+}
+
+QRectF ComputeSmallNode::boundingRect() const
+{
+    return outlineRect();
+}
+
+QPainterPath ComputeSmallNode::shape() const
+{
+    QRectF rect = outlineRect();
+    QPainterPath path;
+    path.addRect(rect);
+    return path;
+}
+
+void ComputeSmallNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QPen pen(outlineColor());
+    painter->setPen(pen);
+    painter->setBrush(backgroundColor());
+
+    QRectF rect = outlineRect();
+    painter->drawRect(rect);
+
+    painter->setPen(textColor());
+    QString myText=text();
+    painter->drawText(rect,Qt::AlignCenter,myText);
+}
+
+QVariant ComputeSmallNode::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change & ItemPositionHasChanged) {
+        yuan->setPos(pos().x() + outlineRect().width()/2 + yuan->boundingRect().width()/2,
+                     pos().y());
+        foreach (Link *link, yuan->myLinks)
+        {link->trackYuans();update();}
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
+
 
 
 

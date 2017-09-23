@@ -15,6 +15,7 @@ const int IoSmallNodeType = QGraphicsItem::UserType + 9;
 const int RecType = QGraphicsItem::UserType + 10;
 const int LinkType = QGraphicsItem::UserType + 11;
 const int YuanType = QGraphicsItem::UserType + 12;
+const int ComputeSmallNodeType = QGraphicsItem::UserType + 13;
 
 
 

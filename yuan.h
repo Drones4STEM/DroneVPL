@@ -6,21 +6,23 @@
 #include <QGraphicsItem>
 #include <QSet>
 #include "itemtypes.h"
+#include "widgetwrap.h"
 
 class Link;
 class Node;
+class WidgetWrap;
 
 /*******************************************************************
  * Class name: Yuan
  * Base class: QGraphicsObject
  * Desciption: This is the declaration of class Yuan. Yuan is an
- *       "out" node.
+ *       "in" node.
 ******************************************************************/
 class Yuan:public QGraphicsObject
 {
 public:
     enum {Type = YuanType};
-    Yuan(QGraphicsItem *parent=0);
+    Yuan();
     ~Yuan();
 
     int type() const { return Type; }
@@ -46,8 +48,10 @@ public:
     int inout() const {return m_mode;}
     void setInout(int mode);
 
-    QGraphicsItem *node;
-private:
+    //QGraphicsItem *node;
+    WidgetWrap *master;
+    QString name;
+//private:
 
     int roundness(double size) const;
 
@@ -60,12 +64,12 @@ private:
  * Class name: triYuan
  * Base class: Yuan
  * Description: This is the declaration of class triYuan. triYuan is
- *       an "in" node.
+ *       an "out" node.
 ******************************************************************/
 class triYuan:public Yuan
 {
 public:
-    triYuan(QGraphicsItem *parent=0);
+    triYuan();
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -74,4 +78,20 @@ public:
     QPolygonF outlineRect() const;
 };
 
+/*******************************************************************
+ * Class name: specialYuan
+ * Base class: Yuan
+ * Description: this class is set for characteristic points
+******************************************************************/
+class specialYuan:public Yuan
+{
+public:
+    specialYuan();
+
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF outlineRect() const;
+};
 #endif // YUAN_H

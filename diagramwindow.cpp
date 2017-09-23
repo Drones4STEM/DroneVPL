@@ -1,15 +1,23 @@
 /*******************************************************************
- * File:diagramwindow.cpp
+ * File:diagramwindow.cp
  * Author: Ryan Feng
- * Description: This file includes the realization of class 
- *        DiagramWindow. DiagramWindow is the main window of 
- *        DroneVPL.
+ * Description: This file includes the realization of class
+ *        DiagramWindow. DiagramWindow is the main window of
+ *        DroneVPL
 ******************************************************************/
 
 #include <QtGui>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QSettings>
+#include <QString>
+#include <QMutableStringListIterator>
+
+#include <QApplication>
+#include <QWidget>
+#include <QMainWindow>
+#include <QDesktopServices>
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -25,49 +33,164 @@
 #include "yuan.h"
 #include "rec.h"
 #include "propertiesdialog.h"
+#include "canvasdialog.h"
 #include "itemtypes.h"
+#include "widgetcondition.h"
+#include "propertywidget.h"
+#include "oDocument.h"
+#include "odescription.h"
+#include "format.h"
+#include "digraph.h"
+#include <QProcess>
+
+
+
+namespace {
 
 const int StatusTimeout = AQP::MSecPerSecond * 30;
+const int OffsetIncrement = 5;
+const qint32 MagicNumber = 0x5A93DE5;
+const qint16 VersionNumber = 1;
+const QString ShowGrid("ShowGrid");
+const QString MostRecentFile("MostRecentFile");
+const QString MimeType = "application/vnd.qtrac.pagedesigner";
+
+
+
+#ifndef USE_STL
+template<template<typename T> class S, typename T>
+T min(const S<T> &sequence)
+{
+    Q_ASSERT(!sequence.isEmpty());
+    T minimum = sequence.first();
+    foreach (const T &item, sequence)
+        if (item < minimum)
+            minimum = item;
+    return minimum;
+}
+
+template<template<typename T> class S, typename T>
+T max(const S<T> &sequence)
+{
+    Q_ASSERT(!sequence.isEmpty());
+    T maximum = sequence.first();
+    foreach (const T &item, sequence)
+        if (item > maximum)
+            maximum = item;
+    return maximum;
+}
+#endif
+
+#ifdef NO_DYNAMIC_CAST
+QObject *qObjectFrom(QGraphicsItem *item)
+{
+    if (!item)
+        return 0;
+    // Types not inheriting QGraphicsObject must be handled explicitly
+    if (item->type() == BoxItemType)
+        return qobject_cast<QObject*>(static_cast<BoxItem*>(item));
+    // Types inheriting QGraphicsObject can be handled generically
+    return item->toGraphicsObject();
+}
+#endif
+
+} // anonymous namespace
+/*const int StatusTimeout = AQP::MSecPerSecond * 30;
 const QString MostRecentFile("MostRecentFile");
 const qint32 MagicNumber = 0x5A93DE5;
 const qint16 VersionNumber = 1;
 const QString MimeType = "application/vnd.qtrac.pagedesigner";
-const int OffsetIncrement = 5;
+const int OffsetIncrement = 5;*/
 
+
+QStringList DiagramWindow::recentFiles = QStringList();
 /*******************************************************************
- * Function name: DiagramWindow()
+* Function name: DiagramWindow()
  * Description: This is a constructor of DiagramWindow class
- * Callee: creatActions(), createMenus(), createToolBars()
+ * Callee: creatActions(), createMenus(), createToolBars(),setCurrentFile(const QString &fileName)
+ *         updateRecentFileActions(),updateActions()
  * Inputs:
  * Outputs:
 ******************************************************************/
 DiagramWindow::DiagramWindow()
 {
-    printer = new QPrinter(QPrinter::HighResolution);
-    scene = new QGraphicsScene(0, 0, 1000, 1000);
-    //scene = new QGraphicsScene;
+    wm = new WidgetMap();
+    wm->moveToThread(&t);    //把map移到子线程中操作
+    t.start();
+    LHM = new QMap<QString,LOGIC_Help*>();
 
-    view = new QGraphicsView;
+    printer = new QPrinter(QPrinter::HighResolution);
+    gridGroup = 0;
+    scene = new newscene(wm,LHM);
+    QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
+    //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
+    scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
+    scene->setBackgroundBrush(Qt::white);
+    widgetCondition = new WidgetCondition();
+    view = new View;
     view->setScene(scene);
-    view->setDragMode(QGraphicsView::RubberBandDrag);
-    view->setRenderHints(QPainter::Antialiasing
-                         | QPainter::TextAntialiasing);
-    view->setContextMenuPolicy(Qt::ActionsContextMenu);
+    setMouseTracking(true);
+
+    view->setContextMenuPolicy(Qt::ActionsContextMenu);//显示文本菜单
     setCentralWidget(view);
 
     minZ = 0;
     maxZ = 0;
     seqNumber = 0;
-    varNodeNum = 0;
+
+    varNodeNum=0;  //计数varNode,命名每个varNode,下同
+    takeoffNodeNum=0;
+    landonNodeNum=0;
+    vardefNodeNum=0;
+    computeNodeNum=0;
+    ioNodeNum=0;
+    recNodeNum=0;
+    linkNodeNum=0;
+
 
     createActions();
     createMenus();
     createToolBars();
+    //createWidgetConditionBar(widgetCondition);
+    createDockWidgets();
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
+    connect(scene, SIGNAL(selectionChanged()),
+          this, SLOT(conditionChanged()));
+    connect(this, SIGNAL(passWidget(QGraphicsItem *)),
+            widgetCondition, SLOT(setCondition(QGraphicsItem *)));
+    connect(scene,SIGNAL(itemInserted(int)),
+            this,SLOT(setDirty()));
+    connect(scene,SIGNAL(itemInserted(int)),
+            this,SLOT(changeNodeNum(int)));
+    connect(scene,SIGNAL(sig_bringtofront()),
+            this,SLOT(bringToFront()));
+    connect(scene,SIGNAL(sig_connectItem(QObject*)),
+            this,SLOT(connectItem(QObject*)));
+    connect(scene,SIGNAL(selectionChanged()),
+            this,SLOT(selectionChanged()));
 
-    setWindowTitle(tr("Diagram"));
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QSettings settings("Software Inc.", "Page Designer");
+    recentFiles = settings.value("recentFiles").toStringList();
+    viewShowGridAction->setChecked(settings.value(ShowGrid,false).toBool());//在设置中找showgrid，默认false
+
+    foreach (QWidget *win, QApplication::topLevelWidgets()) {
+        if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
+            mainWin->updateRecentFileActions();
+    }
+    //updateRecentFileActions();
+    setCurrentFile("");
+    //QString filename=settings.value(MostRecentFile).toString();
+    //if(filename.isEmpty()||filename==tr("unnamed"))
+    //    QTimer::singleShot(0,this,SLOT(fileNew()));
+    /*else
+    {
+        setWindowFilePath(filename);
+        QTimer::singleShot(0,this,SLOT(loadFile()));
+    }*/
     updateActions();
 }
 
@@ -80,17 +203,17 @@ DiagramWindow::DiagramWindow()
 ******************************************************************/
 QSize DiagramWindow::sizeHint() const
 {
-    //QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
-    //size.rwidth() += brushWidget->sizeHint().width();
-    //return size.boundedTo(
-    //        QApplication::desktop()->availableGeometry().size());
+    QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
+    size.rwidth()+=widgetCondition->sizeHint().width();
+    return size.boundedTo(
+           QApplication::desktop()->availableGeometry().size());
 }
 
 /*******************************************************************
  * Function name: setDirty()
  * Description: This function notify that the window has unsaved
  *     changes and then updateActions.
- * Callee: setWindowModified()
+ * Callee: setWindowModified(),updateActions()
  * Inputs: bool on
  * Outputs:
 ******************************************************************/
@@ -100,23 +223,63 @@ void DiagramWindow::setDirty(bool on)
     updateActions();
 }
 
+void DiagramWindow::setDirty()
+{
+    setWindowModified(true);
+    updateActions();
+}
+
+void DiagramWindow::changeNodeNum(int num)
+{
+    seqNumber++;
+    switch (num) {
+    case 1:
+        takeoffNodeNum++;
+        break;
+    case 2:
+        landonNodeNum++;
+        break;
+    // 待补充完整
+    default:
+        break;
+    }
+}
+
+void DiagramWindow::closeEvent(QCloseEvent *event)
+{
+    if (okToClearData()) {
+        QSettings settings("Software Inc.", "Page Designer");
+        settings.setValue(MostRecentFile, windowFilePath());
+        settings.setValue("recentFiles",recentFiles);
+        settings.setValue(ShowGrid,viewShowGridAction->isChecked());
+        event->accept();
+    }
+    else
+        event->ignore();
+}
+
 /*******************************************************************
  * Function name: fileNew()
  * Description: This function creates a new file
  * Callee: okToClearData(), selectAllItems(), del(), setDirty()
- *         setWindowFilePath()
+ *         setWindowFilePath(),setCurrentFile("Unnamed"), updateRecentFileActions();
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::fileNew()
+DiagramWindow* DiagramWindow::fileNew()
 {
-    if (!okToClearData())
+    /*if (!okToClearData())
         return;
     selectAllItems();
     del();
-    setWindowFilePath(tr("Unnamed"));
-    setDirty(false);
-
+    setCurrentFile("");
+    setDirty(false);*/
+    DiagramWindow *mainWin = new DiagramWindow;
+    //mainWin->setWindowFilePath(tr("unnamed"));
+    mainWin->show();
+    //CanvasDialog canvas(mainWin->view,mainWin);
+    //canvas.exec();//set the size of canvas when create a new file
+    return mainWin;
 }
 
 /*******************************************************************
@@ -147,7 +310,7 @@ void DiagramWindow::selectAllItems()
 {
     scene->clearSelection();
     foreach (QGraphicsItem *item, scene->items())
-        item->setSelected(true);
+      item->setSelected(true);
 }
 
 /*******************************************************************
@@ -160,37 +323,44 @@ void DiagramWindow::selectAllItems()
 ******************************************************************/
 void DiagramWindow::fileOpen()
 {
-    if (!okToClearData())
-        return;
+    //if (!okToClearData())
+      //  return;
     const QString &filename = QFileDialog::getOpenFileName(this,
             tr("%1 - Open").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));
+            ".", tr("xml (*.xml)"));
     if (filename.isEmpty())
         return;
-    setWindowFilePath(filename);
-    loadFile();
+    DiagramWindow* mainWin = DiagramWindow::fileNew();
+    mainWin->setWindowFilePath(filename);
+    loadFile(mainWin);
 }
 
 /*******************************************************************
  * Function name: loadFile()
  * Description: This function loads the data of an existing file
- * Callee:
+ * Callee:selectAllItems(),del(),setDirty(),
+    updateRecentFileActions()
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::loadFile()
+void DiagramWindow::loadFile(DiagramWindow* mainWin)
 {
-    QFile file(windowFilePath());
-    QDataStream in;
-    if (!openPageDesignerFile(&file, in))
-        return;
-    in.setVersion(QDataStream::Qt_4_5);
-    selectAllItems();
-    del();
-    readItems(in);
-    statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
+    mainWin->setCurrentFile(mainWin->windowFilePath());
+    gridGroup=0;
+    viewShowGrid(viewShowGridAction->isChecked());
+
+    qDebug()<<mainWin->windowFilePath();
+    format formater;
+    formater.read_frame_file(mainWin->windowFilePath());
+    mainWin->wm->set_map(formater.get_map());
+    qDebug()<<"diagramwindow::loadfile(): ";
+
+    mainWin->scene->CreateWidgets();
+
+    mainWin->statusBar()->showMessage(tr("Loaded %1").arg(mainWin->windowFilePath()),
                              StatusTimeout);
-    setDirty(false);
+    mainWin->setDirty(false);
+    updateRecentFileActions();
 }
 
 /*******************************************************************
@@ -229,50 +399,88 @@ bool DiagramWindow::openPageDesignerFile(QFile *file, QDataStream &in)
 }
 
 /*******************************************************************
- * Function name: readItems()
- * Description: This function reads the data of an existing file
- * Callee:
- * Inputs: QDataStream &in, int offset, bool select
+ * Function name: openRecentFile()
+ * Description: This function provides options to open recently used files.
+ * Callee:loadFile()
+ * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::readItems(QDataStream &in, int offset, bool select)
+void DiagramWindow::openRecentFile()
 {
-    QSet<QGraphicsItem*>items;
-    qint32 itemType;
-    QGraphicsItem *item=0;
-    while(!in.atEnd())
-    {
-        in>>itemType;
-        switch (itemType) {
-        case TakeoffNodeType:
+    if (okToClearData()) {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if (action)
         {
-            TakeoffNode* node=new TakeoffNode;
-            in>>*node;
-
-            node->setText(tr("take off\n %1 s").arg(node->time));
-            //node->yuan->setPos(QPointF((node->pos().x()),
-            //                   (node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
-            node->setPos(node->pos());
-            scene->addItem(node);
-            //scene->addItem(node->yuan);
-            //update();
-            item=node;
-            break;
-        }
-        }
-        if(item)
-        {
-            item->moveBy(offset,offset);
-            if(select)
-                items<<item;
-            item=0;
+            setWindowFilePath(action->data().toString());
+            loadFile(this);
         }
     }
-    if(select)
-    {
-        selectItems(items);
-    }
+}
 
+/*******************************************************************
+ * Function name: setCurrentFile()
+ * Description:
+ * Callee:updateRecentFileActions()
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::setCurrentFile(const QString &fileName)
+{
+        curFile = fileName;
+        setWindowModified(false);
+        QString shownName = tr("Unnamed");
+        if (!curFile.isEmpty()) {
+            shownName=curFile;
+            recentFiles.removeAll(curFile);
+            recentFiles.prepend(curFile);
+            foreach (QWidget *win, QApplication::topLevelWidgets()) {
+                if (DiagramWindow *mainWin = qobject_cast<DiagramWindow*>(win))
+                    mainWin->updateRecentFileActions();
+            }
+            updateRecentFileActions();
+        }
+        setWindowFilePath(tr("%1").arg(shownName));
+}
+/*******************************************************************
+ * Function name: updateRecentFileActions()
+ * Description: This function updates the recent files.
+ * Callee:
+ * Inputs:
+ * Outputs:
+****************************************************************/
+void DiagramWindow::updateRecentFileActions()
+{
+    QMutableStringListIterator i(recentFiles);
+    while (i.hasNext()) {
+            if (!QFile::exists(i.next()))
+                i.remove();
+        }
+
+        for (int j = 0; j < MaxRecentFiles; ++j) {
+            if (j < recentFiles.count()) {
+                QString text = tr("&%1 %2")
+                               .arg(j + 1)
+                               .arg(strippedName(recentFiles[j]));
+                recentFileActions[j]->setText(text);
+                recentFileActions[j]->setData(recentFiles[j]);
+                recentFileActions[j]->setVisible(true);
+            } else {
+                recentFileActions[j]->setVisible(false);
+            }
+        }
+        separatorAction->setVisible(!recentFiles.isEmpty());
+}
+
+/*******************************************************************
+ * Function name: strippedName(QString &fullFileName)
+ * Description:This function gets the filename.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+QString DiagramWindow::strippedName(QString &fullFileName)
+{
+    return QFileInfo(fullFileName).fileName();
 }
 
 /*******************************************************************
@@ -282,7 +490,7 @@ void DiagramWindow::readItems(QDataStream &in, int offset, bool select)
  * Inputs: QSet<QGraphicsItem *> &items - the items you want to select
  * Outputs:
 ******************************************************************/
-void DiagramWindow::selectItems(const QSet<QGraphicsItem *> &items)
+void DiagramWindow::selectItems( QSet<QGraphicsItem *> &items)//const?
 {
     scene->clearSelection();
     foreach (QGraphicsItem*item, items) {
@@ -299,12 +507,11 @@ void DiagramWindow::selectItems(const QSet<QGraphicsItem *> &items)
 ******************************************************************/
 bool DiagramWindow::fileSave()
 {
+
     const QString filename = windowFilePath();
     if (filename.isEmpty() || filename == tr("Unnamed"))
         return fileSaveAs();
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-        return false;
+    /*
     QDataStream out(&file);
     out << MagicNumber << VersionNumber;
     out.setVersion(QDataStream::Qt_4_5);
@@ -312,32 +519,16 @@ bool DiagramWindow::fileSave()
     file.close();
     setDirty(false);
     return true;
-}
-
-/*******************************************************************
- * Function name: writeItems()
- * Description: This function writes datas to a QDataStream.
- * Callee:
- * Inputs: QDataStream &out, const QList<QGraphicsItem *> &items
- * Outputs:
-******************************************************************/
-void DiagramWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &items)
-{
-     foreach(QGraphicsItem*item,items)
-     {
-         qint32 type=static_cast<qint32>(item->type());
-         out<<type;
-         switch(type)
-         {
-         case TakeoffNodeType:
-         {
-             out<<*static_cast<TakeoffNode*>(item);
-             break;
-         }
-         //default:
-         //    Q_ASSERT(false);
-         }
-     }
+    */
+    format formater;
+    formater.set_map(&(wm->get_map()));
+    qDebug()<<"whether wm is empty "<<wm->Store.isEmpty();
+    if(formater.Map.isEmpty()) qDebug()<<"formater map is empty";
+    else qDebug()<<"formater map is not empty";
+    formater.save_frame_file(filename);
+    setDirty(false);
+   // file.close();
+    return true;
 }
 
 /*******************************************************************
@@ -351,11 +542,11 @@ bool DiagramWindow::fileSaveAs()
 {
     QString filename = QFileDialog::getSaveFileName(this,
             tr("%1 - Save As").arg(QApplication::applicationName()),
-            ".", tr("Page Designer (*.pd)"));
+            ".", tr("xml(*.xml)"));
     if (filename.isEmpty())
         return false;
-    if (!filename.toLower().endsWith(".pd"))
-        filename += ".pd";
+    if (!filename.toLower().endsWith(".xml"))
+        filename += ".xml";
     setWindowFilePath(filename);
     return fileSave();
 }
@@ -369,6 +560,47 @@ bool DiagramWindow::fileSaveAs()
 ******************************************************************/
 void DiagramWindow::fileExport()
 {
+    QString suffixes = AQP::filenameFilter(tr("Bitmap image"),
+             QImageWriter::supportedImageFormats());
+    suffixes += tr(";;Vector image (*.svg)");
+    const QString filename = QFileDialog::getSaveFileName(this,
+             tr("%1 - Export").arg(QApplication::applicationName()),
+              ".",suffixes);
+    if (filename.isEmpty())return;
+    QImage image(printer->paperSize(QPrinter::Point).toSize(),
+                 QImage::Format_ARGB32);
+    {
+        QPainter painter(&image);
+        painter.setRenderHints(QPainter::Antialiasing|
+                               QPainter::TextAntialiasing);
+        bool showGrid = viewShowGridAction->isChecked();
+        if(showGrid)
+            viewShowGrid(false);
+        QList<QGraphicsItem*>items = scene->selectedItems();
+        scene->clearSelection();
+
+        scene->render(&painter);
+        if(showGrid)
+            viewShowGrid(true);
+        foreach (QGraphicsItem *item,items)
+            item->setSelected(true);
+    }
+    if(image.save(filename))
+        statusBar()->showMessage(tr("Exported %1").arg(filename),
+                                 StatusTimeout);
+    else
+        AQP::warning(this,tr("Error"),tr("Failed to export: %1")
+                                       .arg(filename));
+    /*QPixmap pixmap;
+    //pixmap=pixmap.grabWidget(this,0,0,scene->width(), scene->height());
+    pixmap=pixmap.grabWidget(this,aToolBar->width(),editToolBar->height(),scene->width()+aToolBar->width(),scene->height()+editToolBar->height());
+    QImage  image;
+    image=pixmap.toImage();
+    //pixmap.save("D:\qt\image.jpg","JPG");
+    QString filename = QFileDialog::getSaveFileName(this,
+            tr("%1 - Save As").arg(QApplication::applicationName()),
+            ".", tr("JPG (*.jpg)"));
+    pixmap.save(filename);*/
 
 }
 
@@ -381,6 +613,87 @@ void DiagramWindow::fileExport()
 ******************************************************************/
 void DiagramWindow::filePrint()
 {
+    /*QPrinter printer(QPrinter::HighResolution);
+    QPrintDialog printdialog(&printer,this);
+    if(printdialog.exec())
+    {
+        QPainter painter(&printer);
+        QPixmap image;
+        image=image.grabWidget(this,0,0,scene->width(), scene->height());
+        QRect rect = painter.viewport();
+        QSize size = image.size();
+        size.scale(rect.size(), Qt::KeepAspectRatio);     //此处保证图片显示完整
+        painter.setViewport(rect.x(), rect.y(),size.width(), size.height());
+        painter.setWindow(image.rect());
+        painter.drawPixmap(0,0,image);
+     }*/
+    QPrintDialog dialog(printer);
+    if(dialog.exec())
+    {
+        QPainter painter(printer);
+        bool showGrid = viewShowGridAction->isChecked();
+        if(showGrid)
+            viewShowGrid(false);
+        QList<QGraphicsItem*>items = scene->selectedItems();
+        scene->clearSelection();
+
+        scene->render(&painter);
+        if(showGrid)
+            viewShowGrid(true);;
+        foreach (QGraphicsItem *item,items)
+            item->setSelected(true);
+    }
+    statusBar()->showMessage(tr("Printed %1")
+             .arg(windowFilePath()),StatusTimeout);
+}
+
+void DiagramWindow::connectItem(QObject *item)
+{
+    connect(item,SIGNAL(dirty()),this,SLOT(setDirty()));
+    connect(item,SIGNAL(positionChanged(QPoint)),positionWidget,SLOT(setPosition(QPoint)));
+
+    const QMetaObject *metaObject = item->metaObject();
+    if(metaObject->indexOfProperty("textColor")>-1)
+        connect(colorWidget,SIGNAL(textColorChanged(QColor)),
+                item,SLOT(setTextColor(const QColor&)));
+    if(metaObject->indexOfProperty("outlineColor")>-1)
+        connect(colorWidget,SIGNAL(outlineColorChanged(QColor)),
+                item,SLOT(setOutlineColor(const QColor&)));
+    if(metaObject->indexOfProperty("backgroundColor")>-1)
+        connect(colorWidget,SIGNAL(backgroundColorChanged(QColor)),
+                item,SLOT(setBackgroundColor(const QColor&)));
+    if(metaObject->indexOfProperty("position")>-1)
+        connect(positionWidget,SIGNAL(positionChanged(QPoint)),
+                 item,SLOT(setPosition(QPoint)));
+    //特有的属性
+    if(metaObject->indexOfProperty("myAltitude")>-1)    //TakeOff
+    {
+        connect(mutableWidget,SIGNAL(altitudeChanged(double)),
+                item,SLOT(setAltitude(double)));
+        connect(item,SIGNAL(altitudeChanged(double)),
+                mutableWidget,SLOT(setAltitude(double)));
+    }
+    if(metaObject->indexOfProperty("myTime")>-1)        //LandOn,Hover,Delay
+    {
+        connect(mutableWidget,SIGNAL(timeChanged(double)),
+                item,SLOT(setTime(double)));
+        connect(item,SIGNAL(timeChanged(double)),
+                mutableWidget,SLOT(setTime(double)));
+    }
+    if(metaObject->indexOfProperty("myGroundSpeed")>-1) //Go
+    {
+        connect(mutableWidget,SIGNAL(groundSpeedChanged(double)),
+                item,SLOT(setGroundSpeed(double)));
+        connect(item,SIGNAL(groundSpeedChanged(double)),
+                mutableWidget,SLOT(setGroundSpeed(double)));
+    }
+    if(metaObject->indexOfProperty("mySpeed")>-1)       //Turn
+    {
+        connect(mutableWidget,SIGNAL(speedChanged(double)),
+                item,SLOT(setSpeed(double)));
+        connect(item,SIGNAL(speedChanged(double)),
+                mutableWidget,SLOT(setSpeed(double)));
+    }
 
 }
 
@@ -393,17 +706,18 @@ void DiagramWindow::filePrint()
 ******************************************************************/
 void DiagramWindow::addTakeoffNode()
 {
-    TakeoffNode *node=new TakeoffNode;
-    node->setText(tr("take off\n %1 s").arg(node->time));
-    setupNode(node);
-    node->yuan->setPos(QPointF((node->pos().x()),
-                       (node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
-    scene->addItem(node->yuan);
-
-    takeoffNodeNum++;
-    node->controlsId=takeoffNodeNum;
-
-    setDirty(true);
+    scene->selected_Index=101;//1 means the 1st object
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    scene->need_to_set=1;
+   // TakeoffNode *node=new TakeoffNode;
+   // node->setText(tr("take off\n %1 s").arg(node->time));
+   // setupNode(node);
+   // node->yuan->setPos(QPointF((node->pos().x()),
+   //                    (node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
+   // scene->addItem(node->yuan);
+   // takeoffNodeNum++;
+   // node->controlsId=takeoffNodeNum;
+   // setDirty(true);
 }
 
 /*******************************************************************
@@ -415,17 +729,20 @@ void DiagramWindow::addTakeoffNode()
 ******************************************************************/
 void DiagramWindow::addLandonNode()
 {
-    LandonNode *node=new LandonNode;
-    node->setText(tr("Land on\n %1 s").arg(node->time));
-    setupNewNode(node);
-    node->yuan2->setPos(QPointF((node->pos().x()),
-                       (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
-    scene->addItem(node->yuan2);
+    scene->need_to_set = 1;
+    scene->selected_Index=102;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //LandonNode *node=new LandonNode;
+    //node->setText(tr("Land on\n %1 s").arg(node->time));
+    //setupNewNode(node);
+    //node->yuan2->setPos(QPointF((node->pos().x()),
+    //                   (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
+    //scene->addItem(node->yuan2);
 
-    landonNodeNum++;
-    node->controlsId=landonNodeNum;
+    //landonNodeNum++;
+    //node->controlsId=landonNodeNum;
 
-    setDirty(true);
+    //setDirty(true);
 }
 
 /*******************************************************************
@@ -437,41 +754,13 @@ void DiagramWindow::addLandonNode()
 ******************************************************************/
 void DiagramWindow::addTranslationNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
+    scene->need_to_set = 1;
+    scene->selected_Index=100;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
 
-    setDirty(true);
-}
-
-/*******************************************************************
- * Function name: addTranslation()
- * Description: This function add a TranslationNode on the scene.
- * Callee:
- * Inputs: TranslationNode *node
- * Outputs:
-******************************************************************/
-void DiagramWindow::addTranslation(TranslationNode *node)
-{
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->speed).arg(node->time));
-    QGraphicsItem* item=scene->addWidget(node->box);
-    node->item=item;
-    setupNewNode(node);
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                      (node->pos().y() )));
-    scene->addItem(node->yuan);
-    scene->addItem(node->yuan2);
-
-    item->setPos(QPointF(node->pos().x()-40,
-                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("rise"));
-    node->box->addItem(tr("fall"));
-    node->box->addItem(tr("advance"));
-    node->box->addItem(tr("back"));
-    node->box->addItem(tr("right"));
-    node->box->addItem(tr("left"));
+    //setDirty(true);
 }
 
 /*******************************************************************
@@ -483,11 +772,14 @@ void DiagramWindow::addTranslation(TranslationNode *node)
 ******************************************************************/
 void DiagramWindow::addRiseNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(0);
+    scene->need_to_set = 1;
+    scene->selected_Index = 103;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(0);
 
-    setDirty(true);
+    //setDirty(true);
 }
 
 /*******************************************************************
@@ -499,11 +791,14 @@ void DiagramWindow::addRiseNode()
 ******************************************************************/
 void DiagramWindow::addFallNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(1);
+    scene->need_to_set = 1;
+    scene->selected_Index = 104;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(1);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -515,11 +810,14 @@ void DiagramWindow::addFallNode()
 ******************************************************************/
 void DiagramWindow::addAdvanceNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(2);
+    scene->need_to_set = 1;
+    scene->selected_Index = 105;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(2);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -531,11 +829,14 @@ void DiagramWindow::addAdvanceNode()
 ******************************************************************/
 void DiagramWindow::addBackNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(3);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 106;
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(3);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -547,11 +848,14 @@ void DiagramWindow::addBackNode()
 ******************************************************************/
 void DiagramWindow::addRightNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(4);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 107;
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(4);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -563,11 +867,14 @@ void DiagramWindow::addRightNode()
 ******************************************************************/
 void DiagramWindow::addLeftNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(5);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 108;
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(5);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -579,11 +886,14 @@ void DiagramWindow::addLeftNode()
 ******************************************************************/
 void DiagramWindow::addSomeNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(0);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 10;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(0);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -625,11 +935,14 @@ void DiagramWindow::addSome(SomeNode *node)
 ******************************************************************/
 void DiagramWindow::addTurnLeftNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(0);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 110;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(0);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -641,11 +954,14 @@ void DiagramWindow::addTurnLeftNode()
 ******************************************************************/
 void DiagramWindow::addTurnRightNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(1);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 111;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(1);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -657,11 +973,14 @@ void DiagramWindow::addTurnRightNode()
 ******************************************************************/
 void DiagramWindow::addHangingNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(2);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 112;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(2);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -673,11 +992,9 @@ void DiagramWindow::addHangingNode()
 ******************************************************************/
 void DiagramWindow::addDelayNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(3);
+    scene->need_to_set=1;
+    scene->selected_Index = 113;
 
-    setDirty();
 }
 
 /*******************************************************************
@@ -689,14 +1006,9 @@ void DiagramWindow::addDelayNode()
 ******************************************************************/
 void DiagramWindow::addVarNode()
 {
-    VarNode* node=new VarNode;
-    node->setText(tr("int"));
-    setupNode(node);
+    scene->need_to_set=1;
+    scene->selected_Index = 201;
 
-    varNodeNum++;
-    node->controlsId=varNodeNum;
-
-    setDirty();
 }
 
 /*******************************************************************
@@ -708,58 +1020,9 @@ void DiagramWindow::addVarNode()
 ******************************************************************/
 void DiagramWindow::addVardefNode()
 {
-    QList<QGraphicsItem *> items = scene->selectedItems();
-    if(items.count()==0)
-    {
-        VardefNode* node=new VardefNode;
-        node->node=0;
-        node->setPos(QPoint(80 + (100 * (seqNumber % 5)),
-                            80 + (50 * ((seqNumber / 5) % 7))));
-        scene->addItem(node);
-        ++seqNumber;
-        node->yuan2->setPos(node->pos().x(),
-                           node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
-        node->yuan->setPos(node->pos().x(),
-                           node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
-        scene->addItem(node->yuan);
-        scene->addItem(node->yuan2);
-
-        vardefNodeNum++;
-        node->controlsId=vardefNodeNum;
-    }
-    else if(items.count()==1)
-    {
-        VarNode* node=dynamic_cast<VarNode*>(scene->selectedItems().first());
-        if(!node)return;
-
-        int flag=0;
-        while(node->flags[node->num])//这个位置已经有了vardefnode
-        {
-            if(flag==6)return;
-            node->num=node->num%6+1;
-            flag++;
-        }
-
-        //计算添加的位置
-        int i=node->num%3;
-        int j;
-        if(node->num==0||node->num==2)j=-17;
-        else if(node->num==3||node->num==5)j=17;
-        else if(node->num==1)j=-35;
-        else j=35;
-
-        node->array[node->num]->node=node;//使vardefnode知道它属于varnode
-
-        node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
-                             node->pos().y() + j);
-        node->flags[node->num]=true;
-        scene->addItem(node->array[node->num]);
-        node->num=node->num%6+1;
-
-        vardefNodeNum++;
-        node->controlsId=vardefNodeNum;
-        }
-    setDirty();
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 202;
 }
 
 /*******************************************************************
@@ -771,41 +1034,81 @@ void DiagramWindow::addVardefNode()
 ******************************************************************/
 void DiagramWindow::addComputeNode()
 {
-    ComputeNode *node=new ComputeNode;
-    node->setText(tr("Compute"));
-    QGraphicsItem* item=scene->addWidget(node->box);
-    node->item=item;
-    setupNode(node);
-    node->yuan->setPos(QPointF(node->pos().x(),
-                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                                node->pos().y()));
-    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
-                                node->pos().y()));
-    scene->addItem(node->yuan);
-    scene->addItem(node->yuan2);
-    scene->addItem(node->yuan3);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 301;
+}
 
-    item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
-                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("+"));
-    node->box->addItem(tr("-"));
-    node->box->addItem(tr("*"));
-    node->box->addItem(tr("/"));
-    node->box->addItem(tr("cos"));
-    node->box->addItem(tr("sin"));
-    node->box->addItem(tr("tan"));
-    node->box->addItem(tr("log"));
-    node->box->addItem(tr("e"));
-    node->box->addItem(tr("="));
-    node->box->addItem(tr(">"));
-    node->box->addItem(tr("<"));
+void DiagramWindow::addAddNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 301;
+}
 
-    computeNodeNum++;
-    node->controlsId=computeNodeNum;
+void DiagramWindow::addSubNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 302;
+}
 
-    setDirty();
+void DiagramWindow::addMulNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 303;
+}
+
+void DiagramWindow::addDivNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 304;
+}
+
+void DiagramWindow::addCosNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 305;
+}
+
+void DiagramWindow::addSinNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 306;
+}
+
+void DiagramWindow::addTanNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 307;
+}
+
+void DiagramWindow::addLogNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 308;
+}
+
+void DiagramWindow::addENode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 309;
+}
+
+void DiagramWindow::addEqualNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 310;
+}
+
+void DiagramWindow::addMoreNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 311;
+}
+
+void DiagramWindow::addLessNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 312;
 }
 
 /*******************************************************************
@@ -817,46 +1120,73 @@ void DiagramWindow::addComputeNode()
 ******************************************************************/
 void DiagramWindow::addIoNode()
 {
-    IoNode* node=new IoNode;
-    node->setText(tr("sensor"));
-    QGraphicsItem* item=scene->addWidget(node->box);
-    node->item=item;
-    setupNewNode(node);
+    scene->need_to_set=1;
+    scene->selected_Index = 400;
+}
 
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
-    scene->addItem(node->yuan);
-    scene->addItem(node->yuan2);
+/*******************************************************************
+ * Function name: addBatteryNode()
+ * Description: This function add an BatteryNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addBatteryNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 401;
+}
 
-    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
-                        node->pos().y());
-    node->node1->setPos(node->node2->pos().x(),
-                        node->node2->pos().y() - node->node2->outlineRect().height());
-    node->node3->setPos(node->node2->pos().x(),
-                        node->node2->pos().y() + node->node2->outlineRect().height());
-    scene->addItem(node->node2);
-    scene->addItem(node->node1);
-    scene->addItem(node->node3);
-    scene->addItem(node->node2->yuan);
-    scene->addItem(node->node1->yuan);
-    scene->addItem(node->node3->yuan);
+/*******************************************************************
+ * Function name: addGimbalNode()
+ * Description: This function add an GimbalNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addGimbalNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 402;
+}
 
+/*******************************************************************
+ * Function name: addAttitudeNode()
+ * Description: This function add an AttitudeNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addAttitudeNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 403;
+}
 
-    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("detection sensor"));
-    node->box->addItem(tr("A sensor"));
-    node->box->addItem(tr("B sensor"));
-    node->box->addItem(tr("delay"));
-    node->box->setCurrentIndex(0);
+/*******************************************************************
+ * Function name: addChannelNode()
+ * Description: This function add an ChannelNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addChannelNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 404;
+}
 
-    ioNodeNum++;
-    node->controlsId=ioNodeNum;
-
-    setDirty();
+/*******************************************************************
+ * Function name: addRangeFinderNode()
+ * Description: This function add an RangeFinderNode on the scene.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::addRangeFinderNode()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 405;
 }
 
 /*******************************************************************
@@ -882,6 +1212,18 @@ void DiagramWindow::addLink()
     Link *link = new Link(yuans.first, yuans.second);
     link->setZValue(100);
     scene->addItem(link);
+    scene->linkNodeNum++;
+
+    link->controlsId = scene->linkNodeNum;
+    link->identifier = "Link";
+    QString cid = QString::number(link->controlsId,10);
+    link->name = link->identifier + cid;
+    WidgetWrap* tmp = new WidgetWrap(link);   //包装节点
+    wm->add(tmp);
+    qDebug()<<"diagramwindow::addlink(): ";
+    qDebug()<<"type: "<<link->identifier;
+    qDebug()<<"id: "<<link->controlsId;
+    qDebug()<<"name: "<<link->name;
 
     setDirty();
 }
@@ -895,29 +1237,32 @@ void DiagramWindow::addLink()
 ******************************************************************/
 void DiagramWindow::addRec()
 {
-    Rec *rec=new Rec;
-    QGraphicsItem* item= scene->addWidget(rec->box);
-    rec->item=item;
-    rec->setPos(100,100);
-    scene->addItem(rec);
-    scene->clearSelection();
-    rec->setSelected(true);
+    //setCursor(Qt::CrossCursor);
+    scene->need_to_set=1;
+    scene->selected_Index = 501;
+    //Rec *rec=new Rec;
+    //QGraphicsItem* item= scene->addWidget(rec->box);
+    //rec->item=item;
+    //rec->setPos(100,100);
+    //scene->addItem(rec);
+    //scene->clearSelection();
+    //rec->setSelected(true);
 
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    scene->addItem(rec->yuan2);
+    //rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+    //                          rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    //scene->addItem(rec->yuan2);
 
-    item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-                         (rec->pos().y() - rec->outlineRect().height()/2)));
-    item->setZValue(rec->zValue()+1);
-    rec->box->addItem(tr("if"));
-    rec->box->addItem(tr("else"));
-    rec->box->addItem(tr("while"));
+    //item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
+    //                    (rec->pos().y() - rec->outlineRect().height()/2)));
+    //item->setZValue(rec->zValue()+1);
+    //rec->box->addItem(tr("if"));
+    //rec->box->addItem(tr("else"));
+    //rec->box->addItem(tr("while"));
 
-    recNodeNum++;
-    rec->controlsId=recNodeNum;
+    //recNodeNum++;
+    //rec->controlsId=recNodeNum;
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -938,17 +1283,41 @@ void DiagramWindow::del()
         if(dynamic_cast<Link*>(items[i]))
             itemLinks<<dynamic_cast<Link*>(items[i]);
     }
-    QList<TakeoffNode*>itemTakeoffs;
+    QList<TakeOffNode*>itemTakeoffs;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<TakeoffNode*>(items[i]))
-            itemTakeoffs<<dynamic_cast<TakeoffNode*>(items[i]);
+        if(dynamic_cast<TakeOffNode*>(items[i]))
+            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
     }
-    QList<LandonNode*>itemLandons;
+    QList<LandNode*>itemLandons;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<LandonNode*>(items[i]))
-            itemLandons<<dynamic_cast<LandonNode*>(items[i]);
+        if(dynamic_cast<LandNode*>(items[i]))
+            itemLandons<<dynamic_cast<LandNode*>(items[i]);
+    }
+    QList<GoNode*>itemTranslations;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<GoNode*>(items[i]))
+            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
+    }
+    QList<TurnNode*>itemTurn;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TurnNode*>(items[i]))
+            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
+    }
+    QList<HoverNode*>itemHover;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<HoverNode*>(items[i]))
+            itemHover<<dynamic_cast<HoverNode*>(items[i]);
+    }
+    QList<DelayNode*>itemDelay;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<DelayNode*>(items[i]))
+            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
     }
     QList<ComputeNode*>itemComputes;
     for(i=0;i<itemsCount;i++)
@@ -962,17 +1331,41 @@ void DiagramWindow::del()
         if(dynamic_cast<IoNode*>(items[i]))
             itemIos<<dynamic_cast<IoNode*>(items[i]);
     }
+    QList<BatteryNode*>itemBry;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<BatteryNode*>(items[i]))
+            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
+    }
+    QList<GimbalNode*>itemGim;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<GimbalNode*>(items[i]))
+            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
+    }
+    QList<AttitudeNode*>itemAtd;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<AttitudeNode*>(items[i]))
+            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
+    }
+    QList<ChannelNode*>itemChn;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<ChannelNode*>(items[i]))
+            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
+    }
+    QList<RangeFinderNode*>itemRF;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<RangeFinderNode*>(items[i]))
+            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
+    }
     QList<Rec*>itemRecs;
     for(i=0;i<itemsCount;i++)
     {
         if(dynamic_cast<Rec*>(items[i]))
             itemRecs<<dynamic_cast<Rec*>(items[i]);
-    }
-    QList<TranslationNode*>itemTranslations;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<TranslationNode*>(items[i]))
-            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
     }
     QList<SomeNode*>itemSomes;
     for(i=0;i<itemsCount;i++)
@@ -993,37 +1386,142 @@ void DiagramWindow::del()
             itemVars<<dynamic_cast<VarNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
+        typename QMap<QString, LOGIC_Help*>::iterator iter;
+        //typename QList<Link*>::iterator it;
+        LOGIC_Help* lh;
+        Link* link;
+        for(iter=LHM->begin();iter!=LHM->end();iter++){
+            lh = iter.value();
+            for(int i=0;i<lh->LOG->tlink.length();i++){
+                link = lh->LOG->tlink[i];
+                if(link->name==item->name){
+                    lh->LOG->tlink.removeOne(link);
+                }
+            }
+            for(int i=0;i<lh->LOG->flink.length();i++){
+                link = lh->LOG->flink[i];
+                if(link->name==item->name){
+                    lh->LOG->flink.removeOne(link);
+                }
+            }
+
+        }
         delete item;
     }
-    foreach (TakeoffNode* item, itemTakeoffs) {
+    foreach (TakeOffNode* item, itemTakeoffs) {
+        /*qDebug()<<"In del():\n"<<"TakeOff: ";
+        qDebug()<<"type: "<<item->identifier;
+        qDebug()<<"id: "<<item->controlsId;
+        qDebug()<<"location_x: "<<item->pos().x();
+        qDebug()<<"location_y: "<<item->pos().y();*/
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-    foreach (LandonNode* item, itemLandons) {
+    foreach (LandNode* item, itemLandons) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (GoNode* item, itemTranslations) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (TurnNode* item, itemTurn) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (HoverNode* item, itemHover) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (DelayNode* item, itemDelay) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (IoNode* item, itemIos) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (BatteryNode* item, itemBry) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (GimbalNode* item, itemGim) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (AttitudeNode* item, itemAtd) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (ChannelNode* item, itemChn) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (RangeFinderNode* item, itemRF) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (Rec* item, itemRecs) {
-        delete item;
-    }
-    foreach (TranslationNode* item, itemTranslations) {
-        delete item;
-    }
-    foreach (SomeNode* item, itemSomes) {
+        WidgetWrap tmp(item);
+        typename QMap<QString, LOGIC_Help*>::iterator iter;
+        LOGIC_Help* lh;
+        for(iter=LHM->begin();iter!=LHM->end();){
+            lh = iter.value();
+            if(lh->LOG->name==tmp.name){
+                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
+                LHM->remove(lh->LOG->name);
+            }else iter++;
+        }
+        wm->del(tmp);
         delete item;
     }
     foreach (VardefNode* item, itemVardefs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (VarNode* item, itemVars) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (SomeNode* item, itemSomes) {
+
         delete item;
     }
 }
-
 
 /*******************************************************************
  * Function name: copy()
@@ -1049,11 +1547,10 @@ void DiagramWindow::copy()
  * Inputs:  QList<QGraphicsItem *> &items
  * Outputs:
 ******************************************************************/
-void DiagramWindow::copyItems(const QList<QGraphicsItem *> &items)
+void DiagramWindow::copyItems( QList<QGraphicsItem *> &items)//const?
 {
     QByteArray copiedItems;
     QDataStream out(&copiedItems,QIODevice::WriteOnly);
-    writeItems(out,items);
     QMimeData *mimeData = new QMimeData;
     mimeData->setData(MimeType,copiedItems);
     QClipboard*clipboard = QApplication::clipboard();
@@ -1077,7 +1574,6 @@ void DiagramWindow::paste()
     {
         QByteArray copiedItems = mimeData->data(MimeType);
         QDataStream in(&copiedItems,QIODevice::ReadOnly);
-        readItems(in,pasteOffset,true);
         pasteOffset+=OffsetIncrement;
     }
     else return;
@@ -1164,9 +1660,48 @@ void DiagramWindow::properties()
 }
 
 /*******************************************************************
+ * Function name: openDocumentation()
+ * Description:This funciton open the help documentation.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::openDocumentation()
+{
+    oDocument *w;
+    w = new oDocument;
+    w->show();
+}
+
+/*******************************************************************
+ * Function name: systemInformation()
+ * Description:
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::systemInformation()
+{
+
+    ODescription *description;
+    description = new ODescription;
+    description->show();
+}
+
+void DiagramWindow::help()
+{
+    //QDesktopServices::openUrl(QUrl("file:///C:/Users/ASUS/learngit/DroneVPL/help/help.chm"));
+    //打包就用下面这个方法，在编译情况下将文件放在debug或release文件夹下也可用下面的方法，或者用上面指定具体路径
+    QString strUrl=QCoreApplication::applicationDirPath();
+    strUrl=QString("file:///%1/help.chm").arg(strUrl);
+    QUrl url(strUrl);
+    qDebug()<<QDesktopServices::openUrl(url);
+}
+
+/*******************************************************************
  * Function name: updateActions()
  * Description: This function changes the state of actions according
- *     to the selected items.
+ *              to the selected items
  * Callee:
  * Inputs:
  * Outputs:
@@ -1176,23 +1711,266 @@ void DiagramWindow::updateActions()
     bool isNode = (selectedNode() != 0||selectedNewNode()!=0);
     bool isYuanPair = (selectedYuanPair() != YuanPair());
     bool isRec = (selectedRec() != 0);
-    bool hasSelection = !scene->selectedItems().isEmpty();
 
-    cutAction->setEnabled(isNode);
-    copyAction->setEnabled(isNode);
+    fileSaveAction->setEnabled(isWindowModified());
+    bool hasItems=sceneHasItems();
+    fileSaveAsAction->setEnabled(hasItems);
+    fileExportAction->setEnabled(hasItems);
+    filePrintAction->setEnabled(hasItems);
+    int selected=scene->selectedItems().count();
+    cutAction->setEnabled(selected>=1);
+    copyAction->setEnabled(selected>=1);
+    deleteAction->setEnabled(selected>=1);
+    //pasteAction未写  以下为参考
+    /*QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    editPasteAction->setEnabled(mimeData &&
+            (mimeData->hasFormat(MimeType) || mimeData->hasHtml() ||
+             mimeData->hasText()));*/
     addLinkAction->setEnabled(isYuanPair);
-    deleteAction->setEnabled(hasSelection);
     bringToFrontAction->setEnabled(isNode||isRec);
     sendToBackAction->setEnabled(isNode||isRec);
-    propertiesAction->setEnabled(isNode);
+    //更新view菜单中的动作
+    showEditToolBarAction->setChecked(editToolBar->isVisible());
+    showNodeBarAction->setChecked(aToolBar->isVisible());
+    showNodeStatusBarAction->setChecked(widgetCondition->isVisible());
+
+    bool hasAltitudeProperty;
+    bool hasTimeProperty;
+    bool hasSpeedProperty;
+    bool hasGroundSpeedProperty;
+    bool hasDirectionProperty;
+    getSelectionProperties(&hasAltitudeProperty,&hasTimeProperty,
+                           &hasSpeedProperty,&hasGroundSpeedProperty,&hasDirectionProperty);
+    mutableWidget->altitudeLineEdit->setEnabled(hasAltitudeProperty);
+    mutableWidget->timeLineEdit->setEnabled(hasTimeProperty);
+    mutableWidget->speedLineEdit->setEnabled(hasSpeedProperty);
+    mutableWidget->groundSpeedLineEdit->setEnabled(hasGroundSpeedProperty);
+    colorWidget->directionLabel->setEnabled(hasDirectionProperty);
 
     foreach (QAction *action, view->actions())
         view->removeAction(action);
 
     foreach (QAction *action, editMenu->actions()) {
         if (action->isEnabled())
-            view->addAction(action);
+        view->addAction(action);
     }
+}
+
+void DiagramWindow::getSelectionProperties(bool *hasAltitudeProperty,bool *hasTimeProperty,
+                            bool *hasSpeedProperty,bool *hasGroundSpeedProperty,
+                                           bool *hasDirectionProperty) const
+{
+    *hasAltitudeProperty = false;
+    *hasTimeProperty = false;
+    *hasSpeedProperty = false;
+    *hasGroundSpeedProperty = false;
+    *hasDirectionProperty = false;
+    foreach (QGraphicsItem *item, scene->selectedItems()) {
+        if(QObject *object = dynamic_cast<QObject *>(item))
+        {
+            const QMetaObject *metaObject = object->metaObject();
+            if(metaObject->indexOfProperty("myAltitude")>-1)
+                *hasAltitudeProperty = true;
+            if(metaObject->indexOfProperty("myTime")>-1)
+                *hasTimeProperty = true;
+            if(metaObject->indexOfProperty("mySpeed")>-1)
+                *hasSpeedProperty = true;
+            if(metaObject->indexOfProperty("myGroundSpeed")>-1)
+                *hasGroundSpeedProperty = true;
+            if(metaObject->indexOfProperty("myDirection")>-1)
+                *hasDirectionProperty = true;
+            if(*hasAltitudeProperty&&*hasGroundSpeedProperty&&
+                    *hasSpeedProperty&&*hasTimeProperty&&*hasDirectionProperty)
+                break;
+        }
+    }
+}
+
+bool DiagramWindow::sceneHasItems() const
+{
+    foreach (QGraphicsItem *item, scene->items()) {
+        if(item!=gridGroup && item->group()!=gridGroup)
+            return true;
+    }
+    return false;
+}
+
+/*******************************************************************
+ * Function name:showEditToolBar()
+ * Description: This function changes the state of edit toolBar according
+ *     to the state of the "EditToolBar" checkbox.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::showEditToolBar()
+{
+    if(showEditToolBarAction->isChecked()) {
+       editToolBar->show();
+    }
+    else
+    {editToolBar->hide();}
+}
+
+/*******************************************************************
+ * Function name:showNodeBar()
+ * Description: This function changes the state of node Bar according
+ *     to the state of the "NodeBar" checkbox.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::showNodeBar()
+{
+    if(showNodeBarAction->isChecked()) {
+       aToolBar->show();
+    }
+    else
+    {aToolBar->hide();}
+}
+
+/*******************************************************************
+ * Function name:showNodeStatusBar()
+ * Description: This function changes the state of status bar according
+ *     to the state of the "NodeStatusBar" checkbox.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::showNodeStatusBar()
+{
+    if(showNodeStatusBarAction->isChecked()) {
+        widgetCondition->show();
+    }
+    else
+        widgetCondition->hide();
+}
+
+/*******************************************************************
+ * Function name:viewShowGrid()
+ * Description: This function changes the background of scene
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::viewShowGrid(bool on)
+{
+    /*if(viewShowGridAction->isChecked())
+        scene->setBackgroundBrush(QPixmap(":/images/background1.png"));
+    else
+        scene->setBackgroundBrush(QPixmap(":/images/background2.png"));
+    scene->update();
+    view->update();*/
+    if(!gridGroup)
+    {
+        const int GridSize = 40;
+        QPen pen(QColor(175,175,175,127));
+        gridGroup = new QGraphicsItemGroup;
+        const int MaxX = static_cast<int>(std::ceil(scene->width())
+                                          /GridSize)*GridSize;
+        const int MaxY = static_cast<int>(std::ceil(scene->height())
+                                          /GridSize)*GridSize;
+        /*for(int x = 0;x <= MaxX;x += GridSize)
+        {
+            QGraphicsLineItem *item = new QGraphicsLineItem(x,0,x,MaxY);
+            item->setPen(pen);
+            item->setZValue(-101);
+            item->setEnabled(false);
+            gridGroup->addToGroup(item);
+        }
+        for(int y = 0;y <= MaxY;y +=GridSize)
+        {
+            QGraphicsLineItem *item = new QGraphicsLineItem(0,y,MaxX,y);
+            item->setPen(pen);
+            item->setZValue(-101);
+            item->setEnabled(false);
+            gridGroup->addToGroup(item);
+        }*/
+        QGraphicsLineItem *item1 = new QGraphicsLineItem(0,0,0,MaxY);
+        item1->setPen(pen);
+        item1->setZValue(-101);
+        //item1->setEnabled(false);
+        gridGroup->addToGroup(item1);
+        QGraphicsLineItem *item2 = new QGraphicsLineItem(MaxX,0,MaxX,MaxY);
+        item2->setPen(pen);
+        item2->setZValue(-101);
+        //item2->setEnabled(false);
+        gridGroup->addToGroup(item2);
+        QGraphicsLineItem *item3 = new QGraphicsLineItem(0,0,MaxX,0);
+        item3->setPen(pen);
+        item3->setZValue(-101);
+        //item3->setEnabled(false);
+        gridGroup->addToGroup(item3);
+        QGraphicsLineItem *item4 = new QGraphicsLineItem(0,MaxY,MaxX,MaxY);
+        item4->setPen(pen);
+        item4->setZValue(-101);
+        //item4->setEnabled(false);
+        gridGroup->addToGroup(item4);
+        scene->addItem(gridGroup);
+    }
+    gridGroup->setVisible(on);
+}
+
+/*******************************************************************
+ * Function name:canvas()
+ * Description: This function is used to set the properties of the canvers.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::canvas()
+{
+    CanvasDialog canvas(view,this);
+    canvas.exec();
+}
+
+/*******************************************************************
+ * Function name: checkup()
+ * Description: This function discovers errors in the biock diagram before compile.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::checkup()
+{
+
+}
+
+void DiagramWindow::compile()
+{
+    QMap<QString,WidgetWrap*> *m = &(wm->get_map());
+    format formater;
+    formater.set_map(m);
+    formater.set_digraph(m,LHM);
+    formater.SavePyFile("../Compile.py");
+    /*
+    digraph digrapher(m);
+    std::stack<widget*> stk = digrapher.get_topology();
+    WidgetWrap* tmp;
+    while(!stk.empty()){
+        tmp = stk.top();
+        stk.pop();
+        qDebug()<<"compile():";
+        qDebug()<<"name :"<<tmp->name;
+        qDebug()<<"identifier :"<<tmp->identifier;
+        qDebug()<<"controlsId :"<<tmp->controlsId;
+    }*/
+}
+
+void DiagramWindow::upload()
+{
+    system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+}
+
+void DiagramWindow::run()
+{
+    system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+}
+
+void DiagramWindow::checkupAndCompile()
+{
+
 }
 
 /*******************************************************************
@@ -1206,14 +1984,24 @@ void DiagramWindow::updateActions()
 void DiagramWindow::createActions()
 {
     fileNewAction = new QAction(tr("New"),this);
+    fileNewAction->setShortcut(QKeySequence::New);
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
     fileNewAction->setIcon(QIcon(":/images/filenew.png"));
 
     fileOpenAction = new QAction(tr("Open"),this);
+    fileOpenAction->setShortcut(QKeySequence::Open);
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
     fileOpenAction->setIcon(QIcon(":/images/fileopen.png"));
 
+   for (int i = 0; i < MaxRecentFiles; ++i) {
+        recentFileActions[i] = new QAction(this);
+        recentFileActions[i]->setVisible(false);
+        connect(recentFileActions[i], SIGNAL(triggered()),
+                this, SLOT(openRecentFile()));
+    }
+
     fileSaveAction = new QAction(tr("Save"),this);
+    fileSaveAction->setShortcut(QKeySequence::Save);
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
     fileSaveAction->setIcon(QIcon(":/images/filesave.png"));
 
@@ -1228,64 +2016,104 @@ void DiagramWindow::createActions()
     connect(filePrintAction, SIGNAL(triggered()), this, SLOT(filePrint()));
     filePrintAction->setIcon(QIcon(":/images/fileprint.png"));
 
+    closeAction = new QAction(tr("&Close"),this);
+    closeAction->setShortcut(tr("Ctrl+W"));
+    connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
+
     exitAction = new QAction(tr("E&xit"), this);
     exitAction->setShortcut(tr("Ctrl+Q"));
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
-    addActionNodeAction = new QAction(tr("action"),this);
+    addActionNodeAction = new QAction(tr("Action"),this);
+    addIONodeAction = new QAction(tr("IO"),this);
 
-    addTakeoffNodeAction = new QAction(tr("takeoff"), this);
+    addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
-
-    addLandonNodeAction = new QAction(tr("landon"),this);
+    addLandonNodeAction = new QAction(tr("LandOn"),this);
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Translation"),this);
 
-    addRiseNodeAction = new QAction(tr("rise"),this);
+    addRiseNodeAction = new QAction(tr("GoUp"),this);
     connect(addRiseNodeAction, SIGNAL(triggered()), this, SLOT(addRiseNode()));
-    addFallNodeAction = new QAction(tr("fall"),this);
+    addFallNodeAction = new QAction(tr("GoDown"),this);
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
-    addAdvanceNodeAction = new QAction(tr("advance"),this);
+    addAdvanceNodeAction = new QAction(tr("Forward"),this);
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
-    addBackNodeAction = new QAction(tr("backward"),this);
+    addBackNodeAction = new QAction(tr("Backward"),this);
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
-    addRightNodeAction = new QAction(tr("right"),this);
+    addRightNodeAction = new QAction(tr("GoRight"),this);
     connect(addRightNodeAction, SIGNAL(triggered()), this, SLOT(addRightNode()));
-    addLeftNodeAction = new QAction(tr("left"),this);
+    addLeftNodeAction = new QAction(tr("GoLeft"),this);
     connect(addLeftNodeAction, SIGNAL(triggered()), this, SLOT(addLeftNode()));
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
-
-    addTurnLeftNodeAction = new QAction(tr("turn left"),this);
+    addTurnLeftNodeAction = new QAction(tr("TurnLeft"),this);
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
-    addTurnRightNodeAction = new QAction(tr("turn right"),this);
+    addTurnRightNodeAction = new QAction(tr("TurnRight"),this);
     connect(addTurnRightNodeAction, SIGNAL(triggered()), this, SLOT(addTurnRightNode()));
-    addHangingNodeAction = new QAction(tr("hanging"),this);
+    addHangingNodeAction = new QAction(tr("Hover"),this);
     connect(addHangingNodeAction, SIGNAL(triggered()), this, SLOT(addHangingNode()));
-    addDelayNodeAction = new QAction(tr("delay"),this);
+    addDelayNodeAction = new QAction(tr("Delay"),this);
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
-    addVarNodeAction = new QAction(tr("Variable"),this);
+    addVarNodeAction = new QAction(tr("VarType"),this);
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
-
-    addVardefNodeAction = new QAction(tr("Vardefine"),this);
+    addVardefNodeAction = new QAction(tr("VarDef"),this);
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
 
     addComputeNodeAction = new QAction(tr("Compute"),this);
-    connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
+    //connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
+    addAddNodeAction = new QAction(tr("+"),this);
+    connect(addAddNodeAction,SIGNAL(triggered()),this,SLOT(addAddNode()));
+    addSubNodeAction = new QAction(tr("-"),this);
+    connect(addSubNodeAction,SIGNAL(triggered()),this,SLOT(addSubNode()));
+    addMulNodeAction = new QAction(tr("*"),this);
+    connect(addMulNodeAction,SIGNAL(triggered()),this,SLOT(addMulNode()));
+    addDivNodeAction = new QAction(tr("/"),this);
+    connect(addDivNodeAction,SIGNAL(triggered()),this,SLOT(addDivNode()));
+    addCosNodeAction = new QAction(tr("cos"),this);
+    connect(addCosNodeAction,SIGNAL(triggered()),this,SLOT(addCosNode()));
+    addSinNodeAction = new QAction(tr("sin"),this);
+    connect(addSinNodeAction,SIGNAL(triggered()),this,SLOT(addSinNode()));
+    addTanNodeAction = new QAction(tr("tan"),this);
+    connect(addTanNodeAction,SIGNAL(triggered()),this,SLOT(addTanNode()));
+    addLogNodeAction = new QAction(tr("log"),this);
+    connect(addLogNodeAction,SIGNAL(triggered()),this,SLOT(addLogNode()));
+    addENodeAction = new QAction(tr("e"),this);
+    connect(addENodeAction,SIGNAL(triggered()),this,SLOT(addENode()));
+    addEqualNodeAction = new QAction(tr("="),this);
+    connect(addEqualNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
+    addMoreNodeAction = new QAction(tr(">"),this);
+    connect(addMoreNodeAction,SIGNAL(triggered()),this,SLOT(addMoreNode()));
+    addLessNodeAction = new QAction(tr("<"),this);
+    connect(addLessNodeAction,SIGNAL(triggered()),this,SLOT(addLessNode()));
 
-    addIoNodeAction = new QAction(tr("IO"),this);
-    connect(addIoNodeAction,SIGNAL(triggered()),this,SLOT(addIoNode()));
+    addBatteryNodeAction = new QAction(tr("Battery"),this);
+    connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
+    addAttitudeNodeAction = new QAction(tr("Attitude"),this);
+    connect(addAttitudeNodeAction,SIGNAL(triggered()),this,SLOT(addAttitudeNode()));
+    addRangeFinderNodeAction = new QAction(tr("RangeFinder"),this);
+    connect(addRangeFinderNodeAction,SIGNAL(triggered()),this,SLOT(addRangeFinderNode()));
+    addChannelNodeAction = new QAction(tr("Channel"),this);
+    connect(addChannelNodeAction,SIGNAL(triggered()),this,SLOT(addChannelNode()));
+    addGimbalNodeAction = new QAction(tr("Gimbal"),this);
+    connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
     addLinkAction = new QAction(tr("&Link"), this);
     addLinkAction->setIcon(QIcon(":/images/link.png"));
     addLinkAction->setShortcut(tr("Ctrl+L"));
     connect(addLinkAction, SIGNAL(triggered()), this, SLOT(addLink()));
 
-    addRecAction = new QAction(tr("Logic Rec"), this);
+    addRecAction = new QAction(tr("Logic"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
+
+    uploadAction = new QAction(tr("upload"),this);
+    connect(uploadAction,SIGNAL(triggered()),this,SLOT(upload()));
+    runAction = new QAction(tr("run"),this);
+    connect(runAction,SIGNAL(triggered()),this,SLOT(run()));
+
 
     deleteAction = new QAction(tr("&Delete"), this);
     deleteAction->setIcon(QIcon(":/images/delete.png"));
@@ -1317,9 +2145,67 @@ void DiagramWindow::createActions()
     connect(sendToBackAction, SIGNAL(triggered()),
             this, SLOT(sendToBack()));
 
+    showEditToolBarAction = new QAction(tr("EditToolBar"), this);
+    showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
+    showEditToolBarAction->setCheckable(true);
+    showEditToolBarAction->setChecked(true);
+    connect(showEditToolBarAction, SIGNAL(triggered()),
+            this, SLOT(showEditToolBar()));
+    showNodeBarAction = new QAction(tr("NodeBar"), this);
+    showNodeBarAction->setStatusTip(tr("show or hide the node bar"));
+    showNodeBarAction->setCheckable(true);
+    showNodeBarAction->setChecked(true);
+    connect(showNodeBarAction, SIGNAL(triggered()),
+            this, SLOT(showNodeBar()));
+    showNodeStatusBarAction = new QAction(tr("ToolStatusBar"), this);
+    showNodeStatusBarAction->setStatusTip(tr("show or hide the tool status bar"));
+    showNodeStatusBarAction->setCheckable(true);
+    showNodeStatusBarAction->setChecked(true);
+    connect(showNodeStatusBarAction, SIGNAL(triggered()),
+            this, SLOT(showNodeStatusBar()));
+    viewShowGridAction = new QAction(tr("show grid"),this);
+    viewShowGridAction->setIcon(QIcon(":/images/showgrid.png"));
+    viewShowGridAction->setStatusTip((tr("show or hide grid")));
+    viewShowGridAction->setCheckable(true);
+    viewShowGridAction->setChecked(false);
+    connect(viewShowGridAction,SIGNAL(toggled(bool)),
+             this,SLOT(viewShowGrid(bool)));
+
     propertiesAction = new QAction(tr("P&roperties..."), this);
     connect(propertiesAction, SIGNAL(triggered()),
             this, SLOT(properties()));
+
+    canvasAction = new QAction(tr("canvas..."), this);
+    connect(canvasAction, SIGNAL(triggered()),
+            this, SLOT(canvas()));
+
+    checkupAction = new QAction(tr("check up"),this);
+    connect(checkupAction,SIGNAL(triggered()),
+            this, SLOT(checkup()));
+
+    compileAction = new QAction(tr("compile"),this);
+    connect(compileAction,SIGNAL(triggered()),this,SLOT(compile()));
+
+    checkupAndCompileAction = new QAction(tr("check up and compile"),this);
+    connect(checkupAndCompileAction,SIGNAL(triggered()),this,SLOT(checkupAndCompile()));
+
+    openDocumentationAction = new QAction(tr("&Documentation"),this);
+    connect(openDocumentationAction,SIGNAL(triggered()),this,SLOT(openDocumentation()));
+
+    systemInformationAction = new QAction(tr("&System information"),this);
+    connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
+
+    openHelpAction = new QAction(tr("Help"),this);
+    connect(openHelpAction,SIGNAL(triggered()),this,SLOT(help()));
+
+    viewZoomInAction = new QAction(QIcon(":/images/zoom-in.png"),
+                                   tr("Zoom In"),this);
+    viewZoomInAction->setShortcut(tr("+"));
+    connect(viewZoomInAction,SIGNAL(triggered()),view,SLOT(zoomIn()));
+    viewZoomOutAction = new QAction(QIcon(":/images/zoom-out.png"),
+                                   tr("Zoom out"),this);
+    viewZoomOutAction->setShortcut(tr("-"));
+    connect(viewZoomOutAction,SIGNAL(triggered()),view,SLOT(zoomOut()));
 }
 
 /*******************************************************************
@@ -1332,6 +2218,11 @@ void DiagramWindow::createActions()
 void DiagramWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
+    editMenu = menuBar()->addMenu(tr("&Edit"));
+    viewMenu = menuBar()->addMenu(tr("&View"));
+    compileMenu = menuBar()->addMenu(tr("&Compile"));
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    //filemenu
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
     fileMenu->addAction(fileSaveAction);
@@ -1339,12 +2230,17 @@ void DiagramWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(fileExportAction);
     fileMenu->addAction(filePrintAction);
+    separatorAction=fileMenu->addSeparator();
+    for(int i=0;i<MaxRecentFiles;++i)
+        fileMenu->addAction(recentFileActions[i]);
     fileMenu->addSeparator();
+    fileMenu->addAction(closeAction);
     fileMenu->addAction(exitAction);
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-    editMenu = menuBar()->addMenu(tr("&Edit"));
-    editMenu->addAction(addLinkAction);
-
+    //helpmenu
+    helpMenu->addAction(openDocumentationAction);
+    helpMenu->addAction(systemInformationAction);
+    helpMenu->addAction(openHelpAction);
+    //editmenu
     QMenu *translationMenu = new QMenu(tr("translation"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addRiseNodeAction<<addFallNodeAction
@@ -1362,24 +2258,58 @@ void DiagramWindow::createMenus()
         actionMenu->addAction(action);
     addActionNodeAction->setMenu(actionMenu);
 
+    QMenu *IOMenu = new QMenu(tr("IO"),this);
+    foreach(QAction *action,QList<QAction*>()
+            <<addBatteryNodeAction
+            <<addGimbalNodeAction
+            <<addAttitudeNodeAction
+            <<addChannelNodeAction
+            <<addRangeFinderNodeAction)
+        IOMenu->addAction(action);
+    addIONodeAction->setMenu(IOMenu);
+    QMenu *computeMenu = new QMenu(tr("Compute"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addAddNodeAction<<addSubNodeAction
+             <<addMulNodeAction<<addDivNodeAction
+             <<addCosNodeAction<<addSinNodeAction
+             <<addTanNodeAction<<addLogNodeAction
+             <<addENodeAction<<addEqualNodeAction
+             <<addMoreNodeAction<<addDivNodeAction)
+        computeMenu->addAction(action);
+    addComputeNodeAction->setMenu(computeMenu);
+
     editMenu->addAction(addActionNodeAction);
     editMenu->addAction(addVarNodeAction);
     editMenu->addAction(addVardefNodeAction);
     editMenu->addAction(addComputeNodeAction);
-    editMenu->addAction(addIoNodeAction);
+    editMenu->addAction(addIONodeAction);
     editMenu->addAction(addRecAction);
     editMenu->addSeparator();
-
     editMenu->addAction(deleteAction);
     editMenu->addAction(cutAction);
     editMenu->addAction(copyAction);
     editMenu->addAction(pasteAction);
     editMenu->addSeparator();
-
     editMenu->addAction(bringToFrontAction);
     editMenu->addAction(sendToBackAction);
     editMenu->addSeparator();
-    editMenu->addAction(propertiesAction);
+    //viewmenu
+    viewMenu->addAction(showEditToolBarAction);
+    viewMenu->addAction(showNodeBarAction);
+    viewMenu->addAction(showNodeStatusBarAction);
+    viewMenu->addAction(viewShowGridAction);
+    viewMenu->addSeparator();
+    viewMenu->addAction(viewZoomInAction);
+    viewMenu->addAction(viewZoomOutAction);
+    viewMenu->addSeparator();
+    viewMenu->addAction(propertiesAction);
+    viewMenu->addAction(canvasAction);
+    //compilemenu
+    compileMenu->addAction(checkupAction);
+    compileMenu->addAction(compileAction);
+    compileMenu->addAction(checkupAndCompileAction);
+    compileMenu->addAction(uploadAction);
+    compileMenu->addAction(runAction);
 }
 
 /*******************************************************************
@@ -1403,8 +2333,11 @@ void DiagramWindow::createToolBars()
     editToolBar->addSeparator();
     editToolBar->addAction(bringToFrontAction);
     editToolBar->addAction(sendToBackAction);
+    editToolBar->addAction(viewZoomInAction);
+    editToolBar->addAction(viewZoomOutAction);
+    editToolBar->addAction(viewShowGridAction);
 
-    QToolBar* aToolBar = new QToolBar(tr("action"));
+    aToolBar = addToolBar(tr("action"));
     aToolBar->addAction(addTakeoffNodeAction);
     aToolBar->addAction(addLandonNodeAction);
     aToolBar->addAction(addRiseNodeAction);
@@ -1422,10 +2355,58 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addVardefNodeAction);
     aToolBar->addSeparator();
     aToolBar->addAction(addComputeNodeAction);
-    aToolBar->addAction(addIoNodeAction);
+    aToolBar->addAction(addIONodeAction);
     aToolBar->addAction(addRecAction);
     aToolBar->addAction(addLinkAction);
     addToolBar(Qt::LeftToolBarArea,aToolBar);
+}
+
+/*******************************************************************
+ * Function name: createWidgetConditionBar()
+ * Description: This function creates a widgetConditionBar.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::createWidgetConditionBar(WidgetCondition *widgetCondition)
+{
+    setDockOptions(DiagramWindow::AnimatedDocks);
+
+    QDockWidget::DockWidgetFeatures features=
+            QDockWidget::DockWidgetClosable;
+
+    QDockWidget *rightside = new QDockWidget(this);
+    //WidgetCondition *widgetCondition = new WidgetCondition();
+    rightside->setWidget(widgetCondition);
+    rightside->setFeatures(features);
+    rightside->setAllowedAreas(Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, rightside);
+}
+
+void DiagramWindow::createDockWidgets()
+{
+    setDockOptions(QMainWindow::AnimatedDocks);
+    QDockWidget::DockWidgetFeatures features =
+            QDockWidget::DockWidgetMovable|
+            QDockWidget::DockWidgetFloatable;
+    colorWidget = new ColorWidget;
+    QDockWidget *colorDockWidget = new QDockWidget(
+                tr("Color"),this);
+    colorDockWidget->setFeatures(features);
+    colorDockWidget->setWidget(colorWidget);
+    addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
+
+    positionWidget = new PositionWidget;
+    QDockWidget *positionDockWidget = new QDockWidget(
+                tr("Position"),this);
+    positionDockWidget->setWidget(positionWidget);
+    addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+
+    mutableWidget = new MutableWidget;
+    QDockWidget *mutableDockWidget = new QDockWidget(
+                tr("Mutable"),this);
+    mutableDockWidget->setWidget(mutableWidget);
+    addDockWidget(Qt::RightDockWidgetArea,mutableDockWidget);
 }
 
 /*******************************************************************
@@ -1469,8 +2450,6 @@ void DiagramWindow::setZValue(int z)
 ******************************************************************/
 void DiagramWindow::setupNode(Node *node)
 {
-    //node->setPos(QPoint(80 + (100 * (seqNumber % 7)),
-    //                    80 + (50 * ((seqNumber / 7) % 9))));
     node->setPos(100,100);
     scene->addItem(node);
     ++seqNumber;
@@ -1489,8 +2468,6 @@ void DiagramWindow::setupNode(Node *node)
 ******************************************************************/
 void DiagramWindow::setupNewNode(NewNode *newnode)
 {
-    //newnode->setPos(QPoint(80 + (100 * (seqNumber % 7)),
-    //                    80 + (70 * ((seqNumber / 7) % 9))));
     newnode->setPos(100,100);
     scene->addItem(newnode);
     ++seqNumber;
@@ -1594,6 +2571,7 @@ Yuan *DiagramWindow::selectedYuan() const
     } else {
         return 0;
     }
+
 }
 
 /*******************************************************************
@@ -1614,4 +2592,53 @@ DiagramWindow::YuanPair DiagramWindow::selectedYuanPair() const
             return YuanPair(first, second);
     }
     return YuanPair();
+}
+
+bool DiagramWindow::conditionChanged(){
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    if (items.count() >= 1) {
+            QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(items.first());
+            emit passWidget(item);
+    }
+    return true;
+}
+
+
+void DiagramWindow::selectionChanged()
+{
+    QList<QGraphicsItem*>items = scene->selectedItems();
+    if(items.count()==1)
+    {
+        if(QObject *item = dynamic_cast<QObject*>(items.at(0)))
+        {
+            if(item->property("textColor").isValid())
+                colorWidget->setTextColor(
+                            item->property("textColor").value<QColor>());
+            if(item->property("outlineColor").isValid())
+                colorWidget->setOutlineColor(
+                            item->property("outlineColor").value<QColor>());
+            if(item->property("backgroundColor").isValid())
+                colorWidget->setBackgroundColor(
+                            item->property("backgroundColor").value<QColor>());
+            if(item->property("myIdentifier").isValid())
+                colorWidget->setIdentifier(
+                            item->property("myIdentifier").value<QString>());
+            if(item->property("myDirection").isValid())
+                colorWidget->setDirection(
+                            item->property("myDirection").value<QString>());
+            else
+                colorWidget->setDirection(QString("None"));
+            if(item->property("position").isValid())
+                positionWidget->setPosition(item->property("position").value<QPoint>());
+            //特有的属性
+            if(item->property("myAltitude").isValid())
+                mutableWidget->setAltitude(item->property("myAltitude").value<double>());
+            if(item->property("myTime").isValid())
+                mutableWidget->setTime(item->property("myTime").value<double>());
+            if(item->property("myGroundSpeed").isValid())
+                mutableWidget->setGroundSpeed(item->property("myGroundSpeed").value<double>());
+            if(item->property("mySpeed").isValid())
+                mutableWidget->setSpeed(item->property("mySpeed").value<double>());
+        }
+    }
 }

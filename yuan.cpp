@@ -12,9 +12,8 @@
 #include "yuan.h"
 #include "node.h"
 
-Yuan::Yuan(QGraphicsItem *parent)
+Yuan::Yuan()
 {
-    node=parent;
     myOutlineColor = Qt::darkBlue;
     myBackgroundColor = Qt::red;
 
@@ -91,6 +90,13 @@ void Yuan::paint(QPainter *painter,
     QRectF rect = outlineRect();
     painter->drawRoundRect(rect, 99,
                            99);
+
+    if(this->collidingItems().count()>=1&&dynamic_cast<specialYuan *>(this->collidingItems().last())!=0)
+     {
+        painter->setBrush(Qt::yellow);
+        painter->drawRoundRect(rect);
+     }
+
 }
 
 /*******************************************************************
@@ -112,12 +118,12 @@ int Yuan::roundness(double size) const
     const int Diameter = 1;
     return 100 * Diameter / int(size);
 }
-
+/*
 QGraphicsItem* Yuan::myNode() const
 {
     return node;
 }
-
+*/
 /*******************************************************************
  * Function name: setInout()
  * Description: This function set the inout mode of a Yuan.
@@ -132,14 +138,14 @@ void Yuan::setInout(int mode)
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-triYuan::triYuan(QGraphicsItem *parent)
+triYuan::triYuan()
 {
-    node=parent;
     setOutlineColor(Qt::darkBlue);
     setBackgroundColor(Qt::red);
 
     setFlags(ItemIsSelectable);
     setInout(0);
+ // connect(this,SIGNAL(signal()),this->parent(),SLOT(set_new_line()));
 }
 
 QPolygonF triYuan::outlineRect() const
@@ -169,11 +175,60 @@ void triYuan::paint(QPainter *painter,
     if (option->state & QStyle::State_Selected) {
         pen.setStyle(Qt::DotLine);
         pen.setWidth(2);
+
     }
     painter->setPen(pen);
     painter->setBrush(backgroundColor());
 
     QPolygonF poly = outlineRect();
     painter->drawPolygon(poly);
+
+}
+
+specialYuan::specialYuan()
+{
+    setOutlineColor(Qt::white);
+    setBackgroundColor(Qt::white);
+
+    setInout(0);
+}
+
+QRectF specialYuan::outlineRect() const
+{
+    QRectF rect(0,0,50,50);
+    rect.translate(-rect.center());
+    return rect;
+}
+
+QRectF specialYuan::boundingRect() const
+{
+    const int Margin=1;
+    return outlineRect().adjusted(-Margin,-Margin,Margin,Margin);}
+
+QPainterPath specialYuan::shape()  const
+{
+    QRectF rect = outlineRect();
+
+    QPainterPath path;
+    path.addRoundRect(rect, roundness(rect.width()),
+                      roundness(rect.height()));
+    return path;
+}
+
+void specialYuan::paint(QPainter *painter,
+                    const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    setZValue(-100);
+    QPen pen(myOutlineColor);
+    if (option->state &QStyle::State_Selected) {
+        pen.setStyle(Qt::DotLine);
+        pen.setWidth(2);
+    }
+    painter->setPen(pen);
+    painter->setBrush(myBackgroundColor);
+
+    QRectF rect = outlineRect();
+    painter->drawRoundRect(rect, 99,
+                           99);
 
 }
