@@ -764,6 +764,14 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
 {
 
     if(w->identifier=="VarType"){    //如果传入的控件是VAR
+        VarNode* tmp = w->mVarTypeNode;
+        stream<<tmp->text()<<" ";
+        int i = 0;
+        if(i<=tmp->num)  stream<<tmp->array[i]->text();
+        for(i=1;i<tmp->num;i++){
+            stream<<","<<tmp->array[i]->text();
+        }
+        stream<<";";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
