@@ -35,7 +35,7 @@ public:
     format();
     bool save_frame_file(QString filename);    //保存框图文件
     bool SavePyFile(QString filename = "compile.py");
-    bool save_py_file(std::stack<widget *> *stk, QTextStream &in);     //保存py可执行文件
+    bool save_py_file(std::stack<widget *> *stk, QTextStream &in, int tabs);     //保存py可执行文件
     bool read_frame_file(QString filename);
 
     bool set_map(QMap<QString,WidgetWrap*>* m){Map = *m; return !Map.isEmpty();}
@@ -53,7 +53,8 @@ private:
     //newscene* scene;
 
     //控件转化成代码块。参数1是要写入的目标文件名，2是要被转化的控件的指针
-    void widget_convert_to_py(WidgetWrap *w, QTextStream& stream);
+    void widget_convert_to_py(WidgetWrap *w, QTextStream& stream, int tabs);
+
 
     //控件转化成xml格式代码。参数1是指向要转化的控件的迭代器，2是xml文件的写入流
     void widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlStreamWriter& stream);

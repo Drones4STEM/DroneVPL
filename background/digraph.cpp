@@ -58,7 +58,12 @@ std::stack<widget*>* digraph::get_topology(Logic *l)
     }
 
     //py代码逻辑上的需要，在rank1，必须把VarType控件放在拓扑结构的最开头。顺便规定只能在rank1放没有出入度的var
-
+    typename QMap<QString, widget*>::iterator iter2;
+    if(l==0){
+        for(iter2=Map->begin();iter2!=Map->end();iter2++){
+            if(iter2.value()->identifier=="VarType") stack->push(iter2.value());
+        }
+    }
     return stack;
 
 }
@@ -98,12 +103,6 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
                     }else
                         stk.push(it.value());
                 }
-    }
-    typename QMap<QString, widget*>::iterator iter2;
-    if(l==0){
-        for(iter2=Map->begin();iter2!=Map->end();iter2++){
-            if(iter2.value()->identifier=="VarType") stk.push(iter2.value());
-        }
     }
 
     return stk;

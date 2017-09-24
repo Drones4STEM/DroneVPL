@@ -575,7 +575,6 @@ bool newscene::CreateVarDef(QPointF point, int id)
 bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
 {
     ComputeNode *node=new ComputeNode;
-    node->setText(tr("Compute"));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
     node->setPos(point);
@@ -619,6 +618,8 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     node->box->addItem(tr(">"));
     node->box->addItem(tr("<"));
     node->box->setCurrentIndex(selected_Index-301);
+    char* c[12] = {"+","-","*","/","cos","sin","tan","log","e","=",">","<"};
+    node->setText(tr(c[selected_Index-301]));
 
 
     node->controlsId=id;

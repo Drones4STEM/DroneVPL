@@ -693,17 +693,17 @@ bool format::read_frame_file(QString filename)
  * Input: QString filename = "Perform.py" - the python file name
  * Output: true - to tell if saving is successful
  *****************************************************/
-bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in)
+bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in, int tabs)
 {
     WidgetWrap* tmp = new widget();
-
     while(!stk->empty()){
         tmp = stk->top();    stk->pop();
         if(tmp->identifier=="Logic"){
+            widget_convert_to_py(tmp,in,tabs++);
             std::stack<widget*>* s = digrapher->get_topology(tmp->mLogicNode);
-            save_py_file(s,in);
+            save_py_file(s,in,tabs++);
         }else{  //Logic转化成代码的过程不在这里进行
-            widget_convert_to_py(tmp, in);
+            widget_convert_to_py(tmp, in, tabs);
         }
 
     }
@@ -732,17 +732,20 @@ bool format::SavePyFile(QString filename)
         tmp<<"";
         qDebug()<<"file remove "<<file.remove();
     }
+
     qDebug()<<"file copy "
             <<QFile::copy("../DroneVPL/pycode/prepare.py",filename);
 
     qDebug()<<filename;
     file.open(QIODevice::Append);
     QTextStream in(&file);
+    in<<"\n\n\nimport math\n";
     in<<"\n\n\n#========specified code=============\n";
+
 
     QMap<QString, widget*>* m = &(Map);
     std::stack<widget*>* stk = digrapher->get_topology(0);
-    save_py_file(stk,in);
+    save_py_file(stk,in,0);
 
     in<<"\nmyCopter.exit()\n";
     file.close();
@@ -760,10 +763,10 @@ bool format::SavePyFile(QString filename)
  * Output: none
  *****************************************************/
 
-void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
+void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
 {
 
-    if(w->identifier=="VarType"){    //如果传入的控件是VAR
+    if(w->identifier=="VarType"){    //如果传入的控件是VarType
         VarNode* tmp = w->mVarTypeNode;
         stream<<tmp->text()<<" ";
         int i = 0;
@@ -771,63 +774,201 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
         for(i=1;i<tmp->num;i++){
             stream<<","<<tmp->array[i]->text();
         }
-        stream<<";";
+        stream<<"\n";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="VarDef"){
+        VardefNode* tmp = w->mVarDefNode;
+        QString s;
+        ComputeNode* cn;
+        if(tmp->myStringText!=""){
+            s = tmp->text() + "=" + tmp->myStringText;
+        }
+        if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
+            cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
+            if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
+                cn->rect1text = "(" + s + ")";
+            else
+                cn->rect2text = "(" + s + ")";
+        }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
+            VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
+            vn->myStringText = "(" + s + ")";
+        }else if(tmp->yuan->myLinks.isEmpty()){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->text()<<"="<<s;
+        }
+
     }
 
     if(w->identifier=="Battery"){    //如果传入的控件是Battery
+        BatteryNode* tmp = w->mBatteryNode;
+        if(tmp->node1!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.battery.voltage\n";
+        }
+        if(tmp->node2!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"(myCopter.battery.current * 10)\n";
+        }
+        if(tmp->node3!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.battery.level\n";
+        }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
-    if(w->identifier=="Gimbal"){    //如果传入的控件是Battery
+    if(w->identifier=="Attitude"){    //如果传入的控件是Attitude
+        AttitudeNode* tmp = w->mAttitudeNode;
+        if(tmp->node1!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.attitude.roll\n";
+        }
+        if(tmp->node2!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.attitude.pitch\n";
+        }
+        if(tmp->node3!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.attitude.yaw\n";
+        }
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="Channel"){    //如果传入的控件是Channel
+        ChannelNode* tmp = w->mChannelNode;
+        if(tmp->node1!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(1)]\n";
+        }
+        if(tmp->node2!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(2)]\n";
+        }
+        if(tmp->node3!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(3)]\n";
+        }
+        if(tmp->node4!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node4->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(4)]\n";
+        }
+        if(tmp->node5!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node5->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(5)]\n";
+        }
+        if(tmp->node6!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node6->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(6)]\n";
+        }
+        if(tmp->node7!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node7->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(7)]\n";
+        }
+        if(tmp->node8!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node8->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(8)]\n";
+        }
+        if(tmp->node9!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node9->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.channels[str(9)]\n";
+        }
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
+    if(w->identifier=="RangeFinder"){    //如果传入的控件是RangeFinder
+        RangeFinderNode* tmp = w->mRangeFinderNode;
+        if(tmp->node2!=0){
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<"myCopter.rangefinder.distance\n";
+        }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
     if(w->identifier=="TakeOff"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"if not myCopter.takeoff(1):\n"
-              <<"   sys.exit(1)\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"if not myCopter.takeoff(1):\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"   sys.exit(1)\n";
     }
     if(w->identifier=="Land"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        stream<<"timeoutCounter = 0\n"
-              <<"while not myCopter.land():\n"
-              <<"    timeoutCounter += 1\n"
-              <<"    if timeoutCounter > 3:\n"
-              <<"        print \"Critical: Cannot land the vehicle after 3 retries.\"\n"
-              <<"        sys.exit(1)";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"timeoutCounter = 0\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"while not myCopter.land():\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"    timeoutCounter += 1\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"    if timeoutCounter > 3:\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"        print \"Critical: Cannot land the vehicle after 3 retries.\"\n";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"        sys.exit(1)";
     }
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         if(w->mGoNode->direction=="GoUp"){
-            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n"
-                  <<"myCopter.send_nav_velocity(0, 0, -0.2)\n"
-                  <<"time.sleep(5)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"myCopter.send_nav_velocity(0, 0, -0.2)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            stream<<"print \"Going down for 0.2m/s for 5 seconds\"\n"
-                  <<"myCopter.send_nav_velocity(0, 0, 0.2)\n"
-                  <<"time.sleep(5)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"print \"Going down for 0.2m/s for 5 seconds\"\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"myCopter.send_nav_velocity(0, 0, 0.2)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoRight"){
-            stream<<"print \"Going rightward at 1m/s for 5s\"\n"
-                  <<"myCopter.send_nav_velocity(1, 0, 0)\n"
-                  <<"time.sleep(5)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"print \"Going rightward at 1m/s for 5s\"\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"myCopter.send_nav_velocity(1, 0, 0)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
-            stream<<"print \"Going leftward at 1m/s for 5s\"\n"
-                  <<"myCopter.send_nav_velocity(-1, 0, 0)\n"
-                  <<"time.sleep(5)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"myCopter.send_nav_velocity(-1, 0, 0)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Forward"){
-            stream<<"print \"Going forward at 1m/s for 5s\"\n"
-                  <<"myCopter.send_nav_velocity(0, -1, 0)\n"
-                  <<"time.sleep(5)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"myCopter.send_nav_velocity(0, -1, 0)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Backward"){
-            stream<<"Going backward at 1m/s for 5s\"\n"
-                  <<"myCopter.send_nav_velocity(0, 1, 0)\n"
-                  <<"time.sleep(5)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"myCopter.send_nav_velocity(0, 1, 0)\n";
+            for(int i=1;i<=tabs;i++) stream<<"   ";
+            stream<<"time.sleep(5)\n";
         }
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
@@ -837,6 +978,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     }
     if(w->identifier=="Hover"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        for(int i=1;i<=tabs;i++) stream<<"   ";
         stream<<"time.sleep(5)\n";
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
@@ -845,12 +987,75 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     }
 
     if(w->identifier=="Compute"){    //如果传入的控件是Compute
+        ComputeNode* tmp = w->mComputeNode;
+        QString s;
+        QString s1="",s2="";
+        if(tmp->rect1text!=""){
+            s1 = tmp->rect1text;
+        }
+        if(tmp->rect2text!=""){
+            s2 = tmp->rect2text;
+        }
+        if(tmp->text()=="cos"){
+            s = "cos(" + s2 + ")";
+        }else
+        if(tmp->text()=="sin"){
+            s = "sin(" + s2 + ")";
+        }else
+        if(tmp->text()=="tan"){
+            s = "tan(" + s2 + ")";
+        }else
+        if(tmp->text()=="log"){
+            s = "log10(" + s2 + ")/log10(" + s1 + ")";
+        }else
+        if(tmp->text()=="e"){
+            s = s1 + "**" + s2;
+        }else
+        if(tmp->text()=="="){
+            s = s1 + "==" + s2;
+        }else{
+            s = s1 + tmp->text() + s2;
+        }
+
+        if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
+            VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
+            vn->myStringText = "(" + s + ")";
+        }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
+            ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
+            if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
+                cn->rect1text = "(" + s + ")";
+            else
+                cn->rect2text = "(" + s + ")";
+        }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
     if(w->identifier=="Logic"){    //如果传入的控件是Logic
-        //理论上讲Logic不会被传到这个函数里执行
-        qDebug()<<"format::widget_convert_to_py()\n"<<w->name<<"(if you see logic is print like now,then this is a bug)";
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<w->mLogicNode->box->currentText()<<" ";
+        ComputeNode* tmp = w->mLogicNode->yuan2->myLinks.toList()[0]->fromYuan()->master->mComputeNode;
+        if(tmp->text()=="cos"){
+            stream<<"cos("<<tmp->rect2->text()<<")";
+        }else
+        if(tmp->text()=="sin"){
+            stream<<"sin("<<tmp->rect2->text()<<")";
+        }else
+        if(tmp->text()=="tan"){
+            stream<<"tan("<<tmp->rect2->text()<<")";
+        }else
+        if(tmp->text()=="log"){
+            stream<<"log10("<<tmp->rect2->text()<<")/log10("<<tmp->rect1->text()<<")";
+        }else
+        if(tmp->text()=="e"){
+            stream<<tmp->rect1->text()<<"**"<<tmp->rect2->text();
+        }else
+        if(tmp->text()=="="){
+            stream<<tmp->rect1->text()<<"=="<<tmp->rect2->text();
+        }else{
+            stream<<tmp->rect1->text()<<tmp->text()<<tmp->rect2->text();
+        }
+        stream<<":\n";
+
     }
 /*
     if(iter->value->yuan->myLinks->mytoyuan != nullptr){    //有后置控件
@@ -858,7 +1063,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream)
     }
 */
 }
-
 
 
 /*******************************************************************************************
