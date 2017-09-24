@@ -974,17 +974,17 @@ QVariant ChannelNode::itemChange(GraphicsItemChange change, const QVariant &valu
         if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
         {qDebug()<<"........if";
             yuan->setPos(pos().x(),
-                         pos().y());
+                         pos().y() + outlineRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
             yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y() - outlineRect().height());
+                         pos().y());
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
 
             node1->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
-                          pos().y());
+                          pos().y() - outlineRect().height()/2 + node1->outlineRect().height()/2);
             node2->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
                           node1->pos().y() + node1->outlineRect().height());
             node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
@@ -1003,8 +1003,10 @@ QVariant ChannelNode::itemChange(GraphicsItemChange change, const QVariant &valu
                           node1->pos().y() + 8*node1->outlineRect().height());
         }else{
             qDebug()<<"........else";
-            setPos(node1->x()- outlineRect().width()/2 -node1->outlineRect().width()/2,
-                   node1->y());
+            //setPos(node1->x()- outlineRect().width()/2 -node1->outlineRect().width()/2,
+            //       node1->y());
+            setPos(yuan2->pos().x() + yuan2->outlineRect().width()/2 + outlineRect().width()/2,
+                   yuan2->pos().y());
         }
     }
     return QGraphicsItem::itemChange(change, value);
