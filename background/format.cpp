@@ -972,6 +972,8 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"print \"turn\"\n";
         //turn目前没有要对应的代码
 
     }
@@ -982,6 +984,8 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"\"delay\"\n";
         //目前没有要对应的代码
     }
 
@@ -1032,7 +1036,8 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
                     cn->rect2text = "(" + s + ")";
             }
         }
-
+        for(int i=1;i<=tabs;i++) stream<<"   ";
+        stream<<"\"if you see this,it means this compute was compiled independently, the code is wrong.but this does not influence your program.\"\n";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
