@@ -699,9 +699,10 @@ bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in, int tabs)
     while(!stk->empty()){
         tmp = stk->top();    stk->pop();
         if(tmp->identifier=="Logic"){
-            widget_convert_to_py(tmp,in,tabs++);
+            widget_convert_to_py(tmp,in,tabs);
             std::stack<widget*>* s = digrapher->get_topology(tmp->mLogicNode);
-            save_py_file(s,in,tabs++);
+            save_py_file(s,in,++tabs);
+            tabs--;
         }else{  //Logic转化成代码的过程不在这里进行
             widget_convert_to_py(tmp, in, tabs);
         }
@@ -895,7 +896,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         RangeFinderNode* tmp = w->mRangeFinderNode;
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode->text()<<"=";
             stream<<"myCopter.rangefinder.distance\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -925,8 +926,8 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     }
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+        for(int i=1;i<=tabs;i++) stream<<"   ";
         if(w->mGoNode->direction=="GoUp"){
-            for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, 0, -0.2)\n";
@@ -934,7 +935,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"print \"Going down for 0.2m/s for 5 seconds\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, 0, 0.2)\n";
@@ -942,7 +942,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoRight"){
-            for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"print \"Going rightward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(1, 0, 0)\n";
@@ -950,7 +949,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
-            for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"print \"Going leftward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(-1, 0, 0)\n";
@@ -958,16 +956,14 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Forward"){
-            for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
+            stream<<"print \"Going forward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, -1, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep(5)\n";
         }
         if(w->mGoNode->direction=="Backward"){
-            for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
+            stream<<"print \"Going backward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, 1, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
