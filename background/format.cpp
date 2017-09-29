@@ -782,22 +782,25 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         QString s;
         ComputeNode* cn;
         if(tmp->myStringText!=""){
+            s = tmp->myStringText;
+        }
+        if(!tmp->yuan->myLinks.isEmpty()){
             s = tmp->text() + "=" + tmp->myStringText;
-        }
-        if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
-            cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
-            if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
-                cn->rect1text = "(" + s + ")";
-            else
-                cn->rect2text = "(" + s + ")";
-        }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
-            VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
-            vn->myStringText = "(" + s + ")";
-        }else if(tmp->yuan->myLinks.isEmpty()){
+            if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
+                cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
+                if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan()){
+                    cn->rect1text = "(" + s + ")";
+                }else{
+                    cn->rect2text = "(" + s + ")";
+                }
+            }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
+                VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
+                vn->myStringText = "(" + s + ")";
+            }
+        }else{
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->text()<<"="<<s;
+            stream<<tmp->text()<<"="<<s<<"\n";
         }
-
     }
 
     if(w->identifier=="Battery"){    //如果传入的控件是Battery
@@ -992,9 +995,13 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         QString s1="",s2="";
         if(tmp->rect1text!=""){
             s1 = tmp->rect1text;
+        }else{
+            s1 = tmp->rect1->text();
         }
         if(tmp->rect2text!=""){
             s2 = tmp->rect2text;
+        }else{
+            s2 = tmp->rect2->text();
         }
         if(tmp->text()=="cos"){
             s = "cos(" + s2 + ")";
@@ -1017,16 +1024,19 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             s = s1 + tmp->text() + s2;
         }
 
-        if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
-            VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
-            vn->myStringText = "(" + s + ")";
-        }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
-            ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
-            if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
-                cn->rect1text = "(" + s + ")";
-            else
-                cn->rect2text = "(" + s + ")";
+        if(!tmp->yuan->myLinks.isEmpty()){
+            if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
+                VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
+                vn->myStringText = "(" + s + ")";
+            }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
+                ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
+                if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
+                    cn->rect1text = "(" + s + ")";
+                else
+                    cn->rect2text = "(" + s + ")";
+            }
         }
+
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
 
