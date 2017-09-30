@@ -252,7 +252,7 @@ bool newscene::CreateTakeOff(QPointF point, int id)
 bool newscene::CreateLand(QPointF point, int id)
 {
     LandNode *node=new LandNode;
-    node->setText(tr("Land\n %1 s").arg(node->time));
+    node->setText(tr("Land"));
 
     node->setPos(point);
     this->addItem(node);
@@ -286,7 +286,7 @@ bool newscene::CreateLand(QPointF point, int id)
 bool newscene::CreateGo(QPointF point, int id, int index)
 {
     GoNode *node=new GoNode;
-    node->setText(tr(" %1 m/s").arg(node->groundspeed));
+    node->setText(tr(" %1 m/s \n %2 s").arg(node->groundspeed).arg(node->Time));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -344,7 +344,7 @@ bool newscene::CreateTurn(QPointF point, int id, int index)
 {
     TurnNode *node=new TurnNode;
 
-    node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" %1 ").arg(node->Angel));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -643,7 +643,9 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     emit sig_connectItem(node);
     return true;
 }
-
+/*
+这个函数好像是我写的，然后忘记用了…… by gjf
+*/
 bool newscene::CreateTriCompute(QPointF point, int id)
 {
     ComputeNode *node=new ComputeNode;
@@ -1257,11 +1259,10 @@ bool newscene::CreateTakeOff(TakeOffNode* node)
 }
 bool newscene::CreateLand(LandNode* node)
 {
-    node->setText(tr("Land on\n %1 s").arg(node->time));
+    node->setText(tr("Land"));
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
-
 
     this->clearSelection();
     node->setSelected(true);
@@ -1278,7 +1279,7 @@ bool newscene::CreateLand(LandNode* node)
 }
 bool newscene::CreateGo(GoNode* node)
 {
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->time));
+    node->setText(tr(" %1 m/s \n %2 s").arg(node->groundspeed).arg(node->Time));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -1321,7 +1322,7 @@ bool newscene::CreateGo(GoNode* node)
 }
 bool newscene::CreateTurn(TurnNode* node)
 {
-    node->setText(tr(" %1  \n %2 s").arg(node->angel).arg(node->time));
+    node->setText(tr(" %1 ").arg(node->Angel));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 

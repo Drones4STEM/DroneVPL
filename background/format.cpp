@@ -103,6 +103,8 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
              stream.writeTextElement("location_x",x);
              y = QString::number((long)ww->mTakeOffNode->pos().y(),10);
              stream.writeTextElement("location_y",y);
+             QString Altitude = QString::number((long)ww->mTakeOffNode->myAltitude(),10);
+             stream.writeTextElement("Altitude",Altitude);
              //stream.writeStartElement("arrow_out");
         }
         if(identifier == "Land"){ //降落动作
@@ -116,18 +118,26 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mGoNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            QString GroundSpeed = QString::number((long)ww->mGoNode->myGroundSpeed(),10);
+            stream.writeTextElement("GroudSpeed",GroundSpeed);
+            QString Time = QString::number((long)ww->mGoNode->myTime(),10);
+            stream.writeTextElement("Time",Time);
         }
         if(identifier == "Turn"){ //转向动作
             x = QString::number((long)ww->mTurnNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mTurnNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            QString Angel = QString::number((long)ww->mTurnNode->myAngel(),10);
+            stream.writeTextElement("Angel",Angel);
         }
         if(identifier == "Hover"){ //悬停动作
             x = QString::number((long)ww->mHoverNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mHoverNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            QString Time = QString::number((long)ww->mHoverNode->myTime(),10);
+            stream.writeTextElement("Time",Time);
         }
         if(identifier == "Delay"){ //延时动作
             x = QString::number((long)ww->mDelayNode->pos().x(),10);
@@ -154,6 +164,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mVarTypeNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            stream.writeTextElement("data_type",ww->mVarTypeNode->text());
             //stream.writeTextElement("data_type",iter->);
             //stream.writeStartElement("arrow_out");
         }
@@ -171,6 +182,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             QString seq;
             seq = QString::number((long)ww->mVarDefNode->seq,10);
             stream.writeTextElement("sequence",seq);
+            stream.writeTextElement("Variable",ww->mVarTypeNode->text());
             //stream.writeStartElement("arrow_out");
         }
         stream.writeEndElement();   //correspond to writeStartElement("VAR")
@@ -446,27 +458,58 @@ bool format::read_frame_file(QString filename)
                     }
 
                     QPointF point(location_x,location_y);
-                    try{
-                        if(type=="TakeOff"){
-                            CreateTakeOff(point,id); //在窗口中生成takeoff控件
+                    if(type=="TakeOff"){
+                        stream.readNext();
+                        stream.readNext();
+                        double Altitude;
+                        if(stream.name().toString()=="Altitude"){
+                            Altitude = stream.readElementText().toDouble();
+                            qDebug()<<"Altitude: "<<Altitude;
                         }
-                        if(type=="Land"){
-                            CreateLand(point,id); //在窗口中生成takeoff控件
+                        CreateTakeOff(point,id,Altitude); //在窗口中生成takeoff控件
+                    }
+                    if(type=="Land"){
+                        CreateLand(point,id); //在窗口中生成takeoff控件
+                    }
+                    if(type=="Go"){
+                        stream.readNext();
+                        stream.readNext();
+                        double GroundSpeed;
+                        if(stream.name().toString()=="GroudSpeed"){
+                            GroundSpeed = stream.readElementText().toDouble();
+                            qDebug()<<"GroudSpeed: "<<GroundSpeed;
                         }
-                        if(type=="Go"){
-                            CreateGo(point,id); //在窗口中生成takeoff控件
+                        stream.readNext();
+                        stream.readNext();
+                        double Time;
+                        if(stream.name().toString()=="Time"){
+                            Time = stream.readElementText().toDouble();
+                            qDebug()<<"Time: "<<Time;
                         }
-                        if(type=="Turn"){
-                            CreateTurn(point,id); //在窗口中生成takeoff控件
+                        CreateGo(point,id,GroundSpeed,Time); //在窗口中生成takeoff控件
+                    }
+                    if(type=="Turn"){
+                        stream.readNext();
+                        stream.readNext();
+                        double Angel;
+                        if(stream.name().toString()=="Angel"){
+                            Angel = stream.readElementText().toDouble();
+                            qDebug()<<"Angel: "<<Angel;
                         }
-                        if(type=="Hover"){
-                            CreateHover(point,id); //在窗口中生成takeoff控件
+                        CreateTurn(point,id,Angel); //在窗口中生成takeoff控件
+                    }
+                    if(type=="Hover"){
+                        stream.readNext();
+                        stream.readNext();
+                        double Time;
+                        if(stream.name().toString()=="Time"){
+                            Time = stream.readElementText().toDouble();
+                            qDebug()<<"Time: "<<Time;
                         }
-                        if(type=="Delay"){
-                            CreateDelay(point,id); //在窗口中生成takeoff控件
-                        }
-                    }catch(exception e){
-                       ;
+                        CreateHover(point,id,Time); //在窗口中生成takeoff控件
+                    }
+                    if(type=="Delay"){
+                        CreateDelay(point,id); //在窗口中生成takeoff控件
                     }
                 }
             //}
@@ -905,7 +948,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="TakeOff"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<"if not myCopter.takeoff(1):\n";
+        stream<<"if not myCopter.takeoff("<<w->mTakeOffNode->myAltitude()<<"):\n";
         for(int i=1;i<=tabs;i++) stream<<"   ";
         stream<<"   sys.exit(1)\n";
     }
@@ -928,59 +971,61 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         for(int i=1;i<=tabs;i++) stream<<"   ";
         if(w->mGoNode->direction=="GoUp"){
-            stream<<"print \"Going upward for 0.2m/s for 5 seconds\"\n";
+            stream<<"print \"Going upward\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(0, 0, -0.2)\n";
+            stream<<"myCopter.send_nav_velocity(0, 0,"<<(-(w->mGoNode->myGroundSpeed()))<<")\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"time.sleep(5)\n";
+            stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            stream<<"print \"Going down for 0.2m/s for 5 seconds\"\n";
+            stream<<"print \"Going down\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(0, 0, 0.2)\n";
+            stream<<"myCopter.send_nav_velocity(0, 0,"<<w->mGoNode->myGroundSpeed()<<")\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"time.sleep(5)\n";
+            stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoRight"){
             stream<<"print \"Going rightward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(1, 0, 0)\n";
+            stream<<"myCopter.send_nav_velocity("<<w->mGoNode->myGroundSpeed()<<", 0, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"time.sleep(5)\n";
+            stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
             stream<<"print \"Going leftward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(-1, 0, 0)\n";
+            stream<<"myCopter.send_nav_velocity("<<(-(w->mGoNode->myGroundSpeed()))<<", 0, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"time.sleep(5)\n";
+            stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="Forward"){
             stream<<"print \"Going forward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(0, -1, 0)\n";
+            stream<<"myCopter.send_nav_velocity(0, "<<(-(w->mGoNode->myGroundSpeed()))<<", 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"time.sleep(5)\n";
+            stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="Backward"){
             stream<<"print \"Going backward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(0, 1, 0)\n";
+            stream<<"myCopter.send_nav_velocity(0, "<<(w->mGoNode->myGroundSpeed())<<", 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"time.sleep(5)\n";
+            stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
     }
     if(w->identifier=="Turn"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<"print \"turn\"\n";
-        //turn目前没有要对应的代码
+        if(w->mTurnNode->box->currentIndex()==0)
+            stream<<"myCopter.condition_yaw("<<w->mTurnNode->myAngel()<<", relative = True, clock_wise = False)\n";
+        if(w->mTurnNode->box->currentIndex()==1)
+            stream<<"myCopter.condition_yaw("<<w->mTurnNode->myAngel()<<", relative = True, clock_wise = True)\n";
 
     }
     if(w->identifier=="Hover"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<"time.sleep(5)\n";
+        stream<<"time.sleep("<<w->mHoverNode->myTime()<<")\n";
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1088,7 +1133,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
  *        int id - widget id
  * Output: bool
  *******************************************************************************************/
-bool format::CreateTakeOff(QPointF point,int id)
+bool format::CreateTakeOff(QPointF point,int id,double Altitude)
 {
     TakeOffNode *node=new TakeOffNode;
     node->lx = point.x();
@@ -1097,6 +1142,7 @@ bool format::CreateTakeOff(QPointF point,int id)
     node->identifier="TakeOff";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    node->altitude = Altitude;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     node->yuan->master = tmp;
@@ -1120,7 +1166,7 @@ bool format::CreateLand(QPointF point, int id)
     return true;
 }
 
-bool format::CreateGo(QPointF point, int id)
+bool format::CreateGo(QPointF point, int id, double Speed, double Time)
 {
     GoNode *node=new GoNode;
     node->lx = point.x();
@@ -1129,6 +1175,8 @@ bool format::CreateGo(QPointF point, int id)
     node->identifier="Go";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    node->groundspeed = Speed;
+    node->Time = Time;
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
@@ -1139,7 +1187,7 @@ bool format::CreateGo(QPointF point, int id)
     return true;
 }
 
-bool format::CreateTurn(QPointF point, int id)
+bool format::CreateTurn(QPointF point, int id, double Angel)
 {
     TurnNode *node=new TurnNode;
 
@@ -1149,6 +1197,8 @@ bool format::CreateTurn(QPointF point, int id)
     node->identifier="Turn";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    node->Angel = Angel;
+
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
@@ -1159,7 +1209,7 @@ bool format::CreateTurn(QPointF point, int id)
     return true;
 }
 
-bool format::CreateHover(QPointF point, int id)
+bool format::CreateHover(QPointF point, int id, double Time)
 {
     HoverNode *node=new HoverNode;
     node->lx = point.x();
@@ -1168,6 +1218,7 @@ bool format::CreateHover(QPointF point, int id)
     node->identifier="Hover";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    node->time = Time;
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;

@@ -53,31 +53,14 @@ LandNode::LandNode()
 {
     identifier="Land";
     rank = 0;
-    time=0.0;
 }
 
-void LandNode::setTime(double t)
-{
-    if(isSelected()&&t!=myTime())
-    {
-        time=t;
-        setText(tr("Land On\n %1 s").arg(time));
-    }
-}
 
-double LandNode::myTime()
-{
-    return time;
-}
+
 
 void LandNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    double t = QInputDialog::getDouble(event->widget(),
-                           tr("Edit Time"), tr("Enter new time:"),
-                           QLineEdit::Normal, time);
-    time=t;
-    setText(tr("Land On\n %1 s").arg(t));
-    emit timeChanged(time);
+    ;
 }
 
 QVariant LandNode::itemChange(GraphicsItemChange change,
@@ -106,14 +89,10 @@ QVariant LandNode::itemChange(GraphicsItemChange change,
 }
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-int GoNode::riseNodeNum=0;      int GoNode::fallNodeNum=0;
-int GoNode::advanceNodeNum=0;   int GoNode::backNodeNum=0;
-int GoNode::rightNodeNum=0;     int GoNode::leftNodeNum=0;
 GoNode::GoNode()
 {
     box=new QComboBox;
-    time=0;
+    Time=0;
     groundspeed = 0.0;
 
     identifier="Go";
@@ -128,12 +107,16 @@ GoNode::~GoNode()
 
 void GoNode::setTime(double t)
 {
-    time=t;
+    if(isSelected()&&t!=myTime())
+    {
+        Time=t;
+        setText(tr("%1 s").arg(Time));
+    }
 }
 
 double GoNode::myTime()
 {
-    return time;
+    return Time;
 }
 
 void GoNode::setGroundSpeed(double s)
@@ -155,8 +138,12 @@ void GoNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     double gs = QInputDialog::getDouble(event->widget(),
                            tr("Edit GroudSpeed"), tr("Enter new GroundSpeed:"),
                            QLineEdit::Normal, groundspeed);
+    double t = QInputDialog::getDouble(event->widget(),
+                           tr("Edit fly time"), tr("Enter new time:"),
+                           QLineEdit::Normal, groundspeed);
     groundspeed=gs;
-    setText(tr(" %1 m/s").arg(gs));
+    Time = t;
+    setText(tr(" %1 m/s \n %2 s").arg(gs).arg(t));
     emit groundSpeedChanged(groundspeed);
 }
 
@@ -193,43 +180,31 @@ void GoNode::setDirection()
     case 0:
     {
         direction="GoUp";
-        riseNodeNum++;
-        //controlsId=riseNodeNum;
         break;
     }
     case 1:
     {
         direction="GoDown";
-        fallNodeNum++;
-        //controlsId=fallNodeNum;
         break;
     }
     case 2:
     {
         direction="Forward";
-        advanceNodeNum++;
-        //controlsId=advanceNodeNum;
         break;
     }
     case 3:
     {
         direction="Backward";
-        backNodeNum++;
-        //controlsId=backNodeNum;
         break;
     }
     case 4:
     {
         direction="GoRight";
-        rightNodeNum++;
-        //controlsId=rightNodeNum;
         break;
     }
     case 5:
     {
         direction="GoLeft";
-        leftNodeNum++;
-        //controlsId=leftNodeNum;
         break;
     }
     default:
@@ -403,9 +378,7 @@ void SomeNode::setNewIdentifier()
 TurnNode::TurnNode()
 {
     box=new QComboBox;
-    speed=0;
-    time=0;
-    angel=0;
+    Angel=0;
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
 
@@ -418,70 +391,23 @@ TurnNode::~TurnNode()
     delete box;
 }
 
-void TurnNode::setTime(double t)
-{
-    time=t;
-}
-
-double TurnNode::myTime()
-{
-    return time;
-}
-
-void TurnNode::setSpeed(double s)
-{
-    if(isSelected()&&s!=mySpeed())
-    {
-        speed=s;
-        setText(tr(" %1 s").arg(speed));
-    }
-}
-
-double TurnNode::mySpeed()
-{
-    return speed;
-}
-
 void TurnNode::setAngel(double a)
 {
-    angel=a;
+    Angel=a;
 }
 
 double TurnNode::myAngel()
 {
-    return angel;
+    return Angel;
 }
 
 void TurnNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    int index=box->currentIndex();
-    switch (index) {
-    case 0:
-    case 1:
-    {
-        double a = QInputDialog::getDouble(event->widget(),
-                               tr("Edit Angel"), tr("Enter new angel:"),
-                               QLineEdit::Normal, angel);
-        double t = QInputDialog::getDouble(event->widget(),
-                               tr("Edit Time"), tr("Enter new time:"),
-                               QLineEdit::Normal, time);
-        angel=a;time=t;
-        setText(tr(" %1  \n %2 s").arg(a).arg(t));
-        break;
-    }
-    case 2:
-    case 3:
-    {
-        double t = QInputDialog::getDouble(event->widget(),
-                               tr("Edit Time"), tr("Enter new time:"),
-                               QLineEdit::Normal, time);
-        time=t;
-        setText(tr(" %1 s").arg(t));
-        break;
-    }
-    default:
-        break;
-    }
+    double a = QInputDialog::getDouble(event->widget(),
+                           tr("Edit Angel"), tr("Enter new angel:"),
+                           QLineEdit::Normal, Angel);
+    setText(tr(" %1 ").arg(a));
+    Angel=a;
 }
 
 QVariant TurnNode::itemChange(GraphicsItemChange change,
