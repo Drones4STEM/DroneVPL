@@ -36,7 +36,9 @@ public:
     QComboBox* box;
     QGraphicsItem* item;
     ComputeSmallNode *rect1;
+    QString rect1text;
     ComputeSmallNode *rect2;
+    QString rect2text;
 
     static int ComputeNodeAddNum; static int ComputeNodeSubNum;
     static int ComputeNodeMulNum; static int ComputeNodeDivNum;

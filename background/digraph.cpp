@@ -58,16 +58,12 @@ std::stack<widget*>* digraph::get_topology(Logic *l)
     }
 
     //py代码逻辑上的需要，在rank1，必须把VarType控件放在拓扑结构的最开头。顺便规定只能在rank1放没有出入度的var
-    typename QMap<QString, widget*>::iterator iter;
-    if(rank==1){
-        for(iter=Map->begin();iter!=Map->end();iter++){
-            if(iter.value()->identifier=="VarType"&&iter.value()->rank()==rank) stack->push(iter.value());
-        }
-        for(iter=Map->begin();iter!=Map->end();iter++){
-            if(iter.value()->identifier=="VarDef"&&iter.value()->rank()==rank) stack->push(iter.value());
+    typename QMap<QString, widget*>::iterator iter2;
+    if(l==0){
+        for(iter2=Map->begin();iter2!=Map->end();iter2++){
+            if(iter2.value()->identifier=="VarType") stack->push(iter2.value());
         }
     }
-
     return stack;
 
 }
@@ -100,13 +96,17 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
             if(it.value()->rank()==((l==0)?1:l->rank+1))
                 if(it.value()->check_yuan_in()==false){     //没有入度
                     //如果是Logic条件判断式，则无视。之后在转py读取的时候访问
-                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value()))
+                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value())){
                         continue;
-                    else
+                    }else if(it.value()->identifier=="VarType" || it.value()->identifier=="VarDef"){
+                        continue;
+                    }else
                         stk.push(it.value());
                 }
     }
+
     return stk;
+
 }
 /*****************************************************
  * Function name: DFS
