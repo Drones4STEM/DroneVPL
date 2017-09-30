@@ -46,20 +46,17 @@ protected:
 class LandNode:public NewNode
 {
     Q_OBJECT
-    Q_PROPERTY(double myTime READ myTime WRITE setTime)
+//    Q_PROPERTY(double myTime READ myTime WRITE setTime)
 public:
     enum {Type = LandonNodeType};
     LandNode();
 
     int type() const { return Type; }
 
-    double time;
-    double myTime();
-
 signals:
-    void timeChanged(double t);
+
 public slots:
-    void setTime(double t);
+
 
 
 protected:
@@ -78,6 +75,7 @@ class GoNode:public NewNode
 {
     Q_OBJECT
     Q_PROPERTY(double myGroundSpeed READ myGroundSpeed WRITE setGroundSpeed)
+    Q_PROPERTY(double myTime READ myTime WRITE setTime)
     Q_PROPERTY(QString myDirection READ myDirection)
 public:
     enum {Type = TranslationNodeType};
@@ -86,7 +84,7 @@ public:
 
     int type() const { return Type; }
 
-    double time;
+    double Time;
     double groundspeed;
     QString direction;
     QComboBox *box;
@@ -97,11 +95,6 @@ public:
     double myTime();
     double myGroundSpeed();
     QString myDirection() const {return direction;}
-
-
-    static int riseNodeNum;     static int fallNodeNum;
-    static int advanceNodeNum;  static int backNodeNum;
-    static int rightNodeNum;    static int leftNodeNum;
 
 signals:
     void groundSpeedChanged(double s);
@@ -127,7 +120,7 @@ public slots:
 class TurnNode:public NewNode
 {
     Q_OBJECT
-    Q_PROPERTY(double mySpeed READ mySpeed WRITE setSpeed)
+    Q_PROPERTY(double myAngel READ myAngel WRITE setAngel)
     Q_PROPERTY(QString myDirection READ myDirection)
 public:
     enum {Type = SomeNodeType};
@@ -136,22 +129,19 @@ public:
 
     int type() const { return Type; }
 
-    double time,speed,angel;
+    double Angel;
     QString direction;
     QComboBox*box;
     QGraphicsItem *item;
 
-    void setTime(double t);
-    double myTime();
-    double mySpeed();
     void setAngel(double a);
     double myAngel();
     QString myDirection() const{return direction;}
 
 signals:
-    void speedChanged(double s);
+
 public slots:
-    void setSpeed(double s);
+
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

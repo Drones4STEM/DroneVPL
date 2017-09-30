@@ -42,6 +42,9 @@ ComputeNode::ComputeNode()
     rect1 = new ComputeSmallNode;
     rect2 = new ComputeSmallNode;
 
+    rect1text = "";
+    rect1text = "";
+
     identifier="Compute";
     rank = 0;
 }

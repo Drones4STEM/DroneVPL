@@ -2274,7 +2274,7 @@ void DiagramWindow::createMenus()
              <<addCosNodeAction<<addSinNodeAction
              <<addTanNodeAction<<addLogNodeAction
              <<addENodeAction<<addEqualNodeAction
-             <<addMoreNodeAction<<addDivNodeAction)
+             <<addMoreNodeAction<<addLessNodeAction)
         computeMenu->addAction(action);
     addComputeNodeAction->setMenu(computeMenu);
 

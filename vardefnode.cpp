@@ -19,6 +19,8 @@ VardefNode::VardefNode()
     myInt=0;
     myDouble=0.0;
     myString="NULL";
+    myStringText = "";
+
     identifier="VarDef";
     node = 0;
     seq = -1;
