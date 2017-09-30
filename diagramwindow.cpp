@@ -42,6 +42,7 @@
 #include "format.h"
 #include "digraph.h"
 #include <QProcess>
+#include <QGraphicsTextItem>
 
 
 
@@ -1960,7 +1961,13 @@ void DiagramWindow::compile()
 
 void DiagramWindow::upload()
 {
-    system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+    //system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+    QProcess p(0);
+    //p.start("ipconfig");
+    p.start("pscp -pw fff19970210 D:\\path\\2017.txt ryanfeng@192.168.80.129:Documents/2017");
+    p.waitForStarted();
+    p.waitForFinished();
+    qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput());
 }
 
 void DiagramWindow::run()
