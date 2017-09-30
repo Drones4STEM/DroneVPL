@@ -2355,8 +2355,11 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addVardefNodeAction);
     aToolBar->addSeparator();
     aToolBar->addAction(addComputeNodeAction);
+    aToolBar->addSeparator();
     aToolBar->addAction(addIONodeAction);
+    aToolBar->addSeparator();
     aToolBar->addAction(addRecAction);
+    aToolBar->addSeparator();
     aToolBar->addAction(addLinkAction);
     addToolBar(Qt::LeftToolBarArea,aToolBar);
 }
