@@ -37,6 +37,8 @@ public:
     int myInt;
     double myDouble;
     QString myString;
+    QString myStringText;
+
 
     //存储varnode
     VarNode* node;
