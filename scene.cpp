@@ -288,6 +288,7 @@ bool newscene::CreateGo(QPointF point, int id, int index)
     GoNode *node=new GoNode;
     node->setText(tr(" %1 m/s \n %2 s").arg(node->groundspeed).arg(node->Time));
     QGraphicsItem* item=this->addWidget(node->box);
+    qDebug()<<item;
     node->item=item;
 
     node->setPos(point);
@@ -876,6 +877,12 @@ bool newscene::CreateGimbal(QPointF point, int id)
                         node->node2->pos().y() - node->node2->outlineRect().height());
     node->node3->setPos(node->node2->pos().x(),
                         node->node2->pos().y() + node->node2->outlineRect().height());
+    /*node->node2->setPos(node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        0);
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());*/
     this->addItem(node->node2);
     this->addItem(node->node1);
     this->addItem(node->node3);
@@ -1006,7 +1013,7 @@ bool newscene::CreateChannel(QPointF point, int id)
     this->addItem(node->yuan2);
 
     node->node1->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node1->outlineRect().width()/2,
-                        node->pos().y() + node->outlineRect().height()/2);
+                        node->pos().y() - node->outlineRect().height()/2 + node->node1->outlineRect().height()/2);
     node->node2->setPos(node->node1->pos().x(),
                         node->node1->pos().y() + node->node1->outlineRect().height());
     node->node3->setPos(node->node1->pos().x(),

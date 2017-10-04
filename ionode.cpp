@@ -182,9 +182,9 @@ BatteryNode::BatteryNode()
     box->addItem(tr("voltage"));
     box->addItem(tr("current"));
     box->addItem(tr("level"));
-    node1=new IoSmallNode;
-    node2=new IoSmallNode;
-    node3=new IoSmallNode;
+    node1=new IoSmallNode();
+    node2=new IoSmallNode();
+    node3=new IoSmallNode();
 
     identifier="Battery";
 }
@@ -301,8 +301,8 @@ void BatteryNode::paint(QPainter *painter,
 QVariant BatteryNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       //{
             yuan->setPos(pos().x(),
                          pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
@@ -322,12 +322,55 @@ QVariant BatteryNode::itemChange(GraphicsItemChange change, const QVariant &valu
                           node2->pos().y() - node2->outlineRect().height());
             node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
                           node2->pos().y() + node2->outlineRect().height());
-       }
+       /*}
         else{
+            qDebug()<<false;
+            qDebug()<<this->collidingItems();
             setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
                    node2->y());
-        }}
+        }*/
+    }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void BatteryNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<QGraphicsItem *> items = this->collidingItems();
+    int itemsCount = items.count();
+    qDebug()<<itemsCount;
+    for(int i=0;i<items.count();i++)
+    {
+        if(dynamic_cast<IoSmallNode*>(items[i]))
+            itemsCount--;
+    }
+    if(itemsCount>0)
+    {
+        for(int i=0;i<items.count();i++)
+        {
+            if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
+                    &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+            {
+                double dx = this->pos().x() - items[i]->pos().x();
+                double dy = this->pos().y() - items[i]->pos().y();
+                double a = items[i]->boundingRect().width()/items[i]->boundingRect().height();
+                if((abs(dx)/a>abs(dy)&&dx<=0))    //放在左边
+                    setPos(items[i]->pos().x() - items[i]->boundingRect().width()/2 - boundingRect().width()/2,
+                           items[i]->pos().y());
+                else if(abs(dy)>abs(dx)/a&&dy>=0) //放在下边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() + items[i]->boundingRect().height()/2 + boundingRect().height()/2);
+                else if(abs(dx)/a>abs(dy)&&dx>=0)  //放在右边
+                    setPos(items[i]->pos().x() + items[i]->boundingRect().width()/2 + boundingRect().width()/2,
+                           items[i]->pos().y());
+                else                               //放在上边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() - items[i]->boundingRect().height()/2 - boundingRect().height()/2);
+                break;
+            }
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 ///////////////////////////////////////////////////////////////////////////
 /*******************************************************************
@@ -344,9 +387,9 @@ GimbalNode::GimbalNode()
     box->addItem(tr("pitch"));
     box->addItem(tr("roll"));
     box->addItem(tr("yaw"));
-    node1=new IoSmallNode;
-    node2=new IoSmallNode;
-    node3=new IoSmallNode;
+    node1=new IoSmallNode();
+    node2=new IoSmallNode();
+    node3=new IoSmallNode();
 
     identifier="Gimbal";
 }
@@ -463,8 +506,9 @@ void GimbalNode::paint(QPainter *painter,
 QVariant GimbalNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       //{
+            qDebug()<<true;
             yuan->setPos(pos().x(),
                          pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
@@ -484,12 +528,54 @@ QVariant GimbalNode::itemChange(GraphicsItemChange change, const QVariant &value
                           node2->pos().y() - node2->outlineRect().height());
             node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
                           node2->pos().y() + node2->outlineRect().height());
-       }
+       /*}
         else{
+            qDebug()<<false;
             setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
                    node2->y());
-        }}
+        }*/
+    }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void GimbalNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<QGraphicsItem *> items = this->collidingItems();
+    int itemsCount = items.count();
+    qDebug()<<itemsCount;
+    for(int i=0;i<items.count();i++)
+    {
+        if(dynamic_cast<IoSmallNode*>(items[i]))
+            itemsCount--;
+    }
+    if(itemsCount>0)
+    {
+        for(int i=0;i<items.count();i++)
+        {
+            if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
+                    &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+            {
+                double dx = this->pos().x() - items[i]->pos().x();
+                double dy = this->pos().y() - items[i]->pos().y();
+                double a = items[i]->boundingRect().width()/items[i]->boundingRect().height();
+                if((abs(dx)/a>abs(dy)&&dx<=0))    //放在左边
+                    setPos(items[i]->pos().x() - items[i]->boundingRect().width()/2 - boundingRect().width()/2,
+                           items[i]->pos().y());
+                else if(abs(dy)>abs(dx)/a&&dy>=0) //放在下边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() + items[i]->boundingRect().height()/2 + boundingRect().height()/2);
+                else if(abs(dx)/a>abs(dy)&&dx>=0)  //放在右边
+                    setPos(items[i]->pos().x() + items[i]->boundingRect().width()/2 + boundingRect().width()/2,
+                           items[i]->pos().y());
+                else                               //放在上边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() - items[i]->boundingRect().height()/2 - boundingRect().height()/2);
+                break;
+            }
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 // ////////////////////////////////////////////////////////////////////////
@@ -501,8 +587,11 @@ QVariant GimbalNode::itemChange(GraphicsItemChange change, const QVariant &value
  * Inputs:
  * Outputs:
 ******************************************************************/
-IoSmallNode::IoSmallNode()
+IoSmallNode::IoSmallNode(QGraphicsItem *parent)
+    :Node(parent)
 {
+    yuan = new triYuan();
+    //yuan->setPos( outlineRect().width()/2 + yuan->boundingRect().width()/2,0);
     setFlag(ItemIsMovable,false);
     identifier="IoSmallNode";
 }
@@ -599,6 +688,7 @@ QRectF IoSmallNode::boundingRect() const
 {
     const int Margin = 6;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    //return outlineRect();
 }
 
 /*******************************************************************
@@ -790,8 +880,8 @@ void AttitudeNode::paint(QPainter *painter,
 QVariant AttitudeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       //{
             yuan->setPos(pos().x(),
                          pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
@@ -811,12 +901,53 @@ QVariant AttitudeNode::itemChange(GraphicsItemChange change, const QVariant &val
                           node2->pos().y() - node2->outlineRect().height());
             node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
                           node2->pos().y() + node2->outlineRect().height());
-       }
+       /*}
         else{
             setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
                    node2->y());
-        }}
+        }*/
+    }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void AttitudeNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<QGraphicsItem *> items = this->collidingItems();
+    int itemsCount = items.count();
+    qDebug()<<itemsCount;
+    for(int i=0;i<items.count();i++)
+    {
+        if(dynamic_cast<IoSmallNode*>(items[i]))
+            itemsCount--;
+    }
+    if(itemsCount>0)
+    {
+        for(int i=0;i<items.count();i++)
+        {
+            if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
+                    &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+            {
+                double dx = this->pos().x() - items[i]->pos().x();
+                double dy = this->pos().y() - items[i]->pos().y();
+                double a = items[i]->boundingRect().width()/items[i]->boundingRect().height();
+                if((abs(dx)/a>abs(dy)&&dx<=0))    //放在左边
+                    setPos(items[i]->pos().x() - items[i]->boundingRect().width()/2 - boundingRect().width()/2,
+                           items[i]->pos().y());
+                else if(abs(dy)>abs(dx)/a&&dy>=0) //放在下边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() + items[i]->boundingRect().height()/2 + boundingRect().height()/2);
+                else if(abs(dx)/a>abs(dy)&&dx>=0)  //放在右边
+                    setPos(items[i]->pos().x() + items[i]->boundingRect().width()/2 + boundingRect().width()/2,
+                           items[i]->pos().y());
+                else                               //放在上边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() - items[i]->boundingRect().height()/2 - boundingRect().height()/2);
+                break;
+            }
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 /////////////////////////////////////////////////////////////
@@ -971,20 +1102,21 @@ void ChannelNode::paint(QPainter *painter,
 QVariant ChannelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-        {qDebug()<<"........if";
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+        //{
+            qDebug()<<"........if";
             yuan->setPos(pos().x(),
-                         pos().y());
+                         pos().y() + outlineRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
             yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y() - outlineRect().height());
+                         pos().y());
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
 
             node1->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
-                          pos().y());
+                          pos().y() - outlineRect().height()/2 + node1->outlineRect().height()/2);
             node2->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
                           node1->pos().y() + node1->outlineRect().height());
             node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
@@ -1001,13 +1133,55 @@ QVariant ChannelNode::itemChange(GraphicsItemChange change, const QVariant &valu
                           node1->pos().y() + 7*node1->outlineRect().height());
             node9->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
                           node1->pos().y() + 8*node1->outlineRect().height());
-        }else{
+        /*}else{
             qDebug()<<"........else";
-            setPos(node1->x()- outlineRect().width()/2 -node1->outlineRect().width()/2,
-                   node1->y());
-        }
+            //setPos(node1->x()- outlineRect().width()/2 -node1->outlineRect().width()/2,
+            //       node1->y());
+            setPos(yuan2->pos().x() + yuan2->outlineRect().width()/2 + outlineRect().width()/2,
+                   yuan2->pos().y());
+        }*/
     }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void ChannelNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<QGraphicsItem *> items = this->collidingItems();
+    int itemsCount = items.count();
+    qDebug()<<itemsCount;
+    for(int i=0;i<items.count();i++)
+    {
+        if(dynamic_cast<IoSmallNode*>(items[i]))
+            itemsCount--;
+    }
+    if(itemsCount>0)
+    {
+        for(int i=0;i<items.count();i++)
+        {
+            if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
+                    &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+            {
+                double dx = this->pos().x() - items[i]->pos().x();
+                double dy = this->pos().y() - items[i]->pos().y();
+                double a = items[i]->boundingRect().width()/items[i]->boundingRect().height();
+                if((abs(dx)/a>abs(dy)&&dx<=0))    //放在左边
+                    setPos(items[i]->pos().x() - items[i]->boundingRect().width()/2 - boundingRect().width()/2,
+                           items[i]->pos().y());
+                else if(abs(dy)>abs(dx)/a&&dy>=0) //放在下边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() + items[i]->boundingRect().height()/2 + boundingRect().height()/2);
+                else if(abs(dx)/a>abs(dy)&&dx>=0)  //放在右边
+                    setPos(items[i]->pos().x() + items[i]->boundingRect().width()/2 + boundingRect().width()/2,
+                           items[i]->pos().y());
+                else                               //放在上边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() - items[i]->boundingRect().height()/2 - boundingRect().height()/2);
+                break;
+            }
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 
@@ -1139,8 +1313,8 @@ void RangeFinderNode::paint(QPainter *painter,
 QVariant RangeFinderNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       //{
             yuan->setPos(pos().x(),
                          pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
@@ -1156,10 +1330,52 @@ QVariant RangeFinderNode::itemChange(GraphicsItemChange change, const QVariant &
 
             node2->setPos(pos().x() + outlineRect().width()/2 + node2->outlineRect().width()/2,
                           pos().y());
-       }
+       /*}
         else{
             setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
                    node2->y());
-        }}
+        }*/
+    }
     return QGraphicsItem::itemChange(change, value);
 }
+
+void RangeFinderNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<QGraphicsItem *> items = this->collidingItems();
+    int itemsCount = items.count();
+    qDebug()<<itemsCount;
+    for(int i=0;i<items.count();i++)
+    {
+        if(dynamic_cast<IoSmallNode*>(items[i]))
+            itemsCount--;
+    }
+    if(itemsCount>0)
+    {
+        for(int i=0;i<items.count();i++)
+        {
+            if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
+                    &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+            {
+                double dx = this->pos().x() - items[i]->pos().x();
+                double dy = this->pos().y() - items[i]->pos().y();
+                double a = items[i]->boundingRect().width()/items[i]->boundingRect().height();
+                if((abs(dx)/a>abs(dy)&&dx<=0))    //放在左边
+                    setPos(items[i]->pos().x() - items[i]->boundingRect().width()/2 - boundingRect().width()/2,
+                           items[i]->pos().y());
+                else if(abs(dy)>abs(dx)/a&&dy>=0) //放在下边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() + items[i]->boundingRect().height()/2 + boundingRect().height()/2);
+                else if(abs(dx)/a>abs(dy)&&dx>=0)  //放在右边
+                    setPos(items[i]->pos().x() + items[i]->boundingRect().width()/2 + boundingRect().width()/2,
+                           items[i]->pos().y());
+                else                               //放在上边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() - items[i]->boundingRect().height()/2 - boundingRect().height()/2);
+                break;
+            }
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(event);
+}
+

@@ -56,7 +56,7 @@ class IoSmallNode:public Node
     Q_OBJECT
 public:
     enum {Type = IoSmallNodeType};
-    IoSmallNode();
+    IoSmallNode(QGraphicsItem *parent = 0);
 
     int type() const { return Type; }
 
@@ -120,6 +120,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -159,6 +160,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -201,6 +203,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -261,6 +264,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -298,6 +302,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // IONODE_H

@@ -35,6 +35,7 @@ public slots:
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -63,6 +64,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -105,6 +107,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
     void setDirection();
@@ -142,11 +145,11 @@ signals:
 
 public slots:
 
-
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 public slots:
     void setDirection();
 
@@ -184,6 +187,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -218,6 +222,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 
