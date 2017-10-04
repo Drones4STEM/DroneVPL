@@ -21,7 +21,8 @@
  * Inputs:
  * Outputs:
 ******************************************************************/
-Node::Node()
+Node::Node(QGraphicsItem *parent)
+    :QGraphicsObject(parent)
 {
     myTextColor = Qt::darkGreen;
     myOutlineColor = Qt::darkBlue;
@@ -264,17 +265,17 @@ QVariant Node::itemChange(GraphicsItemChange change,
 {
 
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       //{
             yuan->setPos(pos().x(),
                          pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
-       }
-        else{
+       //}
+        /*else{
             setPos(yuan->pos().x(),
-                          yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
-        }
+                          yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);*/
+        //}
     }
     return QGraphicsItem::itemChange(change, value);
 }

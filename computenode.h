@@ -50,6 +50,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 private slots:
     void setNewIdentifier();
 };

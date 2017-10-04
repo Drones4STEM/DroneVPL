@@ -205,6 +205,8 @@ DiagramWindow::DiagramWindow()
 QSize DiagramWindow::sizeHint() const
 {
     QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
+    qDebug()<<size;
+    qDebug()<<printer->paperSize(QPrinter::Point);
     size.rwidth()+=widgetCondition->sizeHint().width();
     return size.boundedTo(
            QApplication::desktop()->availableGeometry().size());

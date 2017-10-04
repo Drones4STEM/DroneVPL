@@ -22,7 +22,7 @@ class Yuan:public QGraphicsObject
 {
 public:
     enum {Type = YuanType};
-    Yuan();
+    Yuan(QGraphicsItem *parent = 0);
     ~Yuan();
 
     int type() const { return Type; }
@@ -69,7 +69,7 @@ public:
 class triYuan:public Yuan
 {
 public:
-    triYuan();
+    triYuan(QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const;
     QPainterPath shape() const;

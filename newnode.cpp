@@ -19,7 +19,8 @@
  * Inputs:
  * Outputs:
 ******************************************************************/
-NewNode::NewNode()
+NewNode::NewNode(QGraphicsItem *parent)
+    :QGraphicsObject(parent)
 {
     myTextColor = Qt::darkGreen;
     myOutlineColor = Qt::darkBlue;
