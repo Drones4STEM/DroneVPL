@@ -21,7 +21,7 @@ VarNode::VarNode()
     {
         flags[i]=false;
         array[i]=new VardefNode;
-        array[i]->setFlag(ItemIsMovable,false);
+        //array[i]->setFlag(ItemIsMovable,false);
     }
 
     identifier="VarNode";
@@ -86,14 +86,19 @@ void VarNode::paint(QPainter *painter,
 
 QVariant VarNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
-{ if (change & ItemPositionHasChanged){
+{
+    if (change & ItemPositionHasChanged)
+    {
         //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
        //{
-            int a=0;
-            for(;a<6;a++)
+            int static a=0;
+            for(a=0;a<6;a++)
             {
+                qDebug()<<a;
                 if(flags[a])
                 {
+                    qDebug()<<flags[a];
+                    qDebug()<<array[a];
                     int i=a%3;
                     int j;
                     if(a==0||a==2)j=-17;
@@ -104,8 +109,11 @@ QVariant VarNode::itemChange(GraphicsItemChange change,
                                      pos().y() + j);
                 }
             }
+
        /*}
-        else{
+        else
+        {
+            qDebug()<<false;
             if(flags[0])
             {
                 int i=0%3;
@@ -117,7 +125,7 @@ QVariant VarNode::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
-void VarNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+/*void VarNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<QGraphicsItem *> items = this->collidingItems();
     int itemsCount = items.count();
@@ -155,4 +163,4 @@ void VarNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         }
     }
     QGraphicsItem::mouseReleaseEvent(event);
-}
+}*/

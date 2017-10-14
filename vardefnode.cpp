@@ -119,8 +119,6 @@ QVariant VardefNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-       //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       //{
             yuan2->setPos(pos().x(),
                          pos().y() - 16 - yuan2->outlineRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
@@ -129,16 +127,11 @@ QVariant VardefNode::itemChange(GraphicsItemChange change,
                          pos().y() + 16 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
-       /*}
-        else{
-            setPos(yuan2->pos().x(),
-                           yuan2->pos().y()+ 16 + yuan2->outlineRect().height()/2);
-        }*/
     }
     return QGraphicsItem::itemChange(change, value);
 }
 
-void VardefNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+/*void VardefNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<QGraphicsItem *> items = this->collidingItems();
     int itemsCount = items.count();
@@ -176,5 +169,5 @@ void VardefNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         }
     }
     QGraphicsItem::mouseReleaseEvent(event);
-}
+}*/
 

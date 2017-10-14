@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QLabel>
-
+#include <QTextEdit>
 
 class ColorWidget:public QWidget
 {
@@ -115,6 +115,19 @@ private:
     void createWidgets();
     void createLayouts();
     void createConnections();
+};
+
+
+class ProcessOutputWidget:public QWidget
+{
+    Q_OBJECT
+public:
+    ProcessOutputWidget(QWidget *parent=0);
+
+    QTextEdit *textEdit;
+
+public slots:
+    void setTextEdit(QString str);
 };
 
 

@@ -1969,17 +1969,44 @@ void DiagramWindow::upload()
     p.start("pscp -pw fff19970210 D:\\path\\2017.txt ryanfeng@192.168.80.129:Documents/2017");
     p.waitForStarted();
     p.waitForFinished();
+    QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    processWidget->setTextEdit(str);
     qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput());
+    qDebug()<<str;
 }
 
 void DiagramWindow::run()
 {
-    system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+    //system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+    QProcess p(0);
+    p.start("plink -pw fff19970210 ryanfeng@192.168.80.129 python Documents/2017.txt");
+    p.waitForStarted();
+    p.waitForFinished();
+    /*if(p.isReadable())
+    {
+        qDebug()<<true;
+        QString str = QString::fromLocal8Bit(p.read(32));
+        qDebug()<<str;
+        processWidget->setTextEdit(str);
+    }*/
+    QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    if(!str.isEmpty())
+        processWidget->setTextEdit(str);
+    str = QString::fromLocal8Bit(p.readAllStandardError());
+    if(!str.isEmpty())
+        processWidget->setTextEdit(str);
+    qDebug()<<str;
 }
 
 void DiagramWindow::checkupAndCompile()
 {
-
+    QProcess more;
+    more.start("more");
+    more.write("Text to display");
+    more.closeWriteChannel();
+    qDebug()<<more.readAllStandardOutput();
+    qDebug()<<more.errorString();
+    qDebug()<<more.environment();
 }
 
 /*******************************************************************
@@ -2419,6 +2446,12 @@ void DiagramWindow::createDockWidgets()
                 tr("Mutable"),this);
     mutableDockWidget->setWidget(mutableWidget);
     addDockWidget(Qt::RightDockWidgetArea,mutableDockWidget);
+
+    processWidget = new ProcessOutputWidget;
+    QDockWidget *processDockWidget = new QDockWidget(
+                tr("upload and run"),this);
+    processDockWidget->setWidget(processWidget);
+    addDockWidget(Qt::BottomDockWidgetArea,processDockWidget);
 }
 
 /*******************************************************************

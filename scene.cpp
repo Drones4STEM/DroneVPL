@@ -543,6 +543,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
 
             node->array[node->num]->node=node;//使vardefnode知道它属于varnode
 
+
             int x = node->pos().x() + (1-i)*30;
             int y = node->pos().y() + j;
             (node->array[node->num])->setPos(x,y);
@@ -551,6 +552,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
             node->flags[node->num]=true;
             this->addItem(node->array[node->num]);
             node->num=node->num%6+1;
+            //vdn->setFlag(QGraphicsItem::ItemIsMovable,false);
         }
 
     vdn->controlsId=id;
