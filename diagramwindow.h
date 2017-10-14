@@ -34,6 +34,7 @@ class WidgetCondition;
 class ColorWidget;
 class PositionWidget;
 class MutableWidget;
+class ProcessOutputWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -302,6 +303,7 @@ private:
     ColorWidget *colorWidget;
     PositionWidget *positionWidget;
     MutableWidget *mutableWidget;
+    ProcessOutputWidget *processWidget;
 
 
     QPrinter *printer;
