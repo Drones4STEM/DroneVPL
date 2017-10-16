@@ -42,6 +42,7 @@
 #include "format.h"
 #include "digraph.h"
 #include <QProcess>
+#include <QGraphicsTextItem>
 
 
 
@@ -204,6 +205,8 @@ DiagramWindow::DiagramWindow()
 QSize DiagramWindow::sizeHint() const
 {
     QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
+    qDebug()<<size;
+    qDebug()<<printer->paperSize(QPrinter::Point);
     size.rwidth()+=widgetCondition->sizeHint().width();
     return size.boundedTo(
            QApplication::desktop()->availableGeometry().size());
@@ -1039,6 +1042,11 @@ void DiagramWindow::addComputeNode()
     scene->selected_Index = 301;
 }
 
+void DiagramWindow::addCompareNode()
+{
+    return;
+}
+
 void DiagramWindow::addAddNode()
 {
     scene->need_to_set=1;
@@ -1263,6 +1271,21 @@ void DiagramWindow::addRec()
     //rec->controlsId=recNodeNum;
 
     //setDirty();
+}
+
+void DiagramWindow::addIf()
+{
+    return;
+}
+
+void DiagramWindow::addElse()
+{
+    return;
+}
+
+void DiagramWindow::addWhile()
+{
+    return;
 }
 
 /*******************************************************************
@@ -1960,17 +1983,50 @@ void DiagramWindow::compile()
 
 void DiagramWindow::upload()
 {
-    system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+    //system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+    QProcess p(0);
+    //p.start("ipconfig");
+    p.start("pscp -pw fff19970210 D:\\path\\2017.txt ryanfeng@192.168.80.129:Documents/2017");
+    p.waitForStarted();
+    p.waitForFinished();
+    QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    processWidget->setTextEdit(str);
+    qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput());
+    qDebug()<<str;
 }
 
 void DiagramWindow::run()
 {
-    system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+    //system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+    QProcess p(0);
+    p.start("plink -pw fff19970210 ryanfeng@192.168.80.129 python Documents/2017.txt");
+    p.waitForStarted();
+    p.waitForFinished();
+    /*if(p.isReadable())
+    {
+        qDebug()<<true;
+        QString str = QString::fromLocal8Bit(p.read(32));
+        qDebug()<<str;
+        processWidget->setTextEdit(str);
+    }*/
+    QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    if(!str.isEmpty())
+        processWidget->setTextEdit(str);
+    str = QString::fromLocal8Bit(p.readAllStandardError());
+    if(!str.isEmpty())
+        processWidget->setTextEdit(str);
+    qDebug()<<str;
 }
 
 void DiagramWindow::checkupAndCompile()
 {
-
+    QProcess more;
+    more.start("more");
+    more.write("Text to display");
+    more.closeWriteChannel();
+    qDebug()<<more.readAllStandardOutput();
+    qDebug()<<more.errorString();
+    qDebug()<<more.environment();
 }
 
 /*******************************************************************
@@ -2028,43 +2084,59 @@ void DiagramWindow::createActions()
     addIONodeAction = new QAction(tr("IO"),this);
 
     addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
+    addTakeoffNodeAction->setIcon(QIcon(":/images/icon/take off copy.png"));
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
     addLandonNodeAction = new QAction(tr("LandOn"),this);
+    addLandonNodeAction->setIcon(QIcon(":/images/icon/land on copy.png"));
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Translation"),this);
 
     addRiseNodeAction = new QAction(tr("GoUp"),this);
+    addRiseNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));
     connect(addRiseNodeAction, SIGNAL(triggered()), this, SLOT(addRiseNode()));
     addFallNodeAction = new QAction(tr("GoDown"),this);
+    addFallNodeAction->setIcon(QIcon(":/images/icon/down copy.png"));
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
     addAdvanceNodeAction = new QAction(tr("Forward"),this);
+    addAdvanceNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));//这里的图片要换
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
     addBackNodeAction = new QAction(tr("Backward"),this);
+    addBackNodeAction->setIcon(QIcon(":/images/icon/down copy.png"));//这里的图片也要换
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
     addRightNodeAction = new QAction(tr("GoRight"),this);
+    addRightNodeAction->setIcon(QIcon(":/images/icon/right copy.png"));
     connect(addRightNodeAction, SIGNAL(triggered()), this, SLOT(addRightNode()));
     addLeftNodeAction = new QAction(tr("GoLeft"),this);
+    addLeftNodeAction->setIcon(QIcon(":/images/icon/left copy.png"));
     connect(addLeftNodeAction, SIGNAL(triggered()), this, SLOT(addLeftNode()));
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
     addTurnLeftNodeAction = new QAction(tr("TurnLeft"),this);
+    addTurnLeftNodeAction->setIcon(QIcon(":/images/icon/turn left copy.png"));
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
     addTurnRightNodeAction = new QAction(tr("TurnRight"),this);
+    addTurnRightNodeAction->setIcon(QIcon(":/images/icon/turn right copy.png"));
     connect(addTurnRightNodeAction, SIGNAL(triggered()), this, SLOT(addTurnRightNode()));
     addHangingNodeAction = new QAction(tr("Hover"),this);
+    addHangingNodeAction->setIcon(QIcon(":/images/icon/hover copy.png"));
     connect(addHangingNodeAction, SIGNAL(triggered()), this, SLOT(addHangingNode()));
     addDelayNodeAction = new QAction(tr("Delay"),this);
+    addDelayNodeAction->setIcon(QIcon(":/images/icon/delay copy.png"));
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
     addVarNodeAction = new QAction(tr("VarType"),this);
+    addVarNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
     addVardefNodeAction = new QAction(tr("VarDef"),this);
+    addVardefNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
     connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
 
     addComputeNodeAction = new QAction(tr("Compute"),this);
-    //connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
+    addComputeNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
+    addCompareNodeAction = new QAction(tr("Compare"),this);
+    addCompareNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
     addAddNodeAction = new QAction(tr("+"),this);
     connect(addAddNodeAction,SIGNAL(triggered()),this,SLOT(addAddNode()));
     addSubNodeAction = new QAction(tr("-"),this);
@@ -2108,6 +2180,16 @@ void DiagramWindow::createActions()
 
     addRecAction = new QAction(tr("Logic"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
+    addIfAction = new QAction(tr("If"),this);
+    addIfAction->setIcon(QIcon(":/images/icon/if copy.png"));
+    connect(addIfAction,SIGNAL(triggered()),this,SLOT(addIf()));
+    addElseAction = new QAction(tr("Else"),this);
+    addElseAction->setIcon(QIcon(":/images/icon/else copy.png"));
+    connect(addElseAction,SIGNAL(triggered()),this,SLOT(addElse()));
+    addWhileAction = new QAction(tr("While"),this);
+    addWhileAction->setIcon(QIcon(":/images/icon/while copy.png"));
+    connect(addWhileAction,SIGNAL(triggered()),this,SLOT(addWhile()));
+
 
     uploadAction = new QAction(tr("upload"),this);
     connect(uploadAction,SIGNAL(triggered()),this,SLOT(upload()));
@@ -2116,22 +2198,22 @@ void DiagramWindow::createActions()
 
 
     deleteAction = new QAction(tr("&Delete"), this);
-    deleteAction->setIcon(QIcon(":/images/delete.png"));
+    deleteAction->setIcon(QIcon(":/images/icon/delete copy.png"));
     deleteAction->setShortcut(tr("Del"));
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
 
     cutAction = new QAction(tr("Cu&t"), this);
-    cutAction->setIcon(QIcon(":/images/cut.png"));
+    cutAction->setIcon(QIcon(":/images/icon/cut copy.png"));
     cutAction->setShortcut(tr("Ctrl+X"));
     connect(cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
     copyAction = new QAction(tr("&Copy"), this);
-    copyAction->setIcon(QIcon(":/images/copy.png"));
+    copyAction->setIcon(QIcon(":/images/icon/copy copy.png"));
     copyAction->setShortcut(tr("Ctrl+C"));
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
 
     pasteAction = new QAction(tr("&Paste"), this);
-    pasteAction->setIcon(QIcon(":/images/paste.png"));
+    pasteAction->setIcon(QIcon(":/images/icon/paste copy.png"));
     pasteAction->setShortcut(tr("Ctrl+V"));
     connect(pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
 
@@ -2198,11 +2280,11 @@ void DiagramWindow::createActions()
     openHelpAction = new QAction(tr("Help"),this);
     connect(openHelpAction,SIGNAL(triggered()),this,SLOT(help()));
 
-    viewZoomInAction = new QAction(QIcon(":/images/zoom-in.png"),
+    viewZoomInAction = new QAction(QIcon(":/images/icon/zoom in copy.png"),
                                    tr("Zoom In"),this);
     viewZoomInAction->setShortcut(tr("+"));
     connect(viewZoomInAction,SIGNAL(triggered()),view,SLOT(zoomIn()));
-    viewZoomOutAction = new QAction(QIcon(":/images/zoom-out.png"),
+    viewZoomOutAction = new QAction(QIcon(":/images/icon/zoom out copy.png"),
                                    tr("Zoom out"),this);
     viewZoomOutAction->setShortcut(tr("-"));
     connect(viewZoomOutAction,SIGNAL(triggered()),view,SLOT(zoomOut()));
@@ -2217,11 +2299,15 @@ void DiagramWindow::createActions()
 ******************************************************************/
 void DiagramWindow::createMenus()
 {
-    fileMenu = menuBar()->addMenu(tr("&File"));
-    editMenu = menuBar()->addMenu(tr("&Edit"));
-    viewMenu = menuBar()->addMenu(tr("&View"));
-    compileMenu = menuBar()->addMenu(tr("&Compile"));
-    helpMenu = menuBar()->addMenu(tr("&Help"));
+    QMenuBar *bar = menuBar();
+    bar->setStyleSheet("QMenuBar::item:width:75px}");
+    fileMenu = bar->addMenu(tr("文件"));
+    editMenu = bar->addMenu(tr("编辑"));
+    actionMenu = bar->addMenu(tr("动作"));
+    computeMenu = bar->addMenu(tr("运算"));
+    viewMenu = bar->addMenu(tr("视图"));
+    compileMenu = bar->addMenu(tr("编译"));
+    helpMenu = bar->addMenu(tr("帮助"));
     //filemenu
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
@@ -2241,7 +2327,16 @@ void DiagramWindow::createMenus()
     helpMenu->addAction(systemInformationAction);
     helpMenu->addAction(openHelpAction);
     //editmenu
-    QMenu *translationMenu = new QMenu(tr("translation"),this);
+    editMenu->addAction(cutAction);
+    editMenu->addAction(deleteAction);
+    editMenu->addAction(copyAction);
+    editMenu->addAction(pasteAction);
+    editMenu->addSeparator();
+    editMenu->addAction(bringToFrontAction);
+    editMenu->addAction(sendToBackAction);
+
+    //actionMenu
+    QMenu *translationMenu = new QMenu(tr("movement"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addRiseNodeAction<<addFallNodeAction
             <<addAdvanceNodeAction<<addBackNodeAction
@@ -2249,15 +2344,14 @@ void DiagramWindow::createMenus()
         translationMenu->addAction(action);
     addTranslationNodeAction->setMenu(translationMenu);
 
-    QMenu *actionMenu = new QMenu(tr("action"),this);
+    QMenu *aMenu = new QMenu(tr("action"),this);
     foreach (QAction *action,QList<QAction*>()
              <<addTakeoffNodeAction<<addLandonNodeAction
              <<addTranslationNodeAction
              <<addTurnLeftNodeAction<<addTurnRightNodeAction
              <<addHangingNodeAction<<addDelayNodeAction)
-        actionMenu->addAction(action);
-    addActionNodeAction->setMenu(actionMenu);
-
+        aMenu->addAction(action);
+    addActionNodeAction->setMenu(aMenu);
     QMenu *IOMenu = new QMenu(tr("IO"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addBatteryNodeAction
@@ -2267,32 +2361,39 @@ void DiagramWindow::createMenus()
             <<addRangeFinderNodeAction)
         IOMenu->addAction(action);
     addIONodeAction->setMenu(IOMenu);
-    QMenu *computeMenu = new QMenu(tr("Compute"),this);
+
+    actionMenu->addAction(addActionNodeAction);
+    actionMenu->addAction(addVarNodeAction);
+    actionMenu->addAction(addVardefNodeAction);
+    actionMenu->addAction(addIONodeAction);
+    //computeMenu
+    QMenu *comMenu = new QMenu(tr("Compute"),this);
     foreach (QAction *action, QList<QAction*>()
              <<addAddNodeAction<<addSubNodeAction
              <<addMulNodeAction<<addDivNodeAction
              <<addCosNodeAction<<addSinNodeAction
              <<addTanNodeAction<<addLogNodeAction
-             <<addENodeAction<<addEqualNodeAction
-             <<addMoreNodeAction<<addLessNodeAction)
-        computeMenu->addAction(action);
-    addComputeNodeAction->setMenu(computeMenu);
+             <<addENodeAction)
+        comMenu->addAction(action);
+    addComputeNodeAction->setMenu(comMenu);
 
-    editMenu->addAction(addActionNodeAction);
-    editMenu->addAction(addVarNodeAction);
-    editMenu->addAction(addVardefNodeAction);
-    editMenu->addAction(addComputeNodeAction);
-    editMenu->addAction(addIONodeAction);
-    editMenu->addAction(addRecAction);
-    editMenu->addSeparator();
-    editMenu->addAction(deleteAction);
-    editMenu->addAction(cutAction);
-    editMenu->addAction(copyAction);
-    editMenu->addAction(pasteAction);
-    editMenu->addSeparator();
-    editMenu->addAction(bringToFrontAction);
-    editMenu->addAction(sendToBackAction);
-    editMenu->addSeparator();
+    QMenu *compareMenu = new QMenu(tr("Compare"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addEqualNodeAction<<addMoreNodeAction
+             <<addLessNodeAction)
+        compareMenu->addAction(action);
+    addCompareNodeAction->setMenu(compareMenu);
+    QMenu *logicMenu = new QMenu(tr("Logic"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addIfAction<<addElseAction
+             <<addWhileAction)
+        logicMenu->addAction(action);
+    addRecAction->setMenu(logicMenu);
+
+    computeMenu->addAction(addComputeNodeAction);
+    computeMenu->addAction(addCompareNodeAction);
+    computeMenu->addAction(addRecAction);
+
     //viewmenu
     viewMenu->addAction(showEditToolBarAction);
     viewMenu->addAction(showNodeBarAction);
@@ -2337,28 +2438,43 @@ void DiagramWindow::createToolBars()
     editToolBar->addAction(viewZoomOutAction);
     editToolBar->addAction(viewShowGridAction);
 
-    aToolBar = addToolBar(tr("action"));
+    aToolBar = addToolBar(tr("a"));
     aToolBar->addAction(addTakeoffNodeAction);
     aToolBar->addAction(addLandonNodeAction);
-    aToolBar->addAction(addRiseNodeAction);
-    aToolBar->addAction(addFallNodeAction);
-    aToolBar->addAction(addAdvanceNodeAction);
-    aToolBar->addAction(addBackNodeAction);
-    aToolBar->addAction(addRightNodeAction);
-    aToolBar->addAction(addLeftNodeAction);
-    aToolBar->addAction(addTurnLeftNodeAction);
-    aToolBar->addAction(addTurnRightNodeAction);
     aToolBar->addAction(addHangingNodeAction);
     aToolBar->addAction(addDelayNodeAction);
-    aToolBar->addSeparator();
-    aToolBar->addAction(addVarNodeAction);
-    aToolBar->addAction(addVardefNodeAction);
-    aToolBar->addSeparator();
-    aToolBar->addAction(addComputeNodeAction);
-    aToolBar->addAction(addIONodeAction);
-    aToolBar->addAction(addRecAction);
-    aToolBar->addAction(addLinkAction);
+    aToolBar->addAction(addRightNodeAction);
+    aToolBar->addAction(addLeftNodeAction);
+    aToolBar->addAction(addAdvanceNodeAction);
+    aToolBar->addAction(addBackNodeAction);
+    aToolBar->addAction(addRiseNodeAction);
+    aToolBar->addAction(addFallNodeAction);
+    aToolBar->addAction(addTurnLeftNodeAction);
+    aToolBar->addAction(addTurnRightNodeAction);
+
     addToolBar(Qt::LeftToolBarArea,aToolBar);
+
+    bToolBar = addToolBar(tr("b"));
+    bToolBar->addAction(addIfAction);
+    bToolBar->addAction(addElseAction);
+    bToolBar->addAction(addWhileAction);
+    bToolBar->addAction(addVarNodeAction);
+    bToolBar->addAction(addVardefNodeAction);
+    bToolBar->addAction(addComputeNodeAction);
+    bToolBar->addAction(addCompareNodeAction);
+    bToolBar->addAction(addIONodeAction);
+
+    addToolBar(Qt::LeftToolBarArea,bToolBar);
+
+    /*cToolBar = addToolBar(tr("c"));
+    cToolBar->addAction(cutAction);
+    cToolBar->addAction(deleteAction);
+    cToolBar->addAction(copyAction);
+    cToolBar->addAction(pasteAction);
+    cToolBar->addAction(viewZoomInAction);
+    cToolBar->addAction(viewZoomOutAction);*/
+
+    //addToolBar(Qt::LeftToolBarArea,cToolBar);
 }
 
 /*******************************************************************
@@ -2407,6 +2523,12 @@ void DiagramWindow::createDockWidgets()
                 tr("Mutable"),this);
     mutableDockWidget->setWidget(mutableWidget);
     addDockWidget(Qt::RightDockWidgetArea,mutableDockWidget);
+
+    processWidget = new ProcessOutputWidget;
+    QDockWidget *processDockWidget = new QDockWidget(
+                tr("upload and run"),this);
+    processDockWidget->setWidget(processWidget);
+    addDockWidget(Qt::BottomDockWidgetArea,processDockWidget);
 }
 
 /*******************************************************************

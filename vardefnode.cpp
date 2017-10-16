@@ -119,8 +119,6 @@ QVariant VardefNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-       if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
             yuan2->setPos(pos().x(),
                          pos().y() - 16 - yuan2->outlineRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
@@ -129,11 +127,47 @@ QVariant VardefNode::itemChange(GraphicsItemChange change,
                          pos().y() + 16 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
-       }
-        else{
-            setPos(yuan2->pos().x(),
-                           yuan2->pos().y()+ 16 + yuan2->outlineRect().height()/2);
-        }}
+    }
     return QGraphicsItem::itemChange(change, value);
 }
+
+/*void VardefNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<QGraphicsItem *> items = this->collidingItems();
+    int itemsCount = items.count();
+    qDebug()<<itemsCount;
+    for(int i=0;i<items.count();i++)
+    {
+        if(dynamic_cast<IoSmallNode*>(items[i]))
+            itemsCount--;
+    }
+    if(itemsCount>0)
+    {
+        for(int i=0;i<items.count();i++)
+        {
+            if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
+                    &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+            {
+                double dx = this->pos().x() - items[i]->pos().x();
+                double dy = this->pos().y() - items[i]->pos().y();
+                double a = items[i]->boundingRect().width()/items[i]->boundingRect().height();
+                if((abs(dx)/a>abs(dy)&&dx<=0))    //放在左边
+                    setPos(items[i]->pos().x() - items[i]->boundingRect().width()/2 - boundingRect().width()/2,
+                           items[i]->pos().y());
+                else if(abs(dy)>abs(dx)/a&&dy>=0) //放在下边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() + items[i]->boundingRect().height()/2 + boundingRect().height()/2);
+                else if(abs(dx)/a>abs(dy)&&dx>=0)  //放在右边
+                    setPos(items[i]->pos().x() + items[i]->boundingRect().width()/2 + boundingRect().width()/2,
+                           items[i]->pos().y());
+                else                               //放在上边
+                    setPos(items[i]->pos().x(),
+                           items[i]->pos().y() - items[i]->boundingRect().height()/2 - boundingRect().height()/2);
+                break;
+            }
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(event);
+}*/
 

@@ -224,6 +224,11 @@ bool newscene::CreateTakeOff(QPointF point, int id)
     TakeOffNode *node=new TakeOffNode;
     node->setText(tr("take off\n %1 m").arg(node->altitude));
 
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
+
     node->setPos(point);
     node->setxy(point);
     this->addItem(node);
@@ -254,9 +259,13 @@ bool newscene::CreateLand(QPointF point, int id)
     LandNode *node=new LandNode;
     node->setText(tr("Land"));
 
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
+
     node->setPos(point);
     this->addItem(node);
-
 
     this->clearSelection();
     node->setSelected(true);
@@ -287,8 +296,15 @@ bool newscene::CreateGo(QPointF point, int id, int index)
 {
     GoNode *node=new GoNode;
     node->setText(tr(" %1 m/s \n %2 s").arg(node->groundspeed).arg(node->Time));
+
     QGraphicsItem* item=this->addWidget(node->box);
+    item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
+    node->item->setPos(-100,-16);
+    QGraphicsItem* lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(50,-10);
 
     node->setPos(point);
     this->addItem(node);
@@ -306,15 +322,12 @@ bool newscene::CreateGo(QPointF point, int id, int index)
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
-    item->setPos(QPointF(node->pos().x()-40,
-                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("GoUp"));
-    node->box->addItem(tr("GoDown"));
-    node->box->addItem(tr("Forward"));
-    node->box->addItem(tr("Backward"));
-    node->box->addItem(tr("GoRight"));
-    node->box->addItem(tr("GoLeft"));
+    node->box->addItem(tr("向上"));
+    node->box->addItem(tr("向下"));
+    node->box->addItem(tr("前进"));
+    node->box->addItem(tr("后退"));
+    node->box->addItem(tr("向右"));
+    node->box->addItem(tr("向左"));
     node->box->setCurrentIndex(index-103);
     node->setDirection();
     connect(node->box,SIGNAL(currentIndexChanged(int)),node,SLOT(setDirection()));
@@ -343,10 +356,15 @@ bool newscene::CreateGo(QPointF point, int id, int index)
 bool newscene::CreateTurn(QPointF point, int id, int index)
 {
     TurnNode *node=new TurnNode;
-
     node->setText(tr(" %1 ").arg(node->Angel));
     QGraphicsItem* item=this->addWidget(node->box);
+    item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
+    node->item->setPos(-100,-16);
+    QGraphicsItem* lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(50,-10);
 
     node->setPos(point);
     this->addItem(node);
@@ -362,11 +380,9 @@ bool newscene::CreateTurn(QPointF point, int id, int index)
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
-    item->setPos(QPointF(node->pos().x()-40,
-                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
     item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("TurnLeft"));
-    node->box->addItem(tr("TurnRight"));
+    node->box->addItem(tr("左转"));
+    node->box->addItem(tr("右转"));
     node->box->setCurrentIndex(index-110);
     node->setDirection();
     connect(node->box,SIGNAL(currentIndexChanged(int)),node,SLOT(setDirection()));
@@ -395,8 +411,12 @@ bool newscene::CreateTurn(QPointF point, int id, int index)
 bool newscene::CreateHover(QPointF point, int id)
 {
     HoverNode *node=new HoverNode;
-
     node->setText(tr(" Hover \n %1 s").arg(node->time));
+
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
 
     node->setPos(point);
     this->addItem(node);
@@ -436,8 +456,12 @@ bool newscene::CreateHover(QPointF point, int id)
 bool newscene::CreateDelay(QPointF point, int id)
 {
     DelayNode *node=new DelayNode;
-
     node->setText(tr(" Delay \n %1 s").arg(node->time));
+
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
 
     node->setPos(point);
     this->addItem(node);
@@ -542,6 +566,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
 
             node->array[node->num]->node=node;//使vardefnode知道它属于varnode
 
+
             int x = node->pos().x() + (1-i)*30;
             int y = node->pos().y() + j;
             (node->array[node->num])->setPos(x,y);
@@ -550,6 +575,7 @@ bool newscene::CreateVarDef(QPointF point, int id)
             node->flags[node->num]=true;
             this->addItem(node->array[node->num]);
             node->num=node->num%6+1;
+            //vdn->setFlag(QGraphicsItem::ItemIsMovable,false);
         }
 
     vdn->controlsId=id;
@@ -876,6 +902,12 @@ bool newscene::CreateGimbal(QPointF point, int id)
                         node->node2->pos().y() - node->node2->outlineRect().height());
     node->node3->setPos(node->node2->pos().x(),
                         node->node2->pos().y() + node->node2->outlineRect().height());
+    /*node->node2->setPos(node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+                        0);
+    node->node1->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() - node->node2->outlineRect().height());
+    node->node3->setPos(node->node2->pos().x(),
+                        node->node2->pos().y() + node->node2->outlineRect().height());*/
     this->addItem(node->node2);
     this->addItem(node->node1);
     this->addItem(node->node3);
@@ -1006,7 +1038,7 @@ bool newscene::CreateChannel(QPointF point, int id)
     this->addItem(node->yuan2);
 
     node->node1->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node1->outlineRect().width()/2,
-                        node->pos().y() + node->outlineRect().height()/2);
+                        node->pos().y() - node->outlineRect().height()/2 + node->node1->outlineRect().height()/2);
     node->node2->setPos(node->node1->pos().x(),
                         node->node1->pos().y() + node->node1->outlineRect().height());
     node->node3->setPos(node->node1->pos().x(),

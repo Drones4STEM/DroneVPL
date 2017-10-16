@@ -28,7 +28,7 @@ class NewNode : public QGraphicsObject
 
 
 public:
-    NewNode();
+    NewNode(QGraphicsItem *parent = 0);
     ~NewNode();
 
     void setText(const QString &text);

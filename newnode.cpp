@@ -19,11 +19,12 @@
  * Inputs:
  * Outputs:
 ******************************************************************/
-NewNode::NewNode()
+NewNode::NewNode(QGraphicsItem *parent)
+    :QGraphicsObject(parent)
 {
     myTextColor = Qt::darkGreen;
     myOutlineColor = Qt::darkBlue;
-    myBackgroundColor = Qt::white;
+    myBackgroundColor = Qt::lightGray;
 
     //QGraphicsItem*p=dynamic_cast<QGraphicsItem*>(this);
     yuan=new triYuan();

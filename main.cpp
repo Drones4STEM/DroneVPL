@@ -16,6 +16,11 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("qtrac.eu");
     app.setWindowIcon(QIcon(":/images/fileopen.png"));
 
+    QTextCodec *codec = QTextCodec::codecForName("utf8");
+    QTextCodec::setCodecForLocale(codec);
+    QTextCodec::setCodecForCStrings(codec);
+    QTextCodec::setCodecForTr(codec);
+
     DiagramWindow *mainWin=new DiagramWindow;
     mainWin->show();
     return app.exec();

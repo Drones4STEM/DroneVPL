@@ -34,6 +34,7 @@ class WidgetCondition;
 class ColorWidget;
 class PositionWidget;
 class MutableWidget;
+class ProcessOutputWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -118,6 +119,7 @@ private slots:
     void addVarNode();
     void addVardefNode();
     void addComputeNode();
+    void addCompareNode();
     void addAddNode();
     void addSubNode();
     void addMulNode();
@@ -138,6 +140,9 @@ private slots:
     void addRangeFinderNode();
     void addLink();
     void addRec();
+    void addIf();
+    void addElse();
+    void addWhile();
     void upload();
     void run();
     void del();
@@ -203,6 +208,8 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *actionMenu;
+    QMenu *computeMenu;
     QMenu *viewMenu;
     QMenu *compileMenu;
     QMenu *helpMenu;
@@ -211,6 +218,8 @@ private:
     QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QToolBar *aToolBar;
+    QToolBar *bToolBar;
+    QToolBar *cToolBar;
 
 
     QAction *fileNewAction;
@@ -249,6 +258,7 @@ private:
     QAction *addVardefNodeAction;
 
     QAction *addComputeNodeAction;
+    QAction *addCompareNodeAction;
     QAction *addAddNodeAction;
     QAction *addSubNodeAction;
     QAction *addMulNodeAction;
@@ -273,6 +283,9 @@ private:
 
     QAction *addLinkAction;
     QAction *addRecAction;
+    QAction *addIfAction;
+    QAction *addElseAction;
+    QAction *addWhileAction;
 
     QAction *uploadAction;
     QAction *runAction;
@@ -302,6 +315,7 @@ private:
     ColorWidget *colorWidget;
     PositionWidget *positionWidget;
     MutableWidget *mutableWidget;
+    ProcessOutputWidget *processWidget;
 
 
     QPrinter *printer;

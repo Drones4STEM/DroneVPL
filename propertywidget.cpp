@@ -283,3 +283,21 @@ void MutableWidget::updateGroundSpeed(QString str)
     m_groundSpeed=str.toDouble();
     emit groundSpeedChanged(m_groundSpeed);
 }
+
+
+
+/*//////////////////////ProcessOutputWidget////////////////*/
+ProcessOutputWidget::ProcessOutputWidget(QWidget *parent)
+{
+    textEdit = new QTextEdit;
+    textEdit->setBaseSize(100,100);
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(textEdit);
+    setLayout(layout);
+}
+
+void ProcessOutputWidget::setTextEdit(QString str)
+{
+    textEdit->clear();
+    textEdit->setText(str);
+}
