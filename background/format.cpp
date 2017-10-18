@@ -57,7 +57,7 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
         if(iter.value()->identifier!="VarType" && iter.value()->identifier!="Link")
             widget_convert_to_xml(iter,stream);
     }
-    for(iter=Map.begin(); iter!=Map.end(); iter++){   //存剩下的控件
+    for(iter=Map.begin(); iter!=Map.end(); iter++){   //存link
         if(iter.value()->identifier=="Link")
             widget_convert_to_xml(iter,stream);
     }
@@ -182,7 +182,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             QString seq;
             seq = QString::number((long)ww->mVarDefNode->seq,10);
             stream.writeTextElement("sequence",seq);
-            stream.writeTextElement("Variable",ww->mVarTypeNode->text());
+            stream.writeTextElement("Variable",ww->mVarDefNode->text());
             //stream.writeStartElement("arrow_out");
         }
         stream.writeEndElement();   //correspond to writeStartElement("VAR")
