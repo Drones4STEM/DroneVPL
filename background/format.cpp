@@ -221,34 +221,34 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeAttribute("operator","power");
         }
         if(ww->mComputeNode->text()=="sin"){ //如果正弦
-            stream.writeAttribute("sin");
+            //stream.writeAttribute("sin");
             stream.writeStartElement("angle");
             stream.writeAttribute("unit","angle");
-            stream.writeTextElement();
+            //stream.writeTextElement();
         }
         if(ww->mComputeNode->text()=="cos"){ //如果余弦
-            stream.writeAttribute("cos");
+            //stream.writeAttribute("cos");
             stream.writeStartElement("angle");
             stream.writeAttribute("unit","angle");
-            stream.writeTextElement();
+            //stream.writeTextElement();
         }
         if(ww->mComputeNode->text()=="tan"){ //如果正切
-            stream.writeAttribute("tan");
+            //stream.writeAttribute("tan");
             stream.writeStartElement("angle");
             stream.writeAttribute("unit","angle");
-            stream.writeTextElement();
+            //stream.writeTextElement();
         }
         if(ww->mComputeNode->text()=="log"){ //如果对数
-            stream.writeAttribute("log");
+            //stream.writeAttribute("log");
         }
         if(ww->mComputeNode->text()=="="){ //如果等于
-            stream.writeAttribute("equal");
+            //stream.writeAttribute("equal");
         }
         if(ww->mComputeNode->text()=="<"){ //如果小于
-            stream.writeAttribute("less");
+            //stream.writeAttribute("less");
         }
         if(ww->mComputeNode->text()==">"){ //如果大于
-            stream.writeAttribute("greater");
+            //stream.writeAttribute("greater");
         }
         stream.writeEndElement();
         stream.writeEndElement();
