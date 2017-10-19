@@ -237,7 +237,8 @@ bool newscene::CreateTakeOff(QPointF point, int id)
     node->setSelected(true);
     bringToFront();
 
-    node->yuan->setPos(QPointF((node->pos().x()),(node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
+    node->yuan->setPos(QPointF((node->pos().x() - node->outlineRect().width()/2 +24),
+                               (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2) +3));
     this->addItem(node->yuan);
 
     node->controlsId=id;
@@ -271,8 +272,8 @@ bool newscene::CreateLand(QPointF point, int id)
     node->setSelected(true);
     bringToFront();
 
-    node->yuan2->setPos(QPointF((node->pos().x()),
-                       (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
+    node->yuan2->setPos(QPointF((node->pos().x() - node->outlineRect().width()/2 + 24),
+                       (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2 - 3));
     this->addItem(node->yuan2);
 
     node->controlsId=id;
@@ -314,10 +315,10 @@ bool newscene::CreateGo(QPointF point, int id, int index)
     bringToFront();
 
 
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                      (node->pos().y() )));
+    node->yuan->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2 + 3)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 +24,
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan2->boundingRect().height()/2 - 3)));
 
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
@@ -373,10 +374,10 @@ bool newscene::CreateTurn(QPointF point, int id, int index)
     node->setSelected(true);
     bringToFront();
 
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                      (node->pos().y() )));
+    node->yuan->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2 + 3)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan2->boundingRect().height()/2 - 3 )));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -425,10 +426,10 @@ bool newscene::CreateHover(QPointF point, int id)
     node->setSelected(true);
     bringToFront();
 
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                      (node->pos().y() )));
+    node->yuan->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2 + 3)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan2->boundingRect().height()/2 - 3)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -470,10 +471,10 @@ bool newscene::CreateDelay(QPointF point, int id)
     node->setSelected(true);
     bringToFront();
 
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                      (node->pos().y() )));
+    node->yuan->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2 + 3)));
+    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 + 24,
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan2->boundingRect().height()/2 - 3)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 

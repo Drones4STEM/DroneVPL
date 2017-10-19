@@ -45,6 +45,8 @@ public slots:
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
 };
 
 /*******************************************************************

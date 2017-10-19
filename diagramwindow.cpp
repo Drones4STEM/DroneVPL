@@ -2300,7 +2300,10 @@ void DiagramWindow::createActions()
 void DiagramWindow::createMenus()
 {
     QMenuBar *bar = menuBar();
-    bar->setStyleSheet("QMenuBar::item:width:75px}");
+    bar->setStyleSheet("spacing: 52px");
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(14);
+    bar->setFont(font);
     fileMenu = bar->addMenu(tr("文件"));
     editMenu = bar->addMenu(tr("编辑"));
     actionMenu = bar->addMenu(tr("动作"));

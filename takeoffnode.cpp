@@ -107,6 +107,17 @@ void TakeOffNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     //painter->drawText();
 }
 
+QVariant TakeOffNode::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change & ItemPositionHasChanged){
+        yuan->setPos(pos().x() - outlineRect().width()/2 +24,
+                     pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2 +3);
+        foreach (Link *link, yuan->myLinks)
+        {link->trackYuans();update();}
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
 
 void TakeOffNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -228,8 +239,8 @@ QVariant LandNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
        //{
-            yuan2->setPos(pos().x(),
-                         pos().y() - outlineRect().height()/2-yuan->boundingRect().height()/2);
+            yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
+                         pos().y() - outlineRect().height()/2-yuan->boundingRect().height()/2 - 3);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
             update();
@@ -418,24 +429,14 @@ QVariant GoNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-            //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-           //{
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 +24,
+                             pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
-                /*item->setPos(QPointF(pos().x()-40,
-                             (pos().y() - outlineRect().height()/2 - item->boundingRect().height())));*/
-
-           /*}
-            else{
-                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                               yuan2->pos().y());
-            }*/
     }
         return QGraphicsItem::itemChange(change, value);
 }
@@ -786,13 +787,13 @@ QVariant TurnNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
          //  {
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
 
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
 
@@ -963,13 +964,13 @@ QVariant HoverNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
          //  {
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 +24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
 
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 +24,
+                             pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
 
@@ -1124,13 +1125,13 @@ QVariant DelayNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
          //  {
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
 
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
 
