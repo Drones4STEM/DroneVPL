@@ -124,7 +124,8 @@ void TakeOffNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                     &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                    &&!dynamic_cast<Rec*>(items[i]))
             {
                 double dx = this->pos().x() - items[i]->pos().x();
                 double dy = this->pos().y() - items[i]->pos().y();
@@ -265,7 +266,8 @@ void LandNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                     &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                    &&!dynamic_cast<Rec*>(items[i]))
             {
                 double dx = this->pos().x() - items[i]->pos().x();
                 double dy = this->pos().y() - items[i]->pos().y();
@@ -454,7 +456,8 @@ void GoNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                     &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                    &&!dynamic_cast<Rec*>(items[i]))
             {
                 double dx = this->pos().x() - items[i]->pos().x();
                 double dy = this->pos().y() - items[i]->pos().y();
@@ -818,7 +821,8 @@ void TurnNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                     &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                    &&!dynamic_cast<Rec*>(items[i]))
             {
                 double dx = this->pos().x() - items[i]->pos().x();
                 double dy = this->pos().y() - items[i]->pos().y();
@@ -997,7 +1001,8 @@ void HoverNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                     &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                    &&!dynamic_cast<Rec*>(items[i]))
             {
                 double dx = this->pos().x() - items[i]->pos().x();
                 double dy = this->pos().y() - items[i]->pos().y();
@@ -1158,7 +1163,8 @@ void DelayNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                     &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                    &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                    &&!dynamic_cast<Rec*>(items[i]))
             {
                 double dx = this->pos().x() - items[i]->pos().x();
                 double dy = this->pos().y() - items[i]->pos().y();

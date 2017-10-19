@@ -144,7 +144,8 @@ void ComputeNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             {
                 if(!dynamic_cast<IoSmallNode*>(items[i])&&!dynamic_cast<Link*>(items[i])
                         &&!dynamic_cast<Yuan*>(items[i])&&!dynamic_cast<triYuan*>(items[i])
-                        &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i]))
+                        &&!dynamic_cast<QGraphicsProxyWidget*>(items[i])&&!dynamic_cast<ComputeSmallNode*>(items[i])
+                        &&!dynamic_cast<Rec*>(items[i]))
                 {
                     double dx = this->pos().x() - items[i]->pos().x();
                     double dy = this->pos().y() - items[i]->pos().y();
