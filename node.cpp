@@ -26,7 +26,7 @@ Node::Node(QGraphicsItem *parent)
 {
     myTextColor = Qt::darkGreen;
     myOutlineColor = Qt::darkBlue;
-    myBackgroundColor = Qt::white;
+    myBackgroundColor = Qt::lightGray;
 
     //QGraphicsItem* p=dynamic_cast<QGraphicsItem*>(this);
     //yuan=new triYuan(p);
@@ -231,6 +231,9 @@ void Node::paint(QPainter *painter,
 
     painter->setPen(textColor());
     painter->drawText(rect, Qt::AlignCenter, myText);
+    /*QString text1 = QString(tr("takeoff"));
+    painter->drawText(-30,5,text1);
+    painter->drawText(0,5,text1);*/
 }
 
 /*******************************************************************
@@ -294,6 +297,7 @@ QRectF Node::outlineRect() const
     QRectF rect = metrics.boundingRect(myText);
     rect.adjust(-Padding, -Padding, +Padding, +Padding);
     rect.translate(-rect.center());
+    qDebug()<<rect.size()<<"heiehi";
 
     return rect;
 }

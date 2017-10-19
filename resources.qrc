@@ -20,6 +20,28 @@
 		<file>images/zoom-in.png</file>
 		<file>images/zoom-out.png</file>
 		<file>images/showgrid.png</file>
+		<file>images/icon/add variable copy.png</file>
+		<file>images/icon/compare copy.png</file>
+		<file>images/icon/compute copy.png</file>
+		<file>images/icon/copy copy.png</file>
+		<file>images/icon/cut copy.png</file>
+		<file>images/icon/delay copy.png</file>
+		<file>images/icon/delete copy.png</file>
+		<file>images/icon/down copy.png</file>
+		<file>images/icon/else copy.png</file>
+		<file>images/icon/hover copy.png</file>
+		<file>images/icon/if copy.png</file>
+		<file>images/icon/land on copy.png</file>
+		<file>images/icon/left copy.png</file>
+		<file>images/icon/paste copy.png</file>
+		<file>images/icon/right copy.png</file>
+		<file>images/icon/take off copy.png</file>
+		<file>images/icon/turn left copy.png</file>
+		<file>images/icon/turn right copy.png</file>
+		<file>images/icon/up copy.png</file>
+		<file>images/icon/while copy.png</file>
+		<file>images/icon/zoom in copy.png</file>
+		<file>images/icon/zoom out copy.png</file>
 		<file>help/help.chm</file>
     </qresource>
 </RCC>

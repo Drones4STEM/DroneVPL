@@ -21,11 +21,20 @@ class TakeOffNode:public Node
 public:
     enum {Type = TakeoffNodeType};
     TakeOffNode();
+    ~TakeOffNode();
 
     int type() const { return Type; }
 
     double altitude;
     double myAltitude();
+    QLineEdit *lineEdit;
+    QGraphicsItem *lineItem;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,QWidget *widget);
 
 signals:
     void altitudeChanged(double);
@@ -51,8 +60,18 @@ class LandNode:public NewNode
 public:
     enum {Type = LandonNodeType};
     LandNode();
+    ~LandNode();
 
     int type() const { return Type; }
+
+    QLineEdit *lineEdit;
+    QGraphicsItem *lineItem;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,QWidget *widget);
 
 signals:
 
@@ -90,8 +109,16 @@ public:
     double groundspeed;
     QString direction;
     QComboBox *box;
+    QLineEdit *lineEdit;
 
     QGraphicsItem *item;
+    QGraphicsItem *lineItem;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,QWidget *widget);
 
     void setTime(double t);
     double myTime();
@@ -135,7 +162,15 @@ public:
     double Angel;
     QString direction;
     QComboBox*box;
+    QLineEdit *lineEdit;
     QGraphicsItem *item;
+    QGraphicsItem *lineItem;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,QWidget *widget);
 
     void setAngel(double a);
     double myAngel();
@@ -152,7 +187,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 public slots:
     void setDirection();
-
 };
 
 /*******************************************************************
@@ -174,7 +208,14 @@ public:
     int type() const { return Type; }
 
     double time;
-    //QGraphicsItem *item;
+    QLineEdit *lineEdit;
+    QGraphicsItem *lineItem;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,QWidget *widget);
 
     double myTime();
 
@@ -209,9 +250,16 @@ public:
     int type() const { return Type; }
 
     double time;
-    //QGraphicsItem *item;
-
     double myTime();
+    QLineEdit *lineEdit;
+    QGraphicsItem *lineItem;
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,QWidget *widget);
+
 
 signals:
     void timeChanged(double t);
