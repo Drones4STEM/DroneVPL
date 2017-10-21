@@ -23,6 +23,8 @@ TakeOffNode::TakeOffNode()
     identifier="TakeOff";
     rank = 0;
     altitude = 0;
+
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setAltitude(QString)));
 }
 
 TakeOffNode::~TakeOffNode()
@@ -30,12 +32,20 @@ TakeOffNode::~TakeOffNode()
     delete lineEdit;
 }
 
+void TakeOffNode::setAltitude(QString str)
+{
+    altitude = str.toDouble();
+    emit altitudeChanged(altitude);
+
+}
+
 void TakeOffNode::setAltitude(double a)
 {
     if(isSelected()&&a!=myAltitude())
     {
         altitude=a;
-        setText(tr("take off\n %1 m").arg(altitude));
+        //setText(tr("take off\n %1 m").arg(altitude));
+        lineEdit->setText(QString::number(a));
     }
 }
 
@@ -107,6 +117,17 @@ void TakeOffNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     //painter->drawText();
 }
 
+QVariant TakeOffNode::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change & ItemPositionHasChanged){
+        yuan->setPos(pos().x() - outlineRect().width()/2 +24,
+                     pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2 +3);
+        foreach (Link *link, yuan->myLinks)
+        {link->trackYuans();update();}
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
 
 void TakeOffNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -154,21 +175,13 @@ void TakeOffNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 LandNode::LandNode()
 {
-    lineEdit = new QLineEdit;
-    lineEdit->setFixedSize(36,20);
-
     identifier="Land";
     rank = 0;
 }
 
-LandNode::~LandNode()
-{
-    delete lineEdit;
-}
-
 QRectF LandNode::outlineRect() const
 {
-    QRectF rect(0,0,200,36);
+    QRectF rect(0,0,100,36);
     rect.translate(-rect.center());
     return rect;
 }
@@ -203,7 +216,7 @@ void LandNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                              roundness(rect.height()));
 
     QImage img = QImage(":/images/icon/land on copy.png");
-    painter->drawImage(-91,-15,img);
+    painter->drawImage(-41,-15,img);
 
     pen.setColor(Qt::black);
     painter->setPen(pen);
@@ -211,9 +224,7 @@ void LandNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     font.setPixelSize(18);
     painter->setFont(font);
     QString str1("降落");
-    painter->drawText(-50,7,str1);
-
-    //painter->drawText();
+    painter->drawText(0,7,str1);
 }
 
 
@@ -228,8 +239,8 @@ QVariant LandNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
        //{
-            yuan2->setPos(pos().x(),
-                         pos().y() - outlineRect().height()/2-yuan->boundingRect().height()/2);
+            yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
+                         pos().y() - outlineRect().height()/2-yuan->boundingRect().height()/2 - 3);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
             update();
@@ -298,6 +309,8 @@ GoNode::GoNode()
     box->setFixedSize(72,32);
     lineEdit = new QLineEdit;
     lineEdit->setFixedSize(36,20);
+    lineEdit2 = new QLineEdit;
+    lineEdit2->setFixedSize(36,20);
 
     Time=0;
     groundspeed = 0.0;
@@ -305,12 +318,27 @@ GoNode::GoNode()
     identifier="Go";
     rank = 0;
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setGroundSpeed(QString)));
+    connect(lineEdit2,SIGNAL(textChanged(QString)),this,SLOT(setTime(QString)));
 }
 
 GoNode::~GoNode()
 {
     delete  box;
     delete lineEdit;
+    delete lineEdit2;
+}
+
+void GoNode::setGroundSpeed(QString str)
+{
+    groundspeed = str.toDouble();
+    emit groundSpeedChanged(groundspeed);
+}
+
+void GoNode::setTime(QString str)
+{
+    Time = str.toDouble();
+    emit timeChanged(Time);
 }
 
 void GoNode::setTime(double t)
@@ -318,7 +346,7 @@ void GoNode::setTime(double t)
     if(isSelected()&&t!=myTime())
     {
         Time=t;
-        setText(tr("%1 s").arg(Time));
+        lineEdit2->setText(QString::number(t));
     }
 }
 
@@ -332,7 +360,7 @@ void GoNode::setGroundSpeed(double s)
     if(isSelected()&&s!=myGroundSpeed())
     {
         groundspeed=s;
-        setText(tr("%1 m/s").arg(groundspeed));
+        lineEdit->setText(QString::number(s));
     }
 }
 
@@ -357,7 +385,7 @@ void GoNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 QRectF GoNode::outlineRect() const
 {
-    QRectF rect(0,0,300,36);
+    QRectF rect(0,0,450,36);
     rect.translate(-rect.center());
     return rect;
 }
@@ -391,8 +419,32 @@ void GoNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     painter->drawRoundedRect(rect,roundness(rect.width()),
                              roundness(rect.height()));
 
-    QImage img = QImage(":/images/icon/left copy.png");
-    painter->drawImage(-141,-15,img);
+    //根据comboBox的改变，更改图片显示
+    QImage img;
+    switch (box->currentIndex()) {
+    case 0:
+        img = QImage(":/images/icon/up copy.png");
+        break;
+    case 1:
+        img = QImage(":/images/icon/down copy.png");
+        break;
+    case 2:
+        img = QImage(":/images/icon/up copy.png");
+        break;
+    case 3:
+        img = QImage(":/images/icon/down copy.png");
+        break;
+    case 4:
+        img = QImage(":/images/icon/right copy.png");
+        break;
+    case 5:
+        img = QImage(":/images/icon/left copy.png");
+        break;
+    default:
+        img = QImage(":/images/icon/up copy.png");
+        break;
+    }
+    painter->drawImage(-216,-15,img);
 
     pen.setColor(Qt::black);
     painter->setPen(pen);
@@ -401,41 +453,36 @@ void GoNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     painter->setFont(font);
     QString str2("速度");
     QString str3("m/s");
-    painter->drawText(7,7,str2);
-    painter->drawText(100,4,str3);
+    QString str4("时间");
+    QString str5("s");
+    painter->drawText(-68,7,str2);
+    painter->drawText(25,4,str3);
+    painter->drawText(82,7,str4);
+    painter->drawText(175,4,str5);
+
+
 
     //画中间的竖线
     pen.setColor(Qt::gray);
     pen.setStyle(Qt::SolidLine);
     pen.setWidth(1);
     painter->setPen(pen);
-    painter->drawLine(0,-9,0,9);
-
-    //painter->drawText();
+    painter->drawLine(-75,-9,-75,9);
+    painter->drawLine(75,-9,75,9);
 }
 
 QVariant GoNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-            //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-           //{
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 +24,
+                             pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
-                /*item->setPos(QPointF(pos().x()-40,
-                             (pos().y() - outlineRect().height()/2 - item->boundingRect().height())));*/
-
-           /*}
-            else{
-                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                               yuan2->pos().y());
-            }*/
     }
         return QGraphicsItem::itemChange(change, value);
 }
@@ -693,7 +740,7 @@ TurnNode::TurnNode()
     Angel=0;
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
-
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setAngel(QString)));
     identifier="TurnLeftNode";
     rank = 0;
 }
@@ -702,6 +749,11 @@ TurnNode::~TurnNode()
 {
     delete box;
     delete lineEdit;
+}
+
+void TurnNode::setAngel(QString str)
+{
+    Angel = str.toDouble();
 }
 
 void TurnNode::setAngel(double a)
@@ -759,7 +811,18 @@ void TurnNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->drawRoundedRect(rect,roundness(rect.width()),
                              roundness(rect.height()));
 
-    QImage img = QImage(":/images/icon/turn left copy.png");
+    QImage img;
+    switch (box->currentIndex()) {
+    case 0:
+        img = QImage(":/images/icon/turn left copy.png");
+        break;
+    case 1:
+        img = QImage(":/images/icon/turn right copy.png");
+        break;
+    default:
+        img = QImage(":/images/icon/turn left copy.png");
+        break;
+    }
     painter->drawImage(-141,-15,img);
 
     pen.setColor(Qt::black);
@@ -786,13 +849,13 @@ QVariant TurnNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
          //  {
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
 
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
 
@@ -875,6 +938,8 @@ HoverNode::HoverNode()
     time=0;
     identifier="Hover";
     rank = 0;
+
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setTime(QString)));
 }
 
 HoverNode::~HoverNode()
@@ -882,12 +947,18 @@ HoverNode::~HoverNode()
     delete lineEdit;
 }
 
+void HoverNode::setTime(QString str)
+{
+    time = str.toDouble();
+    emit timeChanged(time);
+}
+
 void HoverNode::setTime(double t)
 {
     if(isSelected()&&t!=myTime())
     {
         time=t;
-        setText(tr(" Hover \n %1 s").arg(time));
+        lineEdit->setText(QString::number(t));
     }
 }
 
@@ -963,13 +1034,13 @@ QVariant HoverNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
          //  {
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 +24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
 
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 +24,
+                             pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
 
@@ -1043,12 +1114,18 @@ DelayNode::~DelayNode()
     delete lineEdit;
 }
 
+void DelayNode::setTime(QString str)
+{
+    time = str.toDouble();
+    emit timeChanged(time);
+}
+
 void DelayNode::setTime(double t)
 {
     if(isSelected()&&t!=myTime())
     {
         time=t;
-        setText(tr(" Delay \n %1 s").arg(time));
+        lineEdit->setText(QString::number(time));
     }
     time=t;
 }
@@ -1124,13 +1201,13 @@ QVariant DelayNode::itemChange(GraphicsItemChange change,
     if (change & ItemPositionHasChanged){
          //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
          //  {
-                yuan->setPos(pos().x(),
-                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+                yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
                 {link->trackYuans();update();}
 
-                yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                             pos().y());
+                yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
+                             pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
 

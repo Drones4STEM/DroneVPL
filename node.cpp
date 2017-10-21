@@ -26,7 +26,7 @@ Node::Node(QGraphicsItem *parent)
 {
     myTextColor = Qt::darkGreen;
     myOutlineColor = Qt::darkBlue;
-    myBackgroundColor = Qt::lightGray;
+    myBackgroundColor = QColor(230,230,230);
 
     //QGraphicsItem* p=dynamic_cast<QGraphicsItem*>(this);
     //yuan=new triYuan(p);

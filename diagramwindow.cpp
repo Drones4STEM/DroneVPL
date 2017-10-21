@@ -2090,7 +2090,8 @@ void DiagramWindow::createActions()
     addLandonNodeAction->setIcon(QIcon(":/images/icon/land on copy.png"));
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
-    addTranslationNodeAction = new QAction(tr("Translation"),this);
+    addTranslationNodeAction = new QAction(tr("Direction"),this);
+    addTranslationNodeAction->setIcon(QIcon("://images/icon/up copy.png"));
 
     addRiseNodeAction = new QAction(tr("GoUp"),this);
     addRiseNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));
@@ -2300,7 +2301,10 @@ void DiagramWindow::createActions()
 void DiagramWindow::createMenus()
 {
     QMenuBar *bar = menuBar();
-    bar->setStyleSheet("QMenuBar::item:width:75px}");
+    bar->setStyleSheet("spacing: 52px");
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(14);
+    bar->setFont(font);
     fileMenu = bar->addMenu(tr("文件"));
     editMenu = bar->addMenu(tr("编辑"));
     actionMenu = bar->addMenu(tr("动作"));
@@ -2443,12 +2447,13 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addLandonNodeAction);
     aToolBar->addAction(addHangingNodeAction);
     aToolBar->addAction(addDelayNodeAction);
-    aToolBar->addAction(addRightNodeAction);
+    /*aToolBar->addAction(addRightNodeAction);
     aToolBar->addAction(addLeftNodeAction);
     aToolBar->addAction(addAdvanceNodeAction);
     aToolBar->addAction(addBackNodeAction);
     aToolBar->addAction(addRiseNodeAction);
-    aToolBar->addAction(addFallNodeAction);
+    aToolBar->addAction(addFallNodeAction);*/
+    aToolBar->addAction(addTranslationNodeAction);
     aToolBar->addAction(addTurnLeftNodeAction);
     aToolBar->addAction(addTurnRightNodeAction);
 

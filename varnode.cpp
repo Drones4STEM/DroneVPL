@@ -109,6 +109,9 @@ QVariant VarNode::itemChange(GraphicsItemChange change,
                                      pos().y() + j);
                 }
             }
+        /*if(flags[0])
+            array[0]->setPos(pos().x(),pos().y()+20);
+        qDebug()<<flags[0];*/
 
        /*}
         else
