@@ -48,7 +48,6 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
-    /*void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);*/
 };
 
 #endif // VARDEFNODE_H

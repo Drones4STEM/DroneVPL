@@ -2090,7 +2090,8 @@ void DiagramWindow::createActions()
     addLandonNodeAction->setIcon(QIcon(":/images/icon/land on copy.png"));
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
-    addTranslationNodeAction = new QAction(tr("Translation"),this);
+    addTranslationNodeAction = new QAction(tr("Direction"),this);
+    addTranslationNodeAction->setIcon(QIcon("://images/icon/up copy.png"));
 
     addRiseNodeAction = new QAction(tr("GoUp"),this);
     addRiseNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));
@@ -2446,12 +2447,13 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addLandonNodeAction);
     aToolBar->addAction(addHangingNodeAction);
     aToolBar->addAction(addDelayNodeAction);
-    aToolBar->addAction(addRightNodeAction);
+    /*aToolBar->addAction(addRightNodeAction);
     aToolBar->addAction(addLeftNodeAction);
     aToolBar->addAction(addAdvanceNodeAction);
     aToolBar->addAction(addBackNodeAction);
     aToolBar->addAction(addRiseNodeAction);
-    aToolBar->addAction(addFallNodeAction);
+    aToolBar->addAction(addFallNodeAction);*/
+    aToolBar->addAction(addTranslationNodeAction);
     aToolBar->addAction(addTurnLeftNodeAction);
     aToolBar->addAction(addTurnRightNodeAction);
 

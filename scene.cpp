@@ -260,11 +260,6 @@ bool newscene::CreateLand(QPointF point, int id)
     LandNode *node=new LandNode;
     node->setText(tr("Land"));
 
-    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
-    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
-    node->lineItem = lineItem;
-    node->lineItem->setPos(0,-10);
-
     node->setPos(point);
     this->addItem(node);
 
@@ -301,11 +296,16 @@ bool newscene::CreateGo(QPointF point, int id, int index)
     QGraphicsItem* item=this->addWidget(node->box);
     item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
-    node->item->setPos(-100,-16);
+    node->item->setPos(-175,-16);
+
     QGraphicsItem* lineItem = this->addWidget(node->lineEdit);
     lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
     node->lineItem = lineItem;
-    node->lineItem->setPos(50,-10);
+    node->lineItem->setPos(-25,-10);
+    QGraphicsItem* lineItem2 = this->addWidget(node->lineEdit2);
+    lineItem2->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem2 = lineItem2;
+    node->lineItem2->setPos(125,-10);
 
     node->setPos(point);
     this->addItem(node);
@@ -510,7 +510,6 @@ bool newscene::CreateVarType(QPointF point, int id)
     this->clearSelection();
     node->setSelected(true);
     bringToFront();
-    //setCursor(Qt::ArrowCursor);
 
     node->controlsId=id;
     node->identifier="VarType";
@@ -532,11 +531,12 @@ bool newscene::CreateVarType(QPointF point, int id)
 bool newscene::CreateVarDef(QPointF point, int id)
 {
     VardefNode* vdn=new VardefNode;
-    vdn->setPos(point);
+    //vdn->setPos(point);
 
         QList<QGraphicsItem *> items = this->selectedItems();
         if(items.count()==0)
         {
+            vdn->setPos(point);
             this->addItem(vdn);
             vdn->node=0;
             vdn->yuan2->setPos(vdn->pos().x(),
@@ -545,11 +545,11 @@ bool newscene::CreateVarDef(QPointF point, int id)
                                vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
             this->addItem(vdn->yuan);
             this->addItem(vdn->yuan2);
-        }else if(items.count()==1)
+        }
+        else if(items.count()==1&&dynamic_cast<VarNode*>(items.first()))
         {
-            VarNode* node=dynamic_cast<VarNode*>(this->selectedItems().first());
+            VarNode* node=dynamic_cast<VarNode*>(items.first());
             if(!node)return false;
-
             int flag=0;
             while(node->flags[node->num])//这个位置已经有了vardefnode
             {
@@ -567,14 +567,16 @@ bool newscene::CreateVarDef(QPointF point, int id)
 
             node->array[node->num]->node=node;//使vardefnode知道它属于varnode
 
-
             int x = node->pos().x() + (1-i)*30;
             int y = node->pos().y() + j;
-            (node->array[node->num])->setPos(x,y);
-            vdn = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map
+            /*(node->array[node->num])->setPos(x,y);
+            vdn = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map*/
+            vdn->setPos(x,y);
+            node->array[node->num] = vdn;
             vdn->seq = node->num;
             node->flags[node->num]=true;
-            this->addItem(node->array[node->num]);
+            //this->addItem(node->array[node->num]);
+            this->addItem(vdn);
             node->num=node->num%6+1;
             //vdn->setFlag(QGraphicsItem::ItemIsMovable,false);
         }

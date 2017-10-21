@@ -161,8 +161,8 @@ void PositionWidget::setPosition(const QPoint pos)
     {
         m_pos.setX(pos.x());
         m_pos.setY(pos.y());
-        xLineEdit->setText(QString::number(pos.x()));
-        yLineEdit->setText(QString::number(pos.y()));
+        //xLineEdit->setText(QString::number(m_pos.x()));
+        //yLineEdit->setText(QString::number(m_pos.y()));
     }
 }
 

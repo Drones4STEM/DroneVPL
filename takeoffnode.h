@@ -40,7 +40,7 @@ signals:
     void altitudeChanged(double);
 public slots:
     void setAltitude(double a);
-
+    void setAltitude(QString str);//变量是str类型是为了响应自己的lineEdit发出的信号
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -62,12 +62,8 @@ class LandNode:public NewNode
 public:
     enum {Type = LandonNodeType};
     LandNode();
-    ~LandNode();
 
     int type() const { return Type; }
-
-    QLineEdit *lineEdit;
-    QGraphicsItem *lineItem;
 
     QRectF outlineRect() const;
     QRectF boundingRect() const;
@@ -112,9 +108,11 @@ public:
     QString direction;
     QComboBox *box;
     QLineEdit *lineEdit;
+    QLineEdit *lineEdit2;
 
     QGraphicsItem *item;
     QGraphicsItem *lineItem;
+    QGraphicsItem *lineItem2;
 
     QRectF outlineRect() const;
     QRectF boundingRect() const;
@@ -122,15 +120,18 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,QWidget *widget);
 
-    void setTime(double t);
     double myTime();
     double myGroundSpeed();
     QString myDirection() const {return direction;}
 
 signals:
     void groundSpeedChanged(double s);
+    void timeChanged(double s);
 public slots:
     void setGroundSpeed(double s);
+    void setTime(double t);
+    void setGroundSpeed(QString str);
+    void setTime(QString str);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -181,6 +182,7 @@ public:
 signals:
 
 public slots:
+    void setAngel(QString str);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -225,6 +227,7 @@ signals:
     void timeChanged(double t);
 public slots:
     void setTime(double t);
+    void setTime(QString str);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -267,6 +270,7 @@ signals:
     void timeChanged(double t);
 public slots:
     void setTime(double t);
+    void setTime(QString str);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
