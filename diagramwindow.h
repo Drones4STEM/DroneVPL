@@ -153,7 +153,7 @@ private slots:
     void sendToBack();
     void properties();
     void updateActions();
-    void showEditToolBar();
+    //void showEditToolBar();
     void showNodeBar();
     void showNodeStatusBar();
     void viewShowGrid(bool on);   //显示网格
@@ -213,9 +213,10 @@ private:
     QMenu *viewMenu;
     QMenu *compileMenu;
     QMenu *helpMenu;
+    QMenu *sceneMenu;   //右键呼出菜单
 
 
-    QToolBar *editToolBar;
+    //QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QToolBar *aToolBar;
     QToolBar *bToolBar;
@@ -297,7 +298,7 @@ private:
     QAction *bringToFrontAction;
     QAction *sendToBackAction;
     QAction *propertiesAction;
-    QAction *showEditToolBarAction;
+    //QAction *showEditToolBarAction;
     QAction *showNodeBarAction;
     QAction *showNodeStatusBarAction;
     QAction *canvasAction;
