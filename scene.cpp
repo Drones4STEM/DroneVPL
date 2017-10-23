@@ -820,8 +820,8 @@ bool newscene::CreateBattery(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                       (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -837,9 +837,9 @@ bool newscene::CreateBattery(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
-    node->node1->setText(tr("voltage"));
-    node->node2->setText(tr("current"));
-    node->node3->setText(tr("level"));
+    node->node1->setText(tr("电压"));
+    node->node2->setText(tr("电流"));
+    node->node3->setText(tr("剩余电量"));
 
 //    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
 //                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
@@ -894,8 +894,8 @@ bool newscene::CreateGimbal(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -917,9 +917,9 @@ bool newscene::CreateGimbal(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
-    node->node1->setText(tr("pitch"));
-    node->node2->setText(tr("roll"));
-    node->node3->setText(tr("yaw"));
+    node->node1->setText(tr("俯仰"));
+    node->node2->setText(tr("横滚"));
+    node->node3->setText(tr("偏航"));
 
 
 //    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
@@ -972,8 +972,8 @@ bool newscene::CreateAttitude(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -989,9 +989,9 @@ bool newscene::CreateAttitude(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
-    node->node1->setText(tr("roll"));
-    node->node2->setText(tr("pitch"));
-    node->node3->setText(tr("yaw"));
+    node->node1->setText(tr("横滚"));
+    node->node2->setText(tr("俯仰"));
+    node->node3->setText(tr("偏航"));
 
     node->controlsId=id;
     node->identifier="Attitude";
@@ -1035,8 +1035,8 @@ bool newscene::CreateChannel(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -1077,15 +1077,15 @@ bool newscene::CreateChannel(QPointF point, int id)
     this->addItem(node->node7->yuan);
     this->addItem(node->node8->yuan);
     this->addItem(node->node9->yuan);
-    node->node1->setText(tr("one"));
-    node->node2->setText(tr("two"));
-    node->node3->setText(tr("three"));
-    node->node4->setText(tr("four"));
-    node->node5->setText(tr("five"));
-    node->node6->setText(tr("six"));
-    node->node7->setText(tr("seven"));
-    node->node8->setText(tr("eight"));
-    node->node9->setText(tr("nine"));
+    node->node1->setText(tr("通道一"));
+    node->node2->setText(tr("通道二"));
+    node->node3->setText(tr("通道三"));
+    node->node4->setText(tr("通道四"));
+    node->node5->setText(tr("通道五"));
+    node->node6->setText(tr("通道六"));
+    node->node7->setText(tr("通道七"));
+    node->node8->setText(tr("通道八"));
+    node->node9->setText(tr("通道九"));
 
     node->controlsId=id;
     node->identifier="Channel";
@@ -1141,8 +1141,8 @@ bool newscene::CreateRangeFinder(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                       (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -1151,7 +1151,7 @@ bool newscene::CreateRangeFinder(QPointF point, int id)
 
     this->addItem(node->node2);
     this->addItem(node->node2->yuan);
-    node->node2->setText(tr("distance"));
+    node->node2->setText(tr("距离"));
 
 
     node->controlsId=id;
