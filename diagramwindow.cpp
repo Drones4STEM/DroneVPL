@@ -124,9 +124,8 @@ DiagramWindow::DiagramWindow()
     gridGroup = 0;
     scene = new newscene(wm,LHM);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
-    //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
-    scene->setBackgroundBrush(Qt::white);
+    scene->setBackgroundBrush(QColor(52,73,94));
     widgetCondition = new WidgetCondition();
     view = new View;
     view->setScene(scene);
@@ -1275,17 +1274,20 @@ void DiagramWindow::addRec()
 
 void DiagramWindow::addIf()
 {
-    return;
+    scene->need_to_set=1;
+    scene->selected_Index = 502;
 }
 
 void DiagramWindow::addElse()
 {
-    return;
+    scene->need_to_set=1;
+    scene->selected_Index = 503;
 }
 
 void DiagramWindow::addWhile()
 {
-    return;
+    scene->need_to_set=1;
+    scene->selected_Index = 504;
 }
 
 /*******************************************************************
@@ -1407,6 +1409,18 @@ void DiagramWindow::del()
     {
         if(dynamic_cast<VarNode*>(items[i]))
             itemVars<<dynamic_cast<VarNode*>(items[i]);
+    } 
+    QList<VariableNode*>itemVariables;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VariableNode*>(items[i]))
+            itemVariables<<dynamic_cast<VariableNode*>(items[i]);
+    }
+    QList<VarSmallNode*>itemVarSmalls;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarSmallNode*>(items[i]))
+            itemVarSmalls<<dynamic_cast<VarSmallNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
         typename QMap<QString, LOGIC_Help*>::iterator iter;
@@ -1538,6 +1552,12 @@ void DiagramWindow::del()
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (VariableNode *item, itemVariables) {
+        delete item;
+    }
+    foreach (VarSmallNode *item, itemVarSmalls) {
         delete item;
     }
     foreach (SomeNode* item, itemSomes) {
@@ -1754,7 +1774,7 @@ void DiagramWindow::updateActions()
     bringToFrontAction->setEnabled(isNode||isRec);
     sendToBackAction->setEnabled(isNode||isRec);
     //更新view菜单中的动作
-    showEditToolBarAction->setChecked(editToolBar->isVisible());
+    //showEditToolBarAction->setChecked(editToolBar->isVisible());
     showNodeBarAction->setChecked(aToolBar->isVisible());
     showNodeStatusBarAction->setChecked(widgetCondition->isVisible());
 
@@ -1774,7 +1794,7 @@ void DiagramWindow::updateActions()
     foreach (QAction *action, view->actions())
         view->removeAction(action);
 
-    foreach (QAction *action, editMenu->actions()) {
+    foreach (QAction *action, sceneMenu->actions()) {
         if (action->isEnabled())
         view->addAction(action);
     }
@@ -1827,14 +1847,14 @@ bool DiagramWindow::sceneHasItems() const
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::showEditToolBar()
+/*void DiagramWindow::showEditToolBar()
 {
     if(showEditToolBarAction->isChecked()) {
        editToolBar->show();
     }
     else
     {editToolBar->hide();}
-}
+}*/
 
 /*******************************************************************
  * Function name:showNodeBar()
@@ -2040,7 +2060,8 @@ void DiagramWindow::checkupAndCompile()
 void DiagramWindow::createActions()
 {
     fileNewAction = new QAction(tr("New"),this);
-    fileNewAction->setShortcut(QKeySequence::New);
+    //fileNewAction->setShortcut(QKeySequence::New);
+    //fileNewAction->setIcon(QIcon(":/images/icon/打钩.png"));
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
     fileNewAction->setIcon(QIcon(":/images/filenew.png"));
 
@@ -2081,7 +2102,6 @@ void DiagramWindow::createActions()
     connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
     addActionNodeAction = new QAction(tr("Action"),this);
-    addIONodeAction = new QAction(tr("IO"),this);
 
     addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
     addTakeoffNodeAction->setIcon(QIcon(":/images/icon/take off copy.png"));
@@ -2091,7 +2111,7 @@ void DiagramWindow::createActions()
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
     addTranslationNodeAction = new QAction(tr("Direction"),this);
-    addTranslationNodeAction->setIcon(QIcon("://images/icon/up copy.png"));
+    addTranslationNodeAction->setIcon(QIcon("://images/icon/motion.png"));
 
     addRiseNodeAction = new QAction(tr("GoUp"),this);
     addRiseNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));
@@ -2100,10 +2120,10 @@ void DiagramWindow::createActions()
     addFallNodeAction->setIcon(QIcon(":/images/icon/down copy.png"));
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
     addAdvanceNodeAction = new QAction(tr("Forward"),this);
-    addAdvanceNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));//这里的图片要换
+    addAdvanceNodeAction->setIcon(QIcon(":/images/icon/forward copy.png"));//这里的图片要换
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
     addBackNodeAction = new QAction(tr("Backward"),this);
-    addBackNodeAction->setIcon(QIcon(":/images/icon/down copy.png"));//这里的图片也要换
+    addBackNodeAction->setIcon(QIcon(":/images/icon/backward copy.png"));//这里的图片也要换
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
     addRightNodeAction = new QAction(tr("GoRight"),this);
     addRightNodeAction->setIcon(QIcon(":/images/icon/right copy.png"));
@@ -2163,15 +2183,22 @@ void DiagramWindow::createActions()
     addLessNodeAction = new QAction(tr("<"),this);
     connect(addLessNodeAction,SIGNAL(triggered()),this,SLOT(addLessNode()));
 
+    addIONodeAction = new QAction(tr("IO"),this);
+    addIONodeAction->setIcon(QIcon(":/images/icon/IO.png"));
     addBatteryNodeAction = new QAction(tr("Battery"),this);
+    addBatteryNodeAction->setIcon(QIcon(":/images/icon/Battery.png"));
     connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
-    addAttitudeNodeAction = new QAction(tr("Attitude"),this);
+    addAttitudeNodeAction = new QAction(tr("Alttitude"),this);
+    addAttitudeNodeAction->setIcon(QIcon(":/images/icon/alttitude.png"));
     connect(addAttitudeNodeAction,SIGNAL(triggered()),this,SLOT(addAttitudeNode()));
     addRangeFinderNodeAction = new QAction(tr("RangeFinder"),this);
+    addRangeFinderNodeAction->setIcon(QIcon(":/images/icon/rangerfinder.png"));
     connect(addRangeFinderNodeAction,SIGNAL(triggered()),this,SLOT(addRangeFinderNode()));
     addChannelNodeAction = new QAction(tr("Channel"),this);
+    addChannelNodeAction->setIcon(QIcon(":/images/icon/channel.png"));
     connect(addChannelNodeAction,SIGNAL(triggered()),this,SLOT(addChannelNode()));
     addGimbalNodeAction = new QAction(tr("Gimbal"),this);
+    addGimbalNodeAction->setIcon(QIcon(":/images/icon/gimbal.png"));
     connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
     addLinkAction = new QAction(tr("&Link"), this);
@@ -2195,6 +2222,7 @@ void DiagramWindow::createActions()
     uploadAction = new QAction(tr("upload"),this);
     connect(uploadAction,SIGNAL(triggered()),this,SLOT(upload()));
     runAction = new QAction(tr("run"),this);
+    runAction->setIcon(QIcon(":/images/icon/运行.png"));
     connect(runAction,SIGNAL(triggered()),this,SLOT(run()));
 
 
@@ -2228,12 +2256,12 @@ void DiagramWindow::createActions()
     connect(sendToBackAction, SIGNAL(triggered()),
             this, SLOT(sendToBack()));
 
-    showEditToolBarAction = new QAction(tr("EditToolBar"), this);
+    /*showEditToolBarAction = new QAction(tr("EditToolBar"), this);
     showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
     showEditToolBarAction->setCheckable(true);
     showEditToolBarAction->setChecked(true);
     connect(showEditToolBarAction, SIGNAL(triggered()),
-            this, SLOT(showEditToolBar()));
+            this, SLOT(showEditToolBar()));*/
     showNodeBarAction = new QAction(tr("NodeBar"), this);
     showNodeBarAction->setStatusTip(tr("show or hide the node bar"));
     showNodeBarAction->setCheckable(true);
@@ -2302,6 +2330,11 @@ void DiagramWindow::createMenus()
 {
     QMenuBar *bar = menuBar();
     bar->setStyleSheet("spacing: 52px");
+    //bar->setStyleSheet("color:rgba(230,230,230,255)");
+    //bar->setStyleSheet("background-color:rgba(230,230,230,255)");
+
+    //bar->setStyleSheet("background:rgba(230,230,230,255)");
+    //bar->setStyleSheet("item:background-color:rgba(230,230,230,255)");
     QFont font("MicrosoftYaHei");
     font.setPixelSize(14);
     bar->setFont(font);
@@ -2312,6 +2345,13 @@ void DiagramWindow::createMenus()
     viewMenu = bar->addMenu(tr("视图"));
     compileMenu = bar->addMenu(tr("编译"));
     helpMenu = bar->addMenu(tr("帮助"));
+    //fileMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    /*editMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    actionMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    computeMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    viewMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    compileMenu->setStyleSheet("background-color:rgba(230,230,230,255)");*/
+
     //filemenu
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
@@ -2368,7 +2408,6 @@ void DiagramWindow::createMenus()
 
     actionMenu->addAction(addActionNodeAction);
     actionMenu->addAction(addVarNodeAction);
-    actionMenu->addAction(addVardefNodeAction);
     actionMenu->addAction(addIONodeAction);
     //computeMenu
     QMenu *comMenu = new QMenu(tr("Compute"),this);
@@ -2399,7 +2438,7 @@ void DiagramWindow::createMenus()
     computeMenu->addAction(addRecAction);
 
     //viewmenu
-    viewMenu->addAction(showEditToolBarAction);
+    /*viewMenu->addAction(showEditToolBarAction);*/
     viewMenu->addAction(showNodeBarAction);
     viewMenu->addAction(showNodeStatusBarAction);
     viewMenu->addAction(viewShowGridAction);
@@ -2415,6 +2454,18 @@ void DiagramWindow::createMenus()
     compileMenu->addAction(checkupAndCompileAction);
     compileMenu->addAction(uploadAction);
     compileMenu->addAction(runAction);
+
+    //sceneMenu
+    sceneMenu = new QMenu;
+    sceneMenu->addAction(fileSaveAction);
+    sceneMenu->addAction(deleteAction);
+    sceneMenu->addAction(cutAction);
+    sceneMenu->addAction(copyAction);
+    sceneMenu->addAction(pasteAction);
+    sceneMenu->addAction(bringToFrontAction);
+    sceneMenu->addAction(sendToBackAction);
+    sceneMenu->addAction(viewZoomInAction);
+    sceneMenu->addAction(viewZoomOutAction);
 }
 
 /*******************************************************************
@@ -2426,22 +2477,6 @@ void DiagramWindow::createMenus()
 ******************************************************************/
 void DiagramWindow::createToolBars()
 {
-    editToolBar = addToolBar(tr("Edit"));
-    editToolBar->addAction(fileNewAction);
-    editToolBar->addAction(fileOpenAction);
-    editToolBar->addAction(fileSaveAction);
-    editToolBar->addSeparator();
-    editToolBar->addAction(deleteAction);
-    editToolBar->addAction(cutAction);
-    editToolBar->addAction(copyAction);
-    editToolBar->addAction(pasteAction);
-    editToolBar->addSeparator();
-    editToolBar->addAction(bringToFrontAction);
-    editToolBar->addAction(sendToBackAction);
-    editToolBar->addAction(viewZoomInAction);
-    editToolBar->addAction(viewZoomOutAction);
-    editToolBar->addAction(viewShowGridAction);
-
     aToolBar = addToolBar(tr("a"));
     aToolBar->addAction(addTakeoffNodeAction);
     aToolBar->addAction(addLandonNodeAction);
@@ -2464,22 +2499,24 @@ void DiagramWindow::createToolBars()
     bToolBar->addAction(addElseAction);
     bToolBar->addAction(addWhileAction);
     bToolBar->addAction(addVarNodeAction);
-    bToolBar->addAction(addVardefNodeAction);
     bToolBar->addAction(addComputeNodeAction);
     bToolBar->addAction(addCompareNodeAction);
     bToolBar->addAction(addIONodeAction);
 
     addToolBar(Qt::LeftToolBarArea,bToolBar);
 
-    /*cToolBar = addToolBar(tr("c"));
+    cToolBar = addToolBar(tr("c"));
     cToolBar->addAction(cutAction);
     cToolBar->addAction(deleteAction);
     cToolBar->addAction(copyAction);
     cToolBar->addAction(pasteAction);
+    cToolBar->addAction(bringToFrontAction);
+    cToolBar->addAction(sendToBackAction);
     cToolBar->addAction(viewZoomInAction);
-    cToolBar->addAction(viewZoomOutAction);*/
+    cToolBar->addAction(viewZoomOutAction);
+    //cToolBar->addAction(viewShowGridAction);
 
-    //addToolBar(Qt::LeftToolBarArea,cToolBar);
+    addToolBar(Qt::LeftToolBarArea,cToolBar);
 }
 
 /*******************************************************************
