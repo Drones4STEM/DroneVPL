@@ -16,10 +16,10 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("qtrac.eu");
     app.setWindowIcon(QIcon(":/images/fileopen.png"));
 
-    QFile file(":/style.qss");
+    /*QFile file(":/style.qss");
     if(!file.open(QFile::ReadOnly))
         qDebug()<<"error";
-    app.setStyleSheet(file.readAll());
+    app.setStyleSheet(file.readAll());*/
 
     QTextCodec *codec = QTextCodec::codecForName("utf8");
     QTextCodec::setCodecForLocale(codec);

@@ -45,6 +45,9 @@ public:
     bool CreateChannel(QPointF point, int id);
     bool CreateRangeFinder(QPointF point, int id);
     bool CreateLogic(QPointF point, int id);
+    bool CreateIf(QPointF point, int id);
+    bool CreateWhile(QPointF point, int id);
+    bool CreateElse(QPointF point, int id);//其实这三个createlogic可以合成一个函数，函数变量多一个参数而已
     Link* CreateLink(QGraphicsSceneMouseEvent* event);
 
     //从xml文件创建控件
@@ -64,6 +67,9 @@ public:
     bool CreateChannel(ChannelNode* ion);
     bool CreateRangeFinder(RangeFinderNode* ion);
     bool CreateLogic(Rec* ln);
+    bool CreateIf(Rec* ifNode);
+    bool CreateWhile(Rec* whileNode);
+    bool CreateElse(Rec* elseNode);//其实这三个createlogic也可以合成一个函数
     bool CreateLink(Link* link);
 
     bool CheckInLogic();    //调用方法
@@ -104,6 +110,9 @@ signals:
     void itemInserted(int index);
     void sig_bringtofront();
     void sig_connectItem(QObject *item);
+
+public slots:
+    void addVariable(VariableNode *node,QString varType,QString varName,QString varValue);//点击variable每一行末端的按钮，就会调用此槽函数，在场景中生成对应变量
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);

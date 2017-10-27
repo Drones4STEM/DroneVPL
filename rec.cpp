@@ -138,7 +138,7 @@ void Rec::paint(QPainter *painter,
         pen.setWidth(2);
     }
     painter->setPen(pen);
-    painter->setBrush(backgroundColor());
+    painter->setBrush(Qt::transparent);
 
     QRectF rect = mBoundingRect;
     painter->drawRoundRect(rect, roundness(rect.width()),

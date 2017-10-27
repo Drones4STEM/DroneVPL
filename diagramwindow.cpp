@@ -1274,17 +1274,20 @@ void DiagramWindow::addRec()
 
 void DiagramWindow::addIf()
 {
-    return;
+    scene->need_to_set=1;
+    scene->selected_Index = 502;
 }
 
 void DiagramWindow::addElse()
 {
-    return;
+    scene->need_to_set=1;
+    scene->selected_Index = 503;
 }
 
 void DiagramWindow::addWhile()
 {
-    return;
+    scene->need_to_set=1;
+    scene->selected_Index = 504;
 }
 
 /*******************************************************************
@@ -1406,6 +1409,18 @@ void DiagramWindow::del()
     {
         if(dynamic_cast<VarNode*>(items[i]))
             itemVars<<dynamic_cast<VarNode*>(items[i]);
+    } 
+    QList<VariableNode*>itemVariables;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VariableNode*>(items[i]))
+            itemVariables<<dynamic_cast<VariableNode*>(items[i]);
+    }
+    QList<VarSmallNode*>itemVarSmalls;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarSmallNode*>(items[i]))
+            itemVarSmalls<<dynamic_cast<VarSmallNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
         typename QMap<QString, LOGIC_Help*>::iterator iter;
@@ -1537,6 +1552,12 @@ void DiagramWindow::del()
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (VariableNode *item, itemVariables) {
+        delete item;
+    }
+    foreach (VarSmallNode *item, itemVarSmalls) {
         delete item;
     }
     foreach (SomeNode* item, itemSomes) {
@@ -2387,7 +2408,6 @@ void DiagramWindow::createMenus()
 
     actionMenu->addAction(addActionNodeAction);
     actionMenu->addAction(addVarNodeAction);
-    actionMenu->addAction(addVardefNodeAction);
     actionMenu->addAction(addIONodeAction);
     //computeMenu
     QMenu *comMenu = new QMenu(tr("Compute"),this);
@@ -2479,7 +2499,6 @@ void DiagramWindow::createToolBars()
     bToolBar->addAction(addElseAction);
     bToolBar->addAction(addWhileAction);
     bToolBar->addAction(addVarNodeAction);
-    bToolBar->addAction(addVardefNodeAction);
     bToolBar->addAction(addComputeNodeAction);
     bToolBar->addAction(addCompareNodeAction);
     bToolBar->addAction(addIONodeAction);
