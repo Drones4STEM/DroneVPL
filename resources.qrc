@@ -42,6 +42,21 @@
 		<file>images/icon/while copy.png</file>
 		<file>images/icon/zoom in copy.png</file>
 		<file>images/icon/zoom out copy.png</file>
+		<file>images/icon/打钩.png</file>
+		<file>images/icon/设置.png</file>
+		<file>images/icon/运行.png</file>
+		<file>images/icon/alttitude.png</file>
+		<file>images/icon/Battery.png</file>
+		<file>images/icon/channel.png</file>
+		<file>images/icon/gimbal.png</file>
+		<file>images/icon/IO.png</file>
+		<file>images/icon/motion.png</file>
+		<file>images/icon/rangerfinder.png</file>
+		<file>images/icon/backward copy.png</file>
+		<file>images/icon/forward copy.png</file>
+		
 		<file>help/help.chm</file>
+		
+		<file>style.qss</file>
     </qresource>
 </RCC>

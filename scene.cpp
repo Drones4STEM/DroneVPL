@@ -215,6 +215,24 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         this->LogicNodeNum++;
         CreateLogic(new_event->scenePos(),this->LogicNodeNum);
     }
+    if(need_to_set==1&&selected_Index==502){
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->LogicNodeNum++;
+        CreateIf(new_event->scenePos(),this->LogicNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==503){
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->LogicNodeNum++;
+        CreateElse(new_event->scenePos(),this->LogicNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==504){
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->LogicNodeNum++;
+        CreateWhile(new_event->scenePos(),this->LogicNodeNum);
+    }
     QGraphicsScene::mousePressEvent(new_event);
     //setCursor(Qt::ArrowCursor);
 }
@@ -500,8 +518,87 @@ bool newscene::CreateDelay(QPointF point, int id)
 }
 
 bool newscene::CreateVarType(QPointF point, int id)
-{
-    VarNode* node=new VarNode;
+{ 
+    VariableNode *node = new VariableNode;
+    node->setPos(point);
+//实现点击后产生一行的方式是：先把四行全部创建，但是最开始生成node时，只显示第一行，隐藏其他三行；之后点击按钮，使下一行显示
+    QGraphicsItem *typeItem[4],*nameItem[4],
+                  *valueItem[4],*buttonItem[4];
+
+    QGraphicsItem *buttonItem0 = this->addWidget(node->button0);
+    buttonItem0->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->button0Item = buttonItem0;
+    node->button0Item->setPos(-110,-30);
+
+    typeItem[0] = this->addWidget(node->typeBox[0]);
+    typeItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->typeItem[0] = typeItem[0];
+    node->typeItem[0]->setPos(-110,7);
+
+    nameItem[0] = this->addWidget(node->nameEdit[0]);
+    nameItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->nameItem[0] = nameItem[0];
+    node->nameItem[0]->setPos(-30,7);
+
+    valueItem[0] = this->addWidget(node->valueEdit[0]);
+    valueItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->valueItem[0] = valueItem[0];
+    node->valueItem[0]->setPos(60,7);
+
+    buttonItem[0] = this->addWidget(node->button[0]);
+    buttonItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->buttonItem[0] = buttonItem[0];
+    node->buttonItem[0]->setPos(100,12);
+
+    for(int i=1;i<4;i++)
+    {    
+        typeItem[i] = this->addWidget(node->typeBox[i]);
+        typeItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->typeItem[i] = typeItem[i];
+        //node->typeItem[i]->setPos(-110,7);
+        node->typeItem[i]->setVisible(false);
+
+        nameItem[i] = this->addWidget(node->nameEdit[i]);
+        nameItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->nameItem[i] = nameItem[i];
+        //node->nameItem[i]->setPos(-30,7);
+        node->nameItem[i]->setVisible(false);
+
+        valueItem[i] = this->addWidget(node->valueEdit[i]);
+        valueItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->valueItem[i] = valueItem[i];
+        //node->valueItem[i]->setPos(60,7);
+        node->valueItem[i]->setVisible(false);
+
+        buttonItem[i] = this->addWidget(node->button[i]);
+        buttonItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->buttonItem[i] = buttonItem[i];
+        //node->buttonItem[i]->setPos(100,12);
+        node->button[i]->setVisible(false);
+        node->buttonItem[i]->setZValue(buttonItem[0]->zValue()-1);
+    }
+
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    //给所有comboBox加入内容
+    for(int i = 0;i<4;i++)
+    {
+        node->typeBox[i]->addItem("int");
+        node->typeBox[i]->addItem("double");
+        node->typeBox[i]->addItem("float");
+    }
+
+    connect(node,SIGNAL(addVarSignal(VariableNode*,QString,QString,QString)),
+            this,SLOT(addVariable(VariableNode*,QString,QString,QString)));
+
+
+    return true;
+
+
+    /*VarNode* node=new VarNode;
     node->setText(tr("int"));
 
     node->setPos(point);
@@ -525,7 +622,7 @@ bool newscene::CreateVarType(QPointF point, int id)
 
     emit sig_connectItem(node);
 
-    return true;
+    return true;*/
 }
 
 bool newscene::CreateVarDef(QPointF point, int id)
@@ -820,8 +917,8 @@ bool newscene::CreateBattery(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                       (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -837,9 +934,9 @@ bool newscene::CreateBattery(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
-    node->node1->setText(tr("voltage"));
-    node->node2->setText(tr("current"));
-    node->node3->setText(tr("level"));
+    node->node1->setText(tr("电压"));
+    node->node2->setText(tr("电流"));
+    node->node3->setText(tr("剩余电量"));
 
 //    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
 //                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
@@ -894,8 +991,8 @@ bool newscene::CreateGimbal(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -917,9 +1014,9 @@ bool newscene::CreateGimbal(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
-    node->node1->setText(tr("pitch"));
-    node->node2->setText(tr("roll"));
-    node->node3->setText(tr("yaw"));
+    node->node1->setText(tr("俯仰"));
+    node->node2->setText(tr("横滚"));
+    node->node3->setText(tr("偏航"));
 
 
 //    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
@@ -972,8 +1069,8 @@ bool newscene::CreateAttitude(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -989,9 +1086,9 @@ bool newscene::CreateAttitude(QPointF point, int id)
     this->addItem(node->node2->yuan);
     this->addItem(node->node1->yuan);
     this->addItem(node->node3->yuan);
-    node->node1->setText(tr("roll"));
-    node->node2->setText(tr("pitch"));
-    node->node3->setText(tr("yaw"));
+    node->node1->setText(tr("横滚"));
+    node->node2->setText(tr("俯仰"));
+    node->node3->setText(tr("偏航"));
 
     node->controlsId=id;
     node->identifier="Attitude";
@@ -1035,8 +1132,8 @@ bool newscene::CreateChannel(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                      (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -1077,15 +1174,15 @@ bool newscene::CreateChannel(QPointF point, int id)
     this->addItem(node->node7->yuan);
     this->addItem(node->node8->yuan);
     this->addItem(node->node9->yuan);
-    node->node1->setText(tr("one"));
-    node->node2->setText(tr("two"));
-    node->node3->setText(tr("three"));
-    node->node4->setText(tr("four"));
-    node->node5->setText(tr("five"));
-    node->node6->setText(tr("six"));
-    node->node7->setText(tr("seven"));
-    node->node8->setText(tr("eight"));
-    node->node9->setText(tr("nine"));
+    node->node1->setText(tr("通道一"));
+    node->node2->setText(tr("通道二"));
+    node->node3->setText(tr("通道三"));
+    node->node4->setText(tr("通道四"));
+    node->node5->setText(tr("通道五"));
+    node->node6->setText(tr("通道六"));
+    node->node7->setText(tr("通道七"));
+    node->node8->setText(tr("通道八"));
+    node->node9->setText(tr("通道九"));
 
     node->controlsId=id;
     node->identifier="Channel";
@@ -1141,8 +1238,8 @@ bool newscene::CreateRangeFinder(QPointF point, int id)
 
     node->yuan->setPos(QPointF(node->pos().x(),
                       (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
+    node->yuan2->setPos(QPointF(node->pos().x(),
+                       (node->pos().y() - node->outlineRect().height()/2 - node->yuan->boundingRect().height()/2)));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
@@ -1151,7 +1248,7 @@ bool newscene::CreateRangeFinder(QPointF point, int id)
 
     this->addItem(node->node2);
     this->addItem(node->node2->yuan);
-    node->node2->setText(tr("distance"));
+    node->node2->setText(tr("距离"));
 
 
     node->controlsId=id;
@@ -1225,6 +1322,173 @@ bool newscene::CreateLogic(QPointF point, int id)
     LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
     LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
     return true;
+}
+
+bool newscene::CreateIf(QPointF point, int id)
+{
+    Rec *rec=new Rec;
+    QGraphicsItem* item= this->addWidget(rec->box);
+    rec->item=item;
+
+    rec->setPos(point);
+    rec->setxy(point);
+    this->addItem(rec);
+    this->clearSelection();
+    rec->setSelected(true);
+
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
+    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
+    this->addItem(rec->yuan2);
+    this->addItem(rec->yuan);
+
+    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
+                         (rec->pos().y() - rec->boundingRect().height()/2)));
+    item->setZValue(rec->zValue()+1);
+    rec->box->addItem(tr("if"));
+    rec->box->addItem(tr("else"));
+    rec->box->addItem(tr("while"));
+    rec->box->setCurrentIndex(0);
+
+    rec->controlsId=id;
+    rec->identifier="Logic";
+    QString cid = QString::number(rec->controlsId,10);
+    rec->name = rec->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<rec->name;
+    qDebug()<<"identifier :"<<rec->identifier;
+    qDebug()<<"controlsId :"<<rec->controlsId;
+    WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    rec->yuan2->master = tmp;
+    rec->yuan2->name = "yuan2";
+
+    emit sig_connectItem(rec);
+
+    LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
+    LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
+    return true;
+}
+
+bool newscene::CreateElse(QPointF point, int id)
+{
+    Rec *rec=new Rec;
+    QGraphicsItem* item= this->addWidget(rec->box);
+    rec->item=item;
+
+    rec->setPos(point);
+    rec->setxy(point);
+    this->addItem(rec);
+    this->clearSelection();
+    rec->setSelected(true);
+
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
+    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
+    this->addItem(rec->yuan2);
+    this->addItem(rec->yuan);
+
+    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
+                         (rec->pos().y() - rec->boundingRect().height()/2)));
+    item->setZValue(rec->zValue()+1);
+    rec->box->addItem(tr("if"));
+    rec->box->addItem(tr("else"));
+    rec->box->addItem(tr("while"));
+    rec->box->setCurrentIndex(0);
+
+    rec->controlsId=id;
+    rec->identifier="Logic";
+    QString cid = QString::number(rec->controlsId,10);
+    rec->name = rec->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<rec->name;
+    qDebug()<<"identifier :"<<rec->identifier;
+    qDebug()<<"controlsId :"<<rec->controlsId;
+    WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    rec->yuan2->master = tmp;
+    rec->yuan2->name = "yuan2";
+
+    emit sig_connectItem(rec);
+
+    LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
+    LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
+    return true;
+}
+
+bool newscene::CreateWhile(QPointF point, int id)
+{
+    Rec *rec=new Rec;
+    QGraphicsItem* item= this->addWidget(rec->box);
+    rec->item=item;
+
+    rec->setPos(point);
+    rec->setxy(point);
+    this->addItem(rec);
+    this->clearSelection();
+    rec->setSelected(true);
+
+    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
+    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
+    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
+                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
+    this->addItem(rec->yuan2);
+    this->addItem(rec->yuan);
+
+    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
+                         (rec->pos().y() - rec->boundingRect().height()/2)));
+    item->setZValue(rec->zValue()+1);
+    rec->box->addItem(tr("if"));
+    rec->box->addItem(tr("else"));
+    rec->box->addItem(tr("while"));
+    rec->box->setCurrentIndex(0);
+
+    rec->controlsId=id;
+    rec->identifier="Logic";
+    QString cid = QString::number(rec->controlsId,10);
+    rec->name = rec->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<rec->name;
+    qDebug()<<"identifier :"<<rec->identifier;
+    qDebug()<<"controlsId :"<<rec->controlsId;
+    WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    rec->yuan2->master = tmp;
+    rec->yuan2->name = "yuan2";
+
+    emit sig_connectItem(rec);
+
+    LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
+    LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
+    return true;
+}
+
+void newscene::addVariable(VariableNode *node, QString varType, QString varName, QString varValue)
+{
+    VarSmallNode *smallNode = new VarSmallNode;
+    smallNode->setPos(node->pos().x(),node->pos().y()+150);
+    smallNode->varType=varType;
+    smallNode->varName=varName;
+    smallNode->varValue=varValue.toDouble();
+    qDebug()<<1;
+    this->addItem(smallNode);
+
+    smallNode->yuan->setPos(smallNode->pos().x() + smallNode->outlineRect().width()/2 + smallNode->yuan2->boundingRect().width()/2,
+                            smallNode->pos().y());
+    smallNode->yuan2->setPos(smallNode->pos().x() - smallNode->outlineRect().width()/2 - smallNode->yuan2->boundingRect().width()/2,
+                             smallNode->pos().y());
+    this->addItem(smallNode->yuan);
+    this->addItem(smallNode->yuan2);
+
+    return;
 }
 
 Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)

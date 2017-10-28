@@ -143,7 +143,7 @@ triYuan::triYuan(QGraphicsItem *parent)
     :Yuan(parent)
 {
     setOutlineColor(Qt::darkBlue);
-    setBackgroundColor(Qt::red);
+    setBackgroundColor(Qt::yellow);
 
     setFlags(ItemIsSelectable);
     setInout(0);
@@ -189,8 +189,8 @@ void triYuan::paint(QPainter *painter,
 
 specialYuan::specialYuan()
 {
-    setOutlineColor(Qt::white);
-    setBackgroundColor(Qt::white);
+    setOutlineColor(Qt::transparent);
+    setBackgroundColor(Qt::transparent);
 
     setInout(0);
 }

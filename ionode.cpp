@@ -213,7 +213,7 @@ BatteryNode::~BatteryNode()
 ******************************************************************/
 QRectF BatteryNode::outlineRect() const
 {
-    QRectF rect(0,0,60,60);
+    QRectF rect(0,0,40,78);
     rect.translate(-rect.center());
     return rect;
 }
@@ -230,8 +230,7 @@ QRectF BatteryNode::outlineRect() const
 ******************************************************************/
 QRectF BatteryNode::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return outlineRect();
 }
 
 /*******************************************************************
@@ -285,9 +284,16 @@ void BatteryNode::paint(QPainter *painter,
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 
-    painter->setPen(textColor());
-    QString myText = text();
-    painter->drawText(rect, Qt::AlignCenter, myText);
+    QImage img = QImage(":/images/icon/Battery.png");
+    painter->drawImage(-15,-20,img);
+
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(14);
+    painter->setFont(font);
+    QString str("电池");
+    painter->drawText(-15,20,str);
 }
 
 /*******************************************************************
@@ -308,8 +314,8 @@ QVariant BatteryNode::itemChange(GraphicsItemChange change, const QVariant &valu
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
-            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y());
+            yuan2->setPos(pos().x(),
+                         pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
 
@@ -419,7 +425,7 @@ GimbalNode::~GimbalNode()
 ******************************************************************/
 QRectF GimbalNode::outlineRect() const
 {
-    QRectF rect(0,0,60,60);
+    QRectF rect(0,0,40,78);
     rect.translate(-rect.center());
     return rect;
 }
@@ -436,8 +442,7 @@ QRectF GimbalNode::outlineRect() const
 ******************************************************************/
 QRectF GimbalNode::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return outlineRect();
 }
 
 /*******************************************************************
@@ -491,9 +496,16 @@ void GimbalNode::paint(QPainter *painter,
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 
-    painter->setPen(textColor());
-    QString myText = text();
-    painter->drawText(rect, Qt::AlignCenter, myText);
+    QImage img = QImage(":/images/icon/gimbal.png");
+    painter->drawImage(-15,-20,img);
+
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(10);
+    painter->setFont(font);
+    QString str("云台");
+    painter->drawText(-15,20,str);
 }
 
 /*******************************************************************
@@ -509,14 +521,13 @@ QVariant GimbalNode::itemChange(GraphicsItemChange change, const QVariant &value
     if (change & ItemPositionHasChanged){
         //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
        //{
-            qDebug()<<true;
             yuan->setPos(pos().x(),
                          pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
-            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y());
+            yuan2->setPos(pos().x(),
+                          pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
 
@@ -589,13 +600,15 @@ void GimbalNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
  * Inputs:
  * Outputs:
 ******************************************************************/
-IoSmallNode::IoSmallNode(QGraphicsItem *parent)
+IoSmallNode::IoSmallNode(int sizeFlag,QGraphicsItem *parent)
     :Node(parent)
 {
     yuan = new triYuan();
     //yuan->setPos( outlineRect().width()/2 + yuan->boundingRect().width()/2,0);
     setFlag(ItemIsMovable,false);
     identifier="IoSmallNode";
+    setBackgroundColor(Qt::white);//为什么没有用呢
+    this->sizeFlag=sizeFlag;
 }
 
 void IoSmallNode::setIoType(QString &type)
@@ -671,9 +684,14 @@ QVariant IoSmallNode::itemChange(GraphicsItemChange change, const QVariant &valu
 ******************************************************************/
 QRectF IoSmallNode::outlineRect() const
 {
-    QRectF rect(0,0,60,20);
-    rect.translate(-rect.center());
-    return rect;
+    QRectF rect1(0,0,80,26);
+    rect1.translate(-rect1.center());
+    QRectF rect2(0,0,80,46);
+    rect2.translate(-rect2.center());
+    if(sizeFlag==1)
+        return rect1;
+    else if(sizeFlag==2)
+        return rect2;
 }
 
 /*******************************************************************
@@ -688,8 +706,7 @@ QRectF IoSmallNode::outlineRect() const
 ******************************************************************/
 QRectF IoSmallNode::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return outlineRect();
     //return outlineRect();
 }
 
@@ -738,13 +755,18 @@ void IoSmallNode::paint(QPainter *painter,
         pen.setWidth(2);
     }
     painter->setPen(pen);
-    painter->setBrush(backgroundColor());
+    //painter->setBrush(backgroundColor());
+    painter->setBrush(Qt::white);
 
     QRectF rect = outlineRect();
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 
-    painter->setPen(textColor());
+    QFont font("MicrosoftYahei");
+    font.setPixelSize(14);
+    painter->setFont(font);
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
     QString myText = text();
     painter->drawText(rect, Qt::AlignCenter, myText);
 }
@@ -794,7 +816,7 @@ AttitudeNode::~AttitudeNode()
 ******************************************************************/
 QRectF AttitudeNode::outlineRect() const
 {
-    QRectF rect(0,0,60,60);
+    QRectF rect(0,0,40,78);
     rect.translate(-rect.center());
     return rect;
 }
@@ -811,8 +833,7 @@ QRectF AttitudeNode::outlineRect() const
 ******************************************************************/
 QRectF AttitudeNode::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return outlineRect();
 }
 
 /*******************************************************************
@@ -866,9 +887,16 @@ void AttitudeNode::paint(QPainter *painter,
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 
-    painter->setPen(textColor());
-    QString myText = text();
-    painter->drawText(rect, Qt::AlignCenter, myText);
+    QImage img = QImage(":/images/icon/alttitude.png");
+    painter->drawImage(-15,-20,img);
+
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(10);
+    painter->setFont(font);
+    QString str("姿态");
+    painter->drawText(-15,20,str);
 }
 
 /*******************************************************************
@@ -882,20 +910,15 @@ void AttitudeNode::paint(QPainter *painter,
 QVariant AttitudeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       //{
             yuan->setPos(pos().x(),
                          pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
-            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y());
+            yuan2->setPos(pos().x(),
+                         pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
-
-//            item->setPos(pos().x() - outlineRect().width()/2,
-//                         pos().y() - outlineRect().height()/2 - item->boundingRect().height());
 
             node2->setPos(pos().x() + outlineRect().width()/2 + node2->outlineRect().width()/2,
                           pos().y());
@@ -903,11 +926,6 @@ QVariant AttitudeNode::itemChange(GraphicsItemChange change, const QVariant &val
                           node2->pos().y() - node2->outlineRect().height());
             node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
                           node2->pos().y() + node2->outlineRect().height());
-       /*}
-        else{
-            setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
-                   node2->y());
-        }*/
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -1017,7 +1035,7 @@ ChannelNode::~ChannelNode()
 ******************************************************************/
 QRectF ChannelNode::outlineRect() const
 {
-    QRectF rect(0,0,60,180);
+    QRectF rect(0,0,40,234);
     rect.translate(-rect.center());
     return rect;
 }
@@ -1034,8 +1052,7 @@ QRectF ChannelNode::outlineRect() const
 ******************************************************************/
 QRectF ChannelNode::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return outlineRect();
 }
 
 /*******************************************************************
@@ -1089,9 +1106,16 @@ void ChannelNode::paint(QPainter *painter,
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 
-    painter->setPen(textColor());
-    QString myText = text();
-    painter->drawText(rect, Qt::AlignCenter, myText);
+    QImage img = QImage(":/images/icon/channel.png");
+    painter->drawImage(-15,-20,img);
+
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(14);
+    painter->setFont(font);
+    QString str("通道");
+    painter->drawText(-15,20,str);
 }
 
 /*******************************************************************
@@ -1105,16 +1129,14 @@ void ChannelNode::paint(QPainter *painter,
 QVariant ChannelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-        //{
             qDebug()<<"........if";
             yuan->setPos(pos().x(),
-                         pos().y() + outlineRect().height()/2);
+                         pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
-            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y());
+            yuan2->setPos(pos().x(),
+                         pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
 
@@ -1136,13 +1158,6 @@ QVariant ChannelNode::itemChange(GraphicsItemChange change, const QVariant &valu
                           node1->pos().y() + 7*node1->outlineRect().height());
             node9->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
                           node1->pos().y() + 8*node1->outlineRect().height());
-        /*}else{
-            qDebug()<<"........else";
-            //setPos(node1->x()- outlineRect().width()/2 -node1->outlineRect().width()/2,
-            //       node1->y());
-            setPos(yuan2->pos().x() + yuan2->outlineRect().width()/2 + outlineRect().width()/2,
-                   yuan2->pos().y());
-        }*/
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -1202,7 +1217,7 @@ RangeFinderNode::RangeFinderNode()
     box=new QComboBox;
     box->addItem(tr("Range Finder"));
     box->addItem(tr("distance"));
-    node2=new IoSmallNode;
+    node2=new IoSmallNode(2);
 
     identifier="RangeFinder";
 }
@@ -1229,7 +1244,7 @@ RangeFinderNode::~RangeFinderNode()
 ******************************************************************/
 QRectF RangeFinderNode::outlineRect() const
 {
-    QRectF rect(0,0,60,60);
+    QRectF rect(0,0,40,46);
     rect.translate(-rect.center());
     return rect;
 }
@@ -1246,8 +1261,7 @@ QRectF RangeFinderNode::outlineRect() const
 ******************************************************************/
 QRectF RangeFinderNode::boundingRect() const
 {
-    const int Margin = 6;
-    return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
+    return outlineRect();
 }
 
 /*******************************************************************
@@ -1301,9 +1315,16 @@ void RangeFinderNode::paint(QPainter *painter,
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
 
-    painter->setPen(textColor());
-    QString myText = text();
-    painter->drawText(rect, Qt::AlignCenter, myText);
+    QImage img = QImage(":/images/icon/rangerfinder.png");
+    painter->drawImage(-15,-20,img);
+
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(10);
+    painter->setFont(font);
+    QString str("测高");
+    painter->drawText(-15,20,str);
 }
 
 /*******************************************************************
@@ -1324,8 +1345,8 @@ QVariant RangeFinderNode::itemChange(GraphicsItemChange change, const QVariant &
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
-            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                         pos().y());
+            yuan2->setPos(pos().x(),
+                         pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
 
