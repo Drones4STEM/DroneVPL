@@ -118,6 +118,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mGoNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            stream.writeTextElement("direction",ww->mGoNode->direction);
             QString GroundSpeed = QString::number((long)ww->mGoNode->myGroundSpeed(),10);
             stream.writeTextElement("GroudSpeed",GroundSpeed);
             QString Time = QString::number((long)ww->mGoNode->myTime(),10);
@@ -128,6 +129,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mTurnNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            stream.writeTextElement("direction",ww->mTurnNode->direction);
             QString Angel = QString::number((long)ww->mTurnNode->myAngel(),10);
             stream.writeTextElement("Angel",Angel);
         }
@@ -144,6 +146,8 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mDelayNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
+            QString Time = QString::number((long)ww->mDelayNode->myTime(),10);
+            stream.writeTextElement("Time",Time);
         }
 
         qDebug()<<"category: "<<ww->category;
@@ -207,18 +211,28 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         stream.writeStartElement("math");
         if(ww->mComputeNode->text()=="+"){ //如果加法
             stream.writeAttribute("operator","add");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()=="-"){ //如果减法
             stream.writeAttribute("operator","substract");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()=="*"){ //如果乘法
             stream.writeAttribute("operator","multiple");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()=="/"){ //如果除法
             stream.writeAttribute("operator","divison");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()=="e"){ //如果幂
             stream.writeAttribute("operator","power");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()=="sin"){ //如果正弦
             //stream.writeAttribute("sin");
@@ -239,19 +253,26 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             //stream.writeTextElement();
         }
         if(ww->mComputeNode->text()=="log"){ //如果对数
-            //stream.writeAttribute("log");
+            stream.writeAttribute("operator","log");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()=="="){ //如果等于
-            //stream.writeAttribute("equal");
+            stream.writeAttribute("operator","equal");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
+
         }
         if(ww->mComputeNode->text()=="<"){ //如果小于
-            //stream.writeAttribute("less");
+            stream.writeAttribute("operator","less");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
         if(ww->mComputeNode->text()==">"){ //如果大于
-            //stream.writeAttribute("greater");
+            stream.writeAttribute("operator","greater");
+            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
+            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
         }
-        stream.writeEndElement();
-        stream.writeEndElement();
         stream.writeEndElement();
         stream.writeEndElement();   //correspond to writeStartElement("Compute")
         qDebug()<<"category: "<<ww->category;
@@ -326,7 +347,6 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mLogicNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            //stream.writeStartElement("arrow_out");
         }
         stream.writeEndElement();   //correspond to writeStartElement("Logic")
         qDebug()<<"category: "<<ww->category;
@@ -335,45 +355,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"location_x: "<<x;
         qDebug()<<"location_y: "<<y;
     }
-        /*
-        QString t;
-        t = ;//判断是if还是else还是while
-         SWmap::iterator WILiter;
-         SWmap* WIL = iter->value->li->WidgetsInLOGIC;
-         for(WILiter=WIL->begin(); WILiter!=WIL->end(); WILiter++){
-            save_widget(WILiter,stream);
-         }
-         if(){ //控件if
-            stream.writeTextElement("else",);
-         }
-         stream.writeEndElement();
-        stream.writeEndElement();
-    }*/
-        /*
 
-    }*/
-          /*
-          if(){   //判断VAR里面是否有保存变量
-              stream.writeTextElement("variable_a",iter->);
-              stream.writeTextElement("variable_b",iter->);
-          }
-          if(){ //有constant
-              stream.writeTextElement("constant",);
-          }
-          if(){ //有输出
-              stream.writeStartElement("arrow_out");
-               stream.writeStartElement("a_to");
-               stream.writeAttribute("name", iter->value->yuan->myLinks->yuan->node->name);
-               //指到node的名字，还未完成
-                stream.writeCharacters(iter->value->yuan->myLinks->yuan);
-                //指到yuan的名字，还未完成
-               stream.writeEndElement();
-              stream.writeEndElement();
-          }
-         stream.writeEndElement();
-        stream.writeEndElement();
-    }
-*/
     if(ww->category == "Link"){
         stream.writeStartElement("Link");
         stream.writeAttribute("type",identifier);
