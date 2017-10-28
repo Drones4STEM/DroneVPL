@@ -436,7 +436,6 @@ bool format::read_frame_file(QString filename)
                         location_y = stream.readElementText().toInt();
                         qDebug()<<"location_y: "<<location_y;
                     }
-
                     QPointF point(location_x,location_y);
                     if(type=="TakeOff"){
                         stream.readNext();
@@ -454,6 +453,13 @@ bool format::read_frame_file(QString filename)
                     if(type=="Go"){
                         stream.readNext();
                         stream.readNext();
+                        QString direction;
+                        if(stream.name().toString()=="direction"){
+                            direction = stream.readElementText();
+                            qDebug()<<"direction: "<<direction;
+                        }
+                        stream.readNext();
+                        stream.readNext();
                         double GroundSpeed;
                         if(stream.name().toString()=="GroudSpeed"){
                             GroundSpeed = stream.readElementText().toDouble();
@@ -466,9 +472,16 @@ bool format::read_frame_file(QString filename)
                             Time = stream.readElementText().toDouble();
                             qDebug()<<"Time: "<<Time;
                         }
-                        CreateGo(point,id,GroundSpeed,Time); //在窗口中生成takeoff控件
+                        CreateGo(point,id,direction,GroundSpeed,Time); //在窗口中生成takeoff控件
                     }
                     if(type=="Turn"){
+                        stream.readNext();
+                        stream.readNext();
+                        QString direction;
+                        if(stream.name().toString()=="direction"){
+                            direction = stream.readElementText();
+                            qDebug()<<"direction: "<<direction;
+                        }
                         stream.readNext();
                         stream.readNext();
                         double Angel;
@@ -476,7 +489,7 @@ bool format::read_frame_file(QString filename)
                             Angel = stream.readElementText().toDouble();
                             qDebug()<<"Angel: "<<Angel;
                         }
-                        CreateTurn(point,id,Angel); //在窗口中生成takeoff控件
+                        CreateTurn(point,id,direction,Angel); //在窗口中生成takeoff控件
                     }
                     if(type=="Hover"){
                         stream.readNext();
@@ -489,7 +502,14 @@ bool format::read_frame_file(QString filename)
                         CreateHover(point,id,Time); //在窗口中生成takeoff控件
                     }
                     if(type=="Delay"){
-                        CreateDelay(point,id); //在窗口中生成takeoff控件
+                        stream.readNext();
+                        stream.readNext();
+                        double Time;
+                        if(stream.name().toString()=="Time"){
+                            Time = stream.readElementText().toDouble();
+                            qDebug()<<"Time: "<<Time;
+                        }
+                        CreateDelay(point,id,Time); //在窗口中生成takeoff控件
                     }
                 }
             //}
@@ -1146,7 +1166,7 @@ bool format::CreateLand(QPointF point, int id)
     return true;
 }
 
-bool format::CreateGo(QPointF point, int id, double Speed, double Time)
+bool format::CreateGo(QPointF point, int id, QString direction, double Speed, double Time)
 {
     GoNode *node=new GoNode;
     node->lx = point.x();
@@ -1157,6 +1177,7 @@ bool format::CreateGo(QPointF point, int id, double Speed, double Time)
     node->name = node->identifier + cid;
     node->groundspeed = Speed;
     node->Time = Time;
+    node->direction = direction;
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
@@ -1167,7 +1188,7 @@ bool format::CreateGo(QPointF point, int id, double Speed, double Time)
     return true;
 }
 
-bool format::CreateTurn(QPointF point, int id, double Angel)
+bool format::CreateTurn(QPointF point, int id, QString direction, double Angel)
 {
     TurnNode *node=new TurnNode;
 
@@ -1178,6 +1199,7 @@ bool format::CreateTurn(QPointF point, int id, double Angel)
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     node->Angel = Angel;
+    node->direction = direction;
 
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
@@ -1209,7 +1231,7 @@ bool format::CreateHover(QPointF point, int id, double Time)
     return true;
 }
 
-bool format::CreateDelay(QPointF point, int id)
+bool format::CreateDelay(QPointF point, int id, double time)
 {
     DelayNode *node=new DelayNode;
 
@@ -1219,6 +1241,8 @@ bool format::CreateDelay(QPointF point, int id)
     node->identifier="Delay";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    node->time = time;
+
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;

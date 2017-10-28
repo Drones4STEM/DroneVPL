@@ -63,10 +63,10 @@ private:
     //they accept parameters from xml.
     bool CreateTakeOff(QPointF point, int id, double Altitude);
     bool CreateLand(QPointF point, int id);
-    bool CreateGo(QPointF point, int id,double Speed,double Time);
-    bool CreateTurn(QPointF point, int id, double Angel);
+    bool CreateGo(QPointF point, int id, QString direction, double Speed,double Time);
+    bool CreateTurn(QPointF point, int id, QString direction, double Angel);
     bool CreateHover(QPointF point, int id, double Time);
-    bool CreateDelay(QPointF point, int id);
+    bool CreateDelay(QPointF point, int id, double time);
     bool CreateVarType(QPointF point, int id);
     bool CreateVarDef(QPointF point, int id, QString name, int seq);   //num表示VarDef是VarType的第几个节点
     bool CreateCompute(QPointF point, int id, QString math);
