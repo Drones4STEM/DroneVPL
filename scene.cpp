@@ -430,7 +430,6 @@ bool newscene::CreateTurn(QPointF point, int id, int index)
 bool newscene::CreateHover(QPointF point, int id)
 {
     HoverNode *node=new HoverNode;
-    node->setText(tr(" Hover \n %1 s").arg(node->time));
 
     QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
     lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
@@ -1537,8 +1536,13 @@ Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 //----------------从xml文件创建控件-----------------------
 bool newscene::CreateTakeOff(TakeOffNode* node)
 {
-    node->setText(tr("take off\n %1 s").arg(node->altitude));
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
 
+    QString tmp = QString::number(node->altitude,10,2);
+    node->lineEdit->setText(tmp);
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -1578,9 +1582,24 @@ bool newscene::CreateLand(LandNode* node)
 }
 bool newscene::CreateGo(GoNode* node)
 {
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->groundspeed).arg(node->Time));
     QGraphicsItem* item=this->addWidget(node->box);
+    item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
+    node->item->setPos(-175,-16);
+
+    QGraphicsItem* lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(-25,-10);
+    QGraphicsItem* lineItem2 = this->addWidget(node->lineEdit2);
+    lineItem2->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem2 = lineItem2;
+    node->lineItem2->setPos(125,-10);
+
+    QString tmp = QString::number(node->groundspeed,10,2);
+    node->lineEdit->setText(tmp);
+    tmp = QString::number(node->Time,10,2);
+    node->lineEdit2->setText(tmp);
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1598,16 +1617,26 @@ bool newscene::CreateGo(GoNode* node)
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
-    item->setPos(QPointF(node->pos().x()-40,
-                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("GoUp"));
-    node->box->addItem(tr("GoDown"));
-    node->box->addItem(tr("Forward"));
-    node->box->addItem(tr("Backward"));
-    node->box->addItem(tr("GoRight"));
-    node->box->addItem(tr("GoLeft"));
-    node->box->setCurrentIndex(0);
+    node->box->addItem(tr("向上"));
+    node->box->addItem(tr("向下"));
+    node->box->addItem(tr("前进"));
+    node->box->addItem(tr("后退"));
+    node->box->addItem(tr("向右"));
+    node->box->addItem(tr("向左"));
+    if(node->direction=="GoUp"){
+        node->box->setCurrentIndex(0);
+    }else if(node->direction=="GoDown"){
+        node->box->setCurrentIndex(1);
+    }else if(node->direction=="Forward"){
+        node->box->setCurrentIndex(2);
+    }else if(node->direction=="Backward"){
+        node->box->setCurrentIndex(3);
+    }else if(node->direction=="GoRight"){
+        node->box->setCurrentIndex(4);
+    }else if(node->direction=="GoLeft"){
+        node->box->setCurrentIndex(5);
+    }
+    connect(node->box,SIGNAL(currentIndexChanged(int)),node,SLOT(setDirection()));
     this->GoNodeNum++;
 
     qDebug()<<"Create():";
@@ -1621,9 +1650,18 @@ bool newscene::CreateGo(GoNode* node)
 }
 bool newscene::CreateTurn(TurnNode* node)
 {
-    node->setText(tr(" %1 ").arg(node->Angel));
     QGraphicsItem* item=this->addWidget(node->box);
+    item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
+    node->item->setPos(-100,-16);
+
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(50,-10);
+
+    QString tmp = QString::number(node->Angel,10,2);
+    node->lineEdit->setText(tmp);
 
     node->setPos(node->lx,node->ly);
     this->addItem(node);
@@ -1639,12 +1677,15 @@ bool newscene::CreateTurn(TurnNode* node)
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
 
-    item->setPos(QPointF(node->pos().x()-40,
-                 (node->pos().y() - node->outlineRect().height()/2 - node->item->boundingRect().height())));
     item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("TurnLeft"));
-    node->box->addItem(tr("TurnRight"));
-    node->box->setCurrentIndex(0);
+    node->box->addItem(tr("左转"));
+    node->box->addItem(tr("右转"));
+    if(node->direction=="TurnLeft"){
+        node->box->setCurrentIndex(0);
+    }else if(node->direction=="TurnRight"){
+        node->box->setCurrentIndex(1);
+    }
+    connect(node->box,SIGNAL(currentIndexChanged(int)),node,SLOT(setDirection()));
     this->TurnNodeNum++;
 
     qDebug()<<"Create():";
@@ -1658,8 +1699,13 @@ bool newscene::CreateTurn(TurnNode* node)
 }
 bool newscene::CreateHover(HoverNode* node)
 {
-    node->setText(tr(" Hover \n %1 s").arg(node->time));
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
 
+    QString tmp = QString::number(node->time,10,2);
+    node->lineEdit->setText(tmp);
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -1686,8 +1732,13 @@ bool newscene::CreateHover(HoverNode* node)
 }
 bool newscene::CreateDelay(DelayNode *node)
 {
-    node->setText(tr(" Delay \n %1 s").arg(node->time));
+    QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
+    lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
+    node->lineItem = lineItem;
+    node->lineItem->setPos(0,-10);
 
+    QString tmp = QString::number(node->time,10,2);
+    node->lineEdit->setText(tmp);
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
