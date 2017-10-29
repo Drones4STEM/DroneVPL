@@ -33,20 +33,19 @@ ComputeNode::ComputeNode()
     //yuan->master = new WidgetWrap(this);
     //yuan2->master = new WidgetWrap(this);
     //yuan3->master = new WidgetWrap(this);
-    //yuan = new triYuan();
     yuan2 = new Yuan();
-    yuan3 = new Yuan();
     yuan2->setInout(1);
-    yuan3->setInout(1);
     box = new QComboBox;
-    rect1 = new ComputeSmallNode;
-    rect2 = new ComputeSmallNode;
-
-    rect1text = "";
-    rect1text = "";
+    box->setFixedSize(44,28);
+    lineEdit1 = new QLineEdit;
+    lineEdit2 = new QLineEdit;
+    lineEdit1->setFixedSize(36,20);
+    lineEdit2->setFixedSize(36,20);
 
     identifier="Compute";
     rank = 0;
+
+    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
 }
 
 /*******************************************************************
@@ -59,10 +58,9 @@ ComputeNode::ComputeNode()
 ComputeNode::~ComputeNode()
 {
     delete yuan2;
-    delete yuan3;
     delete box;
-    delete rect1;
-    delete rect2;
+    delete lineEdit1;
+    delete lineEdit2;
 }
 
 /*******************************************************************
@@ -74,8 +72,23 @@ ComputeNode::~ComputeNode()
 ******************************************************************/
 QRectF ComputeNode::outlineRect() const
 {
-    QRectF rect(-20,-20,40,40);
+    QRectF rect(0,0,162,36);
+    rect.translate(-rect.center());
     return rect;
+}
+
+QRectF ComputeNode::boundingRect() const
+{
+    return outlineRect();
+}
+
+QPainterPath ComputeNode::shape() const
+{
+    QRectF rect = outlineRect();
+    QPainterPath path;
+    path.addRoundedRect(rect,roundness(rect.width()),
+                        roundness(rect.height()));
+    return path;
 }
 
 /*******************************************************************
@@ -91,38 +104,15 @@ QRectF ComputeNode::outlineRect() const
 QVariant ComputeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       //{
-            yuan->setPos(pos().x(),
-                         pos().y() + outlineRect().height()/2 +yuan->boundingRect().height()/2);
+            yuan->setPos(pos().x() - 70,
+                         pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
 
-            yuan2->setPos(pos().x() - outlineRect().width()/2 - rect1->boundingRect().width()
-                          - yuan2->outlineRect().width()/2,
-                         pos().y());
+            yuan2->setPos(pos().x() - 70,
+                         pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
-            {link->trackYuans();update();}
-
-            yuan3->setPos(pos().x() + outlineRect().width()/2 + rect2->boundingRect().width()
-                          + yuan3->outlineRect().width()/2,
-                         pos().y());
-            foreach (Link *link, yuan3->myLinks)
-            {link->trackYuans();update();}
-
-            item->setPos(QPointF(pos().x()- item->boundingRect().width()/2,
-                                 pos().y() - outlineRect().height()/2 - item->boundingRect().height()));
-
-            rect1->setPos(pos().x() - outlineRect().width(),
-                          pos().y());
-            rect2->setPos(pos().x() + outlineRect().width(),
-                          pos().y());
-
-       /*}
-        else{
-            setPos(yuan->x(),
-                   yuan->y() - outlineRect().height()/2 -yuan->boundingRect().height()/2);
-        }*/
+            {link->trackYuans();update();}         
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -200,10 +190,6 @@ void ComputeNode::paint(QPainter *painter,
     QRectF rect = outlineRect();
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
-
-    painter->setPen(textColor());
-    QString myText=text();
-    painter->drawText(rect, Qt::AlignCenter, myText);
 }
 
 /*******************************************************************
@@ -217,6 +203,7 @@ void ComputeNode::paint(QPainter *painter,
 void ComputeNode::setNewIdentifier()
 {
     int index=box->currentIndex();
+    qDebug()<<"true";
     switch (index) {
     case 0:
     {

@@ -832,11 +832,11 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             s = tmp->text() + "=" + tmp->myStringText;
             if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
                 cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
-                if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan()){
+                /*if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan()){
                     cn->rect1text = "(" + s + ")";
                 }else{
                     cn->rect2text = "(" + s + ")";
-                }
+                }*/
             }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
                 VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
                 vn->myStringText = "(" + s + ")";
@@ -1038,7 +1038,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         ComputeNode* tmp = w->mComputeNode;
         QString s;
         QString s1="",s2="";
-        if(tmp->rect1text!=""){
+        /*if(tmp->rect1text!=""){
             s1 = tmp->rect1text;
         }else{
             s1 = tmp->rect1->text();
@@ -1047,7 +1047,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             s2 = tmp->rect2text;
         }else{
             s2 = tmp->rect2->text();
-        }
+        }*/
         if(tmp->text()=="cos"){
             s = "cos(" + s2 + ")";
         }else
@@ -1075,10 +1075,10 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
                 vn->myStringText = "(" + s + ")";
             }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
                 ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
-                if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
+                /*if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
                     cn->rect1text = "(" + s + ")";
                 else
-                    cn->rect2text = "(" + s + ")";
+                    cn->rect2text = "(" + s + ")";*/
             }
         }
         for(int i=1;i<=tabs;i++) stream<<"   ";
@@ -1090,7 +1090,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         for(int i=1;i<=tabs;i++) stream<<"   ";
         stream<<w->mLogicNode->box->currentText()<<" ";
         ComputeNode* tmp = w->mLogicNode->yuan2->myLinks.toList()[0]->fromYuan()->master->mComputeNode;
-        if(tmp->text()=="cos"){
+        /*if(tmp->text()=="cos"){
             stream<<"cos("<<tmp->rect2->text()<<")";
         }else
         if(tmp->text()=="sin"){
@@ -1109,7 +1109,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             stream<<tmp->rect1->text()<<"=="<<tmp->rect2->text();
         }else{
             stream<<tmp->rect1->text()<<tmp->text()<<tmp->rect2->text();
-        }
+        }*/
         stream<<":\n";
 
     }
@@ -1549,8 +1549,8 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
     if(wto.identifier == "Compute"){
         if(tyuan == "yuan2")
             second = wto.mComputeNode->yuan2;
-        else if(tyuan == "yuan3")
-            second = wto.mComputeNode->yuan3;
+        /*else if(tyuan == "yuan3")
+            second = wto.mComputeNode->yuan3;*/
     }
     if(wto.identifier == "IO"){
         second = wto.mIONode->yuan2;

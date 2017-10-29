@@ -3,6 +3,7 @@
 
 
 #include "QObject"
+#include <QtGui>
 #include "node.h"
 #include "itemtypes.h"
 
@@ -28,17 +29,23 @@ public:
     int type() const { return Type; }
 
     QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     Yuan* yuan2;
-    Yuan* yuan3;
+    //Yuan* yuan3;
     QComboBox* box;
     QGraphicsItem* item;
-    ComputeSmallNode *rect1;
+    QLineEdit *lineEdit1;
+    QLineEdit *lineEdit2;
+    QGraphicsItem *lineItem1,*lineItem2;
+
+    /*ComputeSmallNode *rect1;
     QString rect1text;
     ComputeSmallNode *rect2;
-    QString rect2text;
+    QString rect2text;*/
 
     static int ComputeNodeAddNum; static int ComputeNodeSubNum;
     static int ComputeNodeMulNum; static int ComputeNodeDivNum;

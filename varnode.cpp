@@ -177,19 +177,21 @@ VariableNode::VariableNode(QGraphicsItem *parent)
 {
     varnum=1;              //初始产生一个变量
     button0 = new QPushButton;
-    button0->setFixedSize(10,10);
+    button0->setFixedSize(20,20);
+    button0->setIcon(QIcon(":/images/icon/add.png"));
 
     int i=0;
     for(i=0;i<4;i++)
     {
         typeBox[i]=new QComboBox;
-        typeBox[i]->setFixedSize(60,26);
+        typeBox[i]->setFixedSize(86,28);
         nameEdit[i]=new QLineEdit;
-        nameEdit[i]->setFixedSize(40,26);
+        nameEdit[i]->setFixedSize(46,25);
         valueEdit[i]=new QLineEdit;
-        valueEdit[i]->setFixedSize(40,26);
+        valueEdit[i]->setFixedSize(48,25);
         button[i] = new QPushButton;
-        button[i]->setFixedSize(10,10);
+        button[i]->setFixedSize(20,20);
+        button[i]->setIcon(QIcon(":/images/icon/generate.png"));
     }
 
     setFlags(ItemIsMovable|ItemIsSelectable|ItemSendsGeometryChanges);
@@ -286,9 +288,9 @@ void VariableNode::paint(QPainter *painter,
     QString str1("增加变量");
     QString str2("名称");
     QString str3("初始值");
-    painter->drawText(rect.topLeft().x()+30,rect.topLeft().y()+15,str1);
-    painter->drawText(rect.topLeft().x()+90,rect.topLeft().y()+15,str2);
-    painter->drawText(rect.topLeft().x()+150,rect.topLeft().y()+15,str3);
+    painter->drawText(rect.topLeft().x()+33,rect.topLeft().y()+15,str1);
+    painter->drawText(rect.topLeft().x()+104,rect.topLeft().y()+15,str2);
+    painter->drawText(rect.topLeft().x()+157,rect.topLeft().y()+15,str3);
 
     pen.setColor(QColor(151,151,151,255));
     pen.setStyle(Qt::SolidLine);
@@ -312,13 +314,13 @@ void VariableNode::addVarType()
     varnum++;
 
     QRectF rect = outlineRect();
-    button0Item->setPos(-110,rect.topLeft().y() + 5);
+    button0Item->setPos(-108,rect.topLeft().y() + 5);
     for(int i=0;i<4;i++)
     {
-        typeItem[i]->setPos(-110,rect.topLeft().y() + 42 + 30*i);
-        nameItem[i]->setPos(-30,rect.topLeft().y() + 42 +30*i);
-        valueItem[i]->setPos(60,rect.topLeft().y() + 42 + 30*i);
-        buttonItem[i]->setPos(100,rect.topLeft().y() + 47 + 30*i);
+        typeItem[i]->setPos(-110,rect.topLeft().y() + 34 + 32*i);
+        nameItem[i]->setPos(-15,rect.topLeft().y() + 34 +32*i);
+        valueItem[i]->setPos(41,rect.topLeft().y() + 34 + 32*i);
+        buttonItem[i]->setPos(92,rect.topLeft().y() + 34 + 32*i);
     }
 
     typeItem[varnum-1]->setVisible(true);
