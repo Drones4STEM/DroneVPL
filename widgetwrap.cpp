@@ -338,8 +338,8 @@ bool WidgetWrap::check_yuan_in()
 
         }
     if(identifier == "Compute")
-        if(mComputeNode->yuan2->myLinks.isEmpty() &&
-                mComputeNode->yuan3->myLinks.isEmpty())
+        if(mComputeNode->yuan2->myLinks.isEmpty() )//&&
+                //mComputeNode->yuan3->myLinks.isEmpty())
             return false;
         else{
             QList<Link*> links = mComputeNode->yuan2->myLinks.values();

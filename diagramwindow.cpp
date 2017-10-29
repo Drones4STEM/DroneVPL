@@ -2158,7 +2158,9 @@ void DiagramWindow::createActions()
     addComputeNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
     addCompareNodeAction = new QAction(tr("Compare"),this);
     addCompareNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
-    addAddNodeAction = new QAction(tr("+"),this);
+    //addAddNodeAction = new QAction(tr("+"),this);
+    addAddNodeAction = new QAction(this);
+    addAddNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
     connect(addAddNodeAction,SIGNAL(triggered()),this,SLOT(addAddNode()));
     addSubNodeAction = new QAction(tr("-"),this);
     connect(addSubNodeAction,SIGNAL(triggered()),this,SLOT(addSubNode()));
@@ -2167,14 +2169,17 @@ void DiagramWindow::createActions()
     addDivNodeAction = new QAction(tr("/"),this);
     connect(addDivNodeAction,SIGNAL(triggered()),this,SLOT(addDivNode()));
     addCosNodeAction = new QAction(tr("cos"),this);
+    addCosNodeAction->setIcon(QIcon(":/images/icon/三角.png"));
     connect(addCosNodeAction,SIGNAL(triggered()),this,SLOT(addCosNode()));
     addSinNodeAction = new QAction(tr("sin"),this);
     connect(addSinNodeAction,SIGNAL(triggered()),this,SLOT(addSinNode()));
     addTanNodeAction = new QAction(tr("tan"),this);
     connect(addTanNodeAction,SIGNAL(triggered()),this,SLOT(addTanNode()));
     addLogNodeAction = new QAction(tr("log"),this);
+    addLogNodeAction->setIcon(QIcon(":/images/icon/log.png"));
     connect(addLogNodeAction,SIGNAL(triggered()),this,SLOT(addLogNode()));
     addENodeAction = new QAction(tr("e"),this);
+    addENodeAction->setIcon(QIcon(":/images/icon/e.png"));
     connect(addENodeAction,SIGNAL(triggered()),this,SLOT(addENode()));
     addEqualNodeAction = new QAction(tr("="),this);
     connect(addEqualNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
@@ -2553,24 +2558,28 @@ void DiagramWindow::createDockWidgets()
     colorDockWidget->setFeatures(features);
     colorDockWidget->setWidget(colorWidget);
     addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
+    colorDockWidget->setVisible(false);
 
     positionWidget = new PositionWidget;
     QDockWidget *positionDockWidget = new QDockWidget(
                 tr("Position"),this);
     positionDockWidget->setWidget(positionWidget);
-    addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+    //addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+    positionDockWidget->setVisible(false);
 
     mutableWidget = new MutableWidget;
     QDockWidget *mutableDockWidget = new QDockWidget(
                 tr("Mutable"),this);
     mutableDockWidget->setWidget(mutableWidget);
     addDockWidget(Qt::RightDockWidgetArea,mutableDockWidget);
+    mutableDockWidget->setVisible(false);
 
     processWidget = new ProcessOutputWidget;
     QDockWidget *processDockWidget = new QDockWidget(
                 tr("upload and run"),this);
     processDockWidget->setWidget(processWidget);
     addDockWidget(Qt::BottomDockWidgetArea,processDockWidget);
+    processDockWidget->setVisible(false);
 }
 
 /*******************************************************************

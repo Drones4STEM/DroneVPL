@@ -528,27 +528,27 @@ bool newscene::CreateVarType(QPointF point, int id)
     QGraphicsItem *buttonItem0 = this->addWidget(node->button0);
     buttonItem0->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->button0Item = buttonItem0;
-    node->button0Item->setPos(-110,-30);
+    node->button0Item->setPos(-108,-30);
 
     typeItem[0] = this->addWidget(node->typeBox[0]);
     typeItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->typeItem[0] = typeItem[0];
-    node->typeItem[0]->setPos(-110,7);
+    node->typeItem[0]->setPos(-110,-3);
 
     nameItem[0] = this->addWidget(node->nameEdit[0]);
     nameItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->nameItem[0] = nameItem[0];
-    node->nameItem[0]->setPos(-30,7);
+    node->nameItem[0]->setPos(-15,-3);
 
     valueItem[0] = this->addWidget(node->valueEdit[0]);
     valueItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->valueItem[0] = valueItem[0];
-    node->valueItem[0]->setPos(60,7);
+    node->valueItem[0]->setPos(41,-3);
 
     buttonItem[0] = this->addWidget(node->button[0]);
     buttonItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->buttonItem[0] = buttonItem[0];
-    node->buttonItem[0]->setPos(100,12);
+    node->buttonItem[0]->setPos(92,-3);
 
     for(int i=1;i<4;i++)
     {    
@@ -701,36 +701,45 @@ bool newscene::CreateVarDef(QPointF point, int id)
 bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
 {
     ComputeNode *node=new ComputeNode;
-    QGraphicsItem* item=this->addWidget(node->box);
-    node->item=item;
     node->setPos(point);
+
+    QGraphicsItem* item=this->addWidget(node->box);
+    item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->item=item;
+    node->item->setPos(-22,-14);
+
+    QGraphicsItem* lineItem1 = this->addWidget(node->lineEdit1);
+    lineItem1->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem1 = lineItem1;
+    node->lineItem1->setPos(-72,-10);
+    QGraphicsItem* lineItem2 = this->addWidget(node->lineEdit2);
+    lineItem2->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem2 = lineItem2;
+    node->lineItem2->setPos(36,-10);
+
     this->addItem(node);
     this->clearSelection();
     node->setSelected(true);
     bringToFront();
 
-    node->yuan->setPos(QPointF(node->pos().x(),
+    node->yuan->setPos(QPointF(node->pos().x() - 70,
                                node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2
-                                - node->rect1->boundingRect().width(),
-                                node->pos().y()));
-    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2
-                                + node->rect2->boundingRect().width(),
-                                node->pos().y()));
+    node->yuan2->setPos(QPointF(node->pos().x() - 70,
+                                node->pos().y() - node->outlineRect().height()/2 -node->yuan->boundingRect().height()/2));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
-    this->addItem(node->yuan3);
+    //this->addItem(node->yuan3);
 
-    node->rect1->setPos(QPointF(node->pos().x() - node->boundingRect().width(),
+    /*node->rect1->setPos(QPointF(node->pos().x() - node->boundingRect().width(),
                                 node->pos().y()));
     node->rect2->setPos(QPointF(node->pos().x() + node->boundingRect().width(),
                                 node->pos().y()));
     addItem(node->rect1);
-    addItem(node->rect2);
+    addItem(node->rect2);*/
 
-    item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
-                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
-    item->setZValue(node->zValue()+1);
+    /*item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
+                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));*/
+    //item->setZValue(node->zValue()+1);
     node->box->addItem(tr("+"));
     node->box->addItem(tr("-"));
     node->box->addItem(tr("*"));
@@ -762,8 +771,8 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     node->yuan2->name = "yuan2";
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
-    node->yuan3->master = tmp;
-    node->yuan3->name = "yuan3";
+    //node->yuan3->master = tmp;
+    //node->yuan3->name = "yuan3";
 
 
     emit sig_connectItem(node);
@@ -772,7 +781,7 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
 /*
 这个函数好像是我写的，然后忘记用了…… by gjf
 */
-bool newscene::CreateTriCompute(QPointF point, int id)
+/*bool newscene::CreateTriCompute(QPointF point, int id)
 {
     ComputeNode *node=new ComputeNode;
     node->setText(tr("Compute"));
@@ -802,7 +811,7 @@ bool newscene::CreateTriCompute(QPointF point, int id)
     node->box->addItem(tr("cos"));
     node->box->addItem(tr("sin"));
     node->box->addItem(tr("tan"));
-    node->box->setCurrentIndex(0);
+    node->box->setCurrentIndex(0);*/
 
     /*node->controlsId=id;
     node->identifier="Compute";
@@ -822,9 +831,9 @@ bool newscene::CreateTriCompute(QPointF point, int id)
     node->yuan3->name = "yuan3";*/
 
 
-    emit sig_connectItem(node);
+    /*emit sig_connectItem(node);
     return true;
-}
+}*/
 
 bool newscene::CreateIO(QPointF point, int id)
 {
@@ -1756,7 +1765,7 @@ bool newscene::CreateVarDef(VardefNode* vdn)
 
     return true;
 }
-bool newscene::CreateCompute(ComputeNode *node)
+/*bool newscene::CreateCompute(ComputeNode *node)
 {
     node->setText(tr("Compute"));
     QGraphicsItem* item=this->addWidget(node->box);
@@ -1811,7 +1820,7 @@ bool newscene::CreateCompute(ComputeNode *node)
     emit sig_connectItem(node);
 
     return true;
-}
+}*/
 
 
 bool newscene::CreateIO(IoNode* node)
@@ -2208,7 +2217,7 @@ bool newscene::CreateWidgets()
         }
         if(ww->identifier=="Compute"){
             //QPointF point(iter->mComputeNode->lx,iter->mComputeNode->ly);
-            CreateCompute(ww->mComputeNode);
+            //CreateCompute(ww->mComputeNode);
         }
         if(ww->identifier=="IO"){
             //QPointF point(iter->mIONode->lx,iter->mIONode->ly);
