@@ -38,6 +38,8 @@ public:
 
     int type() const { return Type; }
 
+    void setLogicFlag(int flag){logicFlag = flag;}
+
     QRectF outlineRect() const;
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -47,8 +49,14 @@ public:
     QString text() const;
     void setLogichw();  //newnode中有sethw，但logic的绘图方法和正常的控件不一样，故另写一个
 
-    QComboBox *box;
-    QGraphicsItem *item;
+    //QComboBox *box;
+    //QGraphicsItem *item;
+
+    Yuan *yuan3;//线上圆
+    triYuan *yuan4;//线下圆
+    Yuan *yuan5;//底部圆
+    Yuan *yuan6;//else 两侧圆
+    triYuan *yuan7;//if两侧圆
 
     //控件名称与在同类控件中的编号
     QString identifier;
@@ -60,6 +68,7 @@ private:
     QRectF mBoundingRect;
 
     bool m_resizing;
+    int logicFlag;//1代表if，2代表else，3代表while
 
 /*protected slots:
     void slot_changeRect();*/
@@ -71,10 +80,6 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-
-private slots:
-    void showYuan();
 };
 
 

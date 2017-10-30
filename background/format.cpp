@@ -197,7 +197,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"location_y: "<<y;
     }
     //---------Compute------------------
-    if(ww->category == "Compute"){
+    /*if(ww->category == "Compute"){
         stream.writeStartElement("Compute");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
@@ -281,7 +281,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"location_x: "<<x;
         qDebug()<<"location_y: "<<y;
         qDebug()<<"operator: "<<ww->mComputeNode->box->currentText();
-    }
+    }*/
     //---------IO------------------
     if(ww->category == "IO"){
         stream.writeStartElement("IO");
@@ -1088,7 +1088,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
 
     if(w->identifier=="Logic"){    //如果传入的控件是Logic
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<w->mLogicNode->box->currentText()<<" ";
+        //stream<<w->mLogicNode->box->currentText()<<" ";
         ComputeNode* tmp = w->mLogicNode->yuan2->myLinks.toList()[0]->fromYuan()->master->mComputeNode;
         /*if(tmp->text()=="cos"){
             stream<<"cos("<<tmp->rect2->text()<<")";

@@ -89,16 +89,11 @@ QVariant VarNode::itemChange(GraphicsItemChange change,
 {
     if (change & ItemPositionHasChanged)
     {
-        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       //{
             int static a=0;
             for(a=0;a<6;a++)
             {
-                qDebug()<<a;
                 if(flags[a])
                 {
-                    qDebug()<<flags[a];
-                    qDebug()<<array[a];
                     int i=a%3;
                     int j;
                     if(a==0||a==2)j=-17;
@@ -109,21 +104,6 @@ QVariant VarNode::itemChange(GraphicsItemChange change,
                                      pos().y() + j);
                 }
             }
-        /*if(flags[0])
-            array[0]->setPos(pos().x(),pos().y()+20);
-        qDebug()<<flags[0];*/
-
-       /*}
-        else
-        {
-            qDebug()<<false;
-            if(flags[0])
-            {
-                int i=0%3;
-                int j=-17;
-                setPos(array[0]->x()- (1-i)*30,array[0]->y()-j);
-            }
-        }*/
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -340,7 +320,6 @@ void VariableNode::emitSignal()
         if(pushButton == button[i])
             break;
     }
-    qDebug()<<i<<"heihei";
     emit addVarSignal(this,typeBox[i]->currentText(),nameEdit[i]->text(),valueEdit[i]->text());
 }
 
