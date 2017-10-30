@@ -411,10 +411,10 @@ void GoNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         img = QImage(":/images/icon/down copy.png");
         break;
     case 2:
-        img = QImage(":/images/icon/up copy.png");
+        img = QImage(":/images/icon/forward copy.png");
         break;
     case 3:
-        img = QImage(":/images/icon/down copy.png");
+        img = QImage(":/images/icon/backward copy.png");
         break;
     case 4:
         img = QImage(":/images/icon/right copy.png");
@@ -512,6 +512,7 @@ void GoNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void GoNode::setDirection()
 {
+    update();
     int index=box->currentIndex();
     switch (index) {
     case 0:
