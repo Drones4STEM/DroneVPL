@@ -297,7 +297,6 @@ QRectF Node::outlineRect() const
     QRectF rect = metrics.boundingRect(myText);
     rect.adjust(-Padding, -Padding, +Padding, +Padding);
     rect.translate(-rect.center());
-    qDebug()<<rect.size()<<"heiehi";
 
     return rect;
 }

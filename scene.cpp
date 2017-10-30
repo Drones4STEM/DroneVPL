@@ -167,11 +167,32 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
         if(flag == false)   this->VarDefNodeNum--;
     }
-    if(need_to_set==1&&selected_Index>=301&&selected_Index<400){
+    if(need_to_set==1&&selected_Index>=301&&selected_Index<308){
         emit itemInserted(selected_Index);
         need_to_set = 0;
         this->ComputeNodeNum++;
         CreateCompute(new_event->scenePos(),this->ComputeNodeNum,selected_Index);
+    }
+    if(need_to_set==1&&selected_Index==308)
+    {
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->ComputeNodeNum++;
+        CreateSin(new_event->scenePos(),this->ComputeNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==311)
+    {
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->ComputeNodeNum++;
+        CreateLog(new_event->scenePos(),this->ComputeNodeNum);
+    }
+    if(need_to_set==1&&selected_Index==312)
+    {
+        emit itemInserted(selected_Index);
+        need_to_set = 0;
+        this->ComputeNodeNum++;
+        CreateE(new_event->scenePos(),this->ComputeNodeNum);
     }
     if(need_to_set==1&&selected_Index==400){
         emit itemInserted(selected_Index);
@@ -724,10 +745,12 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     node->yuan->setPos(QPointF(node->pos().x() - 70,
                                node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
     node->yuan2->setPos(QPointF(node->pos().x() - 70,
-                                node->pos().y() - node->outlineRect().height()/2 -node->yuan->boundingRect().height()/2));
+                                node->pos().y() - node->outlineRect().height()/2 -node->yuan2->boundingRect().height()/2));
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->boundingRect().width()/2,
+                                node->pos().y()));
     this->addItem(node->yuan);
     this->addItem(node->yuan2);
-    //this->addItem(node->yuan3);
+    this->addItem(node->yuan3);
 
     /*node->rect1->setPos(QPointF(node->pos().x() - node->boundingRect().width(),
                                 node->pos().y()));
@@ -743,17 +766,12 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     node->box->addItem(tr("-"));
     node->box->addItem(tr("*"));
     node->box->addItem(tr("/"));
-    node->box->addItem(tr("cos"));
-    node->box->addItem(tr("sin"));
-    node->box->addItem(tr("tan"));
-    node->box->addItem(tr("log"));
-    node->box->addItem(tr("e"));
     node->box->addItem(tr("="));
     node->box->addItem(tr(">"));
     node->box->addItem(tr("<"));
     node->box->setCurrentIndex(selected_Index-301);
     char* c[12] = {"+","-","*","/","cos","sin","tan","log","e","=",">","<"};
-    node->setText(tr(c[selected_Index-301]));
+    //node->setText(tr(c[selected_Index-301]));
 
 
     node->controlsId=id;
@@ -777,6 +795,125 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     emit sig_connectItem(node);
     return true;
 }
+
+bool newscene::CreateSin(QPointF point, int id)
+{
+    qDebug()<<"use this";
+    sinNode *node=new sinNode;
+    node->setPos(point);
+
+    QGraphicsItem* item=this->addWidget(node->box);
+    item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->item=item;
+    node->item->setPos(-71,-14);
+
+    QGraphicsItem* lineItem2 = this->addWidget(node->lineEdit2);
+    lineItem2->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem2 = lineItem2;
+    node->lineItem2->setPos(3,-10);
+
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x() - 65,
+                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
+    node->yuan2->setPos(QPointF(node->pos().x() - 65,
+                                node->pos().y() - node->outlineRect().height()/2 -node->yuan2->boundingRect().height()/2));
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->boundingRect().width()/2,
+                                node->pos().y()));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+    this->addItem(node->yuan3);
+
+    node->box->addItem(tr("cos"));
+    node->box->addItem(tr("sin"));
+    node->box->addItem(tr("tan"));
+    node->box->setCurrentIndex(0);
+
+    /*node->controlsId=id;
+    node->identifier="Compute";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    //node->yuan3->master = tmp;
+    //node->yuan3->name = "yuan3";*/
+    emit sig_connectItem(node);
+    return true;
+}
+
+bool newscene::CreateLog(QPointF point, int id)
+{
+    logNode *node=new logNode;
+    node->setPos(point);
+
+    QGraphicsItem* lineItem1 = this->addWidget(node->lineEdit1);
+    lineItem1->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem1 = lineItem1;
+    node->lineItem1->setPos(-23,-1);
+    QGraphicsItem* lineItem2 = this->addWidget(node->lineEdit2);
+    lineItem2->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem2 = lineItem2;
+    node->lineItem2->setPos(4,-10);
+
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x() - 60,
+                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
+    node->yuan2->setPos(QPointF(node->pos().x() - 60,
+                                node->pos().y() - node->outlineRect().height()/2 -node->yuan2->boundingRect().height()/2));
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->boundingRect().width()/2,
+                                node->pos().y()));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+    this->addItem(node->yuan3);
+
+    emit sig_connectItem(node);
+    return true;
+}
+
+bool newscene::CreateE(QPointF point, int id)
+{
+    eNode *node=new eNode;
+    node->setPos(point);
+
+    QGraphicsItem* lineItem2 = this->addWidget(node->lineEdit2);
+    lineItem2->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->lineItem2 = lineItem2;
+    node->lineItem2->setPos(-11,-13);
+
+    this->addItem(node);
+    this->clearSelection();
+    node->setSelected(true);
+    bringToFront();
+
+    node->yuan->setPos(QPointF(node->pos().x() - 40,
+                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
+    node->yuan2->setPos(QPointF(node->pos().x() - 40,
+                                node->pos().y() - node->outlineRect().height()/2 -node->yuan2->boundingRect().height()/2));
+    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->boundingRect().width()/2,
+                                node->pos().y()));
+    this->addItem(node->yuan);
+    this->addItem(node->yuan2);
+    this->addItem(node->yuan3);
+
+    emit sig_connectItem(node);
+    return true;
+}
+
 /*
 这个函数好像是我写的，然后忘记用了…… by gjf
 */
@@ -1285,7 +1422,7 @@ bool newscene::CreateRangeFinder(QPointF point, int id)
 
 bool newscene::CreateLogic(QPointF point, int id)
 {
-    Rec *rec=new Rec;
+    /*Rec *rec=new Rec;
     QGraphicsItem* item= this->addWidget(rec->box);
     rec->item=item;
 
@@ -1293,12 +1430,12 @@ bool newscene::CreateLogic(QPointF point, int id)
     rec->setxy(point);
     this->addItem(rec);
     this->clearSelection();
-    rec->setSelected(true);
+    rec->setSelected(true);*/
 
     /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
     rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
-    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
+    /*rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
     rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
     this->addItem(rec->yuan2);
@@ -1329,14 +1466,14 @@ bool newscene::CreateLogic(QPointF point, int id)
 
     LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
     LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
+    return true;*/
     return true;
 }
 
 bool newscene::CreateIf(QPointF point, int id)
 {
     Rec *rec=new Rec;
-    QGraphicsItem* item= this->addWidget(rec->box);
-    rec->item=item;
+    rec->setLogicFlag(1);
 
     rec->setPos(point);
     rec->setxy(point);
@@ -1344,22 +1481,24 @@ bool newscene::CreateIf(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
-    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                              rec->pos().y() + rec->boundingRect().height()/2));
+    rec->yuan2->setPos(QPointF(rec->boundingRect().topLeft().x() + 67,
+                               rec->pos().y() - rec->boundingRect().height()/2));
+    rec->yuan3->setPos(QPointF(rec->boundingRect().topLeft().x() + 67,
+                               rec->boundingRect().topLeft().y() + 51));
+    rec->yuan4->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                               rec->boundingRect().topLeft().y() + 66));
+    rec->yuan5->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                               rec->boundingRect().bottomLeft().y() - rec->yuan5->boundingRect().height()/2));
+    rec->yuan7->setPos(QPointF(rec->boundingRect().topRight().x() + rec->yuan7->boundingRect().width()/2,
+                               rec->boundingRect().topRight().y() + 20));
     this->addItem(rec->yuan2);
     this->addItem(rec->yuan);
-
-    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
-                         (rec->pos().y() - rec->boundingRect().height()/2)));
-    item->setZValue(rec->zValue()+1);
-    rec->box->addItem(tr("if"));
-    rec->box->addItem(tr("else"));
-    rec->box->addItem(tr("while"));
-    rec->box->setCurrentIndex(0);
+    this->addItem(rec->yuan3);
+    this->addItem(rec->yuan4);
+    this->addItem(rec->yuan5);
+    this->addItem(rec->yuan7);
 
     rec->controlsId=id;
     rec->identifier="Logic";
@@ -1384,8 +1523,7 @@ bool newscene::CreateIf(QPointF point, int id)
 bool newscene::CreateElse(QPointF point, int id)
 {
     Rec *rec=new Rec;
-    QGraphicsItem* item= this->addWidget(rec->box);
-    rec->item=item;
+    rec->setLogicFlag(2);
 
     rec->setPos(point);
     rec->setxy(point);
@@ -1393,22 +1531,24 @@ bool newscene::CreateElse(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
-    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                              rec->pos().y() + rec->boundingRect().height()/2));
+    rec->yuan2->setPos(QPointF(rec->boundingRect().topLeft().x() + 67,
+                               rec->pos().y() - rec->boundingRect().height()/2));
+    rec->yuan3->setPos(QPointF(rec->boundingRect().topLeft().x() + 67,
+                               rec->boundingRect().topLeft().y() + 51));
+    rec->yuan4->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                               rec->boundingRect().topLeft().y() + 66));
+    rec->yuan5->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                               rec->boundingRect().bottomLeft().y() - rec->yuan5->boundingRect().height()/2));
+    rec->yuan6->setPos(QPointF(rec->boundingRect().topRight().x() - rec->yuan7->boundingRect().width()/2,
+                               rec->boundingRect().topRight().y() + 20));
     this->addItem(rec->yuan2);
     this->addItem(rec->yuan);
-
-    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
-                         (rec->pos().y() - rec->boundingRect().height()/2)));
-    item->setZValue(rec->zValue()+1);
-    rec->box->addItem(tr("if"));
-    rec->box->addItem(tr("else"));
-    rec->box->addItem(tr("while"));
-    rec->box->setCurrentIndex(0);
+    this->addItem(rec->yuan3);
+    this->addItem(rec->yuan4);
+    this->addItem(rec->yuan5);
+    this->addItem(rec->yuan6);
 
     rec->controlsId=id;
     rec->identifier="Logic";
@@ -1433,8 +1573,7 @@ bool newscene::CreateElse(QPointF point, int id)
 bool newscene::CreateWhile(QPointF point, int id)
 {
     Rec *rec=new Rec;
-    QGraphicsItem* item= this->addWidget(rec->box);
-    rec->item=item;
+    rec->setLogicFlag(3);
 
     rec->setPos(point);
     rec->setxy(point);
@@ -1442,22 +1581,21 @@ bool newscene::CreateWhile(QPointF point, int id)
     this->clearSelection();
     rec->setSelected(true);
 
-    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    rec->yuan->setPos(QPointF(rec->pos().x(), rec->pos().y() + rec->outlineRect().height()*0.5));*/
-    rec->yuan->setPos(QPointF(rec->pos().x(),rec->pos().y() + rec->boundingRect().height()*0.5));
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
+    rec->yuan->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                              rec->pos().y() + rec->boundingRect().height()/2));
+    rec->yuan2->setPos(QPointF(rec->boundingRect().topLeft().x() + 67,
+                               rec->pos().y() - rec->boundingRect().height()/2));
+    rec->yuan3->setPos(QPointF(rec->boundingRect().topLeft().x() + 67,
+                               rec->boundingRect().topLeft().y() + 51));
+    rec->yuan4->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                               rec->boundingRect().topLeft().y() + 66));
+    rec->yuan5->setPos(QPointF(rec->boundingRect().bottomLeft().x() + 67,
+                               rec->boundingRect().bottomLeft().y() - rec->yuan5->boundingRect().height()/2));
     this->addItem(rec->yuan2);
     this->addItem(rec->yuan);
-
-    item->setPos(QPointF(rec->pos().x()-rec->boundingRect().width()/2,
-                         (rec->pos().y() - rec->boundingRect().height()/2)));
-    item->setZValue(rec->zValue()+1);
-    rec->box->addItem(tr("if"));
-    rec->box->addItem(tr("else"));
-    rec->box->addItem(tr("while"));
-    rec->box->setCurrentIndex(0);
+    this->addItem(rec->yuan3);
+    this->addItem(rec->yuan4);
+    this->addItem(rec->yuan5);
 
     rec->controlsId=id;
     rec->identifier="Logic";
@@ -2192,7 +2330,7 @@ bool newscene::CreateRangeFinder(RangeFinderNode* node)
 
 bool newscene::CreateLogic(Rec *rec)
 {
-    QGraphicsItem* item= this->addWidget(rec->box);
+    /*QGraphicsItem* item= this->addWidget(rec->box);
     rec->item=item;
 
     rec->setPos(rec->lx,rec->ly);
@@ -2203,8 +2341,6 @@ bool newscene::CreateLogic(Rec *rec)
     this->clearSelection();
     rec->setSelected(true);
 
-    /*rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));*/
     rec->yuan2->setPos(QPointF(rec->pos().x() - rec->boundingRect().height()/2 + item->boundingRect().width()/2,
                                rec->pos().y() - rec->boundingRect().height()/2 + item->boundingRect().height()*1.5));
     this->addItem(rec->yuan2);
@@ -2222,7 +2358,7 @@ bool newscene::CreateLogic(Rec *rec)
     qDebug()<<"identifier :"<<rec->identifier;
     qDebug()<<"controlsId :"<<rec->controlsId;
 
-    emit sig_connectItem(rec);
+    emit sig_connectItem(rec);*/
     return true;
 }
 bool newscene::CreateWidgets()

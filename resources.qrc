@@ -62,6 +62,17 @@
 		<file>images/icon/赋值1.png</file>
 		<file>images/icon/赋值2.png</file>
 		<file>images/icon/三角.png</file>
+		<file>images/icon/connect.png</file>
+		<file>images/icon/disconnect.png</file>
+		<file>images/icon/else.png</file>
+		<file>images/icon/else-2.png</file>
+		<file>images/icon/else-3.png</file>
+		<file>images/icon/if.png</file>
+		<file>images/icon/if-2.png</file>
+		<file>images/icon/if-3.png</file>
+		<file>images/icon/while.png</file>
+		<file>images/icon/while-2.png</file>
+
 		
 		
 		<file>help/help.chm</file>

@@ -204,8 +204,6 @@ DiagramWindow::DiagramWindow()
 QSize DiagramWindow::sizeHint() const
 {
     QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
-    qDebug()<<size;
-    qDebug()<<printer->paperSize(QPrinter::Point);
     size.rwidth()+=widgetCondition->sizeHint().width();
     return size.boundedTo(
            QApplication::desktop()->availableGeometry().size());
@@ -758,11 +756,6 @@ void DiagramWindow::addTranslationNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index=100;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-
-    //setDirty(true);
 }
 
 /*******************************************************************
@@ -776,12 +769,7 @@ void DiagramWindow::addRiseNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index = 103;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(0);
 
-    //setDirty(true);
 }
 
 /*******************************************************************
@@ -795,12 +783,6 @@ void DiagramWindow::addFallNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index = 104;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(1);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -814,12 +796,6 @@ void DiagramWindow::addAdvanceNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index = 105;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(2);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -831,14 +807,8 @@ void DiagramWindow::addAdvanceNode()
 ******************************************************************/
 void DiagramWindow::addBackNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 106;
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(3);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -850,14 +820,8 @@ void DiagramWindow::addBackNode()
 ******************************************************************/
 void DiagramWindow::addRightNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 107;
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(4);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -869,14 +833,8 @@ void DiagramWindow::addRightNode()
 ******************************************************************/
 void DiagramWindow::addLeftNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 108;
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(5);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -888,14 +846,8 @@ void DiagramWindow::addLeftNode()
 ******************************************************************/
 void DiagramWindow::addSomeNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 10;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(0);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -937,14 +889,8 @@ void DiagramWindow::addSome(SomeNode *node)
 ******************************************************************/
 void DiagramWindow::addTurnLeftNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 110;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(0);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -956,14 +902,8 @@ void DiagramWindow::addTurnLeftNode()
 ******************************************************************/
 void DiagramWindow::addTurnRightNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 111;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(1);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -975,14 +915,8 @@ void DiagramWindow::addTurnRightNode()
 ******************************************************************/
 void DiagramWindow::addHangingNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 112;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(2);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -1022,7 +956,6 @@ void DiagramWindow::addVarNode()
 ******************************************************************/
 void DiagramWindow::addVardefNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 202;
 }
@@ -1036,7 +969,6 @@ void DiagramWindow::addVardefNode()
 ******************************************************************/
 void DiagramWindow::addComputeNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 301;
 }
@@ -1070,53 +1002,54 @@ void DiagramWindow::addDivNode()
     scene->selected_Index = 304;
 }
 
-void DiagramWindow::addCosNode()
+void DiagramWindow::addEqualNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 305;
 }
 
-void DiagramWindow::addSinNode()
+void DiagramWindow::addMoreNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 306;
 }
 
-void DiagramWindow::addTanNode()
+void DiagramWindow::addLessNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 307;
 }
 
-void DiagramWindow::addLogNode()
+void DiagramWindow::addCosNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 308;
 }
 
-void DiagramWindow::addENode()
+void DiagramWindow::addSinNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 309;
 }
 
-void DiagramWindow::addEqualNode()
+void DiagramWindow::addTanNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 310;
 }
 
-void DiagramWindow::addMoreNode()
+void DiagramWindow::addLogNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 311;
 }
 
-void DiagramWindow::addLessNode()
+void DiagramWindow::addENode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 312;
 }
+
 
 /*******************************************************************
  * Function name: addIoNode()
@@ -1244,32 +1177,8 @@ void DiagramWindow::addLink()
 ******************************************************************/
 void DiagramWindow::addRec()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 501;
-    //Rec *rec=new Rec;
-    //QGraphicsItem* item= scene->addWidget(rec->box);
-    //rec->item=item;
-    //rec->setPos(100,100);
-    //scene->addItem(rec);
-    //scene->clearSelection();
-    //rec->setSelected(true);
-
-    //rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-    //                          rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    //scene->addItem(rec->yuan2);
-
-    //item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-    //                    (rec->pos().y() - rec->outlineRect().height()/2)));
-    //item->setZValue(rec->zValue()+1);
-    //rec->box->addItem(tr("if"));
-    //rec->box->addItem(tr("else"));
-    //rec->box->addItem(tr("while"));
-
-    //recNodeNum++;
-    //rec->controlsId=recNodeNum;
-
-    //setDirty();
 }
 
 void DiagramWindow::addIf()
@@ -1840,23 +1749,6 @@ bool DiagramWindow::sceneHasItems() const
 }
 
 /*******************************************************************
- * Function name:showEditToolBar()
- * Description: This function changes the state of edit toolBar according
- *     to the state of the "EditToolBar" checkbox.
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-/*void DiagramWindow::showEditToolBar()
-{
-    if(showEditToolBarAction->isChecked()) {
-       editToolBar->show();
-    }
-    else
-    {editToolBar->hide();}
-}*/
-
-/*******************************************************************
  * Function name:showNodeBar()
  * Description: This function changes the state of node Bar according
  *     to the state of the "NodeBar" checkbox.
@@ -2158,7 +2050,7 @@ void DiagramWindow::createActions()
     addComputeNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
     addCompareNodeAction = new QAction(tr("Compare"),this);
     addCompareNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
-    //addAddNodeAction = new QAction(tr("+"),this);
+    connect(addCompareNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
     addAddNodeAction = new QAction(this);
     addAddNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
     connect(addAddNodeAction,SIGNAL(triggered()),this,SLOT(addAddNode()));
@@ -2168,20 +2060,21 @@ void DiagramWindow::createActions()
     connect(addMulNodeAction,SIGNAL(triggered()),this,SLOT(addMulNode()));
     addDivNodeAction = new QAction(tr("/"),this);
     connect(addDivNodeAction,SIGNAL(triggered()),this,SLOT(addDivNode()));
-    addCosNodeAction = new QAction(tr("cos"),this);
+    addCosNodeAction = new QAction(this);
     addCosNodeAction->setIcon(QIcon(":/images/icon/三角.png"));
     connect(addCosNodeAction,SIGNAL(triggered()),this,SLOT(addCosNode()));
     addSinNodeAction = new QAction(tr("sin"),this);
     connect(addSinNodeAction,SIGNAL(triggered()),this,SLOT(addSinNode()));
     addTanNodeAction = new QAction(tr("tan"),this);
     connect(addTanNodeAction,SIGNAL(triggered()),this,SLOT(addTanNode()));
-    addLogNodeAction = new QAction(tr("log"),this);
+    addLogNodeAction = new QAction(this);
     addLogNodeAction->setIcon(QIcon(":/images/icon/log.png"));
     connect(addLogNodeAction,SIGNAL(triggered()),this,SLOT(addLogNode()));
-    addENodeAction = new QAction(tr("e"),this);
+    addENodeAction = new QAction(this);
     addENodeAction->setIcon(QIcon(":/images/icon/e.png"));
     connect(addENodeAction,SIGNAL(triggered()),this,SLOT(addENode()));
-    addEqualNodeAction = new QAction(tr("="),this);
+    addEqualNodeAction = new QAction(this);
+    addEqualNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
     connect(addEqualNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
     addMoreNodeAction = new QAction(tr(">"),this);
     connect(addMoreNodeAction,SIGNAL(triggered()),this,SLOT(addMoreNode()));
@@ -2417,20 +2310,19 @@ void DiagramWindow::createMenus()
     //computeMenu
     QMenu *comMenu = new QMenu(tr("Compute"),this);
     foreach (QAction *action, QList<QAction*>()
-             <<addAddNodeAction<<addSubNodeAction
-             <<addMulNodeAction<<addDivNodeAction
-             <<addCosNodeAction<<addSinNodeAction
-             <<addTanNodeAction<<addLogNodeAction
+             <<addAddNodeAction
+             <<addCosNodeAction
+             <<addLogNodeAction
              <<addENodeAction)
         comMenu->addAction(action);
     addComputeNodeAction->setMenu(comMenu);
 
-    QMenu *compareMenu = new QMenu(tr("Compare"),this);
+    /*QMenu *compareMenu = new QMenu(tr("Compare"),this);
     foreach (QAction *action, QList<QAction*>()
              <<addEqualNodeAction<<addMoreNodeAction
              <<addLessNodeAction)
         compareMenu->addAction(action);
-    addCompareNodeAction->setMenu(compareMenu);
+    addCompareNodeAction->setMenu(compareMenu);*/
     QMenu *logicMenu = new QMenu(tr("Logic"),this);
     foreach (QAction *action, QList<QAction*>()
              <<addIfAction<<addElseAction
@@ -2487,12 +2379,6 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addLandonNodeAction);
     aToolBar->addAction(addHangingNodeAction);
     aToolBar->addAction(addDelayNodeAction);
-    /*aToolBar->addAction(addRightNodeAction);
-    aToolBar->addAction(addLeftNodeAction);
-    aToolBar->addAction(addAdvanceNodeAction);
-    aToolBar->addAction(addBackNodeAction);
-    aToolBar->addAction(addRiseNodeAction);
-    aToolBar->addAction(addFallNodeAction);*/
     aToolBar->addAction(addTranslationNodeAction);
     aToolBar->addAction(addTurnLeftNodeAction);
     aToolBar->addAction(addTurnRightNodeAction);
@@ -2519,7 +2405,6 @@ void DiagramWindow::createToolBars()
     cToolBar->addAction(sendToBackAction);
     cToolBar->addAction(viewZoomInAction);
     cToolBar->addAction(viewZoomOutAction);
-    //cToolBar->addAction(viewShowGridAction);
 
     addToolBar(Qt::LeftToolBarArea,cToolBar);
 }

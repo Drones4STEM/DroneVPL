@@ -35,7 +35,7 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     Yuan* yuan2;
-    //Yuan* yuan3;
+    triYuan* yuan3;
     QComboBox* box;
     QGraphicsItem* item;
     QLineEdit *lineEdit1;
@@ -49,9 +49,7 @@ public:
 
     static int ComputeNodeAddNum; static int ComputeNodeSubNum;
     static int ComputeNodeMulNum; static int ComputeNodeDivNum;
-    static int ComputeNodeCosNum; static int ComputeNodeSinNum;
-    static int ComputeNodeTanNum; static int ComputeNodeLogNum;
-    static int ComputeNodeENum; static int ComputeNodeEqualNum;
+    static int ComputeNodeEqualNum;
     static int ComputeNodeMoreNum; static int ComputeNodeLessNum;
 
 protected:
@@ -106,5 +104,105 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 };
+
+class sinNode:public Node
+{
+    Q_OBJECT
+public:
+    enum {Type = ComputeNodeType};
+    sinNode();
+    ~sinNode();
+
+    int type() const { return Type; }
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    Yuan* yuan2;
+    triYuan* yuan3;
+    QComboBox* box;
+    QGraphicsItem* item;
+    QLineEdit *lineEdit2;
+    QGraphicsItem *lineItem2;
+
+    /*ComputeSmallNode *rect1;
+    QString rect1text;
+    ComputeSmallNode *rect2;
+    QString rect2text;*/
+
+    static int ComputeNodeCosNum; static int ComputeNodeSinNum;
+    static int ComputeNodeTanNum;
+
+protected:
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+private slots:
+    void setNewIdentifier();
+};
+
+class logNode:public Node
+{
+    Q_OBJECT
+public:
+    enum {Type = ComputeNodeType};
+    logNode();
+    ~logNode();
+
+    int type() const { return Type; }
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    Yuan* yuan2;
+    triYuan* yuan3;
+    QLineEdit *lineEdit1;
+    QLineEdit *lineEdit2;
+    QGraphicsItem *lineItem1;
+    QGraphicsItem *lineItem2;
+
+    static int ComputeNodeLogNum;
+
+protected:
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+};
+
+class eNode:public Node
+{
+    Q_OBJECT
+public:
+    enum {Type = ComputeNodeType};
+    eNode();
+    ~eNode();
+
+    int type() const { return Type; }
+
+    QRectF outlineRect() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    Yuan* yuan2;
+    triYuan* yuan3;
+    QLineEdit *lineEdit2;
+    QGraphicsItem *lineItem2;
+
+    static int ComputeNodeENum;
+protected:
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+};
+
+
 
 #endif // COMPUTENODE_H

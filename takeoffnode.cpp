@@ -44,7 +44,6 @@ void TakeOffNode::setAltitude(double a)
     if(isSelected()&&a!=myAltitude())
     {
         altitude=a;
-        //setText(tr("take off\n %1 m").arg(altitude));
         lineEdit->setText(QString::number(a));
     }
 }
@@ -113,8 +112,6 @@ void TakeOffNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QString str2("m");
     painter->drawText(-50,7,str1);
     painter->drawText(50,4,str2);
-
-    //painter->drawText();
 }
 
 QVariant TakeOffNode::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -237,27 +234,12 @@ QVariant LandNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-         //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       //{
             yuan2->setPos(pos().x() - outlineRect().width()/2 + 24,
                          pos().y() - outlineRect().height()/2-yuan->boundingRect().height()/2 - 3);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
-            update();
-       /*}
-        else{
-            setPos(yuan2->pos().x(),
-                           yuan2->pos().y()+outlineRect().height()/2 +yuan->boundingRect().height()/2);*/
-        //}
     }
     return QGraphicsItem::itemChange(change, value);
-    /*if (change & ItemPositionHasChanged) {
-        yuan2->setPos(pos().x(),
-                     pos().y() - outlineRect().height()/2-yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
-    }
-    return QGraphicsItem::itemChange(change, value);*/
 }
 
 
@@ -847,8 +829,6 @@ QVariant TurnNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-         //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-         //  {
                 yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
                              pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
@@ -858,12 +838,6 @@ QVariant TurnNode::itemChange(GraphicsItemChange change,
                              pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
-
-           /*}
-            else{
-                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                               yuan2->pos().y());
-            }*/
     }
         return QGraphicsItem::itemChange(change, value);
 }
@@ -1032,8 +1006,6 @@ QVariant HoverNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-         //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-         //  {
                 yuan->setPos(pos().x() - outlineRect().width()/2 +24,
                              pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
@@ -1043,15 +1015,6 @@ QVariant HoverNode::itemChange(GraphicsItemChange change,
                              pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
-
-                //item->setPos(QPointF(pos().x()-40,
-                             //(pos().y() - outlineRect().height()/2 - item->boundingRect().height())));
-               // update();
-           /*}
-            else{
-                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                               yuan2->pos().y());
-            }*/
     }
         return QGraphicsItem::itemChange(change, value);
 }
@@ -1199,8 +1162,6 @@ QVariant DelayNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
-         //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-         //  {
                 yuan->setPos(pos().x() - outlineRect().width()/2 + 24,
                              pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2 + 3);
                 foreach (Link *link, yuan->myLinks)
@@ -1210,15 +1171,6 @@ QVariant DelayNode::itemChange(GraphicsItemChange change,
                              pos().y() - outlineRect().height()/2 - yuan->boundingRect().height()/2 - 3);
                 foreach (Link *link, yuan2->myLinks)
                 {link->trackYuans();update();}
-
-                //item->setPos(QPointF(pos().x()-40,
-                             //(pos().y() - outlineRect().height()/2 - item->boundingRect().height())));
-               // update();
-           /*}
-            else{
-                setPos(yuan2->pos().x()+ outlineRect().width()/2 + yuan2->outlineRect().width()/2,
-                               yuan2->pos().y());
-            }*/
     }
         return QGraphicsItem::itemChange(change, value);
 }
@@ -1228,7 +1180,6 @@ void DelayNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<QGraphicsItem *> items = this->collidingItems();
     int itemsCount = items.count();
-    qDebug()<<itemsCount;
     for(int i=0;i<items.count();i++)
     {
         if(dynamic_cast<IoSmallNode*>(items[i]))

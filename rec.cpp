@@ -20,9 +20,22 @@
 
 Rec::Rec()
 {
-    box=new QComboBox;
+    //box=new QComboBox;
 
     setAcceptDrops(true);  //目前没什么用
+
+    setLogicFlag(1);
+
+    yuan3 = new Yuan();//线上圆
+    yuan4 = new triYuan();//线下圆
+    yuan5 = new Yuan();//底部圆
+    yuan6 = new Yuan();//else 两侧圆
+    yuan7 = new triYuan;//if两侧圆
+    yuan3->setInout(1);
+    yuan4->setInout(0);
+    yuan5->setInout(1);
+    yuan6->setInout(1);
+    yuan7->setInout(0);
 
     identifier="Rec";
     controlsId=0;
@@ -51,14 +64,16 @@ Rec::Rec()
     connect(drag2, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
     connect(drag3, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));
     connect(drag4, SIGNAL(sig_childMoved()), this, SLOT(slot_changeRect()));*/
-
-    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(showYuan()));
-
 }
 
 Rec::~Rec()
 {
-    delete box;
+    delete yuan3;
+    delete yuan4;
+    delete yuan5;
+    delete yuan6;
+    delete yuan7;
+    //delete box;
     //delete item;
 }
 
@@ -143,6 +158,33 @@ void Rec::paint(QPainter *painter,
     QRectF rect = mBoundingRect;
     painter->drawRoundRect(rect, roundness(rect.width()),
                            roundness(rect.height()));
+
+    pen.setStyle(Qt::SolidLine);
+    painter->setPen(pen);
+    painter->drawLine(boundingRect().topLeft().x() + 50,
+                      boundingRect().topLeft().y() + 60,
+                      boundingRect().topRight().x(),
+                      boundingRect().topRight().y()+60);
+
+    QImage img1 = QImage(":/images/icon/if.png");
+    QImage img2 = QImage(":/images/icon/else.png");
+    QImage img3 = QImage(":/images/icon/while.png");
+    switch (logicFlag) {
+    case 1:
+        painter->drawImage(boundingRect().topLeft().x() + 15,
+                           boundingRect().topLeft().y() + 15,img1);
+        break;
+    case 2:
+        painter->drawImage(boundingRect().topLeft().x() + 15,
+                           boundingRect().topLeft().y() + 15,img2);
+        break;
+    case 3:
+        painter->drawImage(boundingRect().topLeft().x() + 15,
+                           boundingRect().topLeft().y() + 15,img3);
+        break;
+    default:
+        break;
+    }
 }
 
 /*******************************************************************
@@ -159,57 +201,41 @@ QVariant Rec::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged) {
-        /*yuan2->setPos(pos().x() - outlineRect().width()/2 + item->boundingRect().width()/2,
-                     pos().y() - outlineRect().height()/2 + item->boundingRect().height()*1.5);
-        yuan->setPos(QPointF(pos().x(), pos().y() + outlineRect().height()*0.5));*/
-        yuan2->setPos(/*pos().x()*/ scenePos().x() - mBoundingRect.width()/2 + item->boundingRect().width()/2,
-                      /*pos().y()*/ scenePos().y() - mBoundingRect.height()/2 + item->boundingRect().height()*1.5);
-        qDebug()<<scenePos();
-        yuan->setPos(QPointF(pos().x(), pos().y() + mBoundingRect.height()*0.5));
-
+        /*yuan2->setPos(scenePos().x() - mBoundingRect.width()/2 ,
+                      scenePos().y() - mBoundingRect.height()/2 );
+        yuan->setPos(QPointF(pos().x(), pos().y() + mBoundingRect.height()*0.5));*/
+        yuan->setPos(QPointF(scenePos().x() - mBoundingRect.width()/2 + 67,
+                                  scenePos().y() + mBoundingRect.height()/2 + yuan->boundingRect().height()/2));
+        yuan2->setPos(QPointF(scenePos().x() - mBoundingRect.width()/2 + 67,
+                                  scenePos().y() - mBoundingRect.height()/2 - yuan2->boundingRect().height()/2));
+        yuan3->setPos(QPointF(scenePos().x() - mBoundingRect.width()/2 + 67,
+                                  scenePos().y() - mBoundingRect.height()/2 + 51));
+        yuan4->setPos(QPointF(scenePos().x() - mBoundingRect.width()/2 + 67,
+                                  scenePos().y() - mBoundingRect.height()/2 + 66));
+        yuan5->setPos(QPointF(scenePos().x() - mBoundingRect.width()/2 + 67,
+                                  scenePos().y() + mBoundingRect.height()/2 - yuan5->boundingRect().height()/2));
+        yuan6->setPos(QPointF(scenePos().x() - mBoundingRect.width()/2 - yuan6->boundingRect().width()/2,
+                                  scenePos().y() - mBoundingRect.height()/2 + 20));
+        yuan7->setPos(QPointF(scenePos().x() + mBoundingRect.width()/2 + yuan6->boundingRect().width()/2,
+                                  scenePos().y() - mBoundingRect.height()/2 + 20));
         foreach (Link *link, yuan->myLinks)
         {link->trackYuans();update();}
-
-        /*item->setPos(QPointF(pos().x()-outlineRect().width()/2,
-                     (pos().y() - outlineRect().height()/2)));*/
-        item->setPos(QPointF(pos().x() - mBoundingRect.width()/2,
-                            pos().y() - mBoundingRect.height()/2));
+        foreach (Link *link, yuan2->myLinks)
+        {link->trackYuans();update();}
+        foreach (Link *link, yuan3->myLinks)
+        {link->trackYuans();update();}
+        foreach (Link *link, yuan4->myLinks)
+        {link->trackYuans();update();}
+        foreach (Link *link, yuan5->myLinks)
+        {link->trackYuans();update();}
+        foreach (Link *link, yuan6->myLinks)
+        {link->trackYuans();update();}
+        foreach (Link *link, yuan7->myLinks)
+        {link->trackYuans();update();}
     }
     return QGraphicsItem::itemChange(change, value);
 }
 
-/*******************************************************************
- * Function name: showYuan()
- * Description: This function show Yuan according to the logic
- *     function you choose. If you choose "if" or "while", Yuan will
- *     be shown, but if you choose "else", Yuan will not be shown.
-******************************************************************/
-void Rec::showYuan()
-{
-    int i=box->currentIndex();
-    switch (i) {
-    case 0://if
-    {
-        yuan2->setVisible(true);
-        yuan->setVisible(true);
-        break;
-    }
-    case 1:
-    {//else
-        yuan2->setVisible(true);
-        yuan->setVisible(false);
-        break;
-    }
-    case 2:
-    {//while
-        yuan2->setVisible(true);
-        yuan->setVisible(false);
-        break;
-    }
-    default:
-        break;
-    }
-}
 
 /*void Rec::slot_changeRect()
 {
