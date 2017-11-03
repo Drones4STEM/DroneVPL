@@ -63,6 +63,9 @@ public:
     bool CreateVarType(VarNode* vtn);
     bool CreateVarDef(VardefNode* vdn);
     bool CreateCompute(ComputeNode* cn);
+    bool CreateE(eNode* cn);
+    bool CreateLog(logNode* cn);
+    bool CreateSin(sinNode* cn);
     bool CreateIO(IoNode* ion);
     bool CreateBattery(BatteryNode* ion);
     bool CreateGimbal(GimbalNode* ion);

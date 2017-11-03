@@ -197,7 +197,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"location_y: "<<y;
     }
     //---------Compute------------------
-    /*if(ww->category == "Compute"){
+    if(ww->category == "Compute"){
         stream.writeStartElement("Compute");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
@@ -206,73 +206,81 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mComputeNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            //stream.writeStartElement("arrow_out");
-        }
-        stream.writeStartElement("math");
-        if(ww->mComputeNode->text()=="+"){ //如果加法
-            stream.writeAttribute("operator","add");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="-"){ //如果减法
-            stream.writeAttribute("operator","substract");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="*"){ //如果乘法
-            stream.writeAttribute("operator","multiple");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="/"){ //如果除法
-            stream.writeAttribute("operator","divison");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="e"){ //如果幂
-            stream.writeAttribute("operator","power");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="sin"){ //如果正弦
-            //stream.writeAttribute("sin");
-            stream.writeStartElement("angle");
-            stream.writeAttribute("unit","angle");
-            //stream.writeTextElement();
-        }
-        if(ww->mComputeNode->text()=="cos"){ //如果余弦
-            //stream.writeAttribute("cos");
-            stream.writeStartElement("angle");
-            stream.writeAttribute("unit","angle");
-            //stream.writeTextElement();
-        }
-        if(ww->mComputeNode->text()=="tan"){ //如果正切
-            //stream.writeAttribute("tan");
-            stream.writeStartElement("angle");
-            stream.writeAttribute("unit","angle");
-            //stream.writeTextElement();
-        }
-        if(ww->mComputeNode->text()=="log"){ //如果对数
-            stream.writeAttribute("operator","log");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="="){ //如果等于
-            stream.writeAttribute("operator","equal");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
 
+            stream.writeStartElement("math");
+            if(ww->mComputeNode->box->currentText()=="+"){ //如果加法
+                stream.writeAttribute("operator","+");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="-"){ //如果减法
+                stream.writeAttribute("operator","-");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="*"){ //如果乘法
+                stream.writeAttribute("operator","*");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="/"){ //如果除法
+                stream.writeAttribute("operator","/");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="="){ //如果等于
+                stream.writeAttribute("operator","=");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+
+            }
+            if(ww->mComputeNode->box->currentText()=="<"){ //如果小于
+                stream.writeAttribute("operator","<");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()==">"){ //如果大于
+                stream.writeAttribute("operator",">");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+        }else{//下面代码很大重复，本来应该通过widgetwrap实时拷贝控件位置，来避免指针调用的，没时间优化了
+            if(ww->identifier=="E"){ //如果幂
+                x = QString::number((long)ww->mENode->pos().x(),10);
+                stream.writeTextElement("location_x",x);
+                y = QString::number((long)ww->mENode->pos().y(),10);
+                stream.writeTextElement("location_y",y);
+
+                stream.writeStartElement("math");
+                stream.writeAttribute("operator","e");
+                stream.writeTextElement("op_left","");
+                stream.writeTextElement("op_right",ww->mENode->lineEdit2->text());
+            }
+            if(ww->identifier=="Sin"){ //如果正弦
+                x = QString::number((long)ww->mSinNode->pos().x(),10);
+                stream.writeTextElement("location_x",x);
+                y = QString::number((long)ww->mSinNode->pos().y(),10);
+                stream.writeTextElement("location_y",y);
+
+                stream.writeStartElement("math");
+                QString tmp = ww->mSinNode->box->currentText();
+                stream.writeAttribute("operator",tmp);
+                stream.writeTextElement("op_left","");
+                stream.writeTextElement("op_right",ww->mSinNode->lineEdit2->text());
+            }
+            if(ww->identifier=="Log"){ //如果对数
+                x = QString::number((long)ww->mLogNode->pos().x(),10);
+                stream.writeTextElement("location_x",x);
+                y = QString::number((long)ww->mLogNode->pos().y(),10);
+                stream.writeTextElement("location_y",y);
+
+                stream.writeStartElement("math");
+                stream.writeAttribute("operator","log");
+                stream.writeTextElement("op_left",ww->mLogNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mLogNode->lineEdit2->text());
+            }
         }
-        if(ww->mComputeNode->text()=="<"){ //如果小于
-            stream.writeAttribute("operator","less");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()==">"){ //如果大于
-            stream.writeAttribute("operator","greater");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
+
         stream.writeEndElement();
         stream.writeEndElement();   //correspond to writeStartElement("Compute")
         qDebug()<<"category: "<<ww->category;
@@ -280,8 +288,8 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"id: "<<controlsId;
         qDebug()<<"location_x: "<<x;
         qDebug()<<"location_y: "<<y;
-        qDebug()<<"operator: "<<ww->mComputeNode->box->currentText();
-    }*/
+//        qDebug()<<"operator: "<<ww->mComputeNode->box->currentText();
+    }
     //---------IO------------------
     if(ww->category == "IO"){
         stream.writeStartElement("IO");
@@ -342,12 +350,12 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         stream.writeStartElement("Logic");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
-        if(identifier == "Logic"){
+//        if(identifier == "Logic"){
             x = QString::number((long)ww->mLogicNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mLogicNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-        }
+//        }
         stream.writeEndElement();   //correspond to writeStartElement("Logic")
         qDebug()<<"category: "<<ww->category;
         qDebug()<<"type: "<<identifier;
@@ -559,6 +567,7 @@ bool format::read_frame_file(QString filename)
                 }
             }
             if(stream.name().toString()=="Compute"){
+                QString left,right;
                 type = stream.attributes().value("type").toString();
                 qDebug()<<"type: "<<type;
                 stream.readNext();
@@ -582,17 +591,31 @@ bool format::read_frame_file(QString filename)
                 stream.readNext();
                 stream.readNext();
                 if(stream.name().toString()=="math"){
-                    math = stream.readElementText();
+                    math = stream.attributes().value("operator").toString();
                     qDebug()<<"math: "<<math;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="op_left"){
+                    left = stream.readElementText();
+                    qDebug()<<"left: "<<left;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="op_right"){
+                    right = stream.readElementText();
+                    qDebug()<<"right: "<<right;
                 }
 
                 QPointF point(location_x,location_y);
-                try{
-                    if(type=="Compute"){
-                        CreateCompute(point,id,math); //在map中生成compute控件
-                    }
-                }catch(exception e){
-                   ;
+                if(type=="Compute"){
+                    CreateCompute(point,id,math,left,right,type); //在map中生成compute控件
+                }else if(type=="E"){
+                    CreateE(point,id,math,right,type);
+                }else if(type=="Log"){
+                    CreateLog(point,id,math,left,right,type);
+                }else if(type=="Sin"){
+                    CreateSin(point,id,math,right,type);
                 }
             }
             if(stream.name().toString()=="IO"){
@@ -662,8 +685,8 @@ bool format::read_frame_file(QString filename)
 
                 QPointF point(location_x,location_y);
                 try{
-                    if(type=="Logic"){
-                        CreateLogic(point,id); //在窗口中生成IO控件
+                    if(type=="If" || type=="Else" || type=="While"){
+                        CreateLogic(point,id,type); //在窗口中生成Logic控件
                     }
                 }catch(exception e){
                    ;
@@ -1317,14 +1340,17 @@ bool format::CreateVarDef(QPointF point, int id, QString name, int seq)//varnode
     return true;
 }
 
-bool format::CreateCompute(QPointF point, int id, QString math)
+bool format::CreateCompute(QPointF point, int id, QString math ,QString left, QString right,QString type)
 {
     ComputeNode *node=new ComputeNode;
     node->lx = point.x();
     node->ly = point.y();
 
+    node->oprt = math;
+    node->left = left;
+    node->right = right;
     node->controlsId=id;
-    node->identifier="Compute";
+    node->identifier=type;
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";
@@ -1334,7 +1360,123 @@ bool format::CreateCompute(QPointF point, int id, QString math)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+   /* }else if(type=="E"){
+        eNode *node=new eNode;
+        node->lx = point.x();
+        node->ly = point.y();
+
+        node->
+        node->controlsId=id;
+        node->identifier=type;
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+        Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    }else if(type=="Log"){
+        logNode *node=new logNode;
+        node->lx = point.x();
+        node->ly = point.y();
+
+        node->
+        node->controlsId=id;
+        node->identifier=type;
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+        Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    }else if(type=="E"){
+        sinNode *node=new sinNode;
+        node->lx = point.x();
+        node->ly = point.y();
+
+        node->
+        node->controlsId=id;
+        node->identifier=type;
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+        Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    }*/
+
+
+
     return true;
+}
+
+bool format::CreateE(QPointF point,int id,QString math,QString right,QString type){
+    eNode *node=new eNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->oprt = math;
+    node->right = right;
+    node->controlsId=id;
+    node->identifier=type;
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateSin(QPointF point,int id,QString math,QString right,QString type){
+    sinNode *node=new sinNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->oprt = math;
+    node->right = right;
+    node->controlsId=id;
+    node->identifier=type;
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+}
+
+bool format:: CreateLog(QPointF point,int id,QString math,QString left,QString right,QString type){
+    logNode *node=new logNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->oprt = math;
+    node->left = left;
+    node->right = right;
+    node->controlsId=id;
+    node->identifier=type;
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
 }
 
 bool format::CreateIO(QPointF point, int id)
@@ -1457,14 +1599,14 @@ bool format::CreateRangeFinder(QPointF point, int id)
     return true;
 }
 
-bool format::CreateLogic(QPointF point, int id)
+bool format::CreateLogic(QPointF point, int id, QString type)
 {
     Rec *node=new Rec;
     node->lx = point.x();
     node->ly = point.y();
 
     node->controlsId=id;
-    node->identifier="Logic";
+    node->identifier=type;
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";

@@ -27,6 +27,9 @@ public:
     WidgetWrap(DelayNode *dn);
 
     WidgetWrap(ComputeNode* cn);
+    WidgetWrap(eNode* cn);
+    WidgetWrap(logNode* cn);
+    WidgetWrap(sinNode* cn);
     WidgetWrap(IoNode* in);
     WidgetWrap(BatteryNode* in);
     WidgetWrap(GimbalNode* in);
@@ -56,6 +59,9 @@ public:
 
 
     ComputeNode* mComputeNode = NULL;
+    eNode* mENode = NULL;
+    logNode* mLogNode = NULL;
+    sinNode* mSinNode = NULL;
 
     IoNode* mIONode;
     BatteryNode* mBatteryNode;

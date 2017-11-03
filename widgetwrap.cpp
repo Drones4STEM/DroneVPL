@@ -8,10 +8,46 @@ WidgetWrap::WidgetWrap()
 WidgetWrap::WidgetWrap(ComputeNode* cn)
 {
     category = "Compute";
-    identifier = "Compute"; //控件类型
+    identifier = cn->identifier; //控件类型
     controlsId = cn->controlsId;
     name = cn->name;
     mComputeNode = cn;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
+}
+WidgetWrap::WidgetWrap(eNode* cn)
+{
+    category = "Compute";
+    identifier = cn->identifier; //控件类型
+    controlsId = cn->controlsId;
+    name = cn->name;
+    mENode = cn;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
+}
+WidgetWrap::WidgetWrap(sinNode* cn)
+{
+    category = "Compute";
+    identifier = cn->identifier; //控件类型
+    controlsId = cn->controlsId;
+    name = cn->name;
+    mSinNode = cn;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
+}
+WidgetWrap::WidgetWrap(logNode* cn)
+{
+    category = "Compute";
+    identifier = cn->identifier; //控件类型
+    controlsId = cn->controlsId;
+    name = cn->name;
+    mLogNode = cn;
     lx = cn->lx;
     ly = cn->ly;
     high = cn->high;
@@ -94,7 +130,7 @@ WidgetWrap::WidgetWrap(RangeFinderNode* in)
 WidgetWrap::WidgetWrap(Rec* ln)
 {
     category = "Logic";
-    identifier = "Logic"; //控件类型
+    identifier = ln->identifier; //控件类型
     controlsId = ln->controlsId;
     name = ln->name;
     mLogicNode = ln;
