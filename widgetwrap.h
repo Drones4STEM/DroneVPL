@@ -38,7 +38,7 @@ public:
     WidgetWrap(RangeFinderNode* in);
     WidgetWrap(Rec* ln);
 
-    WidgetWrap(VardefNode* vdn);
+    WidgetWrap(VarInstanceNode* vdn);
     WidgetWrap(VarNode* vn);
 
     WidgetWrap(Link* link);
@@ -72,8 +72,8 @@ public:
 
     Rec* mLogicNode;
 
-    VardefNode* mVarDefNode;
-    VarNode* mVarTypeNode;
+    VarInstanceNode* mVarInstanceNode;
+    VarNode* mVarNode;
 
     TakeOffNode* mTakeOffNode;
     LandNode* mLandNode;

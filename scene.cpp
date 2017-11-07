@@ -42,8 +42,8 @@ newscene::newscene(WidgetMap* m, QMap<QString, LOGIC_Help *> *L)
     need_to_set=0;
     selected_Index=1;
 
-    VarTypeNodeNum = 0;  //计数varNode,命名每个varNode,下同
-    VarDefNodeNum = 0;
+    VarNodeNum = 0;  //计数varNode,命名每个varNode,下同
+    VarInstanceNodeNum = 0;
 
     LogicNodeNum=0;
 
@@ -157,15 +157,15 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     if(need_to_set==1&&selected_Index==201){
         emit itemInserted(selected_Index);
         need_to_set = 0;
-        this->VarTypeNodeNum++;
-        CreateVarType(new_event->scenePos(),this->VarTypeNodeNum);
+        this->VarNodeNum++;
+        CreateVar(new_event->scenePos(),this->VarNodeNum);
     }
     if(need_to_set==1&&selected_Index==202){
         emit itemInserted(selected_Index);
         need_to_set = 0;
-        this->VarDefNodeNum++;
-        bool flag = CreateVarDef(new_event->scenePos(),this->VarDefNodeNum);
-        if(flag == false)   this->VarDefNodeNum--;
+        this->VarInstanceNodeNum++;
+        bool flag = CreateVarInstance(new_event->scenePos(),this->VarInstanceNodeNum);
+        if(flag == false)   this->VarInstanceNodeNum--;
     }
     if(need_to_set==1&&selected_Index>=301&&selected_Index<308){
         emit itemInserted(selected_Index);
@@ -537,9 +537,9 @@ bool newscene::CreateDelay(QPointF point, int id)
     return true;
 }
 
-bool newscene::CreateVarType(QPointF point, int id)
+bool newscene::CreateVar(QPointF point, int id)
 { 
-    VariableNode *node = new VariableNode;
+    VarNode *node = new VarNode;
     node->setPos(point);
 //实现点击后产生一行的方式是：先把四行全部创建，但是最开始生成node时，只显示第一行，隐藏其他三行；之后点击按钮，使下一行显示
     QGraphicsItem *typeItem[4],*nameItem[4],
@@ -611,111 +611,100 @@ bool newscene::CreateVarType(QPointF point, int id)
         node->typeBox[i]->addItem("float");
     }
 
-    connect(node,SIGNAL(addVarSignal(VariableNode*,QString,QString,QString)),
-            this,SLOT(addVariable(VariableNode*,QString,QString,QString)));
+    connect(node,SIGNAL(addVarSignal(VarfNode*,QString,QString,QString)),
+            this,SLOT(addVariable(VarfNode*,QString,QString,QString)));
 
-
-    return true;
-
-
-    /*VarNode* node=new VarNode;
-    node->setText(tr("int"));
-
-    node->setPos(point);
-
-    this->addItem(node);
-    this->clearSelection();
-    node->setSelected(true);
-    bringToFront();
 
     node->controlsId=id;
-    node->identifier="VarType";
+    node->identifier="Var";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
 
-    emit sig_connectItem(node);
+    return true;
 
-    return true;*/
+
+    /*
+    emit sig_connectItem(node);//不是我写的，不是我注释的，不知道干嘛用 gjf
+    */
 }
 
-bool newscene::CreateVarDef(QPointF point, int id)
+bool newscene::CreateVarInstance(QPointF point, int id)
 {
-    VardefNode* vdn=new VardefNode;
-    //vdn->setPos(point);
+//    VarInstanceNode* vdn=new VarInstanceNode;
+//    //vdn->setPos(point);
 
-        QList<QGraphicsItem *> items = this->selectedItems();
-        if(items.count()==0)
-        {
-            vdn->setPos(point);
-            this->addItem(vdn);
-            vdn->node=0;
-            vdn->yuan2->setPos(vdn->pos().x(),
-                               vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
-            vdn->yuan->setPos(vdn->pos().x(),
-                               vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
-            this->addItem(vdn->yuan);
-            this->addItem(vdn->yuan2);
-        }
-        else if(items.count()==1&&dynamic_cast<VarNode*>(items.first()))
-        {
-            VarNode* node=dynamic_cast<VarNode*>(items.first());
-            if(!node)return false;
-            int flag=0;
-            while(node->flags[node->num])//这个位置已经有了vardefnode
-            {
-                if(flag==6)return false;
-                node->num=node->num%6+1;
-                flag++;
-            }
-            //计算添加的位置
-            int i=node->num%3;
-            int j;
-            if(node->num==0||node->num==2)j=-17;
-            else if(node->num==3||node->num==5)j=17;
-            else if(node->num==1)j=-35;
-            else j=35;
+//        QList<QGraphicsItem *> items = this->selectedItems();
+//        if(items.count()==0)
+//        {
+//            vdn->setPos(point);
+//            this->addItem(vdn);
+//            vdn->node=0;
+//            vdn->yuan2->setPos(vdn->pos().x(),
+//                               vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
+//            vdn->yuan->setPos(vdn->pos().x(),
+//                               vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
+//            this->addItem(vdn->yuan);
+//            this->addItem(vdn->yuan2);
+//        }
+//        else if(items.count()==1&&dynamic_cast<VarNode*>(items.first()))
+//        {
+//            VarNode* node=dynamic_cast<VarNode*>(items.first());
+//            if(!node)return false;
+//            int flag=0;
+//            while(node->flags[node->num])//这个位置已经有了VarInstancenode
+//            {
+//                if(flag==6)return false;
+//                node->num=node->num%6+1;
+//                flag++;
+//            }
+//            //计算添加的位置
+//            int i=node->num%3;
+//            int j;
+//            if(node->num==0||node->num==2)j=-17;
+//            else if(node->num==3||node->num==5)j=17;
+//            else if(node->num==1)j=-35;
+//            else j=35;
 
-            node->array[node->num]->node=node;//使vardefnode知道它属于varnode
+//            node->array[node->num]->node=node;//使VarInstancenode知道它属于varnode
 
-            int x = node->pos().x() + (1-i)*30;
-            int y = node->pos().y() + j;
-            /*(node->array[node->num])->setPos(x,y);
-            vdn = node->array[node->num];    //在这里记录VarDef，最后包装、添加到map*/
-            vdn->setPos(x,y);
-            node->array[node->num] = vdn;
-            vdn->seq = node->num;
-            node->flags[node->num]=true;
-            //this->addItem(node->array[node->num]);
-            this->addItem(vdn);
-            node->num=node->num%6+1;
-            //vdn->setFlag(QGraphicsItem::ItemIsMovable,false);
-        }
+//            int x = node->pos().x() + (1-i)*30;
+//            int y = node->pos().y() + j;
+//            /*(node->array[node->num])->setPos(x,y);
+//            vdn = node->array[node->num];    //在这里记录VarInstance，最后包装、添加到map*/
+//            vdn->setPos(x,y);
+//            node->array[node->num] = vdn;
+//            vdn->seq = node->num;
+//            node->flags[node->num]=true;
+//            //this->addItem(node->array[node->num]);
+//            this->addItem(vdn);
+//            node->num=node->num%6+1;
+//            //vdn->setFlag(QGraphicsItem::ItemIsMovable,false);
+//        }
 
-    vdn->controlsId=id;
-    vdn->identifier="VarDef";
-    QString cid = QString::number(vdn->controlsId,10);
-    vdn->name = vdn->identifier + cid;
-    qDebug()<<"Create():";
-    qDebug()<<"name :"<<vdn->name;
-    qDebug()<<"identifier :"<<vdn->identifier;
-    qDebug()<<"controlsId :"<<vdn->controlsId;
-    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
-    wm->add(tmp);            //添加到widgetmap中
-    vdn->yuan2->master = tmp;
-    vdn->yuan2->name = "yuan2";
-    vdn->yuan->master = tmp;
-    vdn->yuan->name = "yuan";
+//    vdn->controlsId=id;
+//    vdn->identifier="VarInstance";
+//    QString cid = QString::number(vdn->controlsId,10);
+//    vdn->name = vdn->identifier + cid;
+//    qDebug()<<"Create():";
+//    qDebug()<<"name :"<<vdn->name;
+//    qDebug()<<"identifier :"<<vdn->identifier;
+//    qDebug()<<"controlsId :"<<vdn->controlsId;
+//    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
+//    wm->add(tmp);            //添加到widgetmap中
+//    vdn->yuan2->master = tmp;
+//    vdn->yuan2->name = "yuan2";
+//    vdn->yuan->master = tmp;
+//    vdn->yuan->name = "yuan";
 
-    emit sig_connectItem(vdn);
+//    emit sig_connectItem(vdn);
 
-    return true;
+//    return true;
 }
 
 bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
@@ -1570,11 +1559,11 @@ bool newscene::CreateWhile(QPointF point, int id)
     return true;
 }
 
-void newscene::addVariable(VariableNode *node, QString varType, QString varName, QString varValue)
+void newscene::addVariable(VarNode *node, QString Var, QString varName, QString varValue)
 {
     VarSmallNode *smallNode = new VarSmallNode;
     smallNode->setPos(node->pos().x(),node->pos().y()+150);
-    smallNode->varType=varType;
+    smallNode->varType=Var;
     smallNode->varName=varName;
     smallNode->varValue=varValue.toDouble();
     qDebug()<<1;
@@ -1863,31 +1852,128 @@ bool newscene::CreateDelay(DelayNode *node)
 
     return true;
 }
-bool newscene::CreateVarType(VarNode* node)
+bool newscene::CreateVar(VarNode* node)
 {
-    node->setText(tr("int"));
-
     node->setPos(node->lx,node->ly);
+//实现点击后产生一行的方式是：先把四行全部创建，但是最开始生成node时，只显示第一行，隐藏其他三行；之后点击按钮，使下一行显示
+    QGraphicsItem *typeItem[4],*nameItem[4],
+                  *valueItem[4],*buttonItem[4];
+
+    QGraphicsItem *buttonItem0 = this->addWidget(node->button0);
+    buttonItem0->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->button0Item = buttonItem0;
+    node->button0Item->setPos(-108,-30);
+
+    typeItem[0] = this->addWidget(node->typeBox[0]);
+    typeItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->typeItem[0] = typeItem[0];
+    node->typeItem[0]->setPos(-110,-3);
+
+    nameItem[0] = this->addWidget(node->nameEdit[0]);
+    nameItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->nameItem[0] = nameItem[0];
+    node->nameItem[0]->setPos(-15,-3);
+
+    valueItem[0] = this->addWidget(node->valueEdit[0]);
+    valueItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->valueItem[0] = valueItem[0];
+    node->valueItem[0]->setPos(41,-3);
+
+    buttonItem[0] = this->addWidget(node->button[0]);
+    buttonItem[0]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+    node->buttonItem[0] = buttonItem[0];
+    node->buttonItem[0]->setPos(92,-3);
+
+    for(int i=1;i<4;i++)
+    {
+        typeItem[i] = this->addWidget(node->typeBox[i]);
+        typeItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->typeItem[i] = typeItem[i];
+        //node->typeItem[i]->setPos(-110,7);
+        node->typeItem[i]->setVisible(false);
+
+        nameItem[i] = this->addWidget(node->nameEdit[i]);
+        nameItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->nameItem[i] = nameItem[i];
+        //node->nameItem[i]->setPos(-30,7);
+        node->nameItem[i]->setVisible(false);
+
+        valueItem[i] = this->addWidget(node->valueEdit[i]);
+        valueItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->valueItem[i] = valueItem[i];
+        //node->valueItem[i]->setPos(60,7);
+        node->valueItem[i]->setVisible(false);
+
+        buttonItem[i] = this->addWidget(node->button[i]);
+        buttonItem[i]->setParentItem(dynamic_cast<QGraphicsItem*>(node));
+        node->buttonItem[i] = buttonItem[i];
+        //node->buttonItem[i]->setPos(100,12);
+        node->button[i]->setVisible(false);
+        node->buttonItem[i]->setZValue(buttonItem[0]->zValue()-1);
+    }
 
     this->addItem(node);
     this->clearSelection();
     node->setSelected(true);
     bringToFront();
-    this->VarTypeNodeNum++;
 
+    //给所有comboBox加入内容
+    for(int i = 0;i<4;i++)
+    {
+        node->typeBox[i]->addItem("int");
+        node->typeBox[i]->addItem("double");
+        node->typeBox[i]->addItem("float");
+    }
+
+    connect(node,SIGNAL(addVarSignal(VarfNode*,QString,QString,QString)),
+            this,SLOT(addVariable(VarfNode*,QString,QString,QString)));
+
+
+    if(node->type[0]=="int")
+        node->typeBox[0]->setCurrentIndex(0);
+    if(node->type[0]=="double")
+        node->typeBox[0]->setCurrentIndex(1);
+    if(node->type[0]=="float")
+        node->typeBox[0]->setCurrentIndex(2);
+    node->nameEdit[0]->setText(node->vname[0]);
+    node->valueEdit[0]->setText(node->value[0]);
+    int amount = node->getvarnum();
+    node->setvarnum(1);
+
+    for(int i=1;i<amount;i++){
+        node->button0->click();
+        if(node->type[i]=="int")
+            node->typeBox[i]->setCurrentIndex(0);
+        if(node->type[i]=="double")
+            node->typeBox[i]->setCurrentIndex(1);
+        if(node->type[i]=="float")
+            node->typeBox[i]->setCurrentIndex(2);
+        node->nameEdit[i]->setText(node->vname[i]);
+        node->valueEdit[i]->setText(node->value[i]);
+//        node->button[i]->setVisible(true);
+//        node->typeItem[i]->setVisible(true);
+//        node->nameItem[i]->setVisible(true);
+//        node->valueItem[i]->setVisible(true);
+    }
+
+    node->controlsId=node->controlsId;
+    node->identifier="Var";
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
     qDebug()<<"Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
     qDebug()<<"controlsId :"<<node->controlsId;
-    emit sig_connectItem(node);
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
 
     return true;
 }
-bool newscene::CreateVarDef(VardefNode* vdn)
+bool newscene::CreateVarInstance(VarInstanceNode* vdn)
 {   //先设定不论从哪里生成控件都会需要的公共的属性
     vdn->setPos(vdn->lx,vdn->ly);
     this->addItem(vdn);
-    if(vdn->node==0 && vdn->seq==-1){   //没有vartype
+    if(vdn->node==0 && vdn->seq==-1){   //没有Var
         vdn->node=0;
         vdn->seq=-1;
         vdn->yuan2->setPos(vdn->pos().x(),
@@ -1897,7 +1983,7 @@ bool newscene::CreateVarDef(VardefNode* vdn)
         this->addItem(vdn->yuan);
         this->addItem(vdn->yuan2);
     }
-    this->VarDefNodeNum++;
+    this->VarInstanceNodeNum++;
 
     qDebug()<<"Create(xml):";
     qDebug()<<"name :"<<vdn->name;
@@ -2588,13 +2674,13 @@ bool newscene::CreateWidgets()
             //QPointF point(iter->mDelayNode->lx,iter->mDelayNode->ly);
             CreateDelay(ww->mDelayNode);
         }
-        if(ww->identifier=="VarType"){
-            //QPointF point(iter->mVarTypeNode->lx,iter->mVarTypeNode->ly);
-            CreateVarType(ww->mVarTypeNode);
+        if(ww->identifier=="Var"){
+            //QPointF point(iter->mVarNode->lx,iter->mVarNode->ly);
+            CreateVar(ww->mVarNode);
         }
-        if(ww->identifier=="VarDef"){
-            //QPointF point(iter->mVarDefNode->lx,iter->mVarDefNode->ly);
-            CreateVarDef(ww->mVarDefNode);
+        if(ww->identifier=="VarInstance"){
+            //QPointF point(iter->mVarInstanceNode->lx,iter->mVarInstanceNode->ly);
+            CreateVarInstance(ww->mVarInstanceNode);
         }
         if(ww->identifier=="Compute"){
             //QPointF point(iter->mComputeNode->lx,iter->mComputeNode->ly);

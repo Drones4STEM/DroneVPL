@@ -1,5 +1,5 @@
-#ifndef VARDEFNODE_H
-#define VARDEFNODE_H
+#ifndef VarInstanceNODE_H
+#define VarInstanceNODE_H
 
 #include "node.h"
 #include "newnode.h"
@@ -9,16 +9,16 @@
 class VarNode;
 
 /*******************************************************************
- * Class name: VardefNode
+ * Class name: VarInstanceNode
  * Base class: NewNode
- * Description: This is the declaration of class VardefNode. VardefNode
+ * Description: This is the declaration of class VarInstanceNode. VarInstanceNode
  *       is a definition of variables.
 ******************************************************************/
-class VardefNode:public NewNode
+class VarInstanceNode:public NewNode
 {
 public:
-    enum {Type = VardefNodeType};
-    VardefNode();
+//    enum {Type = VarInstanceNodeType};
+    VarInstanceNode();
 
     int type() const { return Type; }
 
@@ -42,7 +42,7 @@ public:
 
     //存储varnode
     VarNode* node;
-    int seq;//记录自己是node的第几个vardef节点
+    int seq;//记录自己是node的第几个VarInstance节点
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -50,4 +50,4 @@ protected:
                         const QVariant &value);
 };
 
-#endif // VARDEFNODE_H
+#endif // VarInstanceNODE_H
