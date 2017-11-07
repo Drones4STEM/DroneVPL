@@ -8,10 +8,46 @@ WidgetWrap::WidgetWrap()
 WidgetWrap::WidgetWrap(ComputeNode* cn)
 {
     category = "Compute";
-    identifier = "Compute"; //控件类型
+    identifier = cn->identifier; //控件类型
     controlsId = cn->controlsId;
     name = cn->name;
     mComputeNode = cn;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
+}
+WidgetWrap::WidgetWrap(eNode* cn)
+{
+    category = "Compute";
+    identifier = cn->identifier; //控件类型
+    controlsId = cn->controlsId;
+    name = cn->name;
+    mENode = cn;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
+}
+WidgetWrap::WidgetWrap(sinNode* cn)
+{
+    category = "Compute";
+    identifier = cn->identifier; //控件类型
+    controlsId = cn->controlsId;
+    name = cn->name;
+    mSinNode = cn;
+    lx = cn->lx;
+    ly = cn->ly;
+    high = cn->high;
+    wide = cn->wide;
+}
+WidgetWrap::WidgetWrap(logNode* cn)
+{
+    category = "Compute";
+    identifier = cn->identifier; //控件类型
+    controlsId = cn->controlsId;
+    name = cn->name;
+    mLogNode = cn;
     lx = cn->lx;
     ly = cn->ly;
     high = cn->high;
@@ -94,7 +130,7 @@ WidgetWrap::WidgetWrap(RangeFinderNode* in)
 WidgetWrap::WidgetWrap(Rec* ln)
 {
     category = "Logic";
-    identifier = "Logic"; //控件类型
+    identifier = ln->identifier; //控件类型
     controlsId = ln->controlsId;
     name = ln->name;
     mLogicNode = ln;
@@ -182,30 +218,30 @@ WidgetWrap::WidgetWrap(DelayNode *dn)
     wide = dn->wide;
 }
 //-------------------------------
-WidgetWrap::WidgetWrap(VardefNode* vdn)
+WidgetWrap::WidgetWrap(VarInstanceNode* vdn)
 {
-    category = "VAR";
-    identifier = "VarDef"; //控件类型
-    controlsId = vdn->controlsId;
-    name = vdn->name;
-    mVarDefNode = vdn;
-    lx = vdn->lx;
-    ly = vdn->ly;
-    high = vdn->high;
-    wide = vdn->wide;
+//    category = "VAR";
+//    identifier = "VarInstance"; //控件类型
+//    controlsId = vdn->controlsId;
+//    name = vdn->name;
+//    mVarInstanceNode = vdn;
+//    lx = vdn->lx;
+//    ly = vdn->ly;
+//    high = vdn->high;
+//    wide = vdn->wide;
 }
 
 WidgetWrap::WidgetWrap(VarNode* vn)
 {
     category = "VAR";
-    identifier = "VarType"; //控件类型
+    identifier = "Var"; //控件类型
     controlsId = vn->controlsId;
     name = vn->name;
-    mVarTypeNode = vn;
+    mVarNode = vn;
     lx = vn->lx;
     ly = vn->ly;
-    high = vn->high;
-    wide = vn->wide;
+//    high = vn->high;
+//    wide = vn->wide;
 }
 //--------------------------------
 
@@ -233,10 +269,10 @@ triYuan* WidgetWrap::get_yuan_out()
         return mHoverNode->yuan;
     if(identifier == "Delay")
         return mDelayNode->yuan;
-    if(identifier == "VarType")
+    if(identifier == "Var")
         return NULL;
-    if(identifier == "VarDef")
-        return mVarDefNode->yuan;
+    if(identifier == "VarInstance")
+        return mVarInstanceNode->yuan;
     if(identifier == "Compute")
         return mComputeNode->yuan;
     if(identifier == "IO")
@@ -322,15 +358,15 @@ bool WidgetWrap::check_yuan_in()
             }
 
         }
-    if(identifier == "VarType")
+    if(identifier == "Var")
         return false;
-    if(identifier == "VarDef")
-        if(mVarDefNode->yuan2->myLinks.isEmpty())
+    if(identifier == "VarInstance")
+        if(mVarInstanceNode->yuan2->myLinks.isEmpty())
             return false;
         else{
-            QList<Link*> links = mVarDefNode->yuan2->myLinks.values();
+            QList<Link*> links = mVarInstanceNode->yuan2->myLinks.values();
             for(int i=0;i<links.length();i++){
-                if(links[i]->fromYuan()->master->rank()>=mVarDefNode->rank)
+                if(links[i]->fromYuan()->master->rank()>=mVarInstanceNode->rank)
                     //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
                     return true;
                 else return false;
@@ -434,10 +470,10 @@ QPointF WidgetWrap::pos()
         return mHoverNode->pos();
     if(identifier == "Delay")
         return mDelayNode->pos();
-    if(identifier == "VarType")
-        return mVarTypeNode->pos();
-    if(identifier == "VarDef")
-        return mVarDefNode->pos();
+    if(identifier == "Var")
+        return mVarNode->pos();
+    if(identifier == "VarInstance")
+        return mVarInstanceNode->pos();
     if(identifier == "Compute")
         return mComputeNode->pos();
     if(identifier == "IO")
@@ -468,10 +504,10 @@ int WidgetWrap::rank()
         return mHoverNode->rank;
     if(identifier == "Delay")
         return mDelayNode->rank;
-    if(identifier == "VarType")
-        return mVarTypeNode->rank;
-    if(identifier == "VarDef")
-        return mVarDefNode->rank;
+    if(identifier == "Var")
+//        return mVarNode->rank;
+    if(identifier == "VarInstance")
+        return mVarInstanceNode->rank;
     if(identifier == "Compute")
         return mComputeNode->rank;
     if(identifier == "IO")
@@ -503,10 +539,10 @@ void WidgetWrap::rank(int r)
         mHoverNode->rank = r;
     if(identifier == "Delay")
         mDelayNode->rank = r;
-    if(identifier == "VarType")
-        mVarTypeNode->rank = r;
-    if(identifier == "VarDef")
-        mVarDefNode->rank = r;
+    if(identifier == "Var")
+//        mVarNode->rank = r;
+    if(identifier == "VarInstance")
+        mVarInstanceNode->rank = r;
     if(identifier == "Compute")
         mComputeNode->rank = r;
     if(identifier == "IO")

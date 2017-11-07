@@ -1,8 +1,8 @@
 /*******************************************************************
- * File:vardefnode.cpp
+ * File:VarInstancenode.cpp
  * Author: Ryan Feng
- * Description: This file includes the realization of class 
- *        VardefNode. VardefNode is a definition of variables.
+ * Description: This file includes the realization of class
+ *        VarInstanceNode. VarInstanceNode is a definition of variables.
 ******************************************************************/
 
 #include "vardefnode.h"
@@ -12,7 +12,7 @@
 #include "link.h"
 #include "rec.h"
 
-VardefNode::VardefNode()
+VarInstanceNode::VarInstanceNode()
 {
     //yuan=new Yuan;
     //yuan2=new Yuan;
@@ -21,14 +21,14 @@ VardefNode::VardefNode()
     myString="NULL";
     myStringText = "";
 
-    identifier="VarDef";
+    identifier="VarInstance";
     node = 0;
     seq = -1;
     rank = 0;
     sethw();
 }
 
-QPolygonF VardefNode::outlineRect()const
+QPolygonF VarInstanceNode::outlineRect()const
 {
     QPolygonF poly;
     poly<<QPointF(10,16)<<QPointF(20,0)<<QPointF(10,-16)
@@ -37,12 +37,12 @@ QPolygonF VardefNode::outlineRect()const
     return poly;
 }
 
-QRectF VardefNode::boundingRect() const
+QRectF VarInstanceNode::boundingRect() const
 {
     return QRectF(-20,-20,40,40);
 }
 
-QPainterPath VardefNode::shape()  const
+QPainterPath VarInstanceNode::shape()  const
 {
     QPolygonF poly=outlineRect();
     QPainterPath path;
@@ -50,7 +50,7 @@ QPainterPath VardefNode::shape()  const
     return path;
 }
 
-void VardefNode::paint(QPainter *painter,
+void VarInstanceNode::paint(QPainter *painter,
                     const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPen pen(outlineColor());
@@ -69,53 +69,53 @@ void VardefNode::paint(QPainter *painter,
     painter->drawText(rect, Qt::AlignCenter, text());
 }
 
-void VardefNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void VarInstanceNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    QString text;
-    text = QInputDialog::getText(event->widget(),
-                           tr("Edit Text"), tr("Enter new text:"),
-                           QLineEdit::Normal, varName);
-    if (text.isEmpty())return;
+//    QString text;
+//    text = QInputDialog::getText(event->widget(),
+//                           tr("Edit Text"), tr("Enter new text:"),
+//                           QLineEdit::Normal, varName);
+//    if (text.isEmpty())return;
 
-    varName=text;
-    setText(tr("%1").arg(varName));
+//    varName=text;
+//    setText(tr("%1").arg(varName));
 
-    if(this->node)
-    {
-        QString text1 = this->node->text();
-        int x = QString::compare(text1, "int", Qt::CaseInsensitive);
-        int y = QString::compare(text1, "double", Qt::CaseInsensitive);
-        int z = QString::compare(text1, "string", Qt::CaseInsensitive);
+//    if(this->node)
+//    {
+//        QString text1 = this->node->text();
+//        int x = QString::compare(text1, "int", Qt::CaseInsensitive);
+//        int y = QString::compare(text1, "double", Qt::CaseInsensitive);
+//        int z = QString::compare(text1, "string", Qt::CaseInsensitive);
 
-        if(x==0)
-        {
-            int a=QInputDialog::getInt(event->widget(),
-                                       tr("Edit value"), tr("Enter new value:"),
-                                       QLineEdit::Normal, myInt);
-            myInt=a;
-            setText(tr("%1=%2").arg(text).arg(myInt));
-        }
-        else if(y==0)
-        {
-            double a=QInputDialog::getDouble(event->widget(),
-                                       tr("Edit value"), tr("Enter new value:"),
-                                       QLineEdit::Normal, myDouble);
-            myDouble=a;
-            setText(tr("%1=%2").arg(text).arg(myDouble));
-        }
-        else if(z==0)
-        {
-            QString a=QInputDialog::getText(event->widget(),
-                                       tr("Edit value"), tr("Enter new value:"),
-                                       QLineEdit::Normal, myString);
-            myString=a;
-            setText(tr("%1=%2").arg(varName).arg(myString));
-        }
-    }
+//        if(x==0)
+//        {
+//            int a=QInputDialog::getInt(event->widget(),
+//                                       tr("Edit value"), tr("Enter new value:"),
+//                                       QLineEdit::Normal, myInt);
+//            myInt=a;
+//            setText(tr("%1=%2").arg(text).arg(myInt));
+//        }
+//        else if(y==0)
+//        {
+//            double a=QInputDialog::getDouble(event->widget(),
+//                                       tr("Edit value"), tr("Enter new value:"),
+//                                       QLineEdit::Normal, myDouble);
+//            myDouble=a;
+//            setText(tr("%1=%2").arg(text).arg(myDouble));
+//        }
+//        else if(z==0)
+//        {
+//            QString a=QInputDialog::getText(event->widget(),
+//                                       tr("Edit value"), tr("Enter new value:"),
+//                                       QLineEdit::Normal, myString);
+//            myString=a;
+//            setText(tr("%1=%2").arg(varName).arg(myString));
+//        }
+//    }
 
 }
 
-QVariant VardefNode::itemChange(GraphicsItemChange change,
+QVariant VarInstanceNode::itemChange(GraphicsItemChange change,
                     const QVariant &value)
 {
     if (change & ItemPositionHasChanged){
@@ -131,7 +131,7 @@ QVariant VardefNode::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
-/*void VardefNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+/*void VarInstanceNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<QGraphicsItem *> items = this->collidingItems();
     int itemsCount = items.count();

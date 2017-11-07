@@ -67,9 +67,12 @@ private:
     bool CreateTurn(QPointF point, int id, QString direction, double Angel);
     bool CreateHover(QPointF point, int id, double Time);
     bool CreateDelay(QPointF point, int id, double time);
-    bool CreateVarType(QPointF point, int id);
-    bool CreateVarDef(QPointF point, int id, QString name, int seq);   //num表示VarDef是VarType的第几个节点
-    bool CreateCompute(QPointF point, int id, QString math);
+    bool CreateVar(QPointF point, int id, int amount, QString* data_type, QString* varname, QString* init_value);
+    bool CreateVarInstance(QPointF point, int id, QString name, int seq);   //num表示VarInstance是Var的第几个节点
+    bool CreateCompute(QPointF point, int id, QString math, QString left, QString right, QString type);
+    bool CreateE(QPointF point,int id,QString math,QString right,QString type);
+    bool CreateSin(QPointF point,int id,QString math,QString right,QString type);
+    bool CreateLog(QPointF point,int id,QString math,QString left,QString right,QString type);
     bool CreateIO(QPointF point, int id);
     bool CreateBattery(QPointF point, int id);
     bool CreateGimbal(QPointF point, int id);
@@ -77,7 +80,7 @@ private:
     bool CreateChannel(QPointF point, int id);
     bool CreateRangeFinder(QPointF point, int id);
 
-    bool CreateLogic(QPointF point, int id);
+    bool CreateLogic(QPointF point, int id, QString type);
 
     bool CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan);
 signals:

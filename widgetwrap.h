@@ -27,6 +27,9 @@ public:
     WidgetWrap(DelayNode *dn);
 
     WidgetWrap(ComputeNode* cn);
+    WidgetWrap(eNode* cn);
+    WidgetWrap(logNode* cn);
+    WidgetWrap(sinNode* cn);
     WidgetWrap(IoNode* in);
     WidgetWrap(BatteryNode* in);
     WidgetWrap(GimbalNode* in);
@@ -35,7 +38,7 @@ public:
     WidgetWrap(RangeFinderNode* in);
     WidgetWrap(Rec* ln);
 
-    WidgetWrap(VardefNode* vdn);
+    WidgetWrap(VarInstanceNode* vdn);
     WidgetWrap(VarNode* vn);
 
     WidgetWrap(Link* link);
@@ -56,6 +59,9 @@ public:
 
 
     ComputeNode* mComputeNode = NULL;
+    eNode* mENode = NULL;
+    logNode* mLogNode = NULL;
+    sinNode* mSinNode = NULL;
 
     IoNode* mIONode;
     BatteryNode* mBatteryNode;
@@ -66,8 +72,8 @@ public:
 
     Rec* mLogicNode;
 
-    VardefNode* mVarDefNode;
-    VarNode* mVarTypeNode;
+    VarInstanceNode* mVarInstanceNode;
+    VarNode* mVarNode;
 
     TakeOffNode* mTakeOffNode;
     LandNode* mLandNode;

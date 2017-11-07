@@ -49,12 +49,12 @@ bool format::save_frame_file(QString filename = "FrameGraph.xml")
     stream.writeStartElement("WidgetsAndLinks");
     //这个标签本身没有什么意义，但是在读取xml文件的时候需要有一个总标签包含所有子标签，所以用它占位
 
-    for(iter=Map.begin(); iter!=Map.end(); iter++){   //先存VarType
-        if(iter.value()->identifier=="VarType")
+    for(iter=Map.begin(); iter!=Map.end(); iter++){   //先存Var
+        if(iter.value()->identifier=="Var")
             widget_convert_to_xml(iter,stream);
     }
     for(iter=Map.begin(); iter!=Map.end(); iter++){   //存剩下的控件
-        if(iter.value()->identifier!="VarType" && iter.value()->identifier!="Link")
+        if(iter.value()->identifier!="Var" && iter.value()->identifier!="Link")
             widget_convert_to_xml(iter,stream);
     }
     for(iter=Map.begin(); iter!=Map.end(); iter++){   //存link
@@ -163,30 +163,56 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         stream.writeStartElement("VAR");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
-        if(identifier == "VarType"){
-            x = QString::number((long)ww->mVarTypeNode->pos().x(),10);
+        if(identifier == "Var"){
+            x = QString::number((long)ww->mVarNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
-            y = QString::number((long)ww->mVarTypeNode->pos().y(),10);
+            y = QString::number((long)ww->mVarNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            stream.writeTextElement("data_type",ww->mVarTypeNode->text());
-            //stream.writeTextElement("data_type",iter->);
-            //stream.writeStartElement("arrow_out");
+            stream.writeTextElement("amount",QString::number((long)ww->mVarNode->getvarnum(),10));
+            for(int i=1;i<=ww->mVarNode->getvarnum();i++){
+                if(i==1){
+                    stream.writeTextElement("data_type1",
+                                            ww->mVarNode->typeBox[0]->currentText());
+                    stream.writeTextElement("name",ww->mVarNode->nameEdit[0]->text());
+                    stream.writeTextElement("init_value",ww->mVarNode->valueEdit[0]->text());
+                }
+                if(i==2){
+                    stream.writeTextElement("data_type2",
+                                            ww->mVarNode->typeBox[1]->currentText());
+                    stream.writeTextElement("name",ww->mVarNode->nameEdit[1]->text());
+                    stream.writeTextElement("init_value",ww->mVarNode->valueEdit[1]->text());
+                }
+                if(i==3){
+                    stream.writeTextElement("data_type3",
+                                            ww->mVarNode->typeBox[2]->currentText());
+                    stream.writeTextElement("name",ww->mVarNode->nameEdit[2]->text());
+                    stream.writeTextElement("init_value",ww->mVarNode->valueEdit[2]->text());
+                }
+                if(i==4){
+                    stream.writeTextElement("data_type4",
+                                            ww->mVarNode->typeBox[3]->currentText());
+                    stream.writeTextElement("name",ww->mVarNode->nameEdit[3]->text());
+                    stream.writeTextElement("init_value",ww->mVarNode->valueEdit[3]->text());
+                }
+            }
+
+
         }
-        if(identifier == "VarDef"){
-            x = QString::number((long)ww->mVarDefNode->pos().x(),10);
+        if(identifier == "VarInstance"){
+            x = QString::number((long)ww->mVarInstanceNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
-            y = QString::number((long)ww->mVarDefNode->pos().y(),10);
+            y = QString::number((long)ww->mVarInstanceNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            if(ww->mVarDefNode->node!=0){
-                stream.writeTextElement("data_type",ww->mVarDefNode->node->name);
+            if(ww->mVarInstanceNode->node!=0){
+//                stream.writeTextElement("data_type",ww->mVarInstanceNode->node->name);
             }else{
                 QString s = "none";
                 stream.writeTextElement("data_type",s);
             }
             QString seq;
-            seq = QString::number((long)ww->mVarDefNode->seq,10);
+            seq = QString::number((long)ww->mVarInstanceNode->seq,10);
             stream.writeTextElement("sequence",seq);
-            stream.writeTextElement("Variable",ww->mVarDefNode->text());
+            stream.writeTextElement("Variable",ww->mVarInstanceNode->text());
             //stream.writeStartElement("arrow_out");
         }
         stream.writeEndElement();   //correspond to writeStartElement("VAR")
@@ -197,7 +223,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"location_y: "<<y;
     }
     //---------Compute------------------
-    /*if(ww->category == "Compute"){
+    if(ww->category == "Compute"){
         stream.writeStartElement("Compute");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
@@ -206,73 +232,81 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mComputeNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            //stream.writeStartElement("arrow_out");
-        }
-        stream.writeStartElement("math");
-        if(ww->mComputeNode->text()=="+"){ //如果加法
-            stream.writeAttribute("operator","add");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="-"){ //如果减法
-            stream.writeAttribute("operator","substract");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="*"){ //如果乘法
-            stream.writeAttribute("operator","multiple");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="/"){ //如果除法
-            stream.writeAttribute("operator","divison");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="e"){ //如果幂
-            stream.writeAttribute("operator","power");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="sin"){ //如果正弦
-            //stream.writeAttribute("sin");
-            stream.writeStartElement("angle");
-            stream.writeAttribute("unit","angle");
-            //stream.writeTextElement();
-        }
-        if(ww->mComputeNode->text()=="cos"){ //如果余弦
-            //stream.writeAttribute("cos");
-            stream.writeStartElement("angle");
-            stream.writeAttribute("unit","angle");
-            //stream.writeTextElement();
-        }
-        if(ww->mComputeNode->text()=="tan"){ //如果正切
-            //stream.writeAttribute("tan");
-            stream.writeStartElement("angle");
-            stream.writeAttribute("unit","angle");
-            //stream.writeTextElement();
-        }
-        if(ww->mComputeNode->text()=="log"){ //如果对数
-            stream.writeAttribute("operator","log");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()=="="){ //如果等于
-            stream.writeAttribute("operator","equal");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
 
+            stream.writeStartElement("math");
+            if(ww->mComputeNode->box->currentText()=="+"){ //如果加法
+                stream.writeAttribute("operator","+");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="-"){ //如果减法
+                stream.writeAttribute("operator","-");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="*"){ //如果乘法
+                stream.writeAttribute("operator","*");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="/"){ //如果除法
+                stream.writeAttribute("operator","/");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()=="="){ //如果等于
+                stream.writeAttribute("operator","=");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+
+            }
+            if(ww->mComputeNode->box->currentText()=="<"){ //如果小于
+                stream.writeAttribute("operator","<");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+            if(ww->mComputeNode->box->currentText()==">"){ //如果大于
+                stream.writeAttribute("operator",">");
+                stream.writeTextElement("op_left",ww->mComputeNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mComputeNode->lineEdit2->text());
+            }
+        }else{//下面代码很大重复，本来应该通过widgetwrap实时拷贝控件位置，来避免指针调用的，没时间优化了
+            if(ww->identifier=="E"){ //如果幂
+                x = QString::number((long)ww->mENode->pos().x(),10);
+                stream.writeTextElement("location_x",x);
+                y = QString::number((long)ww->mENode->pos().y(),10);
+                stream.writeTextElement("location_y",y);
+
+                stream.writeStartElement("math");
+                stream.writeAttribute("operator","e");
+                stream.writeTextElement("op_left","");
+                stream.writeTextElement("op_right",ww->mENode->lineEdit2->text());
+            }
+            if(ww->identifier=="Sin"){ //如果正弦
+                x = QString::number((long)ww->mSinNode->pos().x(),10);
+                stream.writeTextElement("location_x",x);
+                y = QString::number((long)ww->mSinNode->pos().y(),10);
+                stream.writeTextElement("location_y",y);
+
+                stream.writeStartElement("math");
+                QString tmp = ww->mSinNode->box->currentText();
+                stream.writeAttribute("operator",tmp);
+                stream.writeTextElement("op_left","");
+                stream.writeTextElement("op_right",ww->mSinNode->lineEdit2->text());
+            }
+            if(ww->identifier=="Log"){ //如果对数
+                x = QString::number((long)ww->mLogNode->pos().x(),10);
+                stream.writeTextElement("location_x",x);
+                y = QString::number((long)ww->mLogNode->pos().y(),10);
+                stream.writeTextElement("location_y",y);
+
+                stream.writeStartElement("math");
+                stream.writeAttribute("operator","log");
+                stream.writeTextElement("op_left",ww->mLogNode->lineEdit1->text());
+                stream.writeTextElement("op_right",ww->mLogNode->lineEdit2->text());
+            }
         }
-        if(ww->mComputeNode->text()=="<"){ //如果小于
-            stream.writeAttribute("operator","less");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
-        if(ww->mComputeNode->text()==">"){ //如果大于
-            stream.writeAttribute("operator","greater");
-            stream.writeTextElement("op_left",ww->mComputeNode->rect1->text());
-            stream.writeTextElement("op_right",ww->mComputeNode->rect2->text());
-        }
+
         stream.writeEndElement();
         stream.writeEndElement();   //correspond to writeStartElement("Compute")
         qDebug()<<"category: "<<ww->category;
@@ -280,8 +314,8 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         qDebug()<<"id: "<<controlsId;
         qDebug()<<"location_x: "<<x;
         qDebug()<<"location_y: "<<y;
-        qDebug()<<"operator: "<<ww->mComputeNode->box->currentText();
-    }*/
+//        qDebug()<<"operator: "<<ww->mComputeNode->box->currentText();
+    }
     //---------IO------------------
     if(ww->category == "IO"){
         stream.writeStartElement("IO");
@@ -342,12 +376,12 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
         stream.writeStartElement("Logic");
         stream.writeAttribute("type",identifier);
         stream.writeTextElement("id",controlsId);
-        if(identifier == "Logic"){
+//        if(identifier == "Logic"){
             x = QString::number((long)ww->mLogicNode->pos().x(),10);
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mLogicNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-        }
+//        }
         stream.writeEndElement();   //correspond to writeStartElement("Logic")
         qDebug()<<"category: "<<ww->category;
         qDebug()<<"type: "<<identifier;
@@ -538,10 +572,30 @@ bool format::read_frame_file(QString filename)
 
                 QPointF point(location_x,location_y);
                 try{
-                    if(type=="VarType"){
-                        CreateVarType(point,id); //在窗口中生成takeoff控件
+                    if(type=="Var"){
+                        QString data_type[4],varname[4],init_value[4];
+                        int amount;
+                        stream.readNext();
+                        stream.readNext();
+                        if(stream.name().toString()=="amount"){
+                            amount = stream.readElementText().toInt();
+                            for(int i=0;i<amount;i++){
+                                stream.readNext();
+                                stream.readNext();
+                                //本来要检查读到的是什么，但是太麻烦，代码重复度又非常高，冒险不查了
+                                data_type[i] = stream.readElementText();
+                                stream.readNext();
+                                stream.readNext();
+                                varname[i] = stream.readElementText();
+                                stream.readNext();
+                                stream.readNext();
+                                init_value[i] = stream.readElementText();
+                            }
+                            qDebug()<<"location_y: "<<location_y;
+                        }
+                        CreateVar(point,id,amount,data_type,varname,init_value); //在窗口中生成takeoff控件
                     }
-                    if(type=="VarDef"){
+                    if(type=="VarInstance"){
                         stream.readNext();
                         stream.readNext();
                         if(stream.name().toString()=="data_type"){
@@ -551,7 +605,7 @@ bool format::read_frame_file(QString filename)
                             int s = seq.toInt();
                             qDebug()<<"data_type: "<<name;
                             qDebug()<<"sequence: "<<seq;
-                            CreateVarDef(point,id,name,s); //在窗口中生成VarDef控件
+                            CreateVarInstance(point,id,name,s); //在窗口中生成VarInstance控件
                         }
                     }
                 }catch(exception e){
@@ -559,6 +613,7 @@ bool format::read_frame_file(QString filename)
                 }
             }
             if(stream.name().toString()=="Compute"){
+                QString left,right;
                 type = stream.attributes().value("type").toString();
                 qDebug()<<"type: "<<type;
                 stream.readNext();
@@ -582,17 +637,31 @@ bool format::read_frame_file(QString filename)
                 stream.readNext();
                 stream.readNext();
                 if(stream.name().toString()=="math"){
-                    math = stream.readElementText();
+                    math = stream.attributes().value("operator").toString();
                     qDebug()<<"math: "<<math;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="op_left"){
+                    left = stream.readElementText();
+                    qDebug()<<"left: "<<left;
+                }
+                stream.readNext();
+                stream.readNext();
+                if(stream.name().toString()=="op_right"){
+                    right = stream.readElementText();
+                    qDebug()<<"right: "<<right;
                 }
 
                 QPointF point(location_x,location_y);
-                try{
-                    if(type=="Compute"){
-                        CreateCompute(point,id,math); //在map中生成compute控件
-                    }
-                }catch(exception e){
-                   ;
+                if(type=="Compute"){
+                    CreateCompute(point,id,math,left,right,type); //在map中生成compute控件
+                }else if(type=="E"){
+                    CreateE(point,id,math,right,type);
+                }else if(type=="Log"){
+                    CreateLog(point,id,math,left,right,type);
+                }else if(type=="Sin"){
+                    CreateSin(point,id,math,right,type);
                 }
             }
             if(stream.name().toString()=="IO"){
@@ -662,8 +731,8 @@ bool format::read_frame_file(QString filename)
 
                 QPointF point(location_x,location_y);
                 try{
-                    if(type=="Logic"){
-                        CreateLogic(point,id); //在窗口中生成IO控件
+                    if(type=="If" || type=="Else" || type=="While"){
+                        CreateLogic(point,id,type); //在窗口中生成Logic控件
                     }
                 }catch(exception e){
                    ;
@@ -810,58 +879,58 @@ bool format::SavePyFile(QString filename)
 void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
 {
 
-    if(w->identifier=="VarType"){    //如果传入的控件是VarType
-        VarNode* tmp = w->mVarTypeNode;
-        stream<<tmp->text()<<" ";
-        int i = 0;
-        if(i<=tmp->num)  stream<<tmp->array[i]->text();
-        for(i=1;i<tmp->num;i++){
-            stream<<","<<tmp->array[i]->text();
-        }
-        stream<<"\n";
-        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-    }
-    if(w->identifier=="VarDef"){
-        VardefNode* tmp = w->mVarDefNode;
-        QString s;
-        ComputeNode* cn;
-        if(tmp->myStringText!=""){
-            s = tmp->myStringText;
-        }
-        if(!tmp->yuan->myLinks.isEmpty()){
-            s = tmp->text() + "=" + tmp->myStringText;
-            if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
-                cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
-                /*if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan()){
-                    cn->rect1text = "(" + s + ")";
-                }else{
-                    cn->rect2text = "(" + s + ")";
-                }*/
-            }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
-                VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
-                vn->myStringText = "(" + s + ")";
-            }
-        }else{
-            for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->text()<<"="<<s<<"\n";
-        }
-    }
+//    if(w->identifier=="Var"){    //如果传入的控件是Var
+//        VarNode* tmp = w->mVarNode;
+//        stream<<tmp->text()<<" ";
+//        int i = 0;
+//        if(i<=tmp->num)  stream<<tmp->array[i]->text();
+//        for(i=1;i<tmp->num;i++){
+//            stream<<","<<tmp->array[i]->text();
+//        }
+//        stream<<"\n";
+//        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+//    }
+//    if(w->identifier=="VarInstance"){
+//        VarInstanceNode* tmp = w->mVarInstanceNode;
+//        QString s;
+//        ComputeNode* cn;
+//        if(tmp->myStringText!=""){
+//            s = tmp->myStringText;
+//        }
+//        if(!tmp->yuan->myLinks.isEmpty()){
+//            s = tmp->text() + "=" + tmp->myStringText;
+//            if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
+//                cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
+//                /*if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan()){
+//                    cn->rect1text = "(" + s + ")";
+//                }else{
+//                    cn->rect2text = "(" + s + ")";
+//                }*/
+//            }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarInstance"){
+//                VarInstanceNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
+//                vn->myStringText = "(" + s + ")";
+//            }
+//        }else{
+//            for(int i=1;i<=tabs;i++) stream<<"   ";
+//            stream<<tmp->text()<<"="<<s<<"\n";
+//        }
+//    }
 
     if(w->identifier=="Battery"){    //如果传入的控件是Battery
         BatteryNode* tmp = w->mBatteryNode;
         if(tmp->node1!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.battery.voltage\n";
         }
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"(myCopter.battery.current * 10)\n";
         }
         if(tmp->node3!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.battery.level\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -871,17 +940,17 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         AttitudeNode* tmp = w->mAttitudeNode;
         if(tmp->node1!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.attitude.roll\n";
         }
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.attitude.pitch\n";
         }
         if(tmp->node3!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.attitude.yaw\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -890,47 +959,47 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         ChannelNode* tmp = w->mChannelNode;
         if(tmp->node1!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(1)]\n";
         }
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(2)]\n";
         }
         if(tmp->node3!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(3)]\n";
         }
         if(tmp->node4!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node4->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node4->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(4)]\n";
         }
         if(tmp->node5!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node5->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node5->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(5)]\n";
         }
         if(tmp->node6!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node6->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node6->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(6)]\n";
         }
         if(tmp->node7!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node7->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node7->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(7)]\n";
         }
         if(tmp->node8!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node8->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node8->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(8)]\n";
         }
         if(tmp->node9!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node9->yuan->myLinks.toList()[0]->fromYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node9->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.channels[str(9)]\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -939,7 +1008,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         RangeFinderNode* tmp = w->mRangeFinderNode;
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode->text()<<"=";
             stream<<"myCopter.rangefinder.distance\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1070,8 +1139,8 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         }
 
         if(!tmp->yuan->myLinks.isEmpty()){
-            if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarDef"){
-                VardefNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarDefNode;
+            if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarInstance"){
+                VarInstanceNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
                 vn->myStringText = "(" + s + ")";
             }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
                 ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
@@ -1253,16 +1322,22 @@ bool format::CreateDelay(QPointF point, int id, double time)
     return true;
 }
 
-bool format::CreateVarType(QPointF point, int id)
+bool format::CreateVar(QPointF point, int id, int amount, QString* data_type, QString* varname, QString* init_value)
 {
     VarNode* node=new VarNode;
     node->lx = point.x();
     node->ly = point.y();
 
     node->controlsId=id;
-    node->identifier="VarType";
+    node->identifier="Var";
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
+    for(int i=0;i<amount;i++){
+        node->type[i] = data_type[i];
+        node->vname[i] = varname[i];
+        node->value[i] = init_value[i];
+    }
+    node->setvarnum(amount);
     qDebug()<<"format::Create():";
     qDebug()<<"name :"<<node->name;
     qDebug()<<"identifier :"<<node->identifier;
@@ -1273,58 +1348,61 @@ bool format::CreateVarType(QPointF point, int id)
     return true;
 }
 /*********
- * QString name - the associated VarType name.
- * int num - the VarDef rank num in all the VarDef widgets of VarType
+ * QString name - the associated Var name.
+ * int num - the VarInstance rank num in all the VarInstance widgets of Var
  ********/
-bool format::CreateVarDef(QPointF point, int id, QString name, int seq)//varnode内部有个成员叫num，所以形参不能和它重名
+bool format::CreateVarInstance(QPointF point, int id, QString name, int seq)//varnode内部有个成员叫num，所以形参不能和它重名
 {
-    VardefNode *vdn = new VardefNode;
-    VarNode *vn = new VarNode;
-    vdn->lx = point.x();
-    vdn->ly = point.y();
-    if(name!="none" && seq!=-1){
-        qDebug()<<"3";
-        QMap<QString,WidgetWrap*>* m = &Map;
-        qDebug()<<"2";
-        WidgetWrap t = map_instrument::find(m,name);
-        if(t.mVarTypeNode==0) qDebug()<<"mVarTypeNode==0";
-        qDebug()<<"0";
-        vdn->node = t.mVarTypeNode;   //使vardefnode知道它属于varnode
-        qDebug()<<"1";
-        vdn->seq = seq;
-        qDebug()<<"4";
-        vn = vdn->node;
-        qDebug()<<"5";
-        vn->array[seq]=vdn; //使varnode知道属于它的vardefnode
-        qDebug()<<"6";
-        vn->flags[seq]=true;
-    }else{
-        vdn->node = 0;
-        vdn->seq = -1;
-    }
+//    VarInstanceNode *vdn = new VarInstanceNode;
+//    VarNode *vn = new VarNode;
+//    vdn->lx = point.x();
+//    vdn->ly = point.y();
+//    if(name!="none" && seq!=-1){
+//        qDebug()<<"3";
+//        QMap<QString,WidgetWrap*>* m = &Map;
+//        qDebug()<<"2";
+//        WidgetWrap t = map_instrument::find(m,name);
+//        if(t.mVarNode==0) qDebug()<<"mVarNode==0";
+//        qDebug()<<"0";
+//        vdn->node = t.mVarNode;   //使VarInstancenode知道它属于varnode
+//        qDebug()<<"1";
+//        vdn->seq = seq;
+//        qDebug()<<"4";
+//        vn = vdn->node;
+//        qDebug()<<"5";
+//        vn->array[seq]=vdn; //使varnode知道属于它的VarInstancenode
+//        qDebug()<<"6";
+//        vn->flags[seq]=true;
+//    }else{
+//        vdn->node = 0;
+//        vdn->seq = -1;
+//    }
 
-    vdn->controlsId=id;
-    vdn->identifier="VarDef";
-    QString cid = QString::number(vdn->controlsId,10);
-    vdn->name = vdn->identifier + cid;
-    qDebug()<<"format::Create():";
-    qDebug()<<"name :"<<vdn->name;
-    qDebug()<<"identifier :"<<vdn->identifier;
-    qDebug()<<"controlsId :"<<vdn->controlsId;
+//    vdn->controlsId=id;
+//    vdn->identifier="VarInstance";
+//    QString cid = QString::number(vdn->controlsId,10);
+//    vdn->name = vdn->identifier + cid;
+//    qDebug()<<"format::Create():";
+//    qDebug()<<"name :"<<vdn->name;
+//    qDebug()<<"identifier :"<<vdn->identifier;
+//    qDebug()<<"controlsId :"<<vdn->controlsId;
 
-    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
-    Map.insert(tmp->name,tmp);            //添加到widgetmap中
-    return true;
+//    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
+//    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+//    return true;
 }
 
-bool format::CreateCompute(QPointF point, int id, QString math)
+bool format::CreateCompute(QPointF point, int id, QString math ,QString left, QString right,QString type)
 {
     ComputeNode *node=new ComputeNode;
     node->lx = point.x();
     node->ly = point.y();
 
+    node->oprt = math;
+    node->left = left;
+    node->right = right;
     node->controlsId=id;
-    node->identifier="Compute";
+    node->identifier=type;
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";
@@ -1334,7 +1412,123 @@ bool format::CreateCompute(QPointF point, int id, QString math)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
+   /* }else if(type=="E"){
+        eNode *node=new eNode;
+        node->lx = point.x();
+        node->ly = point.y();
+
+        node->
+        node->controlsId=id;
+        node->identifier=type;
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+        Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    }else if(type=="Log"){
+        logNode *node=new logNode;
+        node->lx = point.x();
+        node->ly = point.y();
+
+        node->
+        node->controlsId=id;
+        node->identifier=type;
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+        Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    }else if(type=="E"){
+        sinNode *node=new sinNode;
+        node->lx = point.x();
+        node->ly = point.y();
+
+        node->
+        node->controlsId=id;
+        node->identifier=type;
+        QString cid = QString::number(node->controlsId,10);
+        node->name = node->identifier + cid;
+        qDebug()<<"Create():";
+        qDebug()<<"name :"<<node->name;
+        qDebug()<<"identifier :"<<node->identifier;
+        qDebug()<<"controlsId :"<<node->controlsId;
+
+        WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+        Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    }*/
+
+
+
     return true;
+}
+
+bool format::CreateE(QPointF point,int id,QString math,QString right,QString type){
+    eNode *node=new eNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->oprt = math;
+    node->right = right;
+    node->controlsId=id;
+    node->identifier=type;
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+}
+
+bool format::CreateSin(QPointF point,int id,QString math,QString right,QString type){
+    sinNode *node=new sinNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->oprt = math;
+    node->right = right;
+    node->controlsId=id;
+    node->identifier=type;
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+}
+
+bool format:: CreateLog(QPointF point,int id,QString math,QString left,QString right,QString type){
+    logNode *node=new logNode;
+    node->lx = point.x();
+    node->ly = point.y();
+
+    node->oprt = math;
+    node->left = left;
+    node->right = right;
+    node->controlsId=id;
+    node->identifier=type;
+    QString cid = QString::number(node->controlsId,10);
+    node->name = node->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<node->name;
+    qDebug()<<"identifier :"<<node->identifier;
+    qDebug()<<"controlsId :"<<node->controlsId;
+
+    WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
 }
 
 bool format::CreateIO(QPointF point, int id)
@@ -1457,14 +1651,14 @@ bool format::CreateRangeFinder(QPointF point, int id)
     return true;
 }
 
-bool format::CreateLogic(QPointF point, int id)
+bool format::CreateLogic(QPointF point, int id, QString type)
 {
     Rec *node=new Rec;
     node->lx = point.x();
     node->ly = point.y();
 
     node->controlsId=id;
-    node->identifier="Logic";
+    node->identifier=type;
     QString cid = QString::number(node->controlsId,10);
     node->name = node->identifier + cid;
     qDebug()<<"Create():";
@@ -1501,10 +1695,10 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
     if(wfrom.identifier == "Delay"){
         first = dynamic_cast<Yuan*> (wfrom.mDelayNode->yuan);
     }
-    if(wfrom.identifier == "VarType"){
+    if(wfrom.identifier == "Var"){
     }
-    if(wfrom.identifier == "VarDef"){
-        first = dynamic_cast<Yuan*> (wfrom.mVarDefNode->yuan);
+    if(wfrom.identifier == "VarInstance"){
+        first = dynamic_cast<Yuan*> (wfrom.mVarInstanceNode->yuan);
     }
     if(wfrom.identifier == "Compute"){
         first = dynamic_cast<Yuan*> (wfrom.mComputeNode->yuan);
@@ -1540,11 +1734,11 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
     if(wto.identifier == "Delay"){
         second = wto.mDelayNode->yuan2;
     }
-    if(wto.identifier == "VarType"){
-        //VarType没有指入和指出
+    if(wto.identifier == "Var"){
+        //Var没有指入和指出
     }
-    if(wto.identifier == "VarDef"){
-        second = wto.mVarDefNode->yuan2;
+    if(wto.identifier == "VarInstance"){
+        second = wto.mVarInstanceNode->yuan2;
     }
     if(wto.identifier == "Compute"){
         if(tyuan == "yuan2")
