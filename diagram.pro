@@ -45,7 +45,6 @@ SOURCES       = diagramwindow.cpp \
     rec.cpp \
     takeoffnode.cpp \
     varnode.cpp \
-    vardefnode.cpp \
     computenode.cpp \
     ionode.cpp \
     aqp/alt_key.cpp \
@@ -65,6 +64,7 @@ SOURCES       = diagramwindow.cpp \
     swatch.cpp \
     background/logic_help.cpp \
     background/digraph.cpp \
+    varinstancenode.cpp
 
 FORMS         = propertiesdialog.ui \
     awindow.ui \
