@@ -16,36 +16,22 @@ class VarNode;
 ******************************************************************/
 class VarInstanceNode:public NewNode
 {
+    Q_OBJECT
+
 public:
-//    enum {Type = VarInstanceNodeType};
-    VarInstanceNode();
+    VarInstanceNode(QGraphicsItem *parent = 0);
 
-    int type() const { return Type; }
-
-    QPolygonF outlineRect() const;
-    QRectF boundingRect() const;
+    QRectF outlineRect()const;
+    QRectF boundingRect()const;
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void sethw(){wide = 40; high = 32;}
-    //为了方便，直接在头文件里定死长宽，若修改outlineRect()中的六边形长宽，
-    //则这里的数据也要改
 
-    //用来存储变量的值
-    QString varName;// 变量名
-
-    int myInt;
-    double myDouble;
-    QString myString;
-    QString myStringText;
-
-
-    //存储varnode
-    VarNode* node;
-    int seq;//记录自己是node的第几个VarInstance节点
+    QString varType;    //变量的类型
+    double varValue;       //变量的值
+    QString varName;       //变量名
 
 protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
 };

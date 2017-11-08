@@ -11,7 +11,6 @@ HEADERS       = diagramwindow.h \
     rec.h \
     takeoffnode.h \
     varnode.h \
-    vardefnode.h \
     computenode.h \
     ionode.h \
     itemtypes.h \
@@ -33,7 +32,8 @@ HEADERS       = diagramwindow.h \
     swatch.h \
     background/logic_help.h \
     background/digraph.h \
-    pycodes.h
+    pycodes.h \
+    varinstancenode.h
 
 SOURCES       = diagramwindow.cpp \
                 link.cpp \

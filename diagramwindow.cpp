@@ -27,7 +27,7 @@
 #include "newnode.h"
 #include "takeoffnode.h"
 #include "varnode.h"
-#include "vardefnode.h"
+#include "varinstancenode.h"
 #include "computenode.h"
 #include "ionode.h"
 #include "yuan.h"
@@ -1325,12 +1325,6 @@ void DiagramWindow::del()
         if(dynamic_cast<VarNode*>(items[i]))
             itemVariables<<dynamic_cast<VarNode*>(items[i]);
     }
-    QList<VarSmallNode*>itemVarSmalls;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VarSmallNode*>(items[i]))
-            itemVarSmalls<<dynamic_cast<VarSmallNode*>(items[i]);
-    }
     foreach (Link* item, itemLinks) {
         typename QMap<QString, LOGIC_Help*>::iterator iter;
         //typename QList<Link*>::iterator it;
@@ -1463,7 +1457,7 @@ void DiagramWindow::del()
         scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-    foreach (VarSmallNode *item, itemVarSmalls) {
+    foreach (VarInstanceNode *item, itemVarInstances) {
         delete item;
     }
     foreach (SomeNode* item, itemSomes) {

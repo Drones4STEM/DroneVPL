@@ -24,7 +24,7 @@
 #include "newnode.h"
 #include "takeoffnode.h"
 #include "varnode.h"
-#include "vardefnode.h"
+#include "varinstancenode.h"
 #include "computenode.h"
 #include "ionode.h"
 #include "yuan.h"
@@ -161,11 +161,11 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
         CreateVar(new_event->scenePos(),this->VarNodeNum);
     }
     if(need_to_set==1&&selected_Index==202){
-        emit itemInserted(selected_Index);
-        need_to_set = 0;
-        this->VarInstanceNodeNum++;
-        bool flag = CreateVarInstance(new_event->scenePos(),this->VarInstanceNodeNum);
-        if(flag == false)   this->VarInstanceNodeNum--;
+//        emit itemInserted(selected_Index);
+//        need_to_set = 0;
+//        this->VarInstanceNodeNum++;
+//        bool flag = CreateVarInstance(new_event->scenePos(),this->VarInstanceNodeNum);
+//        if(flag == false)   this->VarInstanceNodeNum--;
     }
     if(need_to_set==1&&selected_Index>=301&&selected_Index<308){
         emit itemInserted(selected_Index);
@@ -611,8 +611,8 @@ bool newscene::CreateVar(QPointF point, int id)
         node->typeBox[i]->addItem("float");
     }
 
-    connect(node,SIGNAL(addVarSignal(VarfNode*,QString,QString,QString)),
-            this,SLOT(addVariable(VarfNode*,QString,QString,QString)));
+    connect(node,SIGNAL(addVarSignal(VarNode*,QString,QString,QString)),
+            this,SLOT(CreateVarInstance(VarNode*,QString,QString,QString)));
 
 
     node->controlsId=id;
@@ -634,8 +634,41 @@ bool newscene::CreateVar(QPointF point, int id)
     */
 }
 
-bool newscene::CreateVarInstance(QPointF point, int id)
+void newscene::CreateVarInstance(VarNode *node, QString Var, QString varName, QString varValue)
 {
+    VarInstanceNode *InstanceNode = new VarInstanceNode;
+    InstanceNode->setPos(node->pos().x(),node->pos().y()+150);
+    InstanceNode->varType=Var;
+    InstanceNode->varName=varName;
+    InstanceNode->varValue=varValue.toDouble();
+    qDebug()<<1;
+    this->addItem(InstanceNode);
+
+    InstanceNode->yuan->setPos(InstanceNode->pos().x() + InstanceNode->outlineRect().width()/2 + InstanceNode->yuan2->boundingRect().width()/2,
+                            InstanceNode->pos().y());
+    InstanceNode->yuan2->setPos(InstanceNode->pos().x() - InstanceNode->outlineRect().width()/2 - InstanceNode->yuan2->boundingRect().width()/2,
+                             InstanceNode->pos().y());
+    this->addItem(InstanceNode->yuan);
+    this->addItem(InstanceNode->yuan2);
+
+    int id = ++(this->VarInstanceNodeNum);
+    InstanceNode->controlsId=id;
+    InstanceNode->identifier="VarInstance";
+    QString cid = QString::number(InstanceNode->controlsId,10);
+    InstanceNode->name = InstanceNode->identifier + cid;
+    qDebug()<<"Create():";
+    qDebug()<<"name :"<<InstanceNode->name;
+    qDebug()<<"identifier :"<<InstanceNode->identifier;
+    qDebug()<<"controlsId :"<<InstanceNode->controlsId;
+    WidgetWrap* tmp = new WidgetWrap(InstanceNode);   //包装节点
+    wm->add(tmp);            //添加到widgetmap中
+
+    return;
+}
+
+
+//bool newscene::CreateVarInstance(QPointF point, int id)
+//{
 //    VarInstanceNode* vdn=new VarInstanceNode;
 //    //vdn->setPos(point);
 
@@ -705,7 +738,7 @@ bool newscene::CreateVarInstance(QPointF point, int id)
 //    emit sig_connectItem(vdn);
 
 //    return true;
-}
+//}
 
 bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
 {
@@ -759,7 +792,6 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     node->box->addItem(tr(">"));
     node->box->addItem(tr("<"));
     node->box->setCurrentIndex(selected_Index-301);
-    char* c[12] = {"+","-","*","/","=",">","<"};
     //node->setText(tr(c[selected_Index-301]));
 
 
@@ -1559,25 +1591,6 @@ bool newscene::CreateWhile(QPointF point, int id)
     return true;
 }
 
-void newscene::addVariable(VarNode *node, QString Var, QString varName, QString varValue)
-{
-    VarSmallNode *smallNode = new VarSmallNode;
-    smallNode->setPos(node->pos().x(),node->pos().y()+150);
-    smallNode->varType=Var;
-    smallNode->varName=varName;
-    smallNode->varValue=varValue.toDouble();
-    qDebug()<<1;
-    this->addItem(smallNode);
-
-    smallNode->yuan->setPos(smallNode->pos().x() + smallNode->outlineRect().width()/2 + smallNode->yuan2->boundingRect().width()/2,
-                            smallNode->pos().y());
-    smallNode->yuan2->setPos(smallNode->pos().x() - smallNode->outlineRect().width()/2 - smallNode->yuan2->boundingRect().width()/2,
-                             smallNode->pos().y());
-    this->addItem(smallNode->yuan);
-    this->addItem(smallNode->yuan2);
-
-    return;
-}
 
 Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
 {
@@ -1925,8 +1938,8 @@ bool newscene::CreateVar(VarNode* node)
         node->typeBox[i]->addItem("float");
     }
 
-    connect(node,SIGNAL(addVarSignal(VarfNode*,QString,QString,QString)),
-            this,SLOT(addVariable(VarfNode*,QString,QString,QString)));
+    connect(node,SIGNAL(addVarSignal(VarNode*,QString,QString,QString)),
+            this,SLOT(CreateVarInstance(VarNode*,QString,QString,QString)));
 
 
     if(node->type[0]=="int")
@@ -1971,27 +1984,27 @@ bool newscene::CreateVar(VarNode* node)
 }
 bool newscene::CreateVarInstance(VarInstanceNode* vdn)
 {   //先设定不论从哪里生成控件都会需要的公共的属性
-    vdn->setPos(vdn->lx,vdn->ly);
-    this->addItem(vdn);
-    if(vdn->node==0 && vdn->seq==-1){   //没有Var
-        vdn->node=0;
-        vdn->seq=-1;
-        vdn->yuan2->setPos(vdn->pos().x(),
-                           vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
-        vdn->yuan->setPos(vdn->pos().x(),
-                           vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
-        this->addItem(vdn->yuan);
-        this->addItem(vdn->yuan2);
-    }
-    this->VarInstanceNodeNum++;
+//    vdn->setPos(vdn->lx,vdn->ly);
+//    this->addItem(vdn);
+//    if(vdn->node==0 && vdn->seq==-1){   //没有Var
+//        vdn->node=0;
+//        vdn->seq=-1;
+//        vdn->yuan2->setPos(vdn->pos().x(),
+//                           vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
+//        vdn->yuan->setPos(vdn->pos().x(),
+//                           vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
+//        this->addItem(vdn->yuan);
+//        this->addItem(vdn->yuan2);
+//    }
+//    this->VarInstanceNodeNum++;
 
-    qDebug()<<"Create(xml):";
-    qDebug()<<"name :"<<vdn->name;
-    qDebug()<<"identifier :"<<vdn->identifier;
-    qDebug()<<"controlsId :"<<vdn->controlsId;
-    emit sig_connectItem(vdn);
+//    qDebug()<<"Create(xml):";
+//    qDebug()<<"name :"<<vdn->name;
+//    qDebug()<<"identifier :"<<vdn->identifier;
+//    qDebug()<<"controlsId :"<<vdn->controlsId;
+//    emit sig_connectItem(vdn);
 
-    return true;
+//    return true;
 }
 bool newscene::CreateCompute(ComputeNode *node)
 {

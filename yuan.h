@@ -11,6 +11,8 @@
 class Link;
 class Node;
 class WidgetWrap;
+class VarNode;
+class VarInstanceNode;
 
 /*******************************************************************
  * Class name: Yuan

@@ -203,17 +203,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mVarInstanceNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            if(ww->mVarInstanceNode->node!=0){
-//                stream.writeTextElement("data_type",ww->mVarInstanceNode->node->name);
-            }else{
-                QString s = "none";
-                stream.writeTextElement("data_type",s);
-            }
-            QString seq;
-            seq = QString::number((long)ww->mVarInstanceNode->seq,10);
-            stream.writeTextElement("sequence",seq);
-            stream.writeTextElement("Variable",ww->mVarInstanceNode->text());
-            //stream.writeStartElement("arrow_out");
+            stream.writeTextElement("VarName",ww->mVarInstanceNode->varName);
         }
         stream.writeEndElement();   //correspond to writeStartElement("VAR")
         qDebug()<<"category: "<<ww->category;
@@ -1141,7 +1131,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         if(!tmp->yuan->myLinks.isEmpty()){
             if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarInstance"){
                 VarInstanceNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
-                vn->myStringText = "(" + s + ")";
+//                vn->myStringText = "(" + s + ")";
             }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
                 ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
                 /*if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
