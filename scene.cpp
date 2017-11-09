@@ -99,7 +99,8 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 
     Link* link = CreateLink(event);
-    CheckLinkOverLogic(link);   //检查link是否穿越logic
+//    CheckLinkOverLogic(link);   //检查link是否穿越logic
+    //现在不存在穿越了，但是这个函数写一遍太累了，决定注释而不删
     //检查鼠标释放时生成/拖动的控件是否在Logic内
     CheckInLogic();
 
@@ -1593,7 +1594,7 @@ bool newscene::CreateWhile(QPointF point, int id)
 
 
 Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
-{
+{//生成link并包装，记录
     Link* new_link = 0;
     if(new_yuan->myLinks.size()!=0)
     {
@@ -1983,28 +1984,25 @@ bool newscene::CreateVar(VarNode* node)
     return true;
 }
 bool newscene::CreateVarInstance(VarInstanceNode* vdn)
-{   //先设定不论从哪里生成控件都会需要的公共的属性
-//    vdn->setPos(vdn->lx,vdn->ly);
-//    this->addItem(vdn);
-//    if(vdn->node==0 && vdn->seq==-1){   //没有Var
-//        vdn->node=0;
-//        vdn->seq=-1;
-//        vdn->yuan2->setPos(vdn->pos().x(),
-//                           vdn->pos().y() - 16 - vdn->yuan2->boundingRect().height()/2);
-//        vdn->yuan->setPos(vdn->pos().x(),
-//                           vdn->pos().y() + 16 + vdn->yuan->boundingRect().height()/2);
-//        this->addItem(vdn->yuan);
-//        this->addItem(vdn->yuan2);
-//    }
-//    this->VarInstanceNodeNum++;
+{   //先设定不论从哪里生成控件都会需要的公共的属性,从xml生成的create系列的思想
+    vdn->setPos(vdn->lx,vdn->ly);
+    this->addItem(vdn);
+    vdn->yuan->setPos(vdn->pos().x() + vdn->outlineRect().width()/2 + vdn->yuan2->boundingRect().width()/2,
+                            vdn->pos().y());
+    vdn->yuan2->setPos(vdn->pos().x() - vdn->outlineRect().width()/2 - vdn->yuan2->boundingRect().width()/2,
+                             vdn->pos().y());
+    this->addItem(vdn->yuan);
+    this->addItem(vdn->yuan2);
+    vdn->varName = vdn->varName;
+    this->VarInstanceNodeNum++;
 
-//    qDebug()<<"Create(xml):";
-//    qDebug()<<"name :"<<vdn->name;
-//    qDebug()<<"identifier :"<<vdn->identifier;
-//    qDebug()<<"controlsId :"<<vdn->controlsId;
+    qDebug()<<"Create(xml):";
+    qDebug()<<"name :"<<vdn->name;
+    qDebug()<<"identifier :"<<vdn->identifier;
+    qDebug()<<"controlsId :"<<vdn->controlsId;
 //    emit sig_connectItem(vdn);
 
-//    return true;
+    return true;
 }
 bool newscene::CreateCompute(ComputeNode *node)
 {
@@ -2790,7 +2788,9 @@ bool newscene::CheckInLogic()
         NewNode* n1 = dynamic_cast<NewNode *>(t);
         Node* n2 = dynamic_cast<Node *>(t);
         if(n1!=0){
-            if(n1->identifier=="Logic"){
+            if(n1->identifier=="While"||
+                    n1->identifier=="If"||
+                    n1->identifier=="Else"){
                 for(miter=m.begin();miter!=m.end();miter++){
                     //这个函数会遍历所有Logic进行检查
                     check_in_Logic(miter.value(),"add",0);
@@ -2814,43 +2814,43 @@ bool newscene::CheckInLogic()
     return true;
 }
 
+//这个函数暂时用不到了，但是重写一遍很麻烦，所以先注释着
+//bool newscene::CheckLinkOverLogic(Link *link)
+//{//说明：设定上，找一个控件的父logic只能找到最外层的那个，而一个link是否跨越logic，
+// //     依靠所连接的控件的父logic的指针是否相同来判断。这导致只要在同一个大logic里，
+// //     跨越子logic的link无法知道自己跨越了子logic，而这是遍历多层级的图需要的。
+// //     因此采用了不断识别共同父logic，并设置搜索的rank等级的办法。
+//    if(link==0) return false;
+//    //若是从compute指向logic的情况
+//    if(link->toYuan()->master->identifier=="Logic"){
+//        link->toLogic = link->toYuan()->master->mLogicNode;
+//        //flink记录的是跨越logic的link，所以compute指向logic不算
+//        //link->toLogic->flink<<link;
+//    }else{
+//        Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none",0);
+//        Rec* rec2 = check_in_Logic(link->toYuan()->master,"none",0);
+//        while(rec1==rec2){
+//            if(rec1==0&&rec2==0) break;
+//            rec1 = check_in_Logic(link->fromYuan()->master,"none",rec1->rank);
+//            rec2 = check_in_Logic(link->toYuan()->master,"none",rec2->rank);
+//        }
+//        if(rec1!=rec2){
+//            link->toLogic = rec2;
+//            link->fromLogic = rec1;   //fromLogic其实用不到，顺手写了
+//            if(rec1!=0&&rec2!=0){
+//                rec1->tlink<<link; //从logic指出
+//                rec2->flink<<link;
+//            }
+//            if(rec1!=0&&rec2==0){
+//                rec1->tlink<<link; //从logic指出
+//            }
+//            if(rec1==0&&rec2!=0){
+//                rec2->flink<<link;  //向logic指入
+//            }
+//            //不可能同时等于0
 
-bool newscene::CheckLinkOverLogic(Link *link)
-{//说明：设定上，找一个控件的父logic只能找到最外层的那个，而一个link是否跨越logic，
- //     依靠所连接的控件的父logic的指针是否相同来判断。这导致只要在同一个大logic里，
- //     跨越子logic的link无法知道自己跨越了子logic，而这是遍历多层级的图需要的。
- //     因此采用了不断识别共同父logic，并设置搜索的rank等级的办法。
-    if(link==0) return false;
-    //若是从compute指向logic的情况
-    if(link->toYuan()->master->identifier=="Logic"){
-        link->toLogic = link->toYuan()->master->mLogicNode;
-        //flink记录的是跨越logic的link，所以compute指向logic不算
-        //link->toLogic->flink<<link;
-    }else{
-        Rec* rec1 = check_in_Logic(link->fromYuan()->master,"none",0);
-        Rec* rec2 = check_in_Logic(link->toYuan()->master,"none",0);
-        while(rec1==rec2){
-            if(rec1==0&&rec2==0) break;
-            rec1 = check_in_Logic(link->fromYuan()->master,"none",rec1->rank);
-            rec2 = check_in_Logic(link->toYuan()->master,"none",rec2->rank);
-        }
-        if(rec1!=rec2){
-            link->toLogic = rec2;
-            link->fromLogic = rec1;   //fromLogic其实用不到，顺手写了
-            if(rec1!=0&&rec2!=0){
-                rec1->tlink<<link; //从logic指出
-                rec2->flink<<link;
-            }
-            if(rec1!=0&&rec2==0){
-                rec1->tlink<<link; //从logic指出
-            }
-            if(rec1==0&&rec2!=0){
-                rec2->flink<<link;  //向logic指入
-            }
-            //不可能同时等于0
+//        }
+//    }
 
-        }
-    }
-
-    return true;
-}
+//    return true;
+//}
