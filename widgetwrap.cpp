@@ -220,15 +220,15 @@ WidgetWrap::WidgetWrap(DelayNode *dn)
 //-------------------------------
 WidgetWrap::WidgetWrap(VarInstanceNode* vdn)
 {
-//    category = "VAR";
-//    identifier = "VarInstance"; //控件类型
-//    controlsId = vdn->controlsId;
-//    name = vdn->name;
-//    mVarInstanceNode = vdn;
-//    lx = vdn->lx;
-//    ly = vdn->ly;
-//    high = vdn->high;
-//    wide = vdn->wide;
+    category = "VAR";
+    identifier = "VarInstance"; //控件类型
+    controlsId = vdn->controlsId;
+    name = vdn->name;
+    mVarInstanceNode = vdn;
+    lx = vdn->lx;
+    ly = vdn->ly;
+    high = vdn->high;
+    wide = vdn->wide;
 }
 
 WidgetWrap::WidgetWrap(VarNode* vn)

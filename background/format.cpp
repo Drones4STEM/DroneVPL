@@ -203,17 +203,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mVarInstanceNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            if(ww->mVarInstanceNode->node!=0){
-//                stream.writeTextElement("data_type",ww->mVarInstanceNode->node->name);
-            }else{
-                QString s = "none";
-                stream.writeTextElement("data_type",s);
-            }
-            QString seq;
-            seq = QString::number((long)ww->mVarInstanceNode->seq,10);
-            stream.writeTextElement("sequence",seq);
-            stream.writeTextElement("Variable",ww->mVarInstanceNode->text());
-            //stream.writeStartElement("arrow_out");
+            stream.writeTextElement("VarName",ww->mVarInstanceNode->varName);
         }
         stream.writeEndElement();   //correspond to writeStartElement("VAR")
         qDebug()<<"category: "<<ww->category;
@@ -598,14 +588,10 @@ bool format::read_frame_file(QString filename)
                     if(type=="VarInstance"){
                         stream.readNext();
                         stream.readNext();
-                        if(stream.name().toString()=="data_type"){
+                        if(stream.name().toString()=="VarName"){
                             QString name = stream.readElementText();
                             stream.readNext();  stream.readNext();
-                            QString seq = stream.readElementText();
-                            int s = seq.toInt();
-                            qDebug()<<"data_type: "<<name;
-                            qDebug()<<"sequence: "<<seq;
-                            CreateVarInstance(point,id,name,s); //在窗口中生成VarInstance控件
+                            CreateVarInstance(point,id,name); //在窗口中生成VarInstance控件
                         }
                     }
                 }catch(exception e){
@@ -1141,7 +1127,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         if(!tmp->yuan->myLinks.isEmpty()){
             if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="VarInstance"){
                 VarInstanceNode* vn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
-                vn->myStringText = "(" + s + ")";
+//                vn->myStringText = "(" + s + ")";
             }else if(tmp->yuan->myLinks.toList()[0]->toYuan()->master->identifier=="Compute"){
                 ComputeNode* cn = tmp->yuan->myLinks.toList()[0]->toYuan()->master->mComputeNode;
                 /*if(cn->yuan2==tmp->yuan->myLinks.toList()[0]->toYuan())
@@ -1351,45 +1337,25 @@ bool format::CreateVar(QPointF point, int id, int amount, QString* data_type, QS
  * QString name - the associated Var name.
  * int num - the VarInstance rank num in all the VarInstance widgets of Var
  ********/
-bool format::CreateVarInstance(QPointF point, int id, QString name, int seq)//varnode内部有个成员叫num，所以形参不能和它重名
+bool format::CreateVarInstance(QPointF point, int id, QString name)//varnode内部有个成员叫num，所以形参不能和它重名
 {
-//    VarInstanceNode *vdn = new VarInstanceNode;
-//    VarNode *vn = new VarNode;
-//    vdn->lx = point.x();
-//    vdn->ly = point.y();
-//    if(name!="none" && seq!=-1){
-//        qDebug()<<"3";
-//        QMap<QString,WidgetWrap*>* m = &Map;
-//        qDebug()<<"2";
-//        WidgetWrap t = map_instrument::find(m,name);
-//        if(t.mVarNode==0) qDebug()<<"mVarNode==0";
-//        qDebug()<<"0";
-//        vdn->node = t.mVarNode;   //使VarInstancenode知道它属于varnode
-//        qDebug()<<"1";
-//        vdn->seq = seq;
-//        qDebug()<<"4";
-//        vn = vdn->node;
-//        qDebug()<<"5";
-//        vn->array[seq]=vdn; //使varnode知道属于它的VarInstancenode
-//        qDebug()<<"6";
-//        vn->flags[seq]=true;
-//    }else{
-//        vdn->node = 0;
-//        vdn->seq = -1;
-//    }
+    VarInstanceNode *vdn = new VarInstanceNode;
+    vdn->lx = point.x();
+    vdn->ly = point.y();
+    vdn->varName = name;
 
-//    vdn->controlsId=id;
-//    vdn->identifier="VarInstance";
-//    QString cid = QString::number(vdn->controlsId,10);
-//    vdn->name = vdn->identifier + cid;
-//    qDebug()<<"format::Create():";
-//    qDebug()<<"name :"<<vdn->name;
-//    qDebug()<<"identifier :"<<vdn->identifier;
-//    qDebug()<<"controlsId :"<<vdn->controlsId;
+    vdn->controlsId=id;
+    vdn->identifier="VarInstance";
+    QString cid = QString::number(vdn->controlsId,10);
+    vdn->name = vdn->identifier + cid;
+    qDebug()<<"format::Create():";
+    qDebug()<<"name :"<<vdn->name;
+    qDebug()<<"identifier :"<<vdn->identifier;
+    qDebug()<<"controlsId :"<<vdn->controlsId;
 
-//    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
-//    Map.insert(tmp->name,tmp);            //添加到widgetmap中
-//    return true;
+    WidgetWrap* tmp = new WidgetWrap(vdn);   //包装节点
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+    return true;
 }
 
 bool format::CreateCompute(QPointF point, int id, QString math ,QString left, QString right,QString type)

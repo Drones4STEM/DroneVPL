@@ -11,7 +11,6 @@ HEADERS       = diagramwindow.h \
     rec.h \
     takeoffnode.h \
     varnode.h \
-    vardefnode.h \
     computenode.h \
     ionode.h \
     itemtypes.h \
@@ -33,7 +32,8 @@ HEADERS       = diagramwindow.h \
     swatch.h \
     background/logic_help.h \
     background/digraph.h \
-    pycodes.h
+    pycodes.h \
+    varinstancenode.h
 
 SOURCES       = diagramwindow.cpp \
                 link.cpp \
@@ -45,7 +45,6 @@ SOURCES       = diagramwindow.cpp \
     rec.cpp \
     takeoffnode.cpp \
     varnode.cpp \
-    vardefnode.cpp \
     computenode.cpp \
     ionode.cpp \
     aqp/alt_key.cpp \
@@ -65,6 +64,7 @@ SOURCES       = diagramwindow.cpp \
     swatch.cpp \
     background/logic_help.cpp \
     background/digraph.cpp \
+    varinstancenode.cpp
 
 FORMS         = propertiesdialog.ui \
     awindow.ui \

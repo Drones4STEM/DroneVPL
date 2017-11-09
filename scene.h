@@ -35,7 +35,7 @@ public:
     bool CreateHover(QPointF point, int id);
     bool CreateDelay(QPointF point, int id);
     bool CreateVar(QPointF point, int id);
-    bool CreateVarInstance(QPointF point, int id);
+//    bool CreateVarInstance(QPointF point, int id);
     bool CreateCompute(QPointF point, int id,int selected_Index);
     bool CreateSin(QPointF point, int id);
     bool CreateLog(QPointF point, int id);
@@ -118,7 +118,7 @@ signals:
     void sig_connectItem(QObject *item);
 
 public slots:
-    void addVariable(VarNode *node,QString Var,QString varName,QString varValue);//点击variable每一行末端的按钮，就会调用此槽函数，在场景中生成对应变量
+    void CreateVarInstance(VarNode *node,QString Var,QString varName,QString varValue);//点击variable每一行末端的按钮，就会调用此槽函数，在场景中生成对应变量
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);
