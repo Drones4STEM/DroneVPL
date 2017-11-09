@@ -93,6 +93,9 @@ public:
     vector<QGraphicsItem*>valueItemVec;
     vector<QGraphicsItem*>buttonItemVec;*/
 
+    //这下面三个数组都是从xml文件生成控件时做中转用的，
+    //值是打开xml时赋的，之后不会再改动。打开xml之前是未赋值的状态
+    //尽量避免使用
     QString type[4];
     QString vname[4];
     QString value[4];
@@ -103,6 +106,8 @@ public:
     int controlsId;
     QString identifier;
     QString name;
+    double high,wide;
+
 signals:
     void dirty();
     void addVarSignal(VarNode *node,QString varType,

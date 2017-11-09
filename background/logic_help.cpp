@@ -36,20 +36,20 @@ bool LOGIC_Help::in_LOGIC(widget* w)
     qDebug()<<"LOGIC_Helo::in_LOGIC(): ";
     qDebug()<<"w->pos().x() " <<w->pos().x();
     qDebug()<<"w->pos().y() " <<w->pos().y();
-    qDebug()<<"w->wide " <<w->wide;
-    qDebug()<<"w->high " <<w->high;
+    qDebug()<<"w->wide " <<w->width();
+    qDebug()<<"w->high " <<w->height();
     qDebug()<<"LOG->pos().x() " <<LOG->pos().x();
     qDebug()<<"LOG->pos().y() " <<LOG->pos().y();
-    qDebug()<<"LOG->wide " <<LOG->wide;
-    qDebug()<<"LOG->high " <<LOG->high;
+    qDebug()<<"LOG->wide " <<LOG->boundingRect().width();
+    qDebug()<<"LOG->high " <<LOG->boundingRect().height();
 
     if(w->mLogicNode == LOG) return false;
     //在拖动logic边框的时候，由于速度原因会导致in_LOGIC函数判定自身被包含，所以手动设定为false
 
-    if( w->pos().x() - w->wide/2 > LOG->pos().x() - LOG->wide/2   //横坐标包含
-         && w->pos().x() + w->wide/2 < LOG->pos().x() + LOG->wide/2
-         && w->pos().y() - w->high/2 > LOG->pos().y() - LOG->high/2  //纵坐标包含
-         && w->pos().y() + w->high/2 < LOG->pos().y() + LOG->high/2)
+    if( w->pos().x() - w->width()/2 > LOG->pos().x() - LOG->boundingRect().width()/2   //横坐标包含
+         && w->pos().x() + w->width()/2 < LOG->pos().x() + LOG->boundingRect().width()/2
+         && w->pos().y() - w->height()/2 > LOG->pos().y() - LOG->boundingRect().height()/2  //纵坐标包含
+         && w->pos().y() + w->height()/2 < LOG->pos().y() + LOG->boundingRect().height()/2)
         return true;
     else
         return false;

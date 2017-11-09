@@ -262,7 +262,6 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
 bool newscene::CreateTakeOff(QPointF point, int id)
 {
     TakeOffNode *node=new TakeOffNode;
-    node->setText(tr("take off\n %1 m").arg(node->altitude));
 
     QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
     lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
@@ -298,7 +297,6 @@ bool newscene::CreateTakeOff(QPointF point, int id)
 bool newscene::CreateLand(QPointF point, int id)
 {
     LandNode *node=new LandNode;
-    node->setText(tr("Land"));
 
     node->setPos(point);
     this->addItem(node);
@@ -331,7 +329,6 @@ bool newscene::CreateLand(QPointF point, int id)
 bool newscene::CreateGo(QPointF point, int id, int index)
 {
     GoNode *node=new GoNode;
-    node->setText(tr(" %1 m/s \n %2 s").arg(node->groundspeed).arg(node->Time));
 
     QGraphicsItem* item=this->addWidget(node->box);
     item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
@@ -397,7 +394,6 @@ bool newscene::CreateGo(QPointF point, int id, int index)
 bool newscene::CreateTurn(QPointF point, int id, int index)
 {
     TurnNode *node=new TurnNode;
-    node->setText(tr(" %1 ").arg(node->Angel));
     QGraphicsItem* item=this->addWidget(node->box);
     item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
@@ -496,7 +492,6 @@ bool newscene::CreateHover(QPointF point, int id)
 bool newscene::CreateDelay(QPointF point, int id)
 {
     DelayNode *node=new DelayNode;
-    node->setText(tr(" Delay \n %1 s").arg(node->time));
 
     QGraphicsItem *lineItem = this->addWidget(node->lineEdit);
     lineItem->setParentItem(dynamic_cast<QGraphicsItem*>(node));//设置父对象，这样就可以自动跟随父对象改变位置
@@ -965,7 +960,6 @@ bool newscene::CreateE(QPointF point, int id)
 bool newscene::CreateIO(QPointF point, int id)
 {
     IoNode* node=new IoNode;
-    node->setText(tr("sensor"));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -1038,10 +1032,6 @@ bool newscene::CreateIO(QPointF point, int id)
 bool newscene::CreateBattery(QPointF point, int id)
 {
     BatteryNode* node=new BatteryNode;
-    node->setText(tr("Battery"));
-    //QGraphicsItem* item=this->addWidget(node->box);
-    //node->item=item;
-
 
     node->setPos(point);
     this->addItem(node);
@@ -1112,7 +1102,6 @@ bool newscene::CreateBattery(QPointF point, int id)
 bool newscene::CreateGimbal(QPointF point, int id)
 {
     GimbalNode* node=new GimbalNode;
-//    node->setText(tr("Gimbal"));
 
     node->setPos(point);
     this->addItem(node);
@@ -1177,7 +1166,6 @@ bool newscene::CreateGimbal(QPointF point, int id)
 bool newscene::CreateAttitude(QPointF point, int id)
 {
     AttitudeNode* node=new AttitudeNode;
-    node->setText(tr("Attitude"));
 
     node->setPos(point);
     this->addItem(node);
@@ -1240,7 +1228,6 @@ bool newscene::CreateAttitude(QPointF point, int id)
 bool newscene::CreateChannel(QPointF point, int id)
 {
     ChannelNode* node=new ChannelNode;
-    node->setText(tr("Channel"));
 
     node->setPos(point);
     this->addItem(node);
@@ -1346,7 +1333,6 @@ bool newscene::CreateChannel(QPointF point, int id)
 bool newscene::CreateRangeFinder(QPointF point, int id)
 {
     RangeFinderNode* node=new RangeFinderNode;
-    node->setText(tr("RangeFinder"));
 
     node->setPos(point);
     this->addItem(node);
@@ -1665,8 +1651,6 @@ bool newscene::CreateTakeOff(TakeOffNode* node)
 }
 bool newscene::CreateLand(LandNode* node)
 {
-    node->setText(tr("Land"));
-
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -2271,7 +2255,6 @@ bool newscene::CreateSin(sinNode *node)
 
 bool newscene::CreateIO(IoNode* node)
 {
-    node->setText(tr("sensor"));
     QGraphicsItem* item=this->addWidget(node->box);
     node->item=item;
 
@@ -2325,8 +2308,6 @@ bool newscene::CreateIO(IoNode* node)
 
 bool newscene::CreateBattery(BatteryNode* node)
 {
-//    node->setText(tr("Battery"));
-
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -2370,8 +2351,6 @@ bool newscene::CreateBattery(BatteryNode* node)
 
 bool newscene::CreateAttitude(AttitudeNode* node)
 {
-//    node->setText(tr("Attitude"));
-
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -2415,8 +2394,6 @@ bool newscene::CreateAttitude(AttitudeNode* node)
 
 bool newscene::CreateGimbal(GimbalNode* node)
 {
-//    node->setText(tr("Gimbal"));
-
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -2460,8 +2437,6 @@ bool newscene::CreateGimbal(GimbalNode* node)
 
 bool newscene::CreateChannel(ChannelNode* node)
 {
-//    node->setText(tr("Channel"));
-
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -2537,8 +2512,6 @@ bool newscene::CreateChannel(ChannelNode* node)
 
 bool newscene::CreateRangeFinder(RangeFinderNode* node)
 {
-//    node->setText(tr("RangeFinder"));
-
     node->setPos(node->lx,node->ly);
     this->addItem(node);
 
@@ -2649,6 +2622,9 @@ bool newscene::CreateLogic(Rec *rec)
     qDebug()<<"controlsId :"<<rec->controlsId;
     this->LogicNodeNum++;
 
+    LOGIC_Help* lh = new LOGIC_Help(rec);   //创建对应的工具对象
+    LHM->insert(rec->name,lh);  //添加到logic工具对象的map中
+
     emit sig_connectItem(rec);
     return true;
 }
@@ -2744,7 +2720,7 @@ bool newscene::CreateLink(Link* link)
 //------------------------------------------------------
 
 Rec* newscene::check_in_Logic(WidgetWrap* tmp, QString operate,int maxrank)
-{
+{//这个函数给新建的控件定义了rank，并让所有包含该控件的logic记住了它
     bool flag;
     typename QMap<QString, LOGIC_Help*>::iterator iter;
     LOGIC_Help* lh;
@@ -2792,7 +2768,7 @@ bool newscene::CheckInLogic()
                     n1->identifier=="If"||
                     n1->identifier=="Else"){
                 for(miter=m.begin();miter!=m.end();miter++){
-                    //这个函数会遍历所有Logic进行检查
+                    //这个函数会遍历所有Logic进行检查，换言之，在上面整个for里，n1既检查了别人，也被其他logic检查了。
                     check_in_Logic(miter.value(),"add",0);
                 }
             }else{

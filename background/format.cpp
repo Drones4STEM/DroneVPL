@@ -796,7 +796,9 @@ bool format::save_py_file(std::stack<widget*>* stk, QTextStream& in, int tabs)
     WidgetWrap* tmp = new widget();
     while(!stk->empty()){
         tmp = stk->top();    stk->pop();
-        if(tmp->identifier=="Logic"){
+        if(tmp->identifier=="While" ||
+                tmp->identifier=="If" ||
+                tmp->identifier=="Else" ){
             widget_convert_to_py(tmp,in,tabs);
             std::stack<widget*>* s = digrapher->get_topology(tmp->mLogicNode);
             save_py_file(s,in,++tabs);
@@ -865,18 +867,18 @@ bool format::SavePyFile(QString filename)
 void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
 {
 
-//    if(w->identifier=="Var"){    //如果传入的控件是Var
-//        VarNode* tmp = w->mVarNode;
-//        stream<<tmp->text()<<" ";
-//        int i = 0;
-//        if(i<=tmp->num)  stream<<tmp->array[i]->text();
-//        for(i=1;i<tmp->num;i++){
-//            stream<<","<<tmp->array[i]->text();
-//        }
-//        stream<<"\n";
-//        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-//    }
+    if(w->identifier=="Var"){    //如果传入的控件是Var
+        VarNode* tmp = w->mVarNode;
+        for(int i=0;i<tmp->getvarnum();i++){
+            stream<<tmp->typeBox[i]->currentText()<<" "<<
+                    tmp->valueEdit[i]->text()<<"="<<tmp->valueEdit[i]->text();
+        }
+        stream<<"\n";
+        qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
+    }
 //    if(w->identifier=="VarInstance"){
+//        VarInstance 会用到的地方，在原则上只能是compute和io，考虑到它不是一个操作而是一个变量，
+//          不能在拓扑遍历到时执行（会损失和其他控件的联系），所以改成：如果一个控件可能连上
 //        VarInstanceNode* tmp = w->mVarInstanceNode;
 //        QString s;
 //        ComputeNode* cn;

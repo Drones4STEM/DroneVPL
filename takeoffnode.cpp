@@ -73,6 +73,7 @@ QRectF TakeOffNode::outlineRect() const
 
 QRectF TakeOffNode::boundingRect() const
 {
+
     return outlineRect();
 }
 
@@ -185,6 +186,8 @@ QRectF LandNode::outlineRect() const
 
 QRectF LandNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
@@ -374,6 +377,8 @@ QRectF GoNode::outlineRect() const
 
 QRectF GoNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
@@ -767,6 +772,8 @@ QRectF TurnNode::outlineRect() const
 
 QRectF TurnNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
@@ -962,6 +969,8 @@ QRectF HoverNode::outlineRect() const
 
 QRectF HoverNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
@@ -1118,6 +1127,8 @@ QRectF DelayNode::outlineRect() const
 
 QRectF DelayNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 

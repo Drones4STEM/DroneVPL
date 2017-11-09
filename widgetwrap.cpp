@@ -15,7 +15,7 @@ WidgetWrap::WidgetWrap(ComputeNode* cn)
     lx = cn->lx;
     ly = cn->ly;
     high = cn->high;
-    wide = cn->wide;
+    wide =  cn->wide;
 }
 WidgetWrap::WidgetWrap(eNode* cn)
 {
@@ -555,6 +555,80 @@ void WidgetWrap::rank(int r)
         mChannelNode->rank = r;
     if(identifier == "RangeFinder")
         mRangeFinderNode->rank = r;
-    if(identifier == "Logic")
+    if(identifier == "While" ||
+            identifier == "If" ||
+            identifier == "Else")
         mLogicNode->rank = r;
+}
+
+double WidgetWrap::width()
+{
+    if(identifier == "TakeOff")
+        return mTakeOffNode->boundingRect().width();
+    if(identifier == "Land")
+        return mLandNode->boundingRect().width();
+    if(identifier == "Go")
+        return mGoNode->boundingRect().width();
+    if(identifier == "Turn")
+        return mTurnNode->boundingRect().width();
+    if(identifier == "Hover")
+        return mHoverNode->boundingRect().width();
+    if(identifier == "Delay")
+        return mDelayNode->boundingRect().width();
+    if(identifier == "Var")
+//        return mVarNode->boundingRect().width();
+    if(identifier == "VarInstance")
+        return mVarInstanceNode->boundingRect().width();
+    if(identifier == "Compute")
+        return mComputeNode->boundingRect().width();
+    if(identifier == "IO")
+        return mIONode->boundingRect().width();
+    if(identifier == "Battery")
+        return mBatteryNode->boundingRect().width();
+    if(identifier == "Attitude")
+        return mAttitudeNode->boundingRect().width();
+    if(identifier == "Channel")
+        return mChannelNode->boundingRect().width();
+    if(identifier == "RangeFinder")
+        return mRangeFinderNode->boundingRect().width();
+    if(identifier == "While" ||
+            identifier == "If" ||
+            identifier == "Else")
+        return mLogicNode->boundingRect().width();
+}
+
+double WidgetWrap::height()
+{
+    if(identifier == "TakeOff")
+        return mTakeOffNode->boundingRect().height();
+    if(identifier == "Land")
+        return mLandNode->boundingRect().height();
+    if(identifier == "Go")
+        return mGoNode->boundingRect().height();
+    if(identifier == "Turn")
+        return mTurnNode->boundingRect().height();
+    if(identifier == "Hover")
+        return mHoverNode->boundingRect().height();
+    if(identifier == "Delay")
+        return mDelayNode->boundingRect().height();
+    if(identifier == "Var")
+//        return mVarNode->boundingRect().height();
+    if(identifier == "VarInstance")
+        return mVarInstanceNode->boundingRect().height();
+    if(identifier == "Compute")
+        return mComputeNode->boundingRect().height();
+    if(identifier == "IO")
+        return mIONode->boundingRect().height();
+    if(identifier == "Battery")
+        return mBatteryNode->boundingRect().height();
+    if(identifier == "Attitude")
+        return mAttitudeNode->boundingRect().height();
+    if(identifier == "Channel")
+        return mChannelNode->boundingRect().height();
+    if(identifier == "RangeFinder")
+        return mRangeFinderNode->boundingRect().height();
+    if(identifier == "While" ||
+            identifier == "If" ||
+            identifier == "Else")
+        return mLogicNode->boundingRect().height();
 }

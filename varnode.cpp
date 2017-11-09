@@ -89,6 +89,8 @@ QRectF VarNode::outlineRect() const
 
 QRectF VarNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
