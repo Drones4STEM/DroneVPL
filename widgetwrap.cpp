@@ -275,6 +275,12 @@ triYuan* WidgetWrap::get_yuan_out()
         return mVarInstanceNode->yuan;
     if(identifier == "Compute")
         return mComputeNode->yuan;
+    if(identifier == "Log")
+        return mComputeNode->yuan;
+    if(identifier == "E")
+        return mComputeNode->yuan;
+    if(identifier == "Sin")
+        return mComputeNode->yuan;
     if(identifier == "IO")
         return mIONode->yuan;
     if(identifier == "Battery")
@@ -285,10 +291,13 @@ triYuan* WidgetWrap::get_yuan_out()
         return mChannelNode->yuan;
     if(identifier == "RangeFinder")
         return mRangeFinderNode->yuan;
-    if(identifier == "Logic")
+    if(identifier == "If"||
+            identifier == "Else"||
+            identifier == "While")
         return mLogicNode->yuan;
     return 0;
 }
+//这个函数只被另一个可以淘汰的函数调用，但目前仍在使用，且以后可能有用，故维护
 bool WidgetWrap::check_yuan_in()
 {
     if(identifier == "TakeOff")
@@ -374,13 +383,51 @@ bool WidgetWrap::check_yuan_in()
 
         }
     if(identifier == "Compute")
-        if(mComputeNode->yuan2->myLinks.isEmpty() )//&&
-                //mComputeNode->yuan3->myLinks.isEmpty())
+        if(mComputeNode->yuan2->myLinks.isEmpty() )
             return false;
         else{
             QList<Link*> links = mComputeNode->yuan2->myLinks.values();
             for(int i=0;i<links.length();i++){
                 if(links[i]->fromYuan()->master->rank()>=mComputeNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
+    if(identifier == "E")
+        if(mENode->yuan2->myLinks.isEmpty() )
+            return false;
+        else{
+            QList<Link*> links = mENode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mENode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
+    if(identifier == "Log")
+        if(mLogNode->yuan2->myLinks.isEmpty() )
+            return false;
+        else{
+            QList<Link*> links = mLogNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mLogNode->rank)
+                    //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
+                    return true;
+                else return false;
+            }
+
+        }
+    if(identifier == "Sin")
+        if(mSinNode->yuan2->myLinks.isEmpty() )
+            return false;
+        else{
+            QList<Link*> links = mSinNode->yuan2->myLinks.values();
+            for(int i=0;i<links.length();i++){
+                if(links[i]->fromYuan()->master->rank()>=mSinNode->rank)
                     //级数大表示指向这个节点的上级节点在同一图或子图，即有入度
                     return true;
                 else return false;
@@ -476,6 +523,12 @@ QPointF WidgetWrap::pos()
         return mVarInstanceNode->pos();
     if(identifier == "Compute")
         return mComputeNode->pos();
+    if(identifier == "E")
+        return mENode->pos();
+    if(identifier == "Log")
+        return mLogNode->pos();
+    if(identifier == "Sin")
+        return mSinNode->pos();
     if(identifier == "IO")
         return mIONode->pos();
     if(identifier == "Battery")
@@ -510,6 +563,12 @@ int WidgetWrap::rank()
         return mVarInstanceNode->rank;
     if(identifier == "Compute")
         return mComputeNode->rank;
+    if(identifier == "E")
+        return mENode->rank;
+    if(identifier == "Log")
+        return mLogNode->rank;
+    if(identifier == "Sin")
+        return mSinNode->rank;
     if(identifier == "IO")
         return mIONode->rank;
     if(identifier == "Battery")
@@ -545,6 +604,12 @@ void WidgetWrap::rank(int r)
         mVarInstanceNode->rank = r;
     if(identifier == "Compute")
         mComputeNode->rank = r;
+    if(identifier == "E")
+        mENode->rank = r;
+    if(identifier == "Log")
+        mLogNode->rank = r;
+    if(identifier == "Sin")
+        mSinNode->rank = r;
     if(identifier == "IO")
         mIONode->rank = r;
     if(identifier == "Battery")
@@ -581,6 +646,12 @@ double WidgetWrap::width()
         return mVarInstanceNode->boundingRect().width();
     if(identifier == "Compute")
         return mComputeNode->boundingRect().width();
+    if(identifier == "E")
+        return mENode->boundingRect().width();
+    if(identifier == "Log")
+        return mLogNode->boundingRect().width();
+    if(identifier == "Sin")
+        return mSinNode->boundingRect().width();
     if(identifier == "IO")
         return mIONode->boundingRect().width();
     if(identifier == "Battery")
@@ -617,6 +688,12 @@ double WidgetWrap::height()
         return mVarInstanceNode->boundingRect().height();
     if(identifier == "Compute")
         return mComputeNode->boundingRect().height();
+    if(identifier == "E")
+        return mENode->boundingRect().height();
+    if(identifier == "Log")
+        return mLogNode->boundingRect().height();
+    if(identifier == "Sin")
+        return mSinNode->boundingRect().height();
     if(identifier == "IO")
         return mIONode->boundingRect().height();
     if(identifier == "Battery")

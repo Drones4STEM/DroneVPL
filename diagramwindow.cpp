@@ -1457,9 +1457,6 @@ void DiagramWindow::del()
         scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-    foreach (VarInstanceNode *item, itemVarInstances) {
-        delete item;
-    }
     foreach (SomeNode* item, itemSomes) {
 
         delete item;
