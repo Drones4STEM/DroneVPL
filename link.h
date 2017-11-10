@@ -39,7 +39,7 @@ public:
     QString identifier;
     int controlsId;
     QString name;
-
+//下面两个量应该不用了才对
     Rec* toLogic;
     Rec* fromLogic;
 

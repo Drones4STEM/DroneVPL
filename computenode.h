@@ -41,6 +41,7 @@ public:
     QLineEdit *lineEdit1;
     QLineEdit *lineEdit2;
     QGraphicsItem *lineItem1,*lineItem2;
+    //从xml生成时中转用的，无实时更新效果，勿用，或不上实时更新效果
     QString oprt;//操作符
     QString left,right;  //操作数
 

@@ -46,6 +46,8 @@ public:
     QPointF pos();
     int rank();
     void rank(int r);
+    double height();
+    double width();
 
     triYuan* get_yuan_out();
     bool check_yuan_in();

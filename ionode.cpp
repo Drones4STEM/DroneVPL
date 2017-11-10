@@ -68,6 +68,8 @@ QRectF IoNode::outlineRect() const
 ******************************************************************/
 QRectF IoNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     const int Margin = 6;
     return outlineRect().adjusted(-Margin, -Margin, +Margin, +Margin);
 }
@@ -230,6 +232,8 @@ QRectF BatteryNode::outlineRect() const
 ******************************************************************/
 QRectF BatteryNode::boundingRect() const
 {
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
