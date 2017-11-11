@@ -63,7 +63,7 @@ public:
     int varNodeNum;  //计数varNode,命名每个varNode,下同
     int takeoffNodeNum;
     int landonNodeNum;
-    int vardefNodeNum;
+    int VarInstanceNodeNum;
     int computeNodeNum;
     int ioNodeNum;
     int recNodeNum;
@@ -117,7 +117,7 @@ private slots:
     void addDelayNode();
 
     void addVarNode();
-    void addVardefNode();
+    void addVarInstanceNode();
     void addComputeNode();
     void addCompareNode();
     void addAddNode();
@@ -256,7 +256,7 @@ private:
     QAction *addDelayNodeAction;
 
     QAction *addVarNodeAction;
-    QAction *addVardefNodeAction;
+    QAction *addVarInstanceNodeAction;
 
     QAction *addComputeNodeAction;
     QAction *addCompareNodeAction;

@@ -27,7 +27,7 @@
 #include "newnode.h"
 #include "takeoffnode.h"
 #include "varnode.h"
-#include "vardefnode.h"
+#include "varinstancenode.h"
 #include "computenode.h"
 #include "ionode.h"
 #include "yuan.h"
@@ -141,7 +141,7 @@ DiagramWindow::DiagramWindow()
     varNodeNum=0;  //计数varNode,命名每个varNode,下同
     takeoffNodeNum=0;
     landonNodeNum=0;
-    vardefNodeNum=0;
+    VarInstanceNodeNum=0;
     computeNodeNum=0;
     ioNodeNum=0;
     recNodeNum=0;
@@ -948,13 +948,13 @@ void DiagramWindow::addVarNode()
 }
 
 /*******************************************************************
- * Function name: addVardefNod()
- * Description: This function add a VardefNod on the scene.
+ * Function name: addVarInstanceNod()
+ * Description: This function add a VarInstanceNod on the scene.
  * Callee:
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::addVardefNode()
+void DiagramWindow::addVarInstanceNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 202;
@@ -1307,11 +1307,11 @@ void DiagramWindow::del()
         if(dynamic_cast<SomeNode*>(items[i]))
             itemSomes<<dynamic_cast<SomeNode*>(items[i]);
     }
-    QList<VardefNode*>itemVardefs;
+    QList<VarInstanceNode*>itemVarInstances;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<VardefNode*>(items[i]))
-            itemVardefs<<dynamic_cast<VardefNode*>(items[i]);
+        if(dynamic_cast<VarInstanceNode*>(items[i]))
+            itemVarInstances<<dynamic_cast<VarInstanceNode*>(items[i]);
     }
     QList<VarNode*>itemVars;
     for(i=0;i<itemsCount;i++)
@@ -1319,17 +1319,11 @@ void DiagramWindow::del()
         if(dynamic_cast<VarNode*>(items[i]))
             itemVars<<dynamic_cast<VarNode*>(items[i]);
     } 
-    QList<VariableNode*>itemVariables;
+    QList<VarNode*>itemVariables;
     for(i=0;i<itemsCount;i++)
     {
-        if(dynamic_cast<VariableNode*>(items[i]))
-            itemVariables<<dynamic_cast<VariableNode*>(items[i]);
-    }
-    QList<VarSmallNode*>itemVarSmalls;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VarSmallNode*>(items[i]))
-            itemVarSmalls<<dynamic_cast<VarSmallNode*>(items[i]);
+        if(dynamic_cast<VarNode*>(items[i]))
+            itemVariables<<dynamic_cast<VarNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
         typename QMap<QString, LOGIC_Help*>::iterator iter;
@@ -1451,7 +1445,7 @@ void DiagramWindow::del()
         wm->del(tmp);
         delete item;
     }
-    foreach (VardefNode* item, itemVardefs) {
+    foreach (VarInstanceNode* item, itemVarInstances) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del",0);
@@ -1461,12 +1455,6 @@ void DiagramWindow::del()
         WidgetWrap tmp(item);
         wm->del(tmp);
         scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (VariableNode *item, itemVariables) {
-        delete item;
-    }
-    foreach (VarSmallNode *item, itemVarSmalls) {
         delete item;
     }
     foreach (SomeNode* item, itemSomes) {
@@ -2042,9 +2030,9 @@ void DiagramWindow::createActions()
     addVarNodeAction = new QAction(tr("VarType"),this);
     addVarNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
-    addVardefNodeAction = new QAction(tr("VarDef"),this);
-    addVardefNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
-    connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
+    addVarInstanceNodeAction = new QAction(tr("VarInstance"),this);
+    addVarInstanceNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
+    connect(addVarInstanceNodeAction,SIGNAL(triggered()),this,SLOT(addVarInstanceNode()));
 
     addComputeNodeAction = new QAction(tr("Compute"),this);
     addComputeNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));

@@ -49,7 +49,15 @@ std::stack<widget*>* digraph::get_topology(Logic *l)
     int rank = (l==0)?1:l->rank+1;  //l的子图的rank低一级(+1)
     std::stack<widget*> stk; //保存没有出度的起始节点
     std::stack<widget*>* stack = new std::stack<widget*>();   //得到该图的拓扑结构的保存栈
-    stk = get_nodes_without_IN( (l==0)?0:l );
+    if(l==0)
+        stk = get_nodes_without_IN(0);  //其实合法的起始节点只有takeoff一个，但原来写的函数功能更强，所以也就不删减了
+    else{
+        for(int i=0;i<l->yuan4->myLinks.toList().size();i++){
+            tmp = l->yuan4->myLinks.toList()[i]->toYuan()->master;
+        }
+        stk.push(tmp);
+    }
+
 
     while(!stk.empty()){
         tmp = stk.top();
@@ -57,11 +65,11 @@ std::stack<widget*>* digraph::get_topology(Logic *l)
         DFS(tmp,rank,stack);
     }
 
-    //py代码逻辑上的需要，在rank1，必须把VarType控件放在拓扑结构的最开头。顺便规定只能在rank1放没有出入度的var
+    //py代码逻辑上的需要，在rank1，必须把Var控件放在拓扑结构的最开头。顺便规定只能在rank1放var
     typename QMap<QString, widget*>::iterator iter2;
     if(l==0){
         for(iter2=Map->begin();iter2!=Map->end();iter2++){
-            if(iter2.value()->identifier=="VarType") stack->push(iter2.value());
+            if(iter2.value()->identifier=="Var") stack->push(iter2.value());
         }
     }
     return stack;
@@ -83,13 +91,13 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
     typename QMap<QString,LOGIC_Help*>::iterator iter;
     typename QMap<QString, widget*>::iterator it;
     QMap<QString, widget*>* map;
-    if(l==0){
+//    if(l==0){
         map = Map;
-    }else{
-        for(iter=LHM->begin();iter!=LHM->end();iter++){
-            if(iter.value()->LOG==l)    map = &(iter.value()->WidgetsInLOGIC);
-        }
-    }
+//    }else{
+//        for(iter=LHM->begin();iter!=LHM->end();iter++){
+//            if(iter.value()->LOG==l)    map = &(iter.value()->WidgetsInLOGIC);
+//        }
+//    }
 
     for(it=map->begin(); it!=map->end(); ++it){
         if(it.value()->identifier!="Link")
@@ -121,18 +129,17 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
     if(w->rank() != rank) return;   //非该级的节点视作无连接
     else if(visited.value(w->name)==0){
         visited[w->name]=1;
-        if(w->identifier!="Logic"){
-            if(w->get_yuan_out() != NULL){
+        if(w->identifier!="If"||
+                w->identifier!="Else"||
+                w->identifier!="While"){
+            if(w->get_yuan_out()!= NULL){
                 QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
                 for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
-                    if(it.peekNext()->toLogic!=0){  //若link穿过了Logic，则访问Logic
-                        DFS(new WidgetWrap(it.peekNext()->toLogic),rank,stack);
-                    }else
-                        DFS(it.peekNext()->toYuan()->master,rank,stack);
+                    DFS(it.peekNext()->toYuan()->master,rank,stack);
                     it.next();
                 }
             }
-        }else{
+        }/*else{
             if(!w->mLogicNode->tlink.empty()){
                 QListIterator<Link*> it = (w->mLogicNode->tlink);   //Qset的迭代器,传入迭代对象
                 for(;it.hasNext();it.next()){      //遍历每个从当前控件节点指向的节点
@@ -147,7 +154,7 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
                 DFS(w->mLogicNode->yuan->myLinks.values()[0]->toYuan()->master,rank,stack);
             }
 
-        }
+        }*/
         stack->push(w);  //加入结果集
     }
 }

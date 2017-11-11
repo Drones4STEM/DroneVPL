@@ -34,8 +34,8 @@ public:
     bool CreateTurn(QPointF point, int id, int index);
     bool CreateHover(QPointF point, int id);
     bool CreateDelay(QPointF point, int id);
-    bool CreateVarType(QPointF point, int id);
-    bool CreateVarDef(QPointF point, int id);
+    bool CreateVar(QPointF point, int id);
+//    bool CreateVarInstance(QPointF point, int id);
     bool CreateCompute(QPointF point, int id,int selected_Index);
     bool CreateSin(QPointF point, int id);
     bool CreateLog(QPointF point, int id);
@@ -60,9 +60,12 @@ public:
     bool CreateTurn(TurnNode* tn);
     bool CreateHover(HoverNode* hn);
     bool CreateDelay(DelayNode* dn);
-    bool CreateVarType(VarNode* vtn);
-    bool CreateVarDef(VardefNode* vdn);
+    bool CreateVar(VarNode* vtn);
+    bool CreateVarInstance(VarInstanceNode* vdn);
     bool CreateCompute(ComputeNode* cn);
+    bool CreateE(eNode* cn);
+    bool CreateLog(logNode* cn);
+    bool CreateSin(sinNode* cn);
     bool CreateIO(IoNode* ion);
     bool CreateBattery(BatteryNode* ion);
     bool CreateGimbal(GimbalNode* ion);
@@ -83,8 +86,8 @@ public:
     int need_to_set;
     int selected_Index;
 
-    int VarTypeNodeNum;  //计数varNode,命名每个varNode,下同
-    int VarDefNodeNum;
+    int VarNodeNum;  //计数varNode,命名每个varNode,下同
+    int VarInstanceNodeNum;
 
     int LogicNodeNum;
 
@@ -115,7 +118,7 @@ signals:
     void sig_connectItem(QObject *item);
 
 public slots:
-    void addVariable(VariableNode *node,QString varType,QString varName,QString varValue);//点击variable每一行末端的按钮，就会调用此槽函数，在场景中生成对应变量
+    void CreateVarInstance(VarNode *node,QString Var,QString varName,QString varValue);//点击variable每一行末端的按钮，就会调用此槽函数，在场景中生成对应变量
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);

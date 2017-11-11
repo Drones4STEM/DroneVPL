@@ -3,10 +3,12 @@
 
 #include "node.h"
 #include "newnode.h"
-#include "vardefnode.h"
+#include "varinstancenode.h"
 #include "yuan.h"
 #include <QtGui>
 #include <vector>
+
+
 
 /*******************************************************************
  * Class name: VarNode
@@ -14,46 +16,46 @@
  * Description: This is the declaration of class VarNode. VarNode
  *       represents variables read and written by other actions.
 ******************************************************************/
-class VarNode:public Node
-{
-public:
-    enum {Type = VardefNodeType};
-    VarNode();
-    ~VarNode();
+//class VarNode:public Node
+//{
+//public:
+//    enum {Type = VardefNodeType};
+//    VarNode();
+//    ~VarNode();
 
-    int type() const { return Type; }
+//    int type() const { return Type; }
 
-    QPolygonF outlineRect() const;
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
-    void paint(QPainter *painter,
-               const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void sethw(){wide = 40; high = 32;}
-    //为了方便，直接在头文件里定死长宽，若修改outlineRect()中的六边形长宽，
-    //则这里的数据也要改
+//    QPolygonF outlineRect() const;
+//    QRectF boundingRect() const;
+//    QPainterPath shape() const;
+//    void paint(QPainter *painter,
+//               const QStyleOptionGraphicsItem *option, QWidget *widget);
+//    void sethw(){wide = 40; high = 32;}
+//    //为了方便，直接在头文件里定死长宽，若修改outlineRect()中的六边形长宽，
+//    //则这里的数据也要改
 
-    QComboBox* box;
-    QGraphicsItem* item;
+//    QComboBox* box;
+//    QGraphicsItem* item;
 
-    int num;
-    bool flags[6];
-    VardefNode* array[6];
-
-
-protected:
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
-    /*void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);*/
-};
+//    int num;
+//    bool flags[6];
+//    VardefNode* array[6];
 
 
-class VariableNode:public QGraphicsObject
+//protected:
+//    QVariant itemChange(GraphicsItemChange change,
+//                        const QVariant &value);
+//    /*void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);*/
+//};
+
+
+class VarNode:public QGraphicsObject
 {
     Q_OBJECT
 
 public:
-    VariableNode(QGraphicsItem *parent = 0);
-    ~VariableNode();
+    VarNode(QGraphicsItem *parent = 0);
+    ~VarNode();
 
     int roundness(double szie)const;
 
@@ -90,9 +92,25 @@ public:
     vector<QGraphicsItem*>nameItemVec;
     vector<QGraphicsItem*>valueItemVec;
     vector<QGraphicsItem*>buttonItemVec;*/
+
+    //这下面三个数组都是从xml文件生成控件时做中转用的，
+    //值是打开xml时赋的，之后不会再改动。打开xml之前是未赋值的状态
+    //尽量避免使用
+    QString type[4];
+    QString vname[4];
+    QString value[4];
+    int lx,ly;
+    int getvarnum(){return varnum;}
+    void setvarnum(int a){varnum = a;}
+
+    int controlsId;
+    QString identifier;
+    QString name;
+    double high,wide;
+
 signals:
     void dirty();
-    void addVarSignal(VariableNode *node,QString varType,
+    void addVarSignal(VarNode *node,QString varType,
                       QString varName,QString varValue);
 public slots:
     void addVarType();
@@ -102,26 +120,6 @@ private:
     int varnum;//记录产生的变量的数目
 };
 
-class VarSmallNode:public NewNode
-{
-    Q_OBJECT
 
-public:
-    VarSmallNode(QGraphicsItem *parent = 0);
-
-    QRectF outlineRect()const;
-    QRectF boundingRect()const;
-    QPainterPath shape() const;
-    void paint(QPainter *painter,
-               const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-    QString varType;    //变量的类型
-    double varValue;       //变量的值
-    QString varName;       //变量名
-
-protected:
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
-};
 
 #endif // VARNODE_H

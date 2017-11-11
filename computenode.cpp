@@ -13,14 +13,6 @@
 #include "computenode.h"
 #include "rec.h"
 
-
-int ComputeNode::ComputeNodeAddNum=0;  int ComputeNode::ComputeNodeSubNum=0;
-int ComputeNode::ComputeNodeMulNum=0;  int ComputeNode::ComputeNodeDivNum=0;
-int sinNode::ComputeNodeCosNum=0;      int sinNode::ComputeNodeSinNum=0;
-int sinNode::ComputeNodeTanNum=0;      int logNode::ComputeNodeLogNum=0;
-int eNode::ComputeNodeENum=0;          int ComputeNode::ComputeNodeEqualNum=0;
-int ComputeNode::ComputeNodeMoreNum=0; int ComputeNode::ComputeNodeLessNum=0;
-
 /*******************************************************************
  * Function name: ComputeNode()
  * Description: This is a constructor of ComputeNode class
@@ -207,61 +199,47 @@ void ComputeNode::paint(QPainter *painter,
  * Outputs:
 ******************************************************************/
 void ComputeNode::setNewIdentifier()
-{
-    int index=box->currentIndex();
-    switch (index) {
-    case 0:
-    {
-        identifier="ComputeNodeAdd";
-        ComputeNodeAddNum++;
-        controlsId=ComputeNodeAddNum;
-        break;
-    }
-    case 1:
-    {
-        identifier="ComputeNodeSub";
-        ComputeNodeSubNum++;
-        controlsId=ComputeNodeSubNum;
-        break;
-    }
-    case 2:
-    {
-        identifier="ComputeNodeMul";
-        ComputeNodeMulNum++;
-        controlsId=ComputeNodeMulNum;
-        break;
-    }
-    case 3:
-    {
-        identifier="ComputeNodeDiv";
-        ComputeNodeDivNum++;
-        controlsId=ComputeNodeDivNum;
-        break;
-    }
-    case 4:
-    {
-        identifier="ComputeNodeEqual";
-        ComputeNodeEqualNum++;
-        controlsId=ComputeNodeEqualNum;
-        break;
-    }
-    case 5:
-    {
-        identifier="ComputeNodeMore";
-        ComputeNodeMoreNum++;
-        controlsId=ComputeNodeMoreNum;
-        break;
-    }
-    case 6:
-    {
-        identifier="ComputeNodeLess";
-        ComputeNodeLessNum++;
-        controlsId=ComputeNodeLessNum;
-        break;
-    }
-    default:
-        break;
-    }
+{//这个函数先不用了
+//    int index=box->currentIndex();
+//    switch (index) {
+//    case 0:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    case 1:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    case 2:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    case 3:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    case 4:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    case 5:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    case 6:
+//    {
+//        identifier="Compute";
+//        break;
+//    }
+//    default:
+//        break;
+//    }
 }
 
 
@@ -448,33 +426,27 @@ void sinNode::paint(QPainter *painter,
 }
 
 void sinNode::setNewIdentifier()
-{
-    int index=box->currentIndex();
-    switch (index) {
-    case 0:
-    {
-        identifier="ComputeNodeSin";
-        ComputeNodeSinNum++;
-        controlsId=ComputeNodeSinNum;
-        break;
-    }
-    case 1:
-    {
-        identifier="ComputeNodeCos";
-        ComputeNodeCosNum++;
-        controlsId=ComputeNodeCosNum;
-        break;
-    }
-    case 2:
-    {
-        identifier="ComputeNodeTan";
-        ComputeNodeTanNum++;
-        controlsId=ComputeNodeTanNum;
-        break;
-    }
-    default:
-        break;
-    }
+{//尽管这个函数之后可能有用，但现在不是必需的
+//    int index=box->currentIndex();
+//    switch (index) {
+//    case 0:
+//    {
+//        identifier="ComputeNodeSin";
+//        break;
+//    }
+//    case 1:
+//    {
+//        identifier="ComputeNodeCos";
+//        break;
+//    }
+//    case 2:
+//    {
+//        identifier="ComputeNodeTan";
+//        break;
+//    }
+//    default:
+//        break;
+//    }
 }
 
 

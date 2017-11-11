@@ -45,8 +45,8 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void setText(const QString &text);
-    QString text() const;
+//    void setText(const QString &text);
+//    QString text() const;
     void setLogichw();  //newnode中有sethw，但logic的绘图方法和正常的控件不一样，故另写一个
 
     //QComboBox *box;
