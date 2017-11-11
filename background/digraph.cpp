@@ -104,9 +104,9 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
             if(it.value()->rank()==((l==0)?1:l->rank+1))
                 if(it.value()->check_yuan_in()==false){     //没有入度
                     //如果是Logic条件判断式，则无视。之后在转py读取的时候访问
-                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value())){
+/*                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value())){
                         continue;
-                    }else if(it.value()->identifier=="VarType" || it.value()->identifier=="VarDef"){
+                    }else*/ if(it.value()->identifier=="VarType" || it.value()->identifier=="VarDef"){
                         continue;
                     }else
                         stk.push(it.value());
@@ -129,32 +129,13 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
     if(w->rank() != rank) return;   //非该级的节点视作无连接
     else if(visited.value(w->name)==0){
         visited[w->name]=1;
-        if(w->identifier!="If"||
-                w->identifier!="Else"||
-                w->identifier!="While"){
-            if(w->get_yuan_out()!= NULL){
-                QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
-                for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
-                    DFS(it.peekNext()->toYuan()->master,rank,stack);
-                    it.next();
-                }
+        if(w->get_yuan_out()!= NULL){
+            QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
+            for(;it.hasNext();){      //遍历每个从当前控件节点指向的节点
+                DFS(it.peekNext()->toYuan()->master,rank,stack);
+                it.next();
             }
-        }/*else{
-            if(!w->mLogicNode->tlink.empty()){
-                QListIterator<Link*> it = (w->mLogicNode->tlink);   //Qset的迭代器,传入迭代对象
-                for(;it.hasNext();it.next()){      //遍历每个从当前控件节点指向的节点
-                    if(it.peekNext()->toLogic!=0){  //若link穿过了Logic，则访问Logic
-                        DFS(new WidgetWrap(it.peekNext()->toLogic),rank,stack);
-                    }else{
-                        DFS(it.peekNext()->toYuan()->master,rank,stack);
-                    }
-
-                }
-            }else if(!w->mLogicNode->yuan->myLinks.empty()){    //Logic只有if一种可以指出的情况，这种情况下只能有一个指出的箭头
-                DFS(w->mLogicNode->yuan->myLinks.values()[0]->toYuan()->master,rank,stack);
-            }
-
-        }*/
+        }
         stack->push(w);  //加入结果集
     }
 }

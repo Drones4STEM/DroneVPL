@@ -1867,18 +1867,18 @@ void DiagramWindow::compile()
     formater.set_map(m);
     formater.set_digraph(m,LHM);
     formater.SavePyFile("../Compile.py");
-    /*
-    digraph digrapher(m);
-    std::stack<widget*> stk = digrapher.get_topology();
-    WidgetWrap* tmp;
-    while(!stk.empty()){
-        tmp = stk.top();
-        stk.pop();
-        qDebug()<<"compile():";
-        qDebug()<<"name :"<<tmp->name;
-        qDebug()<<"identifier :"<<tmp->identifier;
-        qDebug()<<"controlsId :"<<tmp->controlsId;
-    }*/
+
+//    digraph digrapher(m);
+//    std::stack<widget*> stk = digrapher.get_topology();
+//    WidgetWrap* tmp;
+//    while(!stk.empty()){
+//        tmp = stk.top();
+//        stk.pop();
+//        qDebug()<<"compile():";
+//        qDebug()<<"name :"<<tmp->name;
+//        qDebug()<<"identifier :"<<tmp->identifier;
+//        qDebug()<<"controlsId :"<<tmp->controlsId;
+//    }
 }
 
 void DiagramWindow::upload()
