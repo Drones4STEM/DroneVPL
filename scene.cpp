@@ -658,6 +658,8 @@ void newscene::CreateVarInstance(VarNode *node, QString Var, QString varName, QS
     qDebug()<<"controlsId :"<<InstanceNode->controlsId;
     WidgetWrap* tmp = new WidgetWrap(InstanceNode);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    InstanceNode->yuan2->master=tmp;
+    InstanceNode->yuan2->name = "yuan2";
 
     return;
 }
@@ -770,16 +772,6 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     this->addItem(node->yuan2);
     this->addItem(node->yuan3);
 
-    /*node->rect1->setPos(QPointF(node->pos().x() - node->boundingRect().width(),
-                                node->pos().y()));
-    node->rect2->setPos(QPointF(node->pos().x() + node->boundingRect().width(),
-                                node->pos().y()));
-    addItem(node->rect1);
-    addItem(node->rect2);*/
-
-    /*item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
-                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));*/
-    //item->setZValue(node->zValue()+1);
     node->box->addItem(tr("+"));
     node->box->addItem(tr("-"));
     node->box->addItem(tr("*"));
@@ -805,8 +797,8 @@ bool newscene::CreateCompute(QPointF point, int id, int selected_Index)
     node->yuan2->name = "yuan2";
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
-    //node->yuan3->master = tmp;
-    //node->yuan3->name = "yuan3";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";
 
 
     emit sig_connectItem(node);
@@ -863,6 +855,12 @@ bool newscene::CreateSin(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";
 
     return true;
 }
@@ -910,6 +908,12 @@ bool newscene::CreateLog(QPointF point, int id)
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";
 
     return true;
 }
@@ -951,6 +955,12 @@ bool newscene::CreateE(QPointF point, int id)
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";
     wm->add(tmp);            //添加到widgetmap中
 
     return true;
@@ -1471,8 +1481,20 @@ bool newscene::CreateIf(QPointF point, int id)
     qDebug()<<"controlsId :"<<rec->controlsId;
     WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    rec->yuan->master = tmp;
+    rec->yuan->name = "yuan";
     rec->yuan2->master = tmp;
     rec->yuan2->name = "yuan2";
+    rec->yuan3->master = tmp;
+    rec->yuan3->name = "yuan3";
+    rec->yuan4->master = tmp;
+    rec->yuan4->name = "yuan4";
+    rec->yuan5->master = tmp;
+    rec->yuan5->name = "yuan5";
+    rec->yuan6->master = tmp;
+    rec->yuan6->name = "yuan6";
+    rec->yuan7->master = tmp;
+    rec->yuan7->name = "yuan7";
 
     emit sig_connectItem(rec);
 
@@ -1511,6 +1533,7 @@ bool newscene::CreateElse(QPointF point, int id)
     this->addItem(rec->yuan5);
     this->addItem(rec->yuan6);
 
+
     rec->controlsId=id;
     rec->identifier="Else";
     QString cid = QString::number(rec->controlsId,10);
@@ -1521,8 +1544,20 @@ bool newscene::CreateElse(QPointF point, int id)
     qDebug()<<"controlsId :"<<rec->controlsId;
     WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    rec->yuan->master = tmp;
+    rec->yuan->name = "yuan";
     rec->yuan2->master = tmp;
     rec->yuan2->name = "yuan2";
+    rec->yuan3->master = tmp;
+    rec->yuan3->name = "yuan3";
+    rec->yuan4->master = tmp;
+    rec->yuan4->name = "yuan4";
+    rec->yuan5->master = tmp;
+    rec->yuan5->name = "yuan5";
+    rec->yuan6->master = tmp;
+    rec->yuan6->name = "yuan6";
+    rec->yuan7->master = tmp;
+    rec->yuan7->name = "yuan7";
 
     emit sig_connectItem(rec);
 
@@ -2615,6 +2650,7 @@ bool newscene::CreateLogic(Rec *rec)
         rec->setLogicFlag(3);
         rec->identifier="While";
     }
+    rec->setBoundingRect(rec->high,rec->wide);
 
     qDebug()<<"Create():";
     qDebug()<<"name :"<<rec->name;

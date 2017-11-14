@@ -48,6 +48,16 @@ public:
 //    void setText(const QString &text);
 //    QString text() const;
     void setLogichw();  //newnode中有sethw，但logic的绘图方法和正常的控件不一样，故另写一个
+    QRectF getBoundingRect(){return mBoundingRect;}
+    void setBoundingRect(int wide,int high)
+    {
+        QRectF rectangle(mBoundingRect);
+        QPointF point1(mBoundingRect.center().x()-wide/2,mBoundingRect.center().y()-high/2);
+        rectangle.setBottomLeft(point1);
+        mBoundingRect=rectangle;
+        mBoundingRect.translate(-mBoundingRect.center());
+        scene()->update();
+    }
 
     //QComboBox *box;
     //QGraphicsItem *item;

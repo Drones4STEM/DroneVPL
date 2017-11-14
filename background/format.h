@@ -80,7 +80,7 @@ private:
     bool CreateChannel(QPointF point, int id);
     bool CreateRangeFinder(QPointF point, int id);
 
-    bool CreateLogic(QPointF point, int id, QString type);
+    bool CreateLogic(QPointF point, int id, QString type, int width, int height);
 
     bool CreateLink(QPointF point, int id, QString from, QString to, QString fyuan, QString tyuan);
 signals:
