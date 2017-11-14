@@ -59,6 +59,8 @@ public:
     int controlsId;
     QString name;   //identifier+controlsId
     //WidgetWrap* wrap;
+    //下面四个属性，有些可能在部分函数里还在用，有些可能已经不用了，
+    //不是必须就不要从下面的成员中读值
     int lx,ly;
     int high,wide;
     int rank; // from 1 to n

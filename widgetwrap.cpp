@@ -579,7 +579,9 @@ int WidgetWrap::rank()
         return mChannelNode->rank;
     if(identifier == "RangeFinder")
         return mRangeFinderNode->rank;
-    if(identifier == "Logic")
+    if(identifier == "While"||
+            identifier == "If"||
+            identifier == "Else")
         return mLogicNode->rank;
     return -1;
 }
