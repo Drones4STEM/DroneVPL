@@ -181,7 +181,7 @@ void VarNode::emitSignal()
         if(pushButton == button[i])
             break;
     }
-    //emit addVarSignal(this,typeBox[i]->currentText(),nameEdit[i]->text(),valueEdit[i]->text());
+    emit addVarSignal(this,typeBox[i]->currentText(),nameEdit[i]->text(),valueEdit[i]->text());
 }
 
 

@@ -147,7 +147,8 @@ void Rec::paint(QPainter *painter,
                  const QStyleOptionGraphicsItem *option,
                  QWidget * /* widget */)
 {
-    QPen pen(outlineColor());
+    QPen pen(Qt::white);
+    pen.setWidth(2);
     if (option->state & QStyle::State_Selected) {
         pen.setStyle(Qt::DotLine);
         pen.setWidth(2);
