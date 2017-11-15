@@ -51,12 +51,16 @@ public:
     QRectF getBoundingRect(){return mBoundingRect;}
     void setBoundingRect(int wide,int high)
     {
-        QRectF rectangle(mBoundingRect);
-        QPointF point1(mBoundingRect.center().x()-wide/2,mBoundingRect.center().y()-high/2);
-        rectangle.setBottomLeft(point1);
-        mBoundingRect=rectangle;
-        mBoundingRect.translate(-mBoundingRect.center());
-        scene()->update();
+        //QRectF rectangle(mBoundingRect);
+        //QPointF point1(mBoundingRect.center().x()-wide/2,mBoundingRect.center().y()-high/2);
+        //rectangle.setBottomLeft(point1);
+        //mBoundingRect=rectangle;
+        //mBoundingRect.translate(-mBoundingRect.center());
+        //scene()->update();
+        QRectF rect(0,0,wide,high);
+        rect.translate(-rect.center());
+        mBoundingRect = rect;
+
     }
 
     //QComboBox *box;
