@@ -1326,26 +1326,28 @@ void DiagramWindow::del()
             itemVariables<<dynamic_cast<VarNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
-        typename QMap<QString, LOGIC_Help*>::iterator iter;
-        //typename QList<Link*>::iterator it;
-        LOGIC_Help* lh;
-        Link* link;
-        for(iter=LHM->begin();iter!=LHM->end();iter++){
-            lh = iter.value();
-            for(int i=0;i<lh->LOG->tlink.length();i++){
-                link = lh->LOG->tlink[i];
-                if(link->name==item->name){
-                    lh->LOG->tlink.removeOne(link);
-                }
-            }
-            for(int i=0;i<lh->LOG->flink.length();i++){
-                link = lh->LOG->flink[i];
-                if(link->name==item->name){
-                    lh->LOG->flink.removeOne(link);
-                }
-            }
+//        typename QMap<QString, LOGIC_Help*>::iterator iter;
+//        typename QList<Link*>::iterator it;
+//        LOGIC_Help* lh;
+//        Link* link;
+//        for(iter=LHM->begin();iter!=LHM->end();iter++){
+//            lh = iter.value();
+//            for(int i=0;i<lh->LOG->tlink.length();i++){
+//                link = lh->LOG->tlink[i];
+//                if(link->name==item->name){
+//                    lh->LOG->tlink.removeOne(link);
+//                }
+//            }
+//            for(int i=0;i<lh->LOG->flink.length();i++){
+//                link = lh->LOG->flink[i];
+//                if(link->name==item->name){
+//                    lh->LOG->flink.removeOne(link);
+//                }
+//            }
 
-        }
+//        }
+        WidgetWrap tmp(item);
+        wm->del(tmp);
         delete item;
     }
     foreach (TakeOffNode* item, itemTakeoffs) {

@@ -102,7 +102,7 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 //    CheckLinkOverLogic(link);   //检查link是否穿越logic
     //现在不存在穿越了，但是这个函数写一遍太累了，决定注释而不删
     //检查鼠标释放时生成/拖动的控件是否在Logic内
-    CheckInLogic();
+//    CheckInLogic();
 
 
     QGraphicsScene::mouseReleaseEvent(event);
@@ -1603,8 +1603,20 @@ bool newscene::CreateWhile(QPointF point, int id)
     qDebug()<<"controlsId :"<<rec->controlsId;
     WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    rec->yuan->master = tmp;
+    rec->yuan->name = "yuan";
     rec->yuan2->master = tmp;
     rec->yuan2->name = "yuan2";
+    rec->yuan3->master = tmp;
+    rec->yuan3->name = "yuan3";
+    rec->yuan4->master = tmp;
+    rec->yuan4->name = "yuan4";
+    rec->yuan5->master = tmp;
+    rec->yuan5->name = "yuan5";
+    rec->yuan6->master = tmp;
+    rec->yuan6->name = "yuan6";
+    rec->yuan7->master = tmp;
+    rec->yuan7->name = "yuan7";
 
     emit sig_connectItem(rec);
 
@@ -1704,6 +1716,9 @@ bool newscene::CreateLand(LandNode* node)
 }
 bool newscene::CreateGo(GoNode* node)
 {
+    //对node的图形属性（估计是box）初始化的时候，会导致direction也被初始化，所以先记录正确的direction以备之后还原
+    QString direction = node->direction;
+
     QGraphicsItem* item=this->addWidget(node->box);
     item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
@@ -1745,6 +1760,7 @@ bool newscene::CreateGo(GoNode* node)
     node->box->addItem(tr("后退"));
     node->box->addItem(tr("向右"));
     node->box->addItem(tr("向左"));
+    node->direction = direction;//还原正确的direction
     if(node->direction=="GoUp"){
         node->box->setCurrentIndex(0);
     }else if(node->direction=="GoDown"){
@@ -2682,7 +2698,6 @@ bool newscene::CreateWidgets()
             CreateLand(ww->mLandNode);
         }
         if(ww->identifier=="Go"){
-            //QPointF point(iter->mGoNode->lx,iter->mGoNode->ly);
             CreateGo(ww->mGoNode);
         }
         if(ww->identifier=="Turn"){
