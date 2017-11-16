@@ -4,6 +4,7 @@
 #include <QGraphicsLineItem>
 #include "itemtypes.h"
 #include "rec.h"
+#include "QObject"
 
 class Node;
 class Yuan;
@@ -15,7 +16,7 @@ class Rec;
  * Description: This is the declaration of class Link. Link creates
  *        a connection between two nodes.
 ******************************************************************/
-class Link : public QGraphicsLineItem
+class Link :public QGraphicsLineItem
 {
 public:
     enum {Type = LinkType};

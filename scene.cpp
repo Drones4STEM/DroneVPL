@@ -599,6 +599,8 @@ bool newscene::CreateVar(QPointF point, int id)
     node->setSelected(true);
     bringToFront();
 
+    emit sig_connectItem(node);
+
     //给所有comboBox加入内容
     for(int i = 0;i<4;i++)
     {
@@ -1977,6 +1979,8 @@ bool newscene::CreateVar(VarNode* node)
     connect(node,SIGNAL(addVarSignal(VarNode*,QString,QString,QString)),
             this,SLOT(CreateVarInstance(VarNode*,QString,QString,QString)));
 
+    emit sig_connectItem(node);
+
 
     if(node->type[0]=="int")
         node->typeBox[0]->setCurrentIndex(0);
@@ -2597,8 +2601,9 @@ bool newscene::CreateRangeFinder(RangeFinderNode* node)
 
 bool newscene::CreateLogic(Rec *rec)
 {
+    rec->setBoundingRect(rec->wide,rec->high);
     rec->setPos(rec->lx,rec->ly);
-    rec->setxy(rec->pos());
+    rec->setxy(rec->pos());    
     this->addItem(rec);
     this->clearSelection();
     rec->setSelected(true);
@@ -2666,7 +2671,7 @@ bool newscene::CreateLogic(Rec *rec)
         rec->setLogicFlag(3);
         rec->identifier="While";
     }
-    rec->setBoundingRect(rec->high,rec->wide);
+    //rec->setBoundingRect(rec->high,rec->wide);
 
     qDebug()<<"Create():";
     qDebug()<<"name :"<<rec->name;

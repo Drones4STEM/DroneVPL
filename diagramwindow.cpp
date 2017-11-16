@@ -1259,6 +1259,24 @@ void DiagramWindow::del()
         if(dynamic_cast<ComputeNode*>(items[i]))
             itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
     }
+    QList<sinNode*>itemSins;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<sinNode*>(items[i]))
+            itemSins<<dynamic_cast<sinNode*>(items[i]);
+    }
+    QList<logNode*>itemLogs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<logNode*>(items[i]))
+            itemLogs<<dynamic_cast<logNode*>(items[i]);
+    }
+    QList<eNode*>itemEs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<eNode*>(items[i]))
+            itemEs<<dynamic_cast<eNode*>(items[i]);
+    }
     QList<IoNode*>itemIos;
     for(i=0;i<itemsCount;i++)
     {
@@ -1397,6 +1415,25 @@ void DiagramWindow::del()
         scene->check_in_Logic(&tmp,"del",0);
         delete item;
     }
+    foreach (sinNode* item, itemSins) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (logNode* item, itemLogs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (eNode* item, itemEs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        scene->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+
     foreach (IoNode* item, itemIos) {
         WidgetWrap tmp(item);
         wm->del(tmp);
@@ -1941,13 +1978,13 @@ void DiagramWindow::checkupAndCompile()
 ******************************************************************/
 void DiagramWindow::createActions()
 {
-    fileNewAction = new QAction(tr("New"),this);
+    fileNewAction = new QAction(tr("新建"),this);
     //fileNewAction->setShortcut(QKeySequence::New);
     //fileNewAction->setIcon(QIcon(":/images/icon/打钩.png"));
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
     fileNewAction->setIcon(QIcon(":/images/filenew.png"));
 
-    fileOpenAction = new QAction(tr("Open"),this);
+    fileOpenAction = new QAction(tr("打开"),this);
     fileOpenAction->setShortcut(QKeySequence::Open);
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
     fileOpenAction->setIcon(QIcon(":/images/fileopen.png"));
@@ -1959,86 +1996,86 @@ void DiagramWindow::createActions()
                 this, SLOT(openRecentFile()));
     }
 
-    fileSaveAction = new QAction(tr("Save"),this);
+    fileSaveAction = new QAction(tr("保存"),this);
     fileSaveAction->setShortcut(QKeySequence::Save);
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
     fileSaveAction->setIcon(QIcon(":/images/filesave.png"));
 
-    fileSaveAsAction = new QAction(tr("Save As"),this);
+    fileSaveAsAction = new QAction(tr("另存为"),this);
     connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
 
-    fileExportAction = new QAction(tr("Export"),this);
+    fileExportAction = new QAction(tr("导出"),this);
     connect(fileExportAction, SIGNAL(triggered()), this, SLOT(fileExport()));
     fileExportAction->setIcon(QIcon(":/images/fileexport.png"));
 
-    filePrintAction = new QAction(tr("Print"),this);
+    filePrintAction = new QAction(tr("打印"),this);
     connect(filePrintAction, SIGNAL(triggered()), this, SLOT(filePrint()));
     filePrintAction->setIcon(QIcon(":/images/fileprint.png"));
 
-    closeAction = new QAction(tr("&Close"),this);
+    closeAction = new QAction(tr("关闭"),this);
     closeAction->setShortcut(tr("Ctrl+W"));
     connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
 
-    exitAction = new QAction(tr("E&xit"), this);
+    exitAction = new QAction(tr("退出"), this);
     exitAction->setShortcut(tr("Ctrl+Q"));
     connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
     addActionNodeAction = new QAction(tr("Action"),this);
 
-    addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
+    addTakeoffNodeAction = new QAction(tr("起飞"), this);
     addTakeoffNodeAction->setIcon(QIcon(":/images/icon/take off copy.png"));
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
     addLandonNodeAction = new QAction(tr("LandOn"),this);
     addLandonNodeAction->setIcon(QIcon(":/images/icon/land on copy.png"));
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
-    addTranslationNodeAction = new QAction(tr("Direction"),this);
+    addTranslationNodeAction = new QAction(tr("移动"),this);
     addTranslationNodeAction->setIcon(QIcon("://images/icon/motion.png"));
 
-    addRiseNodeAction = new QAction(tr("GoUp"),this);
+    addRiseNodeAction = new QAction(tr("向上"),this);
     addRiseNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));
     connect(addRiseNodeAction, SIGNAL(triggered()), this, SLOT(addRiseNode()));
-    addFallNodeAction = new QAction(tr("GoDown"),this);
+    addFallNodeAction = new QAction(tr("向下"),this);
     addFallNodeAction->setIcon(QIcon(":/images/icon/down copy.png"));
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
-    addAdvanceNodeAction = new QAction(tr("Forward"),this);
+    addAdvanceNodeAction = new QAction(tr("向前"),this);
     addAdvanceNodeAction->setIcon(QIcon(":/images/icon/forward copy.png"));//这里的图片要换
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
-    addBackNodeAction = new QAction(tr("Backward"),this);
+    addBackNodeAction = new QAction(tr("向后"),this);
     addBackNodeAction->setIcon(QIcon(":/images/icon/backward copy.png"));//这里的图片也要换
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
-    addRightNodeAction = new QAction(tr("GoRight"),this);
+    addRightNodeAction = new QAction(tr("向右"),this);
     addRightNodeAction->setIcon(QIcon(":/images/icon/right copy.png"));
     connect(addRightNodeAction, SIGNAL(triggered()), this, SLOT(addRightNode()));
-    addLeftNodeAction = new QAction(tr("GoLeft"),this);
+    addLeftNodeAction = new QAction(tr("向左"),this);
     addLeftNodeAction->setIcon(QIcon(":/images/icon/left copy.png"));
     connect(addLeftNodeAction, SIGNAL(triggered()), this, SLOT(addLeftNode()));
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
-    addTurnLeftNodeAction = new QAction(tr("TurnLeft"),this);
+    addTurnLeftNodeAction = new QAction(tr("左转"),this);
     addTurnLeftNodeAction->setIcon(QIcon(":/images/icon/turn left copy.png"));
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
-    addTurnRightNodeAction = new QAction(tr("TurnRight"),this);
+    addTurnRightNodeAction = new QAction(tr("右转"),this);
     addTurnRightNodeAction->setIcon(QIcon(":/images/icon/turn right copy.png"));
     connect(addTurnRightNodeAction, SIGNAL(triggered()), this, SLOT(addTurnRightNode()));
-    addHangingNodeAction = new QAction(tr("Hover"),this);
+    addHangingNodeAction = new QAction(tr("悬停"),this);
     addHangingNodeAction->setIcon(QIcon(":/images/icon/hover copy.png"));
     connect(addHangingNodeAction, SIGNAL(triggered()), this, SLOT(addHangingNode()));
-    addDelayNodeAction = new QAction(tr("Delay"),this);
+    addDelayNodeAction = new QAction(tr("延时"),this);
     addDelayNodeAction->setIcon(QIcon(":/images/icon/delay copy.png"));
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
-    addVarNodeAction = new QAction(tr("VarType"),this);
+    addVarNodeAction = new QAction(tr("变量"),this);
     addVarNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
     addVarInstanceNodeAction = new QAction(tr("VarInstance"),this);
     addVarInstanceNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
     connect(addVarInstanceNodeAction,SIGNAL(triggered()),this,SLOT(addVarInstanceNode()));
 
-    addComputeNodeAction = new QAction(tr("Compute"),this);
+    addComputeNodeAction = new QAction(tr("计算"),this);
     addComputeNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
-    addCompareNodeAction = new QAction(tr("Compare"),this);
+    addCompareNodeAction = new QAction(tr("比较"),this);
     addCompareNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
     connect(addCompareNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
     addAddNodeAction = new QAction(this);
@@ -2071,30 +2108,30 @@ void DiagramWindow::createActions()
     addLessNodeAction = new QAction(tr("<"),this);
     connect(addLessNodeAction,SIGNAL(triggered()),this,SLOT(addLessNode()));
 
-    addIONodeAction = new QAction(tr("IO"),this);
+    addIONodeAction = new QAction(tr("传感器"),this);
     addIONodeAction->setIcon(QIcon(":/images/icon/IO.png"));
-    addBatteryNodeAction = new QAction(tr("Battery"),this);
+    addBatteryNodeAction = new QAction(tr("电池传感器"),this);
     addBatteryNodeAction->setIcon(QIcon(":/images/icon/Battery.png"));
     connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
-    addAttitudeNodeAction = new QAction(tr("Alttitude"),this);
+    addAttitudeNodeAction = new QAction(tr("姿态传感器"),this);
     addAttitudeNodeAction->setIcon(QIcon(":/images/icon/alttitude.png"));
     connect(addAttitudeNodeAction,SIGNAL(triggered()),this,SLOT(addAttitudeNode()));
-    addRangeFinderNodeAction = new QAction(tr("RangeFinder"),this);
+    addRangeFinderNodeAction = new QAction(tr("测高传感器"),this);
     addRangeFinderNodeAction->setIcon(QIcon(":/images/icon/rangerfinder.png"));
     connect(addRangeFinderNodeAction,SIGNAL(triggered()),this,SLOT(addRangeFinderNode()));
-    addChannelNodeAction = new QAction(tr("Channel"),this);
+    addChannelNodeAction = new QAction(tr("遥控器通道"),this);
     addChannelNodeAction->setIcon(QIcon(":/images/icon/channel.png"));
     connect(addChannelNodeAction,SIGNAL(triggered()),this,SLOT(addChannelNode()));
-    addGimbalNodeAction = new QAction(tr("Gimbal"),this);
+    addGimbalNodeAction = new QAction(tr("云台"),this);
     addGimbalNodeAction->setIcon(QIcon(":/images/icon/gimbal.png"));
     connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
-    addLinkAction = new QAction(tr("&Link"), this);
+    addLinkAction = new QAction(tr("连线"), this);
     addLinkAction->setIcon(QIcon(":/images/link.png"));
     addLinkAction->setShortcut(tr("Ctrl+L"));
     connect(addLinkAction, SIGNAL(triggered()), this, SLOT(addLink()));
 
-    addRecAction = new QAction(tr("Logic"), this);
+    addRecAction = new QAction(tr("逻辑框"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
     addIfAction = new QAction(tr("If"),this);
     addIfAction->setIcon(QIcon(":/images/icon/if copy.png"));
@@ -2107,39 +2144,39 @@ void DiagramWindow::createActions()
     connect(addWhileAction,SIGNAL(triggered()),this,SLOT(addWhile()));
 
 
-    uploadAction = new QAction(tr("upload"),this);
+    uploadAction = new QAction(tr("上传"),this);
     connect(uploadAction,SIGNAL(triggered()),this,SLOT(upload()));
-    runAction = new QAction(tr("run"),this);
+    runAction = new QAction(tr("运行"),this);
     runAction->setIcon(QIcon(":/images/icon/运行.png"));
     connect(runAction,SIGNAL(triggered()),this,SLOT(run()));
 
 
-    deleteAction = new QAction(tr("&Delete"), this);
+    deleteAction = new QAction(tr("删除"), this);
     deleteAction->setIcon(QIcon(":/images/icon/delete copy.png"));
     deleteAction->setShortcut(tr("Del"));
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
 
-    cutAction = new QAction(tr("Cu&t"), this);
+    cutAction = new QAction(tr("剪切"), this);
     cutAction->setIcon(QIcon(":/images/icon/cut copy.png"));
     cutAction->setShortcut(tr("Ctrl+X"));
     connect(cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
-    copyAction = new QAction(tr("&Copy"), this);
+    copyAction = new QAction(tr("复制"), this);
     copyAction->setIcon(QIcon(":/images/icon/copy copy.png"));
     copyAction->setShortcut(tr("Ctrl+C"));
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
 
-    pasteAction = new QAction(tr("&Paste"), this);
+    pasteAction = new QAction(tr("粘贴"), this);
     pasteAction->setIcon(QIcon(":/images/icon/paste copy.png"));
     pasteAction->setShortcut(tr("Ctrl+V"));
     connect(pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
 
-    bringToFrontAction = new QAction(tr("Bring to &Front"), this);
+    bringToFrontAction = new QAction(tr("前移"), this);
     bringToFrontAction->setIcon(QIcon(":/images/bringtofront.png"));
     connect(bringToFrontAction, SIGNAL(triggered()),
             this, SLOT(bringToFront()));
 
-    sendToBackAction = new QAction(tr("&Send to Back"), this);
+    sendToBackAction = new QAction(tr("后移"), this);
     sendToBackAction->setIcon(QIcon(":/images/sendtoback.png"));
     connect(sendToBackAction, SIGNAL(triggered()),
             this, SLOT(sendToBack()));
@@ -2178,14 +2215,14 @@ void DiagramWindow::createActions()
     connect(canvasAction, SIGNAL(triggered()),
             this, SLOT(canvas()));
 
-    checkupAction = new QAction(tr("check up"),this);
+    checkupAction = new QAction(tr("检查"),this);
     connect(checkupAction,SIGNAL(triggered()),
             this, SLOT(checkup()));
 
-    compileAction = new QAction(tr("compile"),this);
+    compileAction = new QAction(tr("编译"),this);
     connect(compileAction,SIGNAL(triggered()),this,SLOT(compile()));
 
-    checkupAndCompileAction = new QAction(tr("check up and compile"),this);
+    checkupAndCompileAction = new QAction(tr("检查&编译"),this);
     connect(checkupAndCompileAction,SIGNAL(triggered()),this,SLOT(checkupAndCompile()));
 
     openDocumentationAction = new QAction(tr("&Documentation"),this);
@@ -2194,7 +2231,7 @@ void DiagramWindow::createActions()
     systemInformationAction = new QAction(tr("&System information"),this);
     connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
 
-    openHelpAction = new QAction(tr("Help"),this);
+    openHelpAction = new QAction(tr("帮助"),this);
     connect(openHelpAction,SIGNAL(triggered()),this,SLOT(help()));
 
     viewZoomInAction = new QAction(QIcon(":/images/icon/zoom in copy.png"),

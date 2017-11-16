@@ -37,7 +37,12 @@ VarNode::VarNode(QGraphicsItem *parent)
 
     connect(button0,SIGNAL(clicked()),this,SLOT(addVarType()));
     for(int i=0;i<4;i++)
+    {
         connect(button[i],SIGNAL(clicked()),this,SLOT(emitSignal()));
+        connect(nameEdit[i],SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+        connect(valueEdit[i],SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+        connect(typeBox[i],SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    }
 }
 
 
