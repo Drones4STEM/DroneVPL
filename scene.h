@@ -81,7 +81,7 @@ public:
     bool CheckInLogic();    //调用方法
     Rec *check_in_Logic(WidgetWrap *tmp, QString operate, int maxrank);  //调用方法的内部工具
     bool CheckLinkOverLogic(Link* link);
-
+    void del();
 
     int need_to_set;
     int selected_Index;
@@ -116,9 +116,11 @@ signals:
     void itemInserted(int index);
     void sig_bringtofront();
     void sig_connectItem(QObject *item);
+    void sig_link_deleted(QSet<Link *> links);
 
 public slots:
     void CreateVarInstance(VarNode *node,QString Var,QString varName,QString varValue);//点击variable每一行末端的按钮，就会调用此槽函数，在场景中生成对应变量
+
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* new_event);

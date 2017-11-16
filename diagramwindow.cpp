@@ -1208,261 +1208,263 @@ void DiagramWindow::addWhile()
 ******************************************************************/
 void DiagramWindow::del()
 {
-    QList<QGraphicsItem *> items = scene->selectedItems();
-    int itemsCount = items.count();
-    int i=0;
-    QList<Link*>itemLinks;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<Link*>(items[i]))
-            itemLinks<<dynamic_cast<Link*>(items[i]);
-    }
-    QList<TakeOffNode*>itemTakeoffs;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<TakeOffNode*>(items[i]))
-            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
-    }
-    QList<LandNode*>itemLandons;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<LandNode*>(items[i]))
-            itemLandons<<dynamic_cast<LandNode*>(items[i]);
-    }
-    QList<GoNode*>itemTranslations;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<GoNode*>(items[i]))
-            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
-    }
-    QList<TurnNode*>itemTurn;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<TurnNode*>(items[i]))
-            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
-    }
-    QList<HoverNode*>itemHover;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<HoverNode*>(items[i]))
-            itemHover<<dynamic_cast<HoverNode*>(items[i]);
-    }
-    QList<DelayNode*>itemDelay;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<DelayNode*>(items[i]))
-            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
-    }
-    QList<ComputeNode*>itemComputes;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<ComputeNode*>(items[i]))
-            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
-    }
-    QList<IoNode*>itemIos;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<IoNode*>(items[i]))
-            itemIos<<dynamic_cast<IoNode*>(items[i]);
-    }
-    QList<BatteryNode*>itemBry;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<BatteryNode*>(items[i]))
-            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
-    }
-    QList<GimbalNode*>itemGim;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<GimbalNode*>(items[i]))
-            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
-    }
-    QList<AttitudeNode*>itemAtd;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<AttitudeNode*>(items[i]))
-            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
-    }
-    QList<ChannelNode*>itemChn;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<ChannelNode*>(items[i]))
-            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
-    }
-    QList<RangeFinderNode*>itemRF;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<RangeFinderNode*>(items[i]))
-            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
-    }
-    QList<Rec*>itemRecs;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<Rec*>(items[i]))
-            itemRecs<<dynamic_cast<Rec*>(items[i]);
-    }
-    QList<SomeNode*>itemSomes;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<SomeNode*>(items[i]))
-            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
-    }
-    QList<VarInstanceNode*>itemVarInstances;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VarInstanceNode*>(items[i]))
-            itemVarInstances<<dynamic_cast<VarInstanceNode*>(items[i]);
-    }
-    QList<VarNode*>itemVars;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VarNode*>(items[i]))
-            itemVars<<dynamic_cast<VarNode*>(items[i]);
-    } 
-    QList<VarNode*>itemVariables;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VarNode*>(items[i]))
-            itemVariables<<dynamic_cast<VarNode*>(items[i]);
-    }
-    foreach (Link* item, itemLinks) {
+    scene->del();
+
+//    QList<QGraphicsItem *> items = scene->selectedItems();
+//    int itemsCount = items.count();
+//    int i=0;
+//    QList<Link*>itemLinks;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<Link*>(items[i]))
+//            itemLinks<<dynamic_cast<Link*>(items[i]);
+//    }
+//    QList<TakeOffNode*>itemTakeoffs;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<TakeOffNode*>(items[i]))
+//            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
+//    }
+//    QList<LandNode*>itemLandons;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<LandNode*>(items[i]))
+//            itemLandons<<dynamic_cast<LandNode*>(items[i]);
+//    }
+//    QList<GoNode*>itemTranslations;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<GoNode*>(items[i]))
+//            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
+//    }
+//    QList<TurnNode*>itemTurn;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<TurnNode*>(items[i]))
+//            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
+//    }
+//    QList<HoverNode*>itemHover;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<HoverNode*>(items[i]))
+//            itemHover<<dynamic_cast<HoverNode*>(items[i]);
+//    }
+//    QList<DelayNode*>itemDelay;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<DelayNode*>(items[i]))
+//            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
+//    }
+//    QList<ComputeNode*>itemComputes;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<ComputeNode*>(items[i]))
+//            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
+//    }
+//    QList<IoNode*>itemIos;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<IoNode*>(items[i]))
+//            itemIos<<dynamic_cast<IoNode*>(items[i]);
+//    }
+//    QList<BatteryNode*>itemBry;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<BatteryNode*>(items[i]))
+//            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
+//    }
+//    QList<GimbalNode*>itemGim;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<GimbalNode*>(items[i]))
+//            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
+//    }
+//    QList<AttitudeNode*>itemAtd;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<AttitudeNode*>(items[i]))
+//            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
+//    }
+//    QList<ChannelNode*>itemChn;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<ChannelNode*>(items[i]))
+//            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
+//    }
+//    QList<RangeFinderNode*>itemRF;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<RangeFinderNode*>(items[i]))
+//            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
+//    }
+//    QList<Rec*>itemRecs;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<Rec*>(items[i]))
+//            itemRecs<<dynamic_cast<Rec*>(items[i]);
+//    }
+//    QList<SomeNode*>itemSomes;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<SomeNode*>(items[i]))
+//            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
+//    }
+//    QList<VarInstanceNode*>itemVarInstances;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<VarInstanceNode*>(items[i]))
+//            itemVarInstances<<dynamic_cast<VarInstanceNode*>(items[i]);
+//    }
+//    QList<VarNode*>itemVars;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<VarNode*>(items[i]))
+//            itemVars<<dynamic_cast<VarNode*>(items[i]);
+//    }
+//    QList<VarNode*>itemVariables;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<VarNode*>(items[i]))
+//            itemVariables<<dynamic_cast<VarNode*>(items[i]);
+//    }
+//    foreach (Link* item, itemLinks) {
+////        typename QMap<QString, LOGIC_Help*>::iterator iter;
+////        typename QList<Link*>::iterator it;
+////        LOGIC_Help* lh;
+////        Link* link;
+////        for(iter=LHM->begin();iter!=LHM->end();iter++){
+////            lh = iter.value();
+////            for(int i=0;i<lh->LOG->tlink.length();i++){
+////                link = lh->LOG->tlink[i];
+////                if(link->name==item->name){
+////                    lh->LOG->tlink.removeOne(link);
+////                }
+////            }
+////            for(int i=0;i<lh->LOG->flink.length();i++){
+////                link = lh->LOG->flink[i];
+////                if(link->name==item->name){
+////                    lh->LOG->flink.removeOne(link);
+////                }
+////            }
+
+////        }
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        delete item;
+//    }
+//    foreach (TakeOffNode* item, itemTakeoffs) {
+//        /*qDebug()<<"In del():\n"<<"TakeOff: ";
+//        qDebug()<<"type: "<<item->identifier;
+//        qDebug()<<"id: "<<item->controlsId;
+//        qDebug()<<"location_x: "<<item->pos().x();
+//        qDebug()<<"location_y: "<<item->pos().y();*/
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (LandNode* item, itemLandons) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (GoNode* item, itemTranslations) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (TurnNode* item, itemTurn) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (HoverNode* item, itemHover) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (DelayNode* item, itemDelay) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (ComputeNode* item, itemComputes) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (IoNode* item, itemIos) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (BatteryNode* item, itemBry) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (GimbalNode* item, itemGim) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (AttitudeNode* item, itemAtd) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (ChannelNode* item, itemChn) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (RangeFinderNode* item, itemRF) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (Rec* item, itemRecs) {
+//        WidgetWrap tmp(item);
 //        typename QMap<QString, LOGIC_Help*>::iterator iter;
-//        typename QList<Link*>::iterator it;
 //        LOGIC_Help* lh;
-//        Link* link;
-//        for(iter=LHM->begin();iter!=LHM->end();iter++){
+//        for(iter=LHM->begin();iter!=LHM->end();){
 //            lh = iter.value();
-//            for(int i=0;i<lh->LOG->tlink.length();i++){
-//                link = lh->LOG->tlink[i];
-//                if(link->name==item->name){
-//                    lh->LOG->tlink.removeOne(link);
-//                }
-//            }
-//            for(int i=0;i<lh->LOG->flink.length();i++){
-//                link = lh->LOG->flink[i];
-//                if(link->name==item->name){
-//                    lh->LOG->flink.removeOne(link);
-//                }
-//            }
-
+//            if(lh->LOG->name==tmp.name){
+//                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
+//                LHM->remove(lh->LOG->name);
+//            }else iter++;
 //        }
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        delete item;
-    }
-    foreach (TakeOffNode* item, itemTakeoffs) {
-        /*qDebug()<<"In del():\n"<<"TakeOff: ";
-        qDebug()<<"type: "<<item->identifier;
-        qDebug()<<"id: "<<item->controlsId;
-        qDebug()<<"location_x: "<<item->pos().x();
-        qDebug()<<"location_y: "<<item->pos().y();*/
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (LandNode* item, itemLandons) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (GoNode* item, itemTranslations) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (TurnNode* item, itemTurn) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (HoverNode* item, itemHover) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (DelayNode* item, itemDelay) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (ComputeNode* item, itemComputes) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (IoNode* item, itemIos) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (BatteryNode* item, itemBry) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (GimbalNode* item, itemGim) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (AttitudeNode* item, itemAtd) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (ChannelNode* item, itemChn) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (RangeFinderNode* item, itemRF) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (Rec* item, itemRecs) {
-        WidgetWrap tmp(item);
-        typename QMap<QString, LOGIC_Help*>::iterator iter;
-        LOGIC_Help* lh;
-        for(iter=LHM->begin();iter!=LHM->end();){
-            lh = iter.value();
-            if(lh->LOG->name==tmp.name){
-                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
-                LHM->remove(lh->LOG->name);
-            }else iter++;
-        }
-        wm->del(tmp);
-        delete item;
-    }
-    foreach (VarInstanceNode* item, itemVarInstances) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (VarNode* item, itemVars) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (SomeNode* item, itemSomes) {
+//        wm->del(tmp);
+//        delete item;
+//    }
+//    foreach (VarInstanceNode* item, itemVarInstances) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (VarNode* item, itemVars) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (SomeNode* item, itemSomes) {
 
-        delete item;
-    }
+//        delete item;
+//    }
 }
 
 /*******************************************************************
