@@ -39,7 +39,7 @@ public:
 private:
     QMap<QString,LOGIC_Help*>* LHM;
     QMap<QString, widget*>* Map;     //指向保存控件的map
-    QMap<QString,int> visited;          //保存每个控件是否被访问过。0没有，~0有,每个控件的名字是用数组存的
+    QMap<QString,int> visited;          //保存每个控件是否被访问过。0没有，~0有
     std::stack<widget*> Stack;       //保存有向图的拓扑结构
 
     std::stack<widget*> get_nodes_without_IN(Logic *l=0);   //返回没有指出箭头的节点的容器

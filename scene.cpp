@@ -908,6 +908,7 @@ void newscene::CreateVarInstance(VarNode *node, QString Var, QString varName, QS
     InstanceNode->setPos(node->pos().x(),node->pos().y()+150);
     InstanceNode->varType=Var;
     InstanceNode->varName=varName;
+    qDebug()<<InstanceNode->varName;
     InstanceNode->varValue=varValue.toDouble();
     qDebug()<<1;
     this->addItem(InstanceNode);
