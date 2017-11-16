@@ -599,6 +599,8 @@ bool newscene::CreateVar(QPointF point, int id)
     node->setSelected(true);
     bringToFront();
 
+    emit sig_connectItem(node);
+
     //给所有comboBox加入内容
     for(int i = 0;i<4;i++)
     {
@@ -1960,6 +1962,8 @@ bool newscene::CreateVar(VarNode* node)
 
     connect(node,SIGNAL(addVarSignal(VarNode*,QString,QString,QString)),
             this,SLOT(CreateVarInstance(VarNode*,QString,QString,QString)));
+
+    emit sig_connectItem(node);
 
 
     if(node->type[0]=="int")

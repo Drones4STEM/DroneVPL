@@ -40,6 +40,8 @@ ComputeNode::ComputeNode()
     rank = 0;
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
+    connect(lineEdit1,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    connect(lineEdit2,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
 }
 
 /*******************************************************************
@@ -314,6 +316,7 @@ sinNode::sinNode()
     rank = 0;
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
+    connect(lineEdit2,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
 }
 
 
@@ -464,6 +467,9 @@ logNode::logNode()
 
     identifier="ComputeNodeLog";
     rank = 0;
+
+    connect(lineEdit1,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    connect(lineEdit2,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
 }
 
 
@@ -596,6 +602,8 @@ eNode::eNode()
 
     identifier="ComputeNodeE";
     rank = 0;
+
+    connect(lineEdit2,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
 }
 
 
