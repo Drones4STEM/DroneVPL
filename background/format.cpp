@@ -1145,11 +1145,6 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         }
         stream<<":\n";
     }
-/*
-    if(iter->value->yuan->myLinks->mytoyuan != nullptr){    //有后置控件
-
-    }
-*/
 }
 
 

@@ -132,8 +132,7 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
  *****************************************************/
 void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
 {
-//    if(w->rank() != rank) return;   //非该级的节点视作无连接
-    /*else*/ if(visited.value(w->name)==0){
+     if(visited.value(w->name)==0){
         visited[w->name]=1;
         if(w->get_yuan_out()!= NULL){
             QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
@@ -141,6 +140,7 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
                 DFS(it.peekNext()->toYuan()->master,rank,stack);
                 it.next();
             }
+
         }
         stack->push(w);  //加入结果集
     }

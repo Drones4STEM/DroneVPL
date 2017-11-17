@@ -390,26 +390,6 @@ void newscene::del()
             itemVariables<<dynamic_cast<VarNode*>(items[i]);
     }
     foreach (Link* item, itemLinks) {
-//        typename QMap<QString, LOGIC_Help*>::iterator iter;
-//        typename QList<Link*>::iterator it;
-//        LOGIC_Help* lh;
-//        Link* link;
-//        for(iter=LHM->begin();iter!=LHM->end();iter++){
-//            lh = iter.value();
-//            for(int i=0;i<lh->LOG->tlink.length();i++){
-//                link = lh->LOG->tlink[i];
-//                if(link->name==item->name){
-//                    lh->LOG->tlink.removeOne(link);
-//                }
-//            }
-//            for(int i=0;i<lh->LOG->flink.length();i++){
-//                link = lh->LOG->flink[i];
-//                if(link->name==item->name){
-//                    lh->LOG->flink.removeOne(link);
-//                }
-//            }
-
-//        }
         WidgetWrap tmp(item);
         wm->del(tmp);
         delete item;
@@ -427,92 +407,137 @@ void newscene::del()
         delete item;
     }
     foreach (LandNode* item, itemLandons) {
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (GoNode* item, itemTranslations) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (TurnNode* item, itemTurn) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (HoverNode* item, itemHover) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (DelayNode* item, itemDelay) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
+        emit sig_link_deleted(item->yuan3->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-    foreach (IoNode* item, itemIos) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        this->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
+//    foreach (IoNode* item, itemIos) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        this->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
     foreach (BatteryNode* item, itemBry) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
+        emit sig_link_deleted(item->node1->yuan->myLinks);
+        emit sig_link_deleted(item->node2->yuan->myLinks);
+        emit sig_link_deleted(item->node3->yuan->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (GimbalNode* item, itemGim) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
+        emit sig_link_deleted(item->node1->yuan->myLinks);
+        emit sig_link_deleted(item->node2->yuan->myLinks);
+        emit sig_link_deleted(item->node3->yuan->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (AttitudeNode* item, itemAtd) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
+        emit sig_link_deleted(item->node1->yuan->myLinks);
+        emit sig_link_deleted(item->node2->yuan->myLinks);
+        emit sig_link_deleted(item->node3->yuan->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (ChannelNode* item, itemChn) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
+        emit sig_link_deleted(item->node1->yuan->myLinks);
+        emit sig_link_deleted(item->node2->yuan->myLinks);
+        emit sig_link_deleted(item->node3->yuan->myLinks);
+        emit sig_link_deleted(item->node4->yuan->myLinks);
+        emit sig_link_deleted(item->node5->yuan->myLinks);
+        emit sig_link_deleted(item->node6->yuan->myLinks);
+        emit sig_link_deleted(item->node7->yuan->myLinks);
+        emit sig_link_deleted(item->node8->yuan->myLinks);
+        emit sig_link_deleted(item->node9->yuan->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (RangeFinderNode* item, itemRF) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
+        emit sig_link_deleted(item->node2->yuan->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (Rec* item, itemRecs) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
-        typename QMap<QString, LOGIC_Help*>::iterator iter;
-        LOGIC_Help* lh;
-        for(iter=LHM->begin();iter!=LHM->end();){
-            lh = iter.value();
-            if(lh->LOG->name==tmp.name){
-                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
-                LHM->remove(lh->LOG->name);
-            }else iter++;
-        }
+//        typename QMap<QString, LOGIC_Help*>::iterator iter;
+//        LOGIC_Help* lh;
+//        for(iter=LHM->begin();iter!=LHM->end();){
+//            lh = iter.value();
+//            if(lh->LOG->name==tmp.name){
+//                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
+//                LHM->remove(lh->LOG->name);
+//            }else iter++;
+//        }
         wm->del(tmp);
         delete item;
     }
     foreach (VarInstanceNode* item, itemVarInstances) {
+        emit sig_link_deleted(item->yuan->myLinks);
+        emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
@@ -524,10 +549,10 @@ void newscene::del()
         this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-    foreach (SomeNode* item, itemSomes) {
+//    foreach (SomeNode* item, itemSomes) {
 
-        delete item;
-    }
+//        delete item;
+//    }
 }
 
 
