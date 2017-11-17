@@ -1780,7 +1780,7 @@ bool newscene::CreateIf(QPointF point, int id)
     this->addItem(rec->yuan3);
     this->addItem(rec->yuan4);
     this->addItem(rec->yuan5);
-    this->addItem(rec->yuan7);
+    //this->addItem(rec->yuan7);
 
     rec->controlsId=id;
     rec->identifier="If";
@@ -1842,7 +1842,7 @@ bool newscene::CreateElse(QPointF point, int id)
     this->addItem(rec->yuan3);
     this->addItem(rec->yuan4);
     this->addItem(rec->yuan5);
-    this->addItem(rec->yuan6);
+    //this->addItem(rec->yuan6);
 
 
     rec->controlsId=id;
@@ -2936,7 +2936,7 @@ bool newscene::CreateLogic(Rec *rec)
         this->addItem(rec->yuan3);
         this->addItem(rec->yuan4);
         this->addItem(rec->yuan5);
-        this->addItem(rec->yuan7);
+        //this->addItem(rec->yuan7);
         rec->setLogicFlag(1);
         rec->identifier="If";
     }
@@ -2958,7 +2958,7 @@ bool newscene::CreateLogic(Rec *rec)
         this->addItem(rec->yuan3);
         this->addItem(rec->yuan4);
         this->addItem(rec->yuan5);
-        this->addItem(rec->yuan6);
+        //this->addItem(rec->yuan6);
         rec->setLogicFlag(2);
         rec->identifier="Else";
     }
