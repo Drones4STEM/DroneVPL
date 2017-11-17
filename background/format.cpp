@@ -1098,23 +1098,23 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Compute"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         ComputeNode* tmp = w->mComputeNode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->text()<<"="<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
+        stream<<vn->varName<<"="<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="Log"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         logNode* tmp = w->mLogNode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->text()<<"="<<"log("<<tmp->lineEdit2->text()<<","<<tmp->lineEdit2->text()<<")";
+        stream<<vn->varName<<"="<<"log("<<tmp->lineEdit2->text()<<","<<tmp->lineEdit2->text()<<")";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="E"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         eNode* tmp = w->mENode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
 //        stream<<vn->text()<<"="<<tmp->lineEdit1->text()<<"**"<<tmp->lineEdit2->text();
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1122,9 +1122,9 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Sin"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         sinNode* tmp = w->mSinNode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->text()<<"="<<tmp->box->currentText()<<"("<<tmp->lineEdit2->text()<<")";
+        stream<<vn->varName<<"="<<tmp->box->currentText()<<"("<<tmp->lineEdit2->text()<<")";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="If"||

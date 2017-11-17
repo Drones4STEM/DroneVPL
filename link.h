@@ -9,6 +9,7 @@
 class Node;
 class Yuan;
 class Rec;
+class Link;
 
 /*******************************************************************
  * Class name: Link
@@ -20,7 +21,7 @@ class Link :public QGraphicsLineItem
 {
 public:
     enum {Type = LinkType};
-    Link(Yuan *fromYuan, Yuan *toYuan);
+    Link(Yuan *fromYuan=NULL, Yuan *toYuan=NULL);
     ~Link();
 
     int type() const { return Type; }
@@ -51,6 +52,8 @@ private:
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+//signals:
+
 };
 
 #endif
