@@ -131,7 +131,8 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
  * Output: none
  *****************************************************/
 void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
-{
+{//这里有个“逻辑漏洞”，一个logic内的子图的终点必然是这个logic，按理讲应当把连接终点的连线忽视从而正确地遍历且只遍历子图，
+ //然而由于logic被遍历到一定在子图之前，因此visted数组记录logic已被访问过，自动终结了子图延伸向这个节点的访问。
      if(visited.value(w->name)==0){
         visited[w->name]=1;
         if(w->get_yuan_out()!= NULL){
