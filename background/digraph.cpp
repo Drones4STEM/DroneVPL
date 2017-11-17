@@ -46,11 +46,13 @@ std::stack<widget*>* digraph::get_topology(Logic *l)
     //获得这个等级的图的起始节点
     //在这个等级的图做深度遍历
     WidgetWrap *tmp;
-    int rank = (l==0)?1:l->rank+1;  //l的子图的rank低一级(+1)
+//    int rank = (l==0)?1:l->rank+1;  //l的子图的rank低一级(+1)
+    int rank = 0;
     std::stack<widget*> stk; //保存没有出度的起始节点
     std::stack<widget*>* stack = new std::stack<widget*>();   //得到该图的拓扑结构的保存栈
     if(l==0)
-        stk = get_nodes_without_IN(0);  //其实合法的起始节点只有takeoff一个，但原来写的函数功能更强，所以也就不删减了
+        stk = get_nodes_without_IN(0);
+        //其实合法的起始节点只有takeoff一个，但原来写的函数提供了一种更强功能的思路，所以保留了原函数，并把原函数体代码注释了，改为返回takeoff
     else{
         for(int i=0;i<l->yuan4->myLinks.toList().size();i++){
             tmp = l->yuan4->myLinks.toList()[i]->toYuan()->master;
@@ -88,7 +90,7 @@ std::stack<widget*>* digraph::get_topology(Logic *l)
 std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
 {
     std::stack<widget*> stk;  //保存没有出度的节点，返回这个栈对象
-    typename QMap<QString,LOGIC_Help*>::iterator iter;
+//    typename QMap<QString,LOGIC_Help*>::iterator iter;
     typename QMap<QString, widget*>::iterator it;
     QMap<QString, widget*>* map;
 //    if(l==0){
@@ -99,20 +101,24 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
 //        }
 //    }
 
+//    for(it=map->begin(); it!=map->end(); ++it){
+//        if(it.value()->identifier!="Link")
+//            if(it.value()->rank()==((l==0)?1:l->rank+1))
+//                if(it.value()->check_yuan_in()==false){     //没有入度
+//                    //如果是Logic条件判断式，则无视。之后在转py读取的时候访问
+//                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value())){
+//                        continue;
+//                    }else if(it.value()->identifier=="VarType" || it.value()->identifier=="VarDef"){
+//                        continue;
+//                    }else
+//                        stk.push(it.value());
+//                }
+//    }
     for(it=map->begin(); it!=map->end(); ++it){
-        if(it.value()->identifier!="Link")
-            if(it.value()->rank()==((l==0)?1:l->rank+1))
-                if(it.value()->check_yuan_in()==false){     //没有入度
-                    //如果是Logic条件判断式，则无视。之后在转py读取的时候访问
-/*                    if(l!=0 && (l->yuan2->myLinks.toList()[0]->fromYuan()->master == it.value())){
-                        continue;
-                    }else*/ if(it.value()->identifier=="VarType" || it.value()->identifier=="VarDef"){
-                        continue;
-                    }else
-                        stk.push(it.value());
-                }
+        if(it.value()->identifier=="TakeOff"){
+            stk.push(it.value());
+        }
     }
-
     return stk;
 
 }
@@ -126,8 +132,8 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
  *****************************************************/
 void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
 {
-    if(w->rank() != rank) return;   //非该级的节点视作无连接
-    else if(visited.value(w->name)==0){
+//    if(w->rank() != rank) return;   //非该级的节点视作无连接
+    /*else*/ if(visited.value(w->name)==0){
         visited[w->name]=1;
         if(w->get_yuan_out()!= NULL){
             QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象

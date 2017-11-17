@@ -890,8 +890,14 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Var"){    //如果传入的控件是Var
         VarNode* tmp = w->mVarNode;
         for(int i=0;i<tmp->getvarnum();i++){
-            stream<<tmp->typeBox[i]->currentText()<<" "<<
-                    tmp->valueEdit[i]->text()<<"="<<tmp->valueEdit[i]->text();
+            if(tmp->typeBox[i]->currentText()=="int"){
+                stream<<tmp->nameEdit[i]->text()<<"="<<tmp->valueEdit[i]->text().toInt();
+            }else if(tmp->typeBox[i]->currentText()=="double"){
+                stream<<tmp->nameEdit[i]->text()<<"="<<tmp->valueEdit[i]->text().toDouble();
+            }else if(tmp->typeBox[i]->currentText()=="float"){
+                stream<<tmp->nameEdit[i]->text()<<"="<<tmp->valueEdit[i]->text().toFloat();
+            }
+
         }
         stream<<"\n";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1041,28 +1047,28 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoRight"){
-            stream<<"print \"Going rightward at 1m/s for 5s\"\n";
+//            stream<<"print \"Going rightward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity("<<w->mGoNode->myGroundSpeed()<<", 0, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
-            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
+//            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity("<<(-(w->mGoNode->myGroundSpeed()))<<", 0, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="Forward"){
-            stream<<"print \"Going forward at 1m/s for 5s\"\n";
+//            stream<<"print \"Going forward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, "<<(-(w->mGoNode->myGroundSpeed()))<<", 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="Backward"){
-            stream<<"print \"Going backward at 1m/s for 5s\"\n";
+//            stream<<"print \"Going backward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, "<<(w->mGoNode->myGroundSpeed())<<", 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
@@ -1092,23 +1098,23 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Compute"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         ComputeNode* tmp = w->mComputeNode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->text()<<"="<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
+        stream<<vn->varName<<"="<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="Log"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         logNode* tmp = w->mLogNode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->text()<<"="<<"log("<<tmp->lineEdit2->text()<<","<<tmp->lineEdit2->text()<<")";
+        stream<<vn->varName<<"="<<"log("<<tmp->lineEdit2->text()<<","<<tmp->lineEdit2->text()<<")";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="E"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         eNode* tmp = w->mENode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
 //        stream<<vn->text()<<"="<<tmp->lineEdit1->text()<<"**"<<tmp->lineEdit2->text();
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1116,9 +1122,9 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Sin"){    //如果传入的控件是Compute
         //除logic外，compute控件必须连接一个变量控件
         sinNode* tmp = w->mSinNode;
-        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode;
+        VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->text()<<"="<<tmp->box->currentText()<<"("<<tmp->lineEdit2->text()<<")";
+        stream<<vn->varName<<"="<<tmp->box->currentText()<<"("<<tmp->lineEdit2->text()<<")";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="If"||
@@ -1132,7 +1138,11 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         stream<<tmp<<" ";
         if(w->identifier!="Else"){
             ComputeNode* tmp = w->mLogicNode->yuan3->myLinks.toList()[0]->fromYuan()->master->mComputeNode;
-            stream<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
+            if(tmp->box->currentText()=="=")
+                stream<<tmp->lineEdit1->text()<<"=="<<tmp->lineEdit2->text();
+            else{
+                stream<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
+            }
         }
         stream<<":\n";
     }
@@ -1196,6 +1206,7 @@ bool format::CreateGo(QPointF point, int id, QString direction, double Speed, do
     GoNode *node=new GoNode;
     node->lx = point.x();
     node->ly = point.y();
+    node->direction = direction;
     node->controlsId=id;
     node->identifier="Go";
     QString cid = QString::number(node->controlsId,10);
@@ -1209,11 +1220,12 @@ bool format::CreateGo(QPointF point, int id, QString direction, double Speed, do
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
-    Map.insert(tmp->name,tmp);            //添加到widgetmap中
     node->yuan2->master = tmp;
     node->yuan2->name = "yuan2";
     node->yuan->master = tmp;
     node->yuan->name = "yuan";
+    Map.insert(tmp->name,tmp);            //添加到widgetmap中
+
     return true;
 }
 
@@ -1700,38 +1712,39 @@ bool format::CreateLogic(QPointF point, int id, QString type,int width,int heigh
     qDebug()<<"controlsId :"<<node->controlsId;
 
     WidgetWrap* tmp = new WidgetWrap(node);   //包装节点
+    node->yuan->master = tmp;
+    node->yuan->name = "yuan";
+    node->yuan2->master = tmp;
+    node->yuan2->name = "yuan2";
+    node->yuan3->master = tmp;
+    node->yuan3->name = "yuan3";
+    node->yuan4->master = tmp;
+    node->yuan4->name = "yuan4";
+    node->yuan5->master = tmp;
+    node->yuan5->name = "yuan5";
+    node->yuan6->master = tmp;
+    node->yuan6->name = "yuan6";
+    node->yuan7->master = tmp;
+    node->yuan7->name = "yuan7";
     Map.insert(tmp->name,tmp);            //添加到widgetmap中
-    if(type=="Else"){
-        node->yuan->master = tmp;
-        node->yuan->name = "yuan";
-        node->yuan2->master = tmp;
-        node->yuan2->name = "yuan2";
-        node->yuan3->master = tmp;
-        node->yuan3->name = "yuan3";
-        node->yuan4->master = tmp;
-        node->yuan4->name = "yuan4";
-        node->yuan5->master = tmp;
-        node->yuan5->name = "yuan5";
-        node->yuan6->master = tmp;
-        node->yuan6->name = "yuan6";
-        node->yuan7->master = tmp;
-        node->yuan7->name = "yuan7";
-    }else if(type=="If"){
-        node->yuan->master = tmp;
-        node->yuan->name = "yuan";
-        node->yuan2->master = tmp;
-        node->yuan2->name = "yuan2";
-        node->yuan3->master = tmp;
-        node->yuan3->name = "yuan3";
-        node->yuan4->master = tmp;
-        node->yuan4->name = "yuan4";
-        node->yuan5->master = tmp;
-        node->yuan5->name = "yuan5";
-        node->yuan6->master = tmp;
-        node->yuan6->name = "yuan6";
-        node->yuan7->master = tmp;
-        node->yuan7->name = "yuan7";
-    }
+//    if(type=="Else"){
+
+//    }else if(type=="If"){
+//        node->yuan->master = tmp;
+//        node->yuan->name = "yuan";
+//        node->yuan2->master = tmp;
+//        node->yuan2->name = "yuan2";
+//        node->yuan3->master = tmp;
+//        node->yuan3->name = "yuan3";
+//        node->yuan4->master = tmp;
+//        node->yuan4->name = "yuan4";
+//        node->yuan5->master = tmp;
+//        node->yuan5->name = "yuan5";
+//        node->yuan6->master = tmp;
+//        node->yuan6->name = "yuan6";
+//        node->yuan7->master = tmp;
+//        node->yuan7->name = "yuan7";
+//    }
     return true;
 }
 
@@ -1800,12 +1813,12 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
     }
     if(wfrom.identifier == "If"||
             wfrom.identifier == "Else"||
-            wfrom.identifier == "Whlie"){
+            wfrom.identifier == "While"){
         if(fyuan==wfrom.mLogicNode->yuan->name)
             first = dynamic_cast<Yuan*> (wfrom.mLogicNode->yuan);
-        if(fyuan==wfrom.mLogicNode->yuan4->name)
+        else if(fyuan==wfrom.mLogicNode->yuan4->name)
             first = dynamic_cast<Yuan*> (wfrom.mLogicNode->yuan4);
-        if(fyuan==wfrom.mLogicNode->yuan7->name)
+        else if(fyuan==wfrom.mLogicNode->yuan7->name)
             first = dynamic_cast<Yuan*> (wfrom.mLogicNode->yuan7);
     }
     if(wto.identifier == "TakeOff"){
@@ -1840,13 +1853,13 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
         if(tyuan == "yuan2")
             second = wto.mENode->yuan2;
     }
-    if(wto.identifier == "Compute"){
-        if(tyuan == "E")
-            second = wto.mENode->yuan2;
-    }
-    if(wto.identifier == "E"){
+    if(wto.identifier == "Log"){
         if(tyuan == "yuan2")
-            second = wto.mENode->yuan2;
+            second = wto.mLogNode->yuan2;
+    }
+    if(wto.identifier == "Sin"){
+        if(tyuan == "yuan2")
+            second = wto.mSinNode->yuan2;
     }
     if(wto.identifier == "IO"){
         second = wto.mIONode->yuan2;
@@ -1856,11 +1869,11 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
             wto.identifier == "While"){
         if(tyuan==wto.mLogicNode->yuan2->name)
             second = wto.mLogicNode->yuan2;
-        if(tyuan==wto.mLogicNode->yuan3->name)
+        else if(tyuan==wto.mLogicNode->yuan3->name)
             second = wto.mLogicNode->yuan3;
-        if(tyuan==wto.mLogicNode->yuan5->name)
+        else if(tyuan==wto.mLogicNode->yuan5->name)
             second = wto.mLogicNode->yuan5;
-        if(tyuan==wto.mLogicNode->yuan6->name)
+        else if(tyuan==wto.mLogicNode->yuan6->name)
             second = wto.mLogicNode->yuan6;
     }
     Link *link = new Link(first,second);

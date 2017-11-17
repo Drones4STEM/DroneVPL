@@ -44,6 +44,7 @@ private:
 signals:
 
 public slots:
+    void link_deleted(QSet<Link *> links);
 };
 
 #endif // WIDGETMAP_H

@@ -67,6 +67,9 @@ newscene::newscene(WidgetMap* m, QMap<QString, LOGIC_Help *> *L)
 
     wm=m;
     LHM = L;
+
+    qRegisterMetaType<QSet<Link*> >("QSet<Link*>");
+    connect(this,SIGNAL(sig_link_deleted(QSet<Link*>)),wm,SLOT(link_deleted(QSet<Link*>)));
 }
 
 newscene::~newscene()
@@ -102,7 +105,7 @@ void newscene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 //    CheckLinkOverLogic(link);   //检查link是否穿越logic
     //现在不存在穿越了，但是这个函数写一遍太累了，决定注释而不删
     //检查鼠标释放时生成/拖动的控件是否在Logic内
-    CheckInLogic();
+//    CheckInLogic();
 
 
     QGraphicsScene::mouseReleaseEvent(event);
@@ -258,6 +261,275 @@ void newscene::mousePressEvent(QGraphicsSceneMouseEvent *new_event){
     QGraphicsScene::mousePressEvent(new_event);
     //setCursor(Qt::ArrowCursor);
 }
+
+
+/*******************************************************************
+ * Function name: del()
+ * Description: This function delete the selected items.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void newscene::del()
+{
+    QList<QGraphicsItem *> items = this->selectedItems();
+    int itemsCount = items.count();
+    int i=0;
+    QList<Link*>itemLinks;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<Link*>(items[i]))
+            itemLinks<<dynamic_cast<Link*>(items[i]);
+    }
+    QList<TakeOffNode*>itemTakeoffs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TakeOffNode*>(items[i]))
+            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
+    }
+    QList<LandNode*>itemLandons;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<LandNode*>(items[i]))
+            itemLandons<<dynamic_cast<LandNode*>(items[i]);
+    }
+    QList<GoNode*>itemTranslations;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<GoNode*>(items[i]))
+            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
+    }
+    QList<TurnNode*>itemTurn;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TurnNode*>(items[i]))
+            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
+    }
+    QList<HoverNode*>itemHover;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<HoverNode*>(items[i]))
+            itemHover<<dynamic_cast<HoverNode*>(items[i]);
+    }
+    QList<DelayNode*>itemDelay;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<DelayNode*>(items[i]))
+            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
+    }
+    QList<ComputeNode*>itemComputes;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<ComputeNode*>(items[i]))
+            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
+    }
+    QList<IoNode*>itemIos;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<IoNode*>(items[i]))
+            itemIos<<dynamic_cast<IoNode*>(items[i]);
+    }
+    QList<BatteryNode*>itemBry;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<BatteryNode*>(items[i]))
+            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
+    }
+    QList<GimbalNode*>itemGim;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<GimbalNode*>(items[i]))
+            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
+    }
+    QList<AttitudeNode*>itemAtd;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<AttitudeNode*>(items[i]))
+            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
+    }
+    QList<ChannelNode*>itemChn;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<ChannelNode*>(items[i]))
+            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
+    }
+    QList<RangeFinderNode*>itemRF;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<RangeFinderNode*>(items[i]))
+            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
+    }
+    QList<Rec*>itemRecs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<Rec*>(items[i]))
+            itemRecs<<dynamic_cast<Rec*>(items[i]);
+    }
+    QList<SomeNode*>itemSomes;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<SomeNode*>(items[i]))
+            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
+    }
+    QList<VarInstanceNode*>itemVarInstances;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarInstanceNode*>(items[i]))
+            itemVarInstances<<dynamic_cast<VarInstanceNode*>(items[i]);
+    }
+    QList<VarNode*>itemVars;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarNode*>(items[i]))
+            itemVars<<dynamic_cast<VarNode*>(items[i]);
+    }
+    QList<VarNode*>itemVariables;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarNode*>(items[i]))
+            itemVariables<<dynamic_cast<VarNode*>(items[i]);
+    }
+    foreach (Link* item, itemLinks) {
+//        typename QMap<QString, LOGIC_Help*>::iterator iter;
+//        typename QList<Link*>::iterator it;
+//        LOGIC_Help* lh;
+//        Link* link;
+//        for(iter=LHM->begin();iter!=LHM->end();iter++){
+//            lh = iter.value();
+//            for(int i=0;i<lh->LOG->tlink.length();i++){
+//                link = lh->LOG->tlink[i];
+//                if(link->name==item->name){
+//                    lh->LOG->tlink.removeOne(link);
+//                }
+//            }
+//            for(int i=0;i<lh->LOG->flink.length();i++){
+//                link = lh->LOG->flink[i];
+//                if(link->name==item->name){
+//                    lh->LOG->flink.removeOne(link);
+//                }
+//            }
+
+//        }
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (TakeOffNode* item, itemTakeoffs) {
+        /*qDebug()<<"In del():\n"<<"TakeOff: ";
+        qDebug()<<"type: "<<item->identifier;
+        qDebug()<<"id: "<<item->controlsId;
+        qDebug()<<"location_x: "<<item->pos().x();
+        qDebug()<<"location_y: "<<item->pos().y();*/
+        emit sig_link_deleted(item->yuan->myLinks);
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (LandNode* item, itemLandons) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (GoNode* item, itemTranslations) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (TurnNode* item, itemTurn) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (HoverNode* item, itemHover) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (DelayNode* item, itemDelay) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (ComputeNode* item, itemComputes) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (IoNode* item, itemIos) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (BatteryNode* item, itemBry) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (GimbalNode* item, itemGim) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (AttitudeNode* item, itemAtd) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (ChannelNode* item, itemChn) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (RangeFinderNode* item, itemRF) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (Rec* item, itemRecs) {
+        WidgetWrap tmp(item);
+        typename QMap<QString, LOGIC_Help*>::iterator iter;
+        LOGIC_Help* lh;
+        for(iter=LHM->begin();iter!=LHM->end();){
+            lh = iter.value();
+            if(lh->LOG->name==tmp.name){
+                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
+                LHM->remove(lh->LOG->name);
+            }else iter++;
+        }
+        wm->del(tmp);
+        delete item;
+    }
+    foreach (VarInstanceNode* item, itemVarInstances) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (VarNode* item, itemVars) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (SomeNode* item, itemSomes) {
+
+        delete item;
+    }
+}
+
 
 bool newscene::CreateTakeOff(QPointF point, int id)
 {
@@ -636,6 +908,7 @@ void newscene::CreateVarInstance(VarNode *node, QString Var, QString varName, QS
     InstanceNode->setPos(node->pos().x(),node->pos().y()+150);
     InstanceNode->varType=Var;
     InstanceNode->varName=varName;
+    qDebug()<<InstanceNode->varName;
     InstanceNode->varValue=varValue.toDouble();
     qDebug()<<1;
     this->addItem(InstanceNode);
@@ -1603,8 +1876,20 @@ bool newscene::CreateWhile(QPointF point, int id)
     qDebug()<<"controlsId :"<<rec->controlsId;
     WidgetWrap* tmp = new WidgetWrap(rec);   //包装节点
     wm->add(tmp);            //添加到widgetmap中
+    rec->yuan->master = tmp;
+    rec->yuan->name = "yuan";
     rec->yuan2->master = tmp;
     rec->yuan2->name = "yuan2";
+    rec->yuan3->master = tmp;
+    rec->yuan3->name = "yuan3";
+    rec->yuan4->master = tmp;
+    rec->yuan4->name = "yuan4";
+    rec->yuan5->master = tmp;
+    rec->yuan5->name = "yuan5";
+    rec->yuan6->master = tmp;
+    rec->yuan6->name = "yuan6";
+    rec->yuan7->master = tmp;
+    rec->yuan7->name = "yuan7";
 
     emit sig_connectItem(rec);
 
@@ -1646,14 +1931,15 @@ Link* newscene::CreateLink(QGraphicsSceneMouseEvent* event)
                       qDebug()<<"id: "<<new_link->controlsId;
                       qDebug()<<"name: "<<new_link->name;
                       break;
+
                   }
               }
             }
 
         }
         new_yuan->setPos(0,0);
-
     }
+
     return new_link;
 }
 
@@ -1704,6 +1990,9 @@ bool newscene::CreateLand(LandNode* node)
 }
 bool newscene::CreateGo(GoNode* node)
 {
+    //对node的图形属性（估计是box）初始化的时候，会导致direction也被初始化，所以先记录正确的direction以备之后还原
+    QString direction = node->direction;
+
     QGraphicsItem* item=this->addWidget(node->box);
     item->setParentItem(dynamic_cast<QGraphicsItem*>(node));
     node->item=item;
@@ -1745,6 +2034,7 @@ bool newscene::CreateGo(GoNode* node)
     node->box->addItem(tr("后退"));
     node->box->addItem(tr("向右"));
     node->box->addItem(tr("向左"));
+    node->direction = direction;//还原正确的direction
     if(node->direction=="GoUp"){
         node->box->setCurrentIndex(0);
     }else if(node->direction=="GoDown"){
@@ -2682,7 +2972,6 @@ bool newscene::CreateWidgets()
             CreateLand(ww->mLandNode);
         }
         if(ww->identifier=="Go"){
-            //QPointF point(iter->mGoNode->lx,iter->mGoNode->ly);
             CreateGo(ww->mGoNode);
         }
         if(ww->identifier=="Turn"){

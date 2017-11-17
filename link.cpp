@@ -10,6 +10,7 @@
 #include "link.h"
 #include "node.h"
 #include "yuan.h"
+#include "scene.h"
 
 #include <math.h>
 
@@ -53,13 +54,16 @@ Link::Link(Yuan *fromYuan, Yuan *toYuan)
 
     toLogic = 0;
     fromLogic = 0;
+
 }
 
 Link::~Link()
 {
     myFromYuan->removeLink(this);
     myToYuan->removeLink(this);
+
 }
+
 
 Yuan *Link::fromYuan() const
 {

@@ -81,3 +81,14 @@ bool WidgetMap::clear()
     return Store.isEmpty();
 }
 
+void WidgetMap::link_deleted(QSet<Link *> links)
+{
+    typename QMap<QString, widget*>::iterator iter;
+    foreach(Link* link,links)
+        for(iter=Store.begin(); iter!=Store.end();iter++){   //遍历控件指针
+            if(iter.value()->name == link->name){
+                qDebug()<<iter.value()->name;
+                iter = Store.erase(iter);
+            }
+        }
+}
