@@ -4,6 +4,7 @@
 #include <QGraphicsLineItem>
 #include "itemtypes.h"
 #include "rec.h"
+#include "QObject"
 
 class Node;
 class Yuan;

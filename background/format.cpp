@@ -1031,16 +1031,15 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     }
     if(w->identifier=="Go"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
-        for(int i=1;i<=tabs;i++) stream<<"   ";
         if(w->mGoNode->direction=="GoUp"){
-            stream<<"print \"Going upward\"\n";
+//            stream<<"print \"Going upward\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, 0,"<<(-(w->mGoNode->myGroundSpeed()))<<")\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoDown"){
-            stream<<"print \"Going down\"\n";
+//            stream<<"print \"Going down\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"myCopter.send_nav_velocity(0, 0,"<<w->mGoNode->myGroundSpeed()<<")\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
@@ -1100,7 +1099,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         ComputeNode* tmp = w->mComputeNode;
         VarInstanceNode* vn = tmp->yuan3->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<vn->varName<<"="<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text();
+        stream<<vn->varName<<"="<<tmp->lineEdit1->text()<<tmp->box->currentText()<<tmp->lineEdit2->text()<<"\n";
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
     }
     if(w->identifier=="Log"){    //如果传入的控件是Compute

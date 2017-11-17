@@ -305,6 +305,10 @@ GoNode::GoNode()
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
     connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setGroundSpeed(QString)));
     connect(lineEdit2,SIGNAL(textChanged(QString)),this,SLOT(setTime(QString)));
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    connect(lineEdit2,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    connect(box,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+
 }
 
 GoNode::~GoNode()
@@ -356,16 +360,7 @@ double GoNode::myGroundSpeed()
 
 void GoNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    double gs = QInputDialog::getDouble(event->widget(),
-                           tr("Edit GroudSpeed"), tr("Enter new GroundSpeed:"),
-                           QLineEdit::Normal, groundspeed);
-    double t = QInputDialog::getDouble(event->widget(),
-                           tr("Edit fly time"), tr("Enter new time:"),
-                           QLineEdit::Normal, groundspeed);
-    groundspeed=gs;
-    Time = t;
-    setText(tr(" %1 m/s \n %2 s").arg(gs).arg(t));
-    emit groundSpeedChanged(groundspeed);
+    ;
 }
 
 QRectF GoNode::outlineRect() const
@@ -377,8 +372,6 @@ QRectF GoNode::outlineRect() const
 
 QRectF GoNode::boundingRect() const
 {
-//    this->high = outlineRect().height();
-//    this->wide = outlineRect().width();
     return outlineRect();
 }
 
@@ -729,6 +722,7 @@ TurnNode::TurnNode()
 
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setDirection()));
     connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setAngel(QString)));
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
     identifier="TurnLeftNode";
     rank = 0;
 }
@@ -756,11 +750,7 @@ double TurnNode::myAngel()
 
 void TurnNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    double a = QInputDialog::getDouble(event->widget(),
-                           tr("Edit Angel"), tr("Enter new angel:"),
-                           QLineEdit::Normal, Angel);
-    setText(tr(" %1 ").arg(a));
-    Angel=a;
+    ;
 }
 
 QRectF TurnNode::outlineRect() const
@@ -922,6 +912,7 @@ HoverNode::HoverNode()
     rank = 0;
 
     connect(lineEdit,SIGNAL(textChanged(QString)),this,SLOT(setTime(QString)));
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
 }
 
 HoverNode::~HoverNode()
@@ -951,12 +942,7 @@ double HoverNode::myTime()
 
 void HoverNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-        double t = QInputDialog::getDouble(event->widget(),
-                               tr("Edit Time"), tr("Enter new time:"),
-                               QLineEdit::Normal, time);
-        time=t;
-        setText(tr(" Hover \n %1 s").arg(t));
-        emit timeChanged(time);
+        ;
 }
 
 
@@ -1080,6 +1066,8 @@ DelayNode::DelayNode()
     time=0;
     rank = 0;
     identifier="Delay";
+
+    connect(lineEdit,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
 }
 
 DelayNode::~DelayNode()
@@ -1110,12 +1098,7 @@ double DelayNode::myTime()
 
 void DelayNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-        double t = QInputDialog::getDouble(event->widget(),
-                               tr("Edit Time"), tr("Enter new time:"),
-                               QLineEdit::Normal, time);
-        time=t;
-        setText(tr(" Delay \n %1 s").arg(t));
-        emit timeChanged(t);
+        ;
 }
 
 QRectF DelayNode::outlineRect() const

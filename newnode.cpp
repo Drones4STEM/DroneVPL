@@ -245,11 +245,7 @@ void NewNode::paint(QPainter *painter,
 ******************************************************************/
 void NewNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    QString text = QInputDialog::getText(event->widget(),
-                           tr("Edit Text"), tr("Enter new text:"),
-                           QLineEdit::Normal, myText);
-    if (!text.isEmpty())
-        setText(text);
+    ;
 }
 
 /*******************************************************************
