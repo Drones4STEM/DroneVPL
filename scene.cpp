@@ -323,6 +323,24 @@ void newscene::del()
         if(dynamic_cast<ComputeNode*>(items[i]))
             itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
     }
+    QList<sinNode*>itemSins;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<sinNode*>(items[i]))
+            itemSins<<dynamic_cast<sinNode*>(items[i]);
+    }
+    QList<logNode*>itemLogs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<logNode*>(items[i]))
+            itemLogs<<dynamic_cast<logNode*>(items[i]);
+    }
+    QList<eNode*>itemEs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<eNode*>(items[i]))
+            itemEs<<dynamic_cast<eNode*>(items[i]);
+    }
     QList<IoNode*>itemIos;
     for(i=0;i<itemsCount;i++)
     {
@@ -457,6 +475,24 @@ void newscene::del()
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (sinNode* item, itemSins) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (logNode* item, itemLogs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (eNode* item, itemEs) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
