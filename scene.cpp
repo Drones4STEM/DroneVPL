@@ -323,6 +323,24 @@ void newscene::del()
         if(dynamic_cast<ComputeNode*>(items[i]))
             itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
     }
+    QList<sinNode*>itemSins;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<sinNode*>(items[i]))
+            itemSins<<dynamic_cast<sinNode*>(items[i]);
+    }
+    QList<logNode*>itemLogs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<logNode*>(items[i]))
+            itemLogs<<dynamic_cast<logNode*>(items[i]);
+    }
+    QList<eNode*>itemEs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<eNode*>(items[i]))
+            itemEs<<dynamic_cast<eNode*>(items[i]);
+    }
     QList<IoNode*>itemIos;
     for(i=0;i<itemsCount;i++)
     {
@@ -457,6 +475,24 @@ void newscene::del()
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (sinNode* item, itemSins) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (logNode* item, itemLogs) {
+        WidgetWrap tmp(item);
+        wm->del(tmp);
+        this->check_in_Logic(&tmp,"del",0);
+        delete item;
+    }
+    foreach (eNode* item, itemEs) {
         WidgetWrap tmp(item);
         wm->del(tmp);
         this->check_in_Logic(&tmp,"del",0);
@@ -1744,7 +1780,7 @@ bool newscene::CreateIf(QPointF point, int id)
     this->addItem(rec->yuan3);
     this->addItem(rec->yuan4);
     this->addItem(rec->yuan5);
-    this->addItem(rec->yuan7);
+    //this->addItem(rec->yuan7);
 
     rec->controlsId=id;
     rec->identifier="If";
@@ -1806,7 +1842,7 @@ bool newscene::CreateElse(QPointF point, int id)
     this->addItem(rec->yuan3);
     this->addItem(rec->yuan4);
     this->addItem(rec->yuan5);
-    this->addItem(rec->yuan6);
+    //this->addItem(rec->yuan6);
 
 
     rec->controlsId=id;
@@ -2900,7 +2936,7 @@ bool newscene::CreateLogic(Rec *rec)
         this->addItem(rec->yuan3);
         this->addItem(rec->yuan4);
         this->addItem(rec->yuan5);
-        this->addItem(rec->yuan7);
+        //this->addItem(rec->yuan7);
         rec->setLogicFlag(1);
         rec->identifier="If";
     }
@@ -2922,7 +2958,7 @@ bool newscene::CreateLogic(Rec *rec)
         this->addItem(rec->yuan3);
         this->addItem(rec->yuan4);
         this->addItem(rec->yuan5);
-        this->addItem(rec->yuan6);
+        //this->addItem(rec->yuan6);
         rec->setLogicFlag(2);
         rec->identifier="Else";
     }
