@@ -413,22 +413,15 @@ void newscene::del()
         delete item;
     }
     foreach (TakeOffNode* item, itemTakeoffs) {
-        /*qDebug()<<"In del():\n"<<"TakeOff: ";
-        qDebug()<<"type: "<<item->identifier;
-        qDebug()<<"id: "<<item->controlsId;
-        qDebug()<<"location_x: "<<item->pos().x();
-        qDebug()<<"location_y: "<<item->pos().y();*/
         emit sig_link_deleted(item->yuan->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (LandNode* item, itemLandons) {
         emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (GoNode* item, itemTranslations) {
@@ -436,7 +429,6 @@ void newscene::del()
         emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (TurnNode* item, itemTurn) {
@@ -444,7 +436,6 @@ void newscene::del()
         emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (HoverNode* item, itemHover) {
@@ -452,7 +443,6 @@ void newscene::del()
         emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (DelayNode* item, itemDelay) {
@@ -460,7 +450,6 @@ void newscene::del()
         emit sig_link_deleted(item->yuan2->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (ComputeNode* item, itemComputes) {
@@ -469,16 +458,8 @@ void newscene::del()
         emit sig_link_deleted(item->yuan3->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-
-//    foreach (IoNode* item, itemIos) {
-//        WidgetWrap tmp(item);
-//        wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
-//        delete item;
-//    }
 
     foreach (sinNode* item, itemSins) {
         emit sig_link_deleted(item->yuan->myLinks);
@@ -486,7 +467,6 @@ void newscene::del()
         emit sig_link_deleted(item->yuan3->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (logNode* item, itemLogs) {
@@ -495,7 +475,6 @@ void newscene::del()
         emit sig_link_deleted(item->yuan3->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
     foreach (eNode* item, itemEs) {
@@ -504,15 +483,8 @@ void newscene::del()
         emit sig_link_deleted(item->yuan3->myLinks);
         WidgetWrap tmp(item);
         wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
         delete item;
     }
-//    foreach (IoNode* item, itemIos) {
-//        WidgetWrap tmp(item);
-//        wm->del(tmp);
-//        this->check_in_Logic(&tmp,"del",0);
-//        delete item;
-//    }
 
     foreach (BatteryNode* item, itemBry) {
         emit sig_link_deleted(item->yuan->myLinks);

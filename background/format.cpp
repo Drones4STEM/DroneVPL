@@ -913,17 +913,17 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         BatteryNode* tmp = w->mBatteryNode;
         if(tmp->node1!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.battery.voltage\n";
         }
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"(myCopter.battery.current * 10)\n";
         }
         if(tmp->node3!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.battery.level\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -933,17 +933,17 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         AttitudeNode* tmp = w->mAttitudeNode;
         if(tmp->node1!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.attitude.roll\n";
         }
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.attitude.pitch\n";
         }
         if(tmp->node3!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.attitude.yaw\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -952,47 +952,47 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         ChannelNode* tmp = w->mChannelNode;
         if(tmp->node1!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node1->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(1)]\n";
         }
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(2)]\n";
         }
         if(tmp->node3!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node3->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(3)]\n";
         }
         if(tmp->node4!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node4->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node4->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(4)]\n";
         }
         if(tmp->node5!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node5->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node5->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(5)]\n";
         }
         if(tmp->node6!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node6->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node6->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(6)]\n";
         }
         if(tmp->node7!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node7->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node7->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(7)]\n";
         }
         if(tmp->node8!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node8->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node8->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(8)]\n";
         }
         if(tmp->node9!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node9->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node9->yuan->myLinks.toList()[0]->fromYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.channels[str(9)]\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1001,7 +1001,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         RangeFinderNode* tmp = w->mRangeFinderNode;
         if(tmp->node2!=0){
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<tmp->node2->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode->text()<<"=";
+            stream<<tmp->node2->yuan->myLinks.toList()[0]->toYuan()->master->mVarInstanceNode->varName<<"=";
             stream<<"myCopter.rangefinder.distance\n";
         }
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
@@ -1795,15 +1795,63 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
         if(fyuan==wfrom.mSinNode->yuan3->name)
             first = dynamic_cast<Yuan*> (wfrom.mSinNode->yuan3);
     }
-    if(wfrom.identifier == "IO"){
-        if(fyuan == "n1yuan")
-            first = dynamic_cast<Yuan*> (wfrom.mIONode->node1->yuan);
+    if(wfrom.identifier == "RangeFinder"){
+        if(fyuan == "yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mRangeFinderNode->yuan);
         else if(fyuan == "n2yuan")
-            first = dynamic_cast<Yuan*> (wfrom.mIONode->node2->yuan);
+            first = dynamic_cast<Yuan*> (wfrom.mRangeFinderNode->node2->yuan);
+    }
+    if(wfrom.identifier == "Channel"){
+        if(fyuan == "yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->yuan);
+        else if(fyuan == "n1yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node1->yuan);
+        else if(fyuan == "n2yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node2->yuan);
         else if(fyuan == "n3yuan")
-            first = dynamic_cast<Yuan*> (wfrom.mIONode->node3->yuan);
-        else if(fyuan == "yuan")
-            first = dynamic_cast<Yuan*> (wfrom.mIONode->yuan);
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node3->yuan);
+        else if(fyuan == "n4yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node4->yuan);
+        else if(fyuan == "n5yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node5->yuan);
+        else if(fyuan == "n6yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node6->yuan);
+        else if(fyuan == "n7yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node7->yuan);
+        else if(fyuan == "n8yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node8->yuan);
+        else if(fyuan == "n9yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mChannelNode->node9->yuan);
+    }
+    if(wfrom.identifier == "Attitude"){
+        if(fyuan == "yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mAttitudeNode->yuan);
+        else if(fyuan == "n1yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mAttitudeNode->node1->yuan);
+        else if(fyuan == "n2yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mAttitudeNode->node2->yuan);
+        else if(fyuan == "n3yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mAttitudeNode->node3->yuan);
+    }
+    if(wfrom.identifier == "Gimbal"){
+        if(fyuan == "yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mGimbalNode->yuan);
+        else if(fyuan == "n1yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mGimbalNode->node1->yuan);
+        else if(fyuan == "n2yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mGimbalNode->node2->yuan);
+        else if(fyuan == "n3yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mGimbalNode->node3->yuan);
+    }
+    if(wfrom.identifier == "Battery"){
+        if(fyuan == "yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mBatteryNode->yuan);
+        else if(fyuan == "n1yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mBatteryNode->node1->yuan);
+        else if(fyuan == "n2yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mBatteryNode->node2->yuan);
+        else if(fyuan == "n3yuan")
+            first = dynamic_cast<Yuan*> (wfrom.mBatteryNode->node3->yuan);
     }
     if(wfrom.identifier == "If"||
             wfrom.identifier == "Else"||
@@ -1857,6 +1905,21 @@ bool format::CreateLink(QPointF point, int id, QString from, QString to, QString
     }
     if(wto.identifier == "IO"){
         second = wto.mIONode->yuan2;
+    }
+    if(wto.identifier == "RangeFinder"){
+        second = wto.mRangeFinderNode->yuan2;
+    }
+    if(wto.identifier == "Channel"){
+        second = wto.mChannelNode->yuan2;
+    }
+    if(wto.identifier == "Attitude"){
+        second = wto.mAttitudeNode->yuan2;
+    }
+    if(wto.identifier == "Gimbal"){
+        second = wto.mGimbalNode->yuan2;
+    }
+    if(wto.identifier == "Battery"){
+        second = wto.mBatteryNode->yuan2;
     }
     if(wto.identifier == "If"||
             wto.identifier == "Else"||
