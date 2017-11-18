@@ -131,9 +131,9 @@ std::stack<widget*> digraph::get_nodes_without_IN(Logic* l)
  * Output: none
  *****************************************************/
 void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
-{
-//    if(w->rank() != rank) return;   //非该级的节点视作无连接
-    /*else*/ if(visited.value(w->name)==0){
+{//这里有个“逻辑漏洞”，一个logic内的子图的终点必然是这个logic，按理讲应当把连接终点的连线忽视从而正确地遍历且只遍历子图，
+ //然而由于logic被遍历到一定在子图之前，因此visted数组记录logic已被访问过，自动终结了子图延伸向这个节点的访问。
+     if(visited.value(w->name)==0){
         visited[w->name]=1;
         if(w->get_yuan_out()!= NULL){
             QSetIterator<Link*> it = (w->get_yuan_out()->myLinks);   //Qset的迭代器,传入迭代对象
@@ -141,6 +141,7 @@ void digraph::DFS(widget* w, int rank,std::stack<widget*>* stack)
                 DFS(it.peekNext()->toYuan()->master,rank,stack);
                 it.next();
             }
+
         }
         stack->push(w);  //加入结果集
     }
