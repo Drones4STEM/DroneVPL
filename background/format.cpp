@@ -1048,28 +1048,28 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
         if(w->mGoNode->direction=="GoRight"){
 //            stream<<"print \"Going rightward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity("<<w->mGoNode->myGroundSpeed()<<", 0, 0)\n";
+            stream<<"myCopter.send_nav_velocity("<<"0, "<<w->mGoNode->myGroundSpeed()<<", 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="GoLeft"){
 //            stream<<"print \"Going leftward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity("<<(-(w->mGoNode->myGroundSpeed()))<<", 0, 0)\n";
+            stream<<"myCopter.send_nav_velocity("<<"0, "<<(-(w->mGoNode->myGroundSpeed()))<<", 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="Forward"){
 //            stream<<"print \"Going forward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(0, "<<(-(w->mGoNode->myGroundSpeed()))<<", 0)\n";
+            stream<<"myCopter.send_nav_velocity("<<(w->mGoNode->myGroundSpeed())<<",0, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
         if(w->mGoNode->direction=="Backward"){
 //            stream<<"print \"Going backward at 1m/s for 5s\"\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
-            stream<<"myCopter.send_nav_velocity(0, "<<(w->mGoNode->myGroundSpeed())<<", 0)\n";
+            stream<<"myCopter.send_nav_velocity("<<(-(w->mGoNode->myGroundSpeed()))<<",0, 0)\n";
             for(int i=1;i<=tabs;i++) stream<<"   ";
             stream<<"time.sleep("<<w->mGoNode->myTime()<<")\n";
         }
