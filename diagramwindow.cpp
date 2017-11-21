@@ -2503,7 +2503,7 @@ void DiagramWindow::createDockWidgets()
                 tr("upload and run"),this);
     processDockWidget->setWidget(processWidget);
     addDockWidget(Qt::RightDockWidgetArea,processDockWidget);
-    //processDockWidget->setVisible(false);
+    processDockWidget->setVisible(false);
 }
 
 /*******************************************************************
