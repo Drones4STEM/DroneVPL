@@ -147,8 +147,8 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mDelayNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            QString Time = QString::number((long)ww->mDelayNode->myTime(),10);
-            stream.writeTextElement("Time",Time);
+//            QString Time = QString::number((long)ww->mDelayNode->lineEdit->text(),10);
+            stream.writeTextElement("Time",ww->mDelayNode->lineEdit->text());
         }
 
         qDebug()<<"category: "<<ww->category;
@@ -854,8 +854,12 @@ bool format::SavePyFile(QString filename)
         qDebug()<<"file remove "<<file.remove();
     }
 
+    QString path;
+    QDir dir;
+    path = dir.currentPath();
+    path = path + "/prepare.py";
     qDebug()<<"file copy "
-            <<QFile::copy("../DroneVPL/pycode/prepare.py",filename);
+            <<QFile::copy(path,filename);
 
     qDebug()<<filename;
     file.open(QIODevice::Append);
@@ -1091,7 +1095,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<"time.sleep("<<w->mDelayNode->myTime()<<")"<<"\n";
+        stream<<"time.sleep("<<w->mDelayNode->lineEdit->text()<<")"<<"\n";
     }
 
     if(w->identifier=="Compute"){    //如果传入的控件是Compute

@@ -18,6 +18,7 @@
 #include <QWidget>
 #include <QMainWindow>
 #include <QDesktopServices>
+#include <string>
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -1851,6 +1852,38 @@ void DiagramWindow::canvas()
 ******************************************************************/
 void DiagramWindow::checkup()
 {
+    //得到当前程序工作目录
+    QString path;
+    QString newPath;
+    QDir dir;
+    path = dir.currentPath();
+    //将格式改为D:\\path\\Compile.py，即将“/”改为“\\”
+    QStringList list;
+    list = path.split('/');
+    int lenth = list.length();
+    for(int i=0;i<lenth;i++)
+        newPath = newPath + list[i] + "\\\\";
+    newPath = newPath + "Compile.py";
+
+    QString command;
+    command = "pscp -pw apsync " + newPath + " apsync@10.0.1.128:FlightController";
+
+    QStringList arguments;
+    arguments<<"pscp"<<"-pw"<<"apsync"<<newPath
+            <<QString("%1@%2:%3").arg("apsync").arg("10.0.1.128").arg("FlihtController");
+
+    QProcess process(this);
+    //process.setProcessChannelMode(QProcess::SeparateChannels);
+    //process.setReadChannel(QProcess::StandardOutput);
+    process.start("cmd.exe",arguments,QIODevice::ReadWrite);
+    process.waitForStarted();
+    process.waitForFinished();
+    QString strResult = QString::fromLocal8Bit(process.readAllStandardOutput());
+    qDebug()<<strResult;
+    char *data;
+    process.read(data,10);
+    qDebug()<<data;
+    process.close();
 
 }
 
@@ -1860,7 +1893,13 @@ void DiagramWindow::compile()
     format formater;
     formater.set_map(m);
     formater.set_digraph(m,LHM);
-    formater.SavePyFile("../Compile.py");
+    //formater.SavePyFile("../Compile.py");
+    QString path;
+    QDir dir;
+    path = dir.currentPath();
+    path += "/Compile.py";
+    qDebug()<<path;
+    formater.SavePyFile(path);
 
 //    digraph digrapher(m);
 //    std::stack<widget*> stk = digrapher.get_topology();
@@ -1877,25 +1916,43 @@ void DiagramWindow::compile()
 
 void DiagramWindow::upload()
 {
-    //system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
-    QProcess p(0);
-    //p.start("ipconfig");
-    p.start("pscp -pw fff19970210 D:\\path\\2017.txt ryanfeng@192.168.80.129:Documents/2017");
+    //得到当前程序工作目录
+    QString path;
+    QString newPath;
+    QDir dir;
+    path = dir.currentPath();
+    //将格式改为D:\\path\\Compile.py，即将“/”改为“\\”
+    QStringList list;
+    list = path.split('/');
+    int lenth = list.length();
+    for(int i=0;i<lenth;i++)
+        newPath = newPath + list[i] + "\\\\";
+    newPath = newPath + "Compile.py";
+    qDebug()<<newPath;
+    string command;
+    command = "pscp -pw apsync " + newPath.toStdString() + " apsync@10.0.1.128:FlightController";
+    system(command.c_str());
+    //char *chararguments;
+    //chararguments = "pscp -pw apsync " + newPath + " apsync@10.0.1.128:FlightController";
+    //system("pscp -pw apsync D:\\path\\Compile.py apsync@10.0.1.128:FlightController");
+
+    /*QProcess p(0);
+    p.start(command);
     p.waitForStarted();
     p.waitForFinished();
-    QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    QString str = QString::fromLocal8Bit(p.readAllStandardError());
     processWidget->setTextEdit(str);
     qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput());
-    qDebug()<<str;
+    qDebug()<<str;*/
 }
 
 void DiagramWindow::run()
 {
-    //system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
-    QProcess p(0);
+    system("plink -pw apsync apsync@10.0.1.128 python FlightController/Compile.py");
+    /*QProcess p(0);
     p.start("plink -pw fff19970210 ryanfeng@192.168.80.129 python Documents/2017.txt");
     p.waitForStarted();
-    p.waitForFinished();
+    p.waitForFinished();*/
     /*if(p.isReadable())
     {
         qDebug()<<true;
@@ -1903,13 +1960,13 @@ void DiagramWindow::run()
         qDebug()<<str;
         processWidget->setTextEdit(str);
     }*/
-    QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    /*QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
     if(!str.isEmpty())
         processWidget->setTextEdit(str);
     str = QString::fromLocal8Bit(p.readAllStandardError());
     if(!str.isEmpty())
         processWidget->setTextEdit(str);
-    qDebug()<<str;
+    qDebug()<<str;*/
 }
 
 void DiagramWindow::checkupAndCompile()
@@ -2236,7 +2293,7 @@ void DiagramWindow::createMenus()
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
     fileMenu->addAction(fileSaveAction);
-    fileMenu->addAction(fileSaveAsAction);
+    //fileMenu->addAction(fileSaveAsAction);
     fileMenu->addSeparator();
     fileMenu->addAction(fileExportAction);
     fileMenu->addAction(filePrintAction);
@@ -2251,10 +2308,10 @@ void DiagramWindow::createMenus()
     helpMenu->addAction(systemInformationAction);
     helpMenu->addAction(openHelpAction);
     //editmenu
-    editMenu->addAction(cutAction);
+    //editMenu->addAction(cutAction);
     editMenu->addAction(deleteAction);
-    editMenu->addAction(copyAction);
-    editMenu->addAction(pasteAction);
+    //editMenu->addAction(copyAction);
+    //editMenu->addAction(pasteAction);
     editMenu->addSeparator();
     editMenu->addAction(bringToFrontAction);
     editMenu->addAction(sendToBackAction);
@@ -2318,17 +2375,17 @@ void DiagramWindow::createMenus()
 
     //viewmenu
     /*viewMenu->addAction(showEditToolBarAction);*/
-    viewMenu->addAction(showNodeBarAction);
-    viewMenu->addAction(showNodeStatusBarAction);
+    //viewMenu->addAction(showNodeBarAction);
+    //viewMenu->addAction(showNodeStatusBarAction);
     viewMenu->addAction(viewShowGridAction);
-    viewMenu->addSeparator();
+    //viewMenu->addSeparator();
     viewMenu->addAction(viewZoomInAction);
     viewMenu->addAction(viewZoomOutAction);
     viewMenu->addSeparator();
-    viewMenu->addAction(propertiesAction);
-    viewMenu->addAction(canvasAction);
+    //viewMenu->addAction(propertiesAction);
+    //viewMenu->addAction(canvasAction);
     //compilemenu
-    compileMenu->addAction(checkupAction);
+    //compileMenu->addAction(checkupAction);
     compileMenu->addAction(compileAction);
     compileMenu->addAction(checkupAndCompileAction);
     compileMenu->addAction(uploadAction);
@@ -2338,9 +2395,9 @@ void DiagramWindow::createMenus()
     sceneMenu = new QMenu;
     sceneMenu->addAction(fileSaveAction);
     sceneMenu->addAction(deleteAction);
-    sceneMenu->addAction(cutAction);
-    sceneMenu->addAction(copyAction);
-    sceneMenu->addAction(pasteAction);
+    //sceneMenu->addAction(cutAction);
+    //sceneMenu->addAction(copyAction);
+    //sceneMenu->addAction(pasteAction);
     sceneMenu->addAction(bringToFrontAction);
     sceneMenu->addAction(sendToBackAction);
     sceneMenu->addAction(viewZoomInAction);
@@ -2379,10 +2436,10 @@ void DiagramWindow::createToolBars()
     addToolBar(Qt::LeftToolBarArea,bToolBar);
 
     cToolBar = addToolBar(tr("c"));
-    cToolBar->addAction(cutAction);
+    //cToolBar->addAction(cutAction);
     cToolBar->addAction(deleteAction);
-    cToolBar->addAction(copyAction);
-    cToolBar->addAction(pasteAction);
+    //cToolBar->addAction(copyAction);
+    //cToolBar->addAction(pasteAction);
     cToolBar->addAction(bringToFrontAction);
     cToolBar->addAction(sendToBackAction);
     cToolBar->addAction(viewZoomInAction);
@@ -2445,8 +2502,8 @@ void DiagramWindow::createDockWidgets()
     QDockWidget *processDockWidget = new QDockWidget(
                 tr("upload and run"),this);
     processDockWidget->setWidget(processWidget);
-    addDockWidget(Qt::BottomDockWidgetArea,processDockWidget);
-    processDockWidget->setVisible(false);
+    addDockWidget(Qt::RightDockWidgetArea,processDockWidget);
+    //processDockWidget->setVisible(false);
 }
 
 /*******************************************************************
