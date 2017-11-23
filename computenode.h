@@ -51,6 +51,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 private slots:
     void setNewIdentifier();
+    void changeUI();
 };
 
 class  ComputeSmallNode:public Node

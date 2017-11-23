@@ -42,6 +42,7 @@ ComputeNode::ComputeNode()
     connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(setNewIdentifier()));
     connect(lineEdit1,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
     connect(lineEdit2,SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    connect(box,SIGNAL(currentIndexChanged(int)),this,SLOT(changeUI()));
 }
 
 /*******************************************************************
@@ -110,8 +111,13 @@ QVariant ComputeNode::itemChange(GraphicsItemChange change, const QVariant &valu
                          pos().y() - outlineRect().height()/2 - yuan2->boundingRect().height()/2);
             foreach (Link *link, yuan2->myLinks)
             {link->trackYuans();update();}
-            yuan3->setPos(pos().x() + outlineRect().width()/2 + yuan3->boundingRect().width()/2,
-                         pos().y());
+
+            if(box->currentIndex() > 3 && box->currentIndex() < 7)
+                yuan3->setPos(pos().x() - outlineRect().width()/2 - yuan3->boundingRect().width()/2,
+                              pos().y());
+            else
+                yuan3->setPos(pos().x() + outlineRect().width()/2 + yuan3->boundingRect().width()/2,
+                             pos().y());
             foreach (Link *link, yuan3->myLinks)
             {link->trackYuans();update();}
     }
@@ -244,7 +250,23 @@ void ComputeNode::setNewIdentifier()
 //    }
 }
 
-
+void ComputeNode::changeUI()
+{
+    if(box->currentIndex() > 3 && box->currentIndex() < 7)
+    {
+        yuan->setVisible(false);
+        yuan2->setVisible(false);
+        yuan3->setPos(pos().x() - outlineRect().width()/2 - yuan3->boundingRect().width()/2,
+                      pos().y());
+    }
+    else
+    {
+        yuan->setVisible(true);
+        yuan2->setVisible(true);
+        yuan3->setPos(pos().x() + outlineRect().width()/2 + yuan3->boundingRect().width()/2,
+                     pos().y());
+    }
+}
 
 //-------------------ComputeSmallNode-----------------------//
 ComputeSmallNode::ComputeSmallNode()
