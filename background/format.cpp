@@ -104,7 +104,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
              stream.writeTextElement("location_x",x);
              y = QString::number((long)ww->mTakeOffNode->pos().y(),10);
              stream.writeTextElement("location_y",y);
-             QString Altitude = QString::number((long)ww->mTakeOffNode->myAltitude(),10);
+             QString Altitude = QString::number(ww->mTakeOffNode->myAltitude());
              stream.writeTextElement("Altitude",Altitude);
              //stream.writeStartElement("arrow_out");
         }
@@ -120,9 +120,9 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             y = QString::number((long)ww->mGoNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
             stream.writeTextElement("direction",ww->mGoNode->direction);
-            QString GroundSpeed = QString::number((long)ww->mGoNode->myGroundSpeed(),10);
+            QString GroundSpeed = QString::number(ww->mGoNode->myGroundSpeed());
             stream.writeTextElement("GroudSpeed",GroundSpeed);
-            QString Time = QString::number((long)ww->mGoNode->myTime(),10);
+            QString Time = QString::number(ww->mGoNode->myTime());
             stream.writeTextElement("Time",Time);
         }
         if(identifier == "Turn"){ //转向动作
@@ -131,7 +131,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             y = QString::number((long)ww->mTurnNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
             stream.writeTextElement("direction",ww->mTurnNode->direction);
-            QString Angel = QString::number((long)ww->mTurnNode->myAngel(),10);
+            QString Angel = QString::number(ww->mTurnNode->myAngel());
             stream.writeTextElement("Angel",Angel);
         }
         if(identifier == "Hover"){ //悬停动作
@@ -139,7 +139,7 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mHoverNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-            QString Time = QString::number((long)ww->mHoverNode->myTime(),10);
+            QString Time = QString::number(ww->mHoverNode->myTime());
             stream.writeTextElement("Time",Time);
         }
         if(identifier == "Delay"){ //延时动作
@@ -147,8 +147,8 @@ void format::widget_convert_to_xml(QMap<QString, widget*>::iterator& iter, QXmlS
             stream.writeTextElement("location_x",x);
             y = QString::number((long)ww->mDelayNode->pos().y(),10);
             stream.writeTextElement("location_y",y);
-//            QString Time = QString::number((long)ww->mDelayNode->lineEdit->text(),10);
-            stream.writeTextElement("Time",ww->mDelayNode->lineEdit->text());
+            QString Time = QString::number(ww->mDelayNode->myTime());
+            stream.writeTextElement("Time",Time);
         }
 
         qDebug()<<"category: "<<ww->category;
