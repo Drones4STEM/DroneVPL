@@ -2,11 +2,11 @@ import FlightController
 import sys
 import time
 
-# Create a Vehicle object
-myCopter = FlightController.Vehicle()
+# Create a Vehicle object, local port 9000 of cmavnode
+myCopter = FlightController.Vehicle(FCAddress='127.0.0.1:9000')
 
-# Connect and initialize the vehicle, enable SITL here
-if not myCopter.initialize(simulation = True):
+# Connect and initialize the vehicle
+if not myCopter.initialize():
 	sys.exit(1)
 
 
