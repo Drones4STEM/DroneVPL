@@ -1090,7 +1090,7 @@ void format::widget_convert_to_py(WidgetWrap* w, QTextStream& stream, int tabs)
     if(w->identifier=="Hover"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
         for(int i=1;i<=tabs;i++) stream<<"   ";
-        stream<<"time.sleep("<<w->mHoverNode->myTime()<<")\n";
+        stream<<"myCopter.hover("<<w->mHoverNode->myTime()<<")\n";
     }
     if(w->identifier=="Delay"){    //如果传入的控件是Action
         qDebug()<<"format::widget_convert_to_py()\n"<<w->name;
