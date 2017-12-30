@@ -18,6 +18,7 @@
 #include <QWidget>
 #include <QMainWindow>
 #include <QDesktopServices>
+#include <string>
 
 #include "aqp/aqp.hpp"
 #include "aqp/alt_key.hpp"
@@ -27,7 +28,7 @@
 #include "newnode.h"
 #include "takeoffnode.h"
 #include "varnode.h"
-#include "vardefnode.h"
+#include "varinstancenode.h"
 #include "computenode.h"
 #include "ionode.h"
 #include "yuan.h"
@@ -42,6 +43,7 @@
 #include "format.h"
 #include "digraph.h"
 #include <QProcess>
+#include <QGraphicsTextItem>
 
 
 
@@ -123,9 +125,8 @@ DiagramWindow::DiagramWindow()
     gridGroup = 0;
     scene = new newscene(wm,LHM);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
-    //scene->setSceneRect(0,0,pageSize.width(),pageSize.height());
     scene->setSceneRect(0,0,2*pageSize.width(),2*pageSize.height());
-    scene->setBackgroundBrush(Qt::white);
+    scene->setBackgroundBrush(QColor(52,73,94));
     widgetCondition = new WidgetCondition();
     view = new View;
     view->setScene(scene);
@@ -141,7 +142,7 @@ DiagramWindow::DiagramWindow()
     varNodeNum=0;  //计数varNode,命名每个varNode,下同
     takeoffNodeNum=0;
     landonNodeNum=0;
-    vardefNodeNum=0;
+    VarInstanceNodeNum=0;
     computeNodeNum=0;
     ioNodeNum=0;
     recNodeNum=0;
@@ -756,11 +757,6 @@ void DiagramWindow::addTranslationNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index=100;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-
-    //setDirty(true);
 }
 
 /*******************************************************************
@@ -774,12 +770,7 @@ void DiagramWindow::addRiseNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index = 103;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(0);
 
-    //setDirty(true);
 }
 
 /*******************************************************************
@@ -793,12 +784,6 @@ void DiagramWindow::addFallNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index = 104;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(1);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -812,12 +797,6 @@ void DiagramWindow::addAdvanceNode()
 {
     scene->need_to_set = 1;
     scene->selected_Index = 105;
-    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(2);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -829,14 +808,8 @@ void DiagramWindow::addAdvanceNode()
 ******************************************************************/
 void DiagramWindow::addBackNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 106;
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(3);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -848,14 +821,8 @@ void DiagramWindow::addBackNode()
 ******************************************************************/
 void DiagramWindow::addRightNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 107;
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(4);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -867,14 +834,8 @@ void DiagramWindow::addRightNode()
 ******************************************************************/
 void DiagramWindow::addLeftNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 108;
-    //TranslationNode *node=new TranslationNode;
-    //addTranslation(node);
-    //node->box->setCurrentIndex(5);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -886,14 +847,8 @@ void DiagramWindow::addLeftNode()
 ******************************************************************/
 void DiagramWindow::addSomeNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 10;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(0);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -935,14 +890,8 @@ void DiagramWindow::addSome(SomeNode *node)
 ******************************************************************/
 void DiagramWindow::addTurnLeftNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 110;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(0);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -954,14 +903,8 @@ void DiagramWindow::addTurnLeftNode()
 ******************************************************************/
 void DiagramWindow::addTurnRightNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 111;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(1);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -973,14 +916,8 @@ void DiagramWindow::addTurnRightNode()
 ******************************************************************/
 void DiagramWindow::addHangingNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 112;
-    //SomeNode *node=new SomeNode;
-    //addSome(node);
-    //node->box->setCurrentIndex(2);
-
-    //setDirty();
 }
 
 /*******************************************************************
@@ -1012,15 +949,14 @@ void DiagramWindow::addVarNode()
 }
 
 /*******************************************************************
- * Function name: addVardefNod()
- * Description: This function add a VardefNod on the scene.
+ * Function name: addVarInstanceNod()
+ * Description: This function add a VarInstanceNod on the scene.
  * Callee:
  * Inputs:
  * Outputs:
 ******************************************************************/
-void DiagramWindow::addVardefNode()
+void DiagramWindow::addVarInstanceNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 202;
 }
@@ -1034,9 +970,13 @@ void DiagramWindow::addVardefNode()
 ******************************************************************/
 void DiagramWindow::addComputeNode()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 301;
+}
+
+void DiagramWindow::addCompareNode()
+{
+    return;
 }
 
 void DiagramWindow::addAddNode()
@@ -1063,53 +1003,54 @@ void DiagramWindow::addDivNode()
     scene->selected_Index = 304;
 }
 
-void DiagramWindow::addCosNode()
+void DiagramWindow::addEqualNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 305;
 }
 
-void DiagramWindow::addSinNode()
+void DiagramWindow::addMoreNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 306;
 }
 
-void DiagramWindow::addTanNode()
+void DiagramWindow::addLessNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 307;
 }
 
-void DiagramWindow::addLogNode()
+void DiagramWindow::addCosNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 308;
 }
 
-void DiagramWindow::addENode()
+void DiagramWindow::addSinNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 309;
 }
 
-void DiagramWindow::addEqualNode()
+void DiagramWindow::addTanNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 310;
 }
 
-void DiagramWindow::addMoreNode()
+void DiagramWindow::addLogNode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 311;
 }
 
-void DiagramWindow::addLessNode()
+void DiagramWindow::addENode()
 {
     scene->need_to_set=1;
     scene->selected_Index = 312;
 }
+
 
 /*******************************************************************
  * Function name: addIoNode()
@@ -1237,32 +1178,26 @@ void DiagramWindow::addLink()
 ******************************************************************/
 void DiagramWindow::addRec()
 {
-    //setCursor(Qt::CrossCursor);
     scene->need_to_set=1;
     scene->selected_Index = 501;
-    //Rec *rec=new Rec;
-    //QGraphicsItem* item= scene->addWidget(rec->box);
-    //rec->item=item;
-    //rec->setPos(100,100);
-    //scene->addItem(rec);
-    //scene->clearSelection();
-    //rec->setSelected(true);
+}
 
-    //rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-    //                          rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    //scene->addItem(rec->yuan2);
+void DiagramWindow::addIf()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 502;
+}
 
-    //item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-    //                    (rec->pos().y() - rec->outlineRect().height()/2)));
-    //item->setZValue(rec->zValue()+1);
-    //rec->box->addItem(tr("if"));
-    //rec->box->addItem(tr("else"));
-    //rec->box->addItem(tr("while"));
+void DiagramWindow::addElse()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 503;
+}
 
-    //recNodeNum++;
-    //rec->controlsId=recNodeNum;
-
-    //setDirty();
+void DiagramWindow::addWhile()
+{
+    scene->need_to_set=1;
+    scene->selected_Index = 504;
 }
 
 /*******************************************************************
@@ -1274,253 +1209,253 @@ void DiagramWindow::addRec()
 ******************************************************************/
 void DiagramWindow::del()
 {
-    QList<QGraphicsItem *> items = scene->selectedItems();
-    int itemsCount = items.count();
-    int i=0;
-    QList<Link*>itemLinks;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<Link*>(items[i]))
-            itemLinks<<dynamic_cast<Link*>(items[i]);
-    }
-    QList<TakeOffNode*>itemTakeoffs;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<TakeOffNode*>(items[i]))
-            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
-    }
-    QList<LandNode*>itemLandons;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<LandNode*>(items[i]))
-            itemLandons<<dynamic_cast<LandNode*>(items[i]);
-    }
-    QList<GoNode*>itemTranslations;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<GoNode*>(items[i]))
-            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
-    }
-    QList<TurnNode*>itemTurn;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<TurnNode*>(items[i]))
-            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
-    }
-    QList<HoverNode*>itemHover;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<HoverNode*>(items[i]))
-            itemHover<<dynamic_cast<HoverNode*>(items[i]);
-    }
-    QList<DelayNode*>itemDelay;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<DelayNode*>(items[i]))
-            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
-    }
-    QList<ComputeNode*>itemComputes;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<ComputeNode*>(items[i]))
-            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
-    }
-    QList<IoNode*>itemIos;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<IoNode*>(items[i]))
-            itemIos<<dynamic_cast<IoNode*>(items[i]);
-    }
-    QList<BatteryNode*>itemBry;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<BatteryNode*>(items[i]))
-            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
-    }
-    QList<GimbalNode*>itemGim;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<GimbalNode*>(items[i]))
-            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
-    }
-    QList<AttitudeNode*>itemAtd;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<AttitudeNode*>(items[i]))
-            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
-    }
-    QList<ChannelNode*>itemChn;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<ChannelNode*>(items[i]))
-            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
-    }
-    QList<RangeFinderNode*>itemRF;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<RangeFinderNode*>(items[i]))
-            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
-    }
-    QList<Rec*>itemRecs;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<Rec*>(items[i]))
-            itemRecs<<dynamic_cast<Rec*>(items[i]);
-    }
-    QList<SomeNode*>itemSomes;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<SomeNode*>(items[i]))
-            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
-    }
-    QList<VardefNode*>itemVardefs;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VardefNode*>(items[i]))
-            itemVardefs<<dynamic_cast<VardefNode*>(items[i]);
-    }
-    QList<VarNode*>itemVars;
-    for(i=0;i<itemsCount;i++)
-    {
-        if(dynamic_cast<VarNode*>(items[i]))
-            itemVars<<dynamic_cast<VarNode*>(items[i]);
-    }
-    foreach (Link* item, itemLinks) {
-        typename QMap<QString, LOGIC_Help*>::iterator iter;
-        //typename QList<Link*>::iterator it;
-        LOGIC_Help* lh;
-        Link* link;
-        for(iter=LHM->begin();iter!=LHM->end();iter++){
-            lh = iter.value();
-            for(int i=0;i<lh->LOG->tlink.length();i++){
-                link = lh->LOG->tlink[i];
-                if(link->name==item->name){
-                    lh->LOG->tlink.removeOne(link);
-                }
-            }
-            for(int i=0;i<lh->LOG->flink.length();i++){
-                link = lh->LOG->flink[i];
-                if(link->name==item->name){
-                    lh->LOG->flink.removeOne(link);
-                }
-            }
+    scene->del();
 
-        }
-        delete item;
-    }
-    foreach (TakeOffNode* item, itemTakeoffs) {
-        /*qDebug()<<"In del():\n"<<"TakeOff: ";
-        qDebug()<<"type: "<<item->identifier;
-        qDebug()<<"id: "<<item->controlsId;
-        qDebug()<<"location_x: "<<item->pos().x();
-        qDebug()<<"location_y: "<<item->pos().y();*/
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (LandNode* item, itemLandons) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (GoNode* item, itemTranslations) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (TurnNode* item, itemTurn) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (HoverNode* item, itemHover) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (DelayNode* item, itemDelay) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (ComputeNode* item, itemComputes) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (IoNode* item, itemIos) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (BatteryNode* item, itemBry) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (GimbalNode* item, itemGim) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (AttitudeNode* item, itemAtd) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (ChannelNode* item, itemChn) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (RangeFinderNode* item, itemRF) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (Rec* item, itemRecs) {
-        WidgetWrap tmp(item);
-        typename QMap<QString, LOGIC_Help*>::iterator iter;
-        LOGIC_Help* lh;
-        for(iter=LHM->begin();iter!=LHM->end();){
-            lh = iter.value();
-            if(lh->LOG->name==tmp.name){
-                iter++;     //因为删除以后就没法访问下一个元素，所以手动在删除前访问
-                LHM->remove(lh->LOG->name);
-            }else iter++;
-        }
-        wm->del(tmp);
-        delete item;
-    }
-    foreach (VardefNode* item, itemVardefs) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (VarNode* item, itemVars) {
-        WidgetWrap tmp(item);
-        wm->del(tmp);
-        scene->check_in_Logic(&tmp,"del",0);
-        delete item;
-    }
-    foreach (SomeNode* item, itemSomes) {
+//    QList<QGraphicsItem *> items = scene->selectedItems();
+//    int itemsCount = items.count();
+//    int i=0;
+//    QList<Link*>itemLinks;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<Link*>(items[i]))
+//            itemLinks<<dynamic_cast<Link*>(items[i]);
+//    }
+//    QList<TakeOffNode*>itemTakeoffs;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<TakeOffNode*>(items[i]))
+//            itemTakeoffs<<dynamic_cast<TakeOffNode*>(items[i]);
+//    }
+//    QList<LandNode*>itemLandons;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<LandNode*>(items[i]))
+//            itemLandons<<dynamic_cast<LandNode*>(items[i]);
+//    }
+//    QList<GoNode*>itemTranslations;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<GoNode*>(items[i]))
+//            itemTranslations<<dynamic_cast<GoNode*>(items[i]);
+//    }
+//    QList<TurnNode*>itemTurn;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<TurnNode*>(items[i]))
+//            itemTurn<<dynamic_cast<TurnNode*>(items[i]);
+//    }
+//    QList<HoverNode*>itemHover;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<HoverNode*>(items[i]))
+//            itemHover<<dynamic_cast<HoverNode*>(items[i]);
+//    }
+//    QList<DelayNode*>itemDelay;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<DelayNode*>(items[i]))
+//            itemDelay<<dynamic_cast<DelayNode*>(items[i]);
+//    }
+//    QList<ComputeNode*>itemComputes;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<ComputeNode*>(items[i]))
+//            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
+//    }
+//    QList<IoNode*>itemIos;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<IoNode*>(items[i]))
+//            itemIos<<dynamic_cast<IoNode*>(items[i]);
+//    }
+//    QList<BatteryNode*>itemBry;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<BatteryNode*>(items[i]))
+//            itemBry<<dynamic_cast<BatteryNode*>(items[i]);
+//    }
+//    QList<GimbalNode*>itemGim;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<GimbalNode*>(items[i]))
+//            itemGim<<dynamic_cast<GimbalNode*>(items[i]);
+//    }
+//    QList<AttitudeNode*>itemAtd;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<AttitudeNode*>(items[i]))
+//            itemAtd<<dynamic_cast<AttitudeNode*>(items[i]);
+//    }
+//    QList<ChannelNode*>itemChn;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<ChannelNode*>(items[i]))
+//            itemChn<<dynamic_cast<ChannelNode*>(items[i]);
+//    }
+//    QList<RangeFinderNode*>itemRF;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<RangeFinderNode*>(items[i]))
+//            itemRF<<dynamic_cast<RangeFinderNode*>(items[i]);
+//    }
+//    QList<Rec*>itemRecs;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<Rec*>(items[i]))
+//            itemRecs<<dynamic_cast<Rec*>(items[i]);
+//    }
+//    QList<SomeNode*>itemSomes;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<SomeNode*>(items[i]))
+//            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
+//    }
+//    QList<VarInstanceNode*>itemVarInstances;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<VarInstanceNode*>(items[i]))
+//            itemVarInstances<<dynamic_cast<VarInstanceNode*>(items[i]);
+//    }
+//    QList<VarNode*>itemVars;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<VarNode*>(items[i]))
+//            itemVars<<dynamic_cast<VarNode*>(items[i]);
+//    }
+//    QList<VarNode*>itemVariables;
+//    for(i=0;i<itemsCount;i++)
+//    {
+//        if(dynamic_cast<VarNode*>(items[i]))
+//            itemVariables<<dynamic_cast<VarNode*>(items[i]);
+//    }
+//    foreach (Link* item, itemLinks) {
+////        typename QMap<QString, LOGIC_Help*>::iterator iter;
+////        typename QList<Link*>::iterator it;
+////        LOGIC_Help* lh;
+////        Link* link;
+////        for(iter=LHM->begin();iter!=LHM->end();iter++){
+////            lh = iter.value();
+////            for(int i=0;i<lh->LOG->tlink.length();i++){
+////                link = lh->LOG->tlink[i];
+////                if(link->name==item->name){
+////                    lh->LOG->tlink.removeOne(link);
+////                }
+////            }
+////            for(int i=0;i<lh->LOG->flink.length();i++){
+////                link = lh->LOG->flink[i];
+////                if(link->name==item->name){
+////                    lh->LOG->flink.removeOne(link);
+////                }
+////            }
 
-        delete item;
-    }
+////        }
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        delete item;
+//    }
+//    foreach (TakeOffNode* item, itemTakeoffs) {
+//        /*qDebug()<<"In del():\n"<<"TakeOff: ";
+//        qDebug()<<"type: "<<item->identifier;
+//        qDebug()<<"id: "<<item->controlsId;
+//        qDebug()<<"location_x: "<<item->pos().x();
+//        qDebug()<<"location_y: "<<item->pos().y();*/
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (LandNode* item, itemLandons) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (GoNode* item, itemTranslations) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (TurnNode* item, itemTurn) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (HoverNode* item, itemHover) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (DelayNode* item, itemDelay) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (ComputeNode* item, itemComputes) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (IoNode* item, itemIos) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (BatteryNode* item, itemBry) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (GimbalNode* item, itemGim) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (AttitudeNode* item, itemAtd) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (ChannelNode* item, itemChn) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (RangeFinderNode* item, itemRF) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (Rec* item, itemRecs) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        delete item;
+//    }
+//    foreach (VarInstanceNode* item, itemVarInstances) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (VarNode* item, itemVars) {
+//        WidgetWrap tmp(item);
+//        wm->del(tmp);
+//        scene->check_in_Logic(&tmp,"del",0);
+//        delete item;
+//    }
+//    foreach (SomeNode* item, itemSomes) {
+//        delete item;
+//    }
 }
 
 /*******************************************************************
@@ -1731,7 +1666,7 @@ void DiagramWindow::updateActions()
     bringToFrontAction->setEnabled(isNode||isRec);
     sendToBackAction->setEnabled(isNode||isRec);
     //更新view菜单中的动作
-    showEditToolBarAction->setChecked(editToolBar->isVisible());
+    //showEditToolBarAction->setChecked(editToolBar->isVisible());
     showNodeBarAction->setChecked(aToolBar->isVisible());
     showNodeStatusBarAction->setChecked(widgetCondition->isVisible());
 
@@ -1751,7 +1686,7 @@ void DiagramWindow::updateActions()
     foreach (QAction *action, view->actions())
         view->removeAction(action);
 
-    foreach (QAction *action, editMenu->actions()) {
+    foreach (QAction *action, sceneMenu->actions()) {
         if (action->isEnabled())
         view->addAction(action);
     }
@@ -1794,23 +1729,6 @@ bool DiagramWindow::sceneHasItems() const
             return true;
     }
     return false;
-}
-
-/*******************************************************************
- * Function name:showEditToolBar()
- * Description: This function changes the state of edit toolBar according
- *     to the state of the "EditToolBar" checkbox.
- * Callee:
- * Inputs:
- * Outputs:
-******************************************************************/
-void DiagramWindow::showEditToolBar()
-{
-    if(showEditToolBarAction->isChecked()) {
-       editToolBar->show();
-    }
-    else
-    {editToolBar->hide();}
 }
 
 /*******************************************************************
@@ -1934,6 +1852,38 @@ void DiagramWindow::canvas()
 ******************************************************************/
 void DiagramWindow::checkup()
 {
+    //得到当前程序工作目录
+    QString path;
+    QString newPath;
+    QDir dir;
+    path = dir.currentPath();
+    //将格式改为D:\\path\\Compile.py，即将“/”改为“\\”
+    QStringList list;
+    list = path.split('/');
+    int lenth = list.length();
+    for(int i=0;i<lenth;i++)
+        newPath = newPath + list[i] + "\\\\";
+    newPath = newPath + "Compile.py";
+
+    QString command;
+    command = "pscp -pw apsync " + newPath + " apsync@10.0.1.128:FlightController";
+
+    QStringList arguments;
+    arguments<<"pscp"<<"-pw"<<"apsync"<<newPath
+            <<QString("%1@%2:%3").arg("apsync").arg("10.0.1.128").arg("FlihtController");
+
+    QProcess process(this);
+    //process.setProcessChannelMode(QProcess::SeparateChannels);
+    //process.setReadChannel(QProcess::StandardOutput);
+    process.start("cmd.exe",arguments,QIODevice::ReadWrite);
+    process.waitForStarted();
+    process.waitForFinished();
+    QString strResult = QString::fromLocal8Bit(process.readAllStandardOutput());
+    qDebug()<<strResult;
+    char *data;
+    process.read(data,10);
+    qDebug()<<data;
+    process.close();
 
 }
 
@@ -1943,34 +1893,91 @@ void DiagramWindow::compile()
     format formater;
     formater.set_map(m);
     formater.set_digraph(m,LHM);
-    formater.SavePyFile("../Compile.py");
-    /*
-    digraph digrapher(m);
-    std::stack<widget*> stk = digrapher.get_topology();
-    WidgetWrap* tmp;
-    while(!stk.empty()){
-        tmp = stk.top();
-        stk.pop();
-        qDebug()<<"compile():";
-        qDebug()<<"name :"<<tmp->name;
-        qDebug()<<"identifier :"<<tmp->identifier;
-        qDebug()<<"controlsId :"<<tmp->controlsId;
-    }*/
+    //formater.SavePyFile("../Compile.py");
+    QString path;
+    QDir dir;
+    path = dir.currentPath();
+    path += "/Compile.py";
+    qDebug()<<path;
+    formater.SavePyFile(path);
+
+//    digraph digrapher(m);
+//    std::stack<widget*> stk = digrapher.get_topology();
+//    WidgetWrap* tmp;
+//    while(!stk.empty()){
+//        tmp = stk.top();
+//        stk.pop();
+//        qDebug()<<"compile():";
+//        qDebug()<<"name :"<<tmp->name;
+//        qDebug()<<"identifier :"<<tmp->identifier;
+//        qDebug()<<"controlsId :"<<tmp->controlsId;
+//    }
 }
 
 void DiagramWindow::upload()
 {
-    system("pscp -pw apsync D:\\path\\2017.txt apsync@10.0.1.128:FlightController");
+    //得到当前程序工作目录
+    QString path;
+    QString newPath;
+    QDir dir;
+    path = dir.currentPath();
+    //将格式改为D:\\path\\Compile.py，即将“/”改为“\\”
+    QStringList list;
+    list = path.split('/');
+    int lenth = list.length();
+    for(int i=0;i<lenth;i++)
+        newPath = newPath + list[i] + "\\\\";
+    newPath = newPath + "Compile.py";
+    qDebug()<<newPath;
+    string command;
+    command = "pscp -pw apsync " + newPath.toStdString() + " apsync@10.0.1.128:FlightController";
+    system(command.c_str());
+    //char *chararguments;
+    //chararguments = "pscp -pw apsync " + newPath + " apsync@10.0.1.128:FlightController";
+    //system("pscp -pw apsync D:\\path\\Compile.py apsync@10.0.1.128:FlightController");
+
+    /*QProcess p(0);
+    p.start(command);
+    p.waitForStarted();
+    p.waitForFinished();
+    QString str = QString::fromLocal8Bit(p.readAllStandardError());
+    processWidget->setTextEdit(str);
+    qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput());
+    qDebug()<<str;*/
 }
 
 void DiagramWindow::run()
 {
-    system("plink -pw apsync apsync@10.0.1.128 python FlightController/VehicleProperties.py");
+    system("plink -pw apsync apsync@10.0.1.128 python FlightController/Compile.py");
+    /*QProcess p(0);
+    p.start("plink -pw fff19970210 ryanfeng@192.168.80.129 python Documents/2017.txt");
+    p.waitForStarted();
+    p.waitForFinished();*/
+    /*if(p.isReadable())
+    {
+        qDebug()<<true;
+        QString str = QString::fromLocal8Bit(p.read(32));
+        qDebug()<<str;
+        processWidget->setTextEdit(str);
+    }*/
+    /*QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
+    if(!str.isEmpty())
+        processWidget->setTextEdit(str);
+    str = QString::fromLocal8Bit(p.readAllStandardError());
+    if(!str.isEmpty())
+        processWidget->setTextEdit(str);
+    qDebug()<<str;*/
 }
 
 void DiagramWindow::checkupAndCompile()
 {
-
+    QProcess more;
+    more.start("more");
+    more.write("Text to display");
+    more.closeWriteChannel();
+    qDebug()<<more.readAllStandardOutput();
+    qDebug()<<more.errorString();
+    qDebug()<<more.environment();
 }
 
 /*******************************************************************
@@ -1983,12 +1990,13 @@ void DiagramWindow::checkupAndCompile()
 ******************************************************************/
 void DiagramWindow::createActions()
 {
-    fileNewAction = new QAction(tr("New"),this);
-    fileNewAction->setShortcut(QKeySequence::New);
+    fileNewAction = new QAction(tr("新建"),this);
+    //fileNewAction->setShortcut(QKeySequence::New);
+    //fileNewAction->setIcon(QIcon(":/images/icon/打钩.png"));
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
     fileNewAction->setIcon(QIcon(":/images/filenew.png"));
 
-    fileOpenAction = new QAction(tr("Open"),this);
+    fileOpenAction = new QAction(tr("打开"),this);
     fileOpenAction->setShortcut(QKeySequence::Open);
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
     fileOpenAction->setIcon(QIcon(":/images/fileopen.png"));
@@ -2000,72 +2008,90 @@ void DiagramWindow::createActions()
                 this, SLOT(openRecentFile()));
     }
 
-    fileSaveAction = new QAction(tr("Save"),this);
+    fileSaveAction = new QAction(tr("保存"),this);
     fileSaveAction->setShortcut(QKeySequence::Save);
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
     fileSaveAction->setIcon(QIcon(":/images/filesave.png"));
 
-    fileSaveAsAction = new QAction(tr("Save As"),this);
+    fileSaveAsAction = new QAction(tr("另存为"),this);
     connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
 
-    fileExportAction = new QAction(tr("Export"),this);
+    fileExportAction = new QAction(tr("导出"),this);
     connect(fileExportAction, SIGNAL(triggered()), this, SLOT(fileExport()));
     fileExportAction->setIcon(QIcon(":/images/fileexport.png"));
 
-    filePrintAction = new QAction(tr("Print"),this);
+    filePrintAction = new QAction(tr("打印"),this);
     connect(filePrintAction, SIGNAL(triggered()), this, SLOT(filePrint()));
     filePrintAction->setIcon(QIcon(":/images/fileprint.png"));
 
-    closeAction = new QAction(tr("&Close"),this);
+    closeAction = new QAction(tr("关闭"),this);
     closeAction->setShortcut(tr("Ctrl+W"));
     connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
 
-    exitAction = new QAction(tr("E&xit"), this);
+    exitAction = new QAction(tr("退出"), this);
     exitAction->setShortcut(tr("Ctrl+Q"));
     connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
     addActionNodeAction = new QAction(tr("Action"),this);
-    addIONodeAction = new QAction(tr("IO"),this);
 
-    addTakeoffNodeAction = new QAction(tr("TakeOff"), this);
+    addTakeoffNodeAction = new QAction(tr("起飞"), this);
+    addTakeoffNodeAction->setIcon(QIcon(":/images/icon/take off copy.png"));
     connect(addTakeoffNodeAction, SIGNAL(triggered()), this, SLOT(addTakeoffNode()));
     addLandonNodeAction = new QAction(tr("LandOn"),this);
+    addLandonNodeAction->setIcon(QIcon(":/images/icon/land on copy.png"));
     connect(addLandonNodeAction, SIGNAL(triggered()), this, SLOT(addLandonNode()));
 
-    addTranslationNodeAction = new QAction(tr("Translation"),this);
+    addTranslationNodeAction = new QAction(tr("移动"),this);
+    addTranslationNodeAction->setIcon(QIcon("://images/icon/motion.png"));
 
-    addRiseNodeAction = new QAction(tr("GoUp"),this);
+    addRiseNodeAction = new QAction(tr("向上"),this);
+    addRiseNodeAction->setIcon(QIcon(":/images/icon/up copy.png"));
     connect(addRiseNodeAction, SIGNAL(triggered()), this, SLOT(addRiseNode()));
-    addFallNodeAction = new QAction(tr("GoDown"),this);
+    addFallNodeAction = new QAction(tr("向下"),this);
+    addFallNodeAction->setIcon(QIcon(":/images/icon/down copy.png"));
     connect(addFallNodeAction, SIGNAL(triggered()), this, SLOT(addFallNode()));
-    addAdvanceNodeAction = new QAction(tr("Forward"),this);
+    addAdvanceNodeAction = new QAction(tr("向前"),this);
+    addAdvanceNodeAction->setIcon(QIcon(":/images/icon/forward copy.png"));//这里的图片要换
     connect(addAdvanceNodeAction, SIGNAL(triggered()), this, SLOT(addAdvanceNode()));
-    addBackNodeAction = new QAction(tr("Backward"),this);
+    addBackNodeAction = new QAction(tr("向后"),this);
+    addBackNodeAction->setIcon(QIcon(":/images/icon/backward copy.png"));//这里的图片也要换
     connect(addBackNodeAction, SIGNAL(triggered()), this, SLOT(addBackNode()));
-    addRightNodeAction = new QAction(tr("GoRight"),this);
+    addRightNodeAction = new QAction(tr("向右"),this);
+    addRightNodeAction->setIcon(QIcon(":/images/icon/right copy.png"));
     connect(addRightNodeAction, SIGNAL(triggered()), this, SLOT(addRightNode()));
-    addLeftNodeAction = new QAction(tr("GoLeft"),this);
+    addLeftNodeAction = new QAction(tr("向左"),this);
+    addLeftNodeAction->setIcon(QIcon(":/images/icon/left copy.png"));
     connect(addLeftNodeAction, SIGNAL(triggered()), this, SLOT(addLeftNode()));
 
     addSomeNodeAction = new QAction(tr("Add Some..."),this);
     connect(addSomeNodeAction,SIGNAL(triggered()),this,SLOT(addSomeNode()));
-    addTurnLeftNodeAction = new QAction(tr("TurnLeft"),this);
+    addTurnLeftNodeAction = new QAction(tr("左转"),this);
+    addTurnLeftNodeAction->setIcon(QIcon(":/images/icon/turn left copy.png"));
     connect(addTurnLeftNodeAction, SIGNAL(triggered()), this, SLOT(addTurnLeftNode()));
-    addTurnRightNodeAction = new QAction(tr("TurnRight"),this);
+    addTurnRightNodeAction = new QAction(tr("右转"),this);
+    addTurnRightNodeAction->setIcon(QIcon(":/images/icon/turn right copy.png"));
     connect(addTurnRightNodeAction, SIGNAL(triggered()), this, SLOT(addTurnRightNode()));
-    addHangingNodeAction = new QAction(tr("Hover"),this);
+    addHangingNodeAction = new QAction(tr("悬停"),this);
+    addHangingNodeAction->setIcon(QIcon(":/images/icon/hover copy.png"));
     connect(addHangingNodeAction, SIGNAL(triggered()), this, SLOT(addHangingNode()));
-    addDelayNodeAction = new QAction(tr("Delay"),this);
+    addDelayNodeAction = new QAction(tr("延时"),this);
+    addDelayNodeAction->setIcon(QIcon(":/images/icon/delay copy.png"));
     connect(addDelayNodeAction, SIGNAL(triggered()), this, SLOT(addDelayNode()));
 
-    addVarNodeAction = new QAction(tr("VarType"),this);
+    addVarNodeAction = new QAction(tr("变量"),this);
+    addVarNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
     connect(addVarNodeAction,SIGNAL(triggered()),this,SLOT(addVarNode()));
-    addVardefNodeAction = new QAction(tr("VarDef"),this);
-    connect(addVardefNodeAction,SIGNAL(triggered()),this,SLOT(addVardefNode()));
+    addVarInstanceNodeAction = new QAction(tr("VarInstance"),this);
+    addVarInstanceNodeAction->setIcon(QIcon(":/images/icon/add variable copy.png"));
+    connect(addVarInstanceNodeAction,SIGNAL(triggered()),this,SLOT(addVarInstanceNode()));
 
-    addComputeNodeAction = new QAction(tr("Compute"),this);
-    //connect(addComputeNodeAction,SIGNAL(triggered()),this,SLOT(addComputeNode()));
-    addAddNodeAction = new QAction(tr("+"),this);
+    addComputeNodeAction = new QAction(tr("计算"),this);
+    addComputeNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
+    addCompareNodeAction = new QAction(tr("比较"),this);
+    addCompareNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
+    connect(addCompareNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
+    addAddNodeAction = new QAction(this);
+    addAddNodeAction->setIcon(QIcon(":/images/icon/compute copy.png"));
     connect(addAddNodeAction,SIGNAL(triggered()),this,SLOT(addAddNode()));
     addSubNodeAction = new QAction(tr("-"),this);
     connect(addSubNodeAction,SIGNAL(triggered()),this,SLOT(addSubNode()));
@@ -2073,84 +2099,106 @@ void DiagramWindow::createActions()
     connect(addMulNodeAction,SIGNAL(triggered()),this,SLOT(addMulNode()));
     addDivNodeAction = new QAction(tr("/"),this);
     connect(addDivNodeAction,SIGNAL(triggered()),this,SLOT(addDivNode()));
-    addCosNodeAction = new QAction(tr("cos"),this);
+    addCosNodeAction = new QAction(this);
+    addCosNodeAction->setIcon(QIcon(":/images/icon/三角.png"));
     connect(addCosNodeAction,SIGNAL(triggered()),this,SLOT(addCosNode()));
     addSinNodeAction = new QAction(tr("sin"),this);
     connect(addSinNodeAction,SIGNAL(triggered()),this,SLOT(addSinNode()));
     addTanNodeAction = new QAction(tr("tan"),this);
     connect(addTanNodeAction,SIGNAL(triggered()),this,SLOT(addTanNode()));
-    addLogNodeAction = new QAction(tr("log"),this);
+    addLogNodeAction = new QAction(this);
+    addLogNodeAction->setIcon(QIcon(":/images/icon/log.png"));
     connect(addLogNodeAction,SIGNAL(triggered()),this,SLOT(addLogNode()));
-    addENodeAction = new QAction(tr("e"),this);
+    addENodeAction = new QAction(this);
+    addENodeAction->setIcon(QIcon(":/images/icon/e.png"));
     connect(addENodeAction,SIGNAL(triggered()),this,SLOT(addENode()));
-    addEqualNodeAction = new QAction(tr("="),this);
+    addEqualNodeAction = new QAction(this);
+    addEqualNodeAction->setIcon(QIcon(":/images/icon/compare copy.png"));
     connect(addEqualNodeAction,SIGNAL(triggered()),this,SLOT(addEqualNode()));
     addMoreNodeAction = new QAction(tr(">"),this);
     connect(addMoreNodeAction,SIGNAL(triggered()),this,SLOT(addMoreNode()));
     addLessNodeAction = new QAction(tr("<"),this);
     connect(addLessNodeAction,SIGNAL(triggered()),this,SLOT(addLessNode()));
 
-    addBatteryNodeAction = new QAction(tr("Battery"),this);
+    addIONodeAction = new QAction(tr("传感器"),this);
+    addIONodeAction->setIcon(QIcon(":/images/icon/IO.png"));
+    addBatteryNodeAction = new QAction(tr("电池传感器"),this);
+    addBatteryNodeAction->setIcon(QIcon(":/images/icon/Battery.png"));
     connect(addBatteryNodeAction,SIGNAL(triggered()),this,SLOT(addBatteryNode()));
-    addAttitudeNodeAction = new QAction(tr("Attitude"),this);
+    addAttitudeNodeAction = new QAction(tr("姿态传感器"),this);
+    addAttitudeNodeAction->setIcon(QIcon(":/images/icon/alttitude.png"));
     connect(addAttitudeNodeAction,SIGNAL(triggered()),this,SLOT(addAttitudeNode()));
-    addRangeFinderNodeAction = new QAction(tr("RangeFinder"),this);
+    addRangeFinderNodeAction = new QAction(tr("测高传感器"),this);
+    addRangeFinderNodeAction->setIcon(QIcon(":/images/icon/rangerfinder.png"));
     connect(addRangeFinderNodeAction,SIGNAL(triggered()),this,SLOT(addRangeFinderNode()));
-    addChannelNodeAction = new QAction(tr("Channel"),this);
+    addChannelNodeAction = new QAction(tr("遥控器通道"),this);
+    addChannelNodeAction->setIcon(QIcon(":/images/icon/channel.png"));
     connect(addChannelNodeAction,SIGNAL(triggered()),this,SLOT(addChannelNode()));
-    addGimbalNodeAction = new QAction(tr("Gimbal"),this);
+    addGimbalNodeAction = new QAction(tr("云台"),this);
+    addGimbalNodeAction->setIcon(QIcon(":/images/icon/gimbal.png"));
     connect(addGimbalNodeAction,SIGNAL(triggered()),this,SLOT(addGimbalNode()));
 
-    addLinkAction = new QAction(tr("&Link"), this);
+    addLinkAction = new QAction(tr("连线"), this);
     addLinkAction->setIcon(QIcon(":/images/link.png"));
     addLinkAction->setShortcut(tr("Ctrl+L"));
     connect(addLinkAction, SIGNAL(triggered()), this, SLOT(addLink()));
 
-    addRecAction = new QAction(tr("Logic"), this);
+    addRecAction = new QAction(tr("逻辑框"), this);
     connect(addRecAction, SIGNAL(triggered()), this, SLOT(addRec()));
+    addIfAction = new QAction(tr("If"),this);
+    addIfAction->setIcon(QIcon(":/images/icon/if copy.png"));
+    connect(addIfAction,SIGNAL(triggered()),this,SLOT(addIf()));
+    addElseAction = new QAction(tr("Else"),this);
+    addElseAction->setIcon(QIcon(":/images/icon/else copy.png"));
+    connect(addElseAction,SIGNAL(triggered()),this,SLOT(addElse()));
+    addWhileAction = new QAction(tr("While"),this);
+    addWhileAction->setIcon(QIcon(":/images/icon/while copy.png"));
+    connect(addWhileAction,SIGNAL(triggered()),this,SLOT(addWhile()));
 
-    uploadAction = new QAction(tr("upload"),this);
+
+    uploadAction = new QAction(tr("上传"),this);
     connect(uploadAction,SIGNAL(triggered()),this,SLOT(upload()));
-    runAction = new QAction(tr("run"),this);
+    runAction = new QAction(tr("运行"),this);
+    runAction->setIcon(QIcon(":/images/icon/运行.png"));
     connect(runAction,SIGNAL(triggered()),this,SLOT(run()));
 
 
-    deleteAction = new QAction(tr("&Delete"), this);
-    deleteAction->setIcon(QIcon(":/images/delete.png"));
+    deleteAction = new QAction(tr("删除"), this);
+    deleteAction->setIcon(QIcon(":/images/icon/delete copy.png"));
     deleteAction->setShortcut(tr("Del"));
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
 
-    cutAction = new QAction(tr("Cu&t"), this);
-    cutAction->setIcon(QIcon(":/images/cut.png"));
+    cutAction = new QAction(tr("剪切"), this);
+    cutAction->setIcon(QIcon(":/images/icon/cut copy.png"));
     cutAction->setShortcut(tr("Ctrl+X"));
     connect(cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
-    copyAction = new QAction(tr("&Copy"), this);
-    copyAction->setIcon(QIcon(":/images/copy.png"));
+    copyAction = new QAction(tr("复制"), this);
+    copyAction->setIcon(QIcon(":/images/icon/copy copy.png"));
     copyAction->setShortcut(tr("Ctrl+C"));
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
 
-    pasteAction = new QAction(tr("&Paste"), this);
-    pasteAction->setIcon(QIcon(":/images/paste.png"));
+    pasteAction = new QAction(tr("粘贴"), this);
+    pasteAction->setIcon(QIcon(":/images/icon/paste copy.png"));
     pasteAction->setShortcut(tr("Ctrl+V"));
     connect(pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
 
-    bringToFrontAction = new QAction(tr("Bring to &Front"), this);
+    bringToFrontAction = new QAction(tr("前移"), this);
     bringToFrontAction->setIcon(QIcon(":/images/bringtofront.png"));
     connect(bringToFrontAction, SIGNAL(triggered()),
             this, SLOT(bringToFront()));
 
-    sendToBackAction = new QAction(tr("&Send to Back"), this);
+    sendToBackAction = new QAction(tr("后移"), this);
     sendToBackAction->setIcon(QIcon(":/images/sendtoback.png"));
     connect(sendToBackAction, SIGNAL(triggered()),
             this, SLOT(sendToBack()));
 
-    showEditToolBarAction = new QAction(tr("EditToolBar"), this);
+    /*showEditToolBarAction = new QAction(tr("EditToolBar"), this);
     showEditToolBarAction->setStatusTip(tr("show or hide the edit toolbar"));
     showEditToolBarAction->setCheckable(true);
     showEditToolBarAction->setChecked(true);
     connect(showEditToolBarAction, SIGNAL(triggered()),
-            this, SLOT(showEditToolBar()));
+            this, SLOT(showEditToolBar()));*/
     showNodeBarAction = new QAction(tr("NodeBar"), this);
     showNodeBarAction->setStatusTip(tr("show or hide the node bar"));
     showNodeBarAction->setCheckable(true);
@@ -2179,14 +2227,14 @@ void DiagramWindow::createActions()
     connect(canvasAction, SIGNAL(triggered()),
             this, SLOT(canvas()));
 
-    checkupAction = new QAction(tr("check up"),this);
+    checkupAction = new QAction(tr("检查"),this);
     connect(checkupAction,SIGNAL(triggered()),
             this, SLOT(checkup()));
 
-    compileAction = new QAction(tr("compile"),this);
+    compileAction = new QAction(tr("编译"),this);
     connect(compileAction,SIGNAL(triggered()),this,SLOT(compile()));
 
-    checkupAndCompileAction = new QAction(tr("check up and compile"),this);
+    checkupAndCompileAction = new QAction(tr("检查&编译"),this);
     connect(checkupAndCompileAction,SIGNAL(triggered()),this,SLOT(checkupAndCompile()));
 
     openDocumentationAction = new QAction(tr("&Documentation"),this);
@@ -2195,14 +2243,14 @@ void DiagramWindow::createActions()
     systemInformationAction = new QAction(tr("&System information"),this);
     connect(systemInformationAction,SIGNAL(triggered()),this,SLOT(systemInformation()));
 
-    openHelpAction = new QAction(tr("Help"),this);
+    openHelpAction = new QAction(tr("帮助"),this);
     connect(openHelpAction,SIGNAL(triggered()),this,SLOT(help()));
 
-    viewZoomInAction = new QAction(QIcon(":/images/zoom-in.png"),
+    viewZoomInAction = new QAction(QIcon(":/images/icon/zoom in copy.png"),
                                    tr("Zoom In"),this);
     viewZoomInAction->setShortcut(tr("+"));
     connect(viewZoomInAction,SIGNAL(triggered()),view,SLOT(zoomIn()));
-    viewZoomOutAction = new QAction(QIcon(":/images/zoom-out.png"),
+    viewZoomOutAction = new QAction(QIcon(":/images/icon/zoom out copy.png"),
                                    tr("Zoom out"),this);
     viewZoomOutAction->setShortcut(tr("-"));
     connect(viewZoomOutAction,SIGNAL(triggered()),view,SLOT(zoomOut()));
@@ -2217,16 +2265,35 @@ void DiagramWindow::createActions()
 ******************************************************************/
 void DiagramWindow::createMenus()
 {
-    fileMenu = menuBar()->addMenu(tr("&File"));
-    editMenu = menuBar()->addMenu(tr("&Edit"));
-    viewMenu = menuBar()->addMenu(tr("&View"));
-    compileMenu = menuBar()->addMenu(tr("&Compile"));
-    helpMenu = menuBar()->addMenu(tr("&Help"));
+    QMenuBar *bar = menuBar();
+    bar->setStyleSheet("spacing: 52px");
+    //bar->setStyleSheet("color:rgba(230,230,230,255)");
+    //bar->setStyleSheet("background-color:rgba(230,230,230,255)");
+
+    //bar->setStyleSheet("background:rgba(230,230,230,255)");
+    //bar->setStyleSheet("item:background-color:rgba(230,230,230,255)");
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(14);
+    bar->setFont(font);
+    fileMenu = bar->addMenu(tr("文件"));
+    editMenu = bar->addMenu(tr("编辑"));
+    actionMenu = bar->addMenu(tr("动作"));
+    computeMenu = bar->addMenu(tr("运算"));
+    viewMenu = bar->addMenu(tr("视图"));
+    compileMenu = bar->addMenu(tr("编译"));
+    helpMenu = bar->addMenu(tr("帮助"));
+    //fileMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    /*editMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    actionMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    computeMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    viewMenu->setStyleSheet("background-color:rgba(230,230,230,255)");
+    compileMenu->setStyleSheet("background-color:rgba(230,230,230,255)");*/
+
     //filemenu
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
     fileMenu->addAction(fileSaveAction);
-    fileMenu->addAction(fileSaveAsAction);
+    //fileMenu->addAction(fileSaveAsAction);
     fileMenu->addSeparator();
     fileMenu->addAction(fileExportAction);
     fileMenu->addAction(filePrintAction);
@@ -2241,7 +2308,16 @@ void DiagramWindow::createMenus()
     helpMenu->addAction(systemInformationAction);
     helpMenu->addAction(openHelpAction);
     //editmenu
-    QMenu *translationMenu = new QMenu(tr("translation"),this);
+    //editMenu->addAction(cutAction);
+    editMenu->addAction(deleteAction);
+    //editMenu->addAction(copyAction);
+    //editMenu->addAction(pasteAction);
+    editMenu->addSeparator();
+    editMenu->addAction(bringToFrontAction);
+    editMenu->addAction(sendToBackAction);
+
+    //actionMenu
+    QMenu *translationMenu = new QMenu(tr("movement"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addRiseNodeAction<<addFallNodeAction
             <<addAdvanceNodeAction<<addBackNodeAction
@@ -2249,15 +2325,14 @@ void DiagramWindow::createMenus()
         translationMenu->addAction(action);
     addTranslationNodeAction->setMenu(translationMenu);
 
-    QMenu *actionMenu = new QMenu(tr("action"),this);
+    QMenu *aMenu = new QMenu(tr("action"),this);
     foreach (QAction *action,QList<QAction*>()
              <<addTakeoffNodeAction<<addLandonNodeAction
              <<addTranslationNodeAction
              <<addTurnLeftNodeAction<<addTurnRightNodeAction
              <<addHangingNodeAction<<addDelayNodeAction)
-        actionMenu->addAction(action);
-    addActionNodeAction->setMenu(actionMenu);
-
+        aMenu->addAction(action);
+    addActionNodeAction->setMenu(aMenu);
     QMenu *IOMenu = new QMenu(tr("IO"),this);
     foreach(QAction *action,QList<QAction*>()
             <<addBatteryNodeAction
@@ -2267,49 +2342,66 @@ void DiagramWindow::createMenus()
             <<addRangeFinderNodeAction)
         IOMenu->addAction(action);
     addIONodeAction->setMenu(IOMenu);
-    QMenu *computeMenu = new QMenu(tr("Compute"),this);
-    foreach (QAction *action, QList<QAction*>()
-             <<addAddNodeAction<<addSubNodeAction
-             <<addMulNodeAction<<addDivNodeAction
-             <<addCosNodeAction<<addSinNodeAction
-             <<addTanNodeAction<<addLogNodeAction
-             <<addENodeAction<<addEqualNodeAction
-             <<addMoreNodeAction<<addLessNodeAction)
-        computeMenu->addAction(action);
-    addComputeNodeAction->setMenu(computeMenu);
 
-    editMenu->addAction(addActionNodeAction);
-    editMenu->addAction(addVarNodeAction);
-    editMenu->addAction(addVardefNodeAction);
-    editMenu->addAction(addComputeNodeAction);
-    editMenu->addAction(addIONodeAction);
-    editMenu->addAction(addRecAction);
-    editMenu->addSeparator();
-    editMenu->addAction(deleteAction);
-    editMenu->addAction(cutAction);
-    editMenu->addAction(copyAction);
-    editMenu->addAction(pasteAction);
-    editMenu->addSeparator();
-    editMenu->addAction(bringToFrontAction);
-    editMenu->addAction(sendToBackAction);
-    editMenu->addSeparator();
+    actionMenu->addAction(addActionNodeAction);
+    actionMenu->addAction(addVarNodeAction);
+    actionMenu->addAction(addIONodeAction);
+    //computeMenu
+    QMenu *comMenu = new QMenu(tr("Compute"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addAddNodeAction
+             <<addCosNodeAction
+             <<addLogNodeAction
+             <<addENodeAction)
+        comMenu->addAction(action);
+    addComputeNodeAction->setMenu(comMenu);
+
+    /*QMenu *compareMenu = new QMenu(tr("Compare"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addEqualNodeAction<<addMoreNodeAction
+             <<addLessNodeAction)
+        compareMenu->addAction(action);
+    addCompareNodeAction->setMenu(compareMenu);*/
+    QMenu *logicMenu = new QMenu(tr("Logic"),this);
+    foreach (QAction *action, QList<QAction*>()
+             <<addIfAction<<addElseAction
+             <<addWhileAction)
+        logicMenu->addAction(action);
+    addRecAction->setMenu(logicMenu);
+
+    computeMenu->addAction(addComputeNodeAction);
+    computeMenu->addAction(addCompareNodeAction);
+    computeMenu->addAction(addRecAction);
+
     //viewmenu
-    viewMenu->addAction(showEditToolBarAction);
-    viewMenu->addAction(showNodeBarAction);
-    viewMenu->addAction(showNodeStatusBarAction);
+    /*viewMenu->addAction(showEditToolBarAction);*/
+    //viewMenu->addAction(showNodeBarAction);
+    //viewMenu->addAction(showNodeStatusBarAction);
     viewMenu->addAction(viewShowGridAction);
-    viewMenu->addSeparator();
+    //viewMenu->addSeparator();
     viewMenu->addAction(viewZoomInAction);
     viewMenu->addAction(viewZoomOutAction);
     viewMenu->addSeparator();
-    viewMenu->addAction(propertiesAction);
-    viewMenu->addAction(canvasAction);
+    //viewMenu->addAction(propertiesAction);
+    //viewMenu->addAction(canvasAction);
     //compilemenu
-    compileMenu->addAction(checkupAction);
+    //compileMenu->addAction(checkupAction);
     compileMenu->addAction(compileAction);
     compileMenu->addAction(checkupAndCompileAction);
     compileMenu->addAction(uploadAction);
     compileMenu->addAction(runAction);
+
+    //sceneMenu
+    sceneMenu = new QMenu;
+    sceneMenu->addAction(fileSaveAction);
+    sceneMenu->addAction(deleteAction);
+    //sceneMenu->addAction(cutAction);
+    //sceneMenu->addAction(copyAction);
+    //sceneMenu->addAction(pasteAction);
+    sceneMenu->addAction(bringToFrontAction);
+    sceneMenu->addAction(sendToBackAction);
+    sceneMenu->addAction(viewZoomInAction);
+    sceneMenu->addAction(viewZoomOutAction);
 }
 
 /*******************************************************************
@@ -2321,44 +2413,39 @@ void DiagramWindow::createMenus()
 ******************************************************************/
 void DiagramWindow::createToolBars()
 {
-    editToolBar = addToolBar(tr("Edit"));
-    editToolBar->addAction(fileNewAction);
-    editToolBar->addAction(fileOpenAction);
-    editToolBar->addAction(fileSaveAction);
-    editToolBar->addSeparator();
-    editToolBar->addAction(deleteAction);
-    editToolBar->addAction(cutAction);
-    editToolBar->addAction(copyAction);
-    editToolBar->addAction(pasteAction);
-    editToolBar->addSeparator();
-    editToolBar->addAction(bringToFrontAction);
-    editToolBar->addAction(sendToBackAction);
-    editToolBar->addAction(viewZoomInAction);
-    editToolBar->addAction(viewZoomOutAction);
-    editToolBar->addAction(viewShowGridAction);
-
-    aToolBar = addToolBar(tr("action"));
+    aToolBar = addToolBar(tr("a"));
     aToolBar->addAction(addTakeoffNodeAction);
     aToolBar->addAction(addLandonNodeAction);
-    aToolBar->addAction(addRiseNodeAction);
-    aToolBar->addAction(addFallNodeAction);
-    aToolBar->addAction(addAdvanceNodeAction);
-    aToolBar->addAction(addBackNodeAction);
-    aToolBar->addAction(addRightNodeAction);
-    aToolBar->addAction(addLeftNodeAction);
-    aToolBar->addAction(addTurnLeftNodeAction);
-    aToolBar->addAction(addTurnRightNodeAction);
     aToolBar->addAction(addHangingNodeAction);
     aToolBar->addAction(addDelayNodeAction);
-    aToolBar->addSeparator();
-    aToolBar->addAction(addVarNodeAction);
-    aToolBar->addAction(addVardefNodeAction);
-    aToolBar->addSeparator();
-    aToolBar->addAction(addComputeNodeAction);
-    aToolBar->addAction(addIONodeAction);
-    aToolBar->addAction(addRecAction);
-    aToolBar->addAction(addLinkAction);
+    aToolBar->addAction(addTranslationNodeAction);
+    aToolBar->addAction(addTurnLeftNodeAction);
+    aToolBar->addAction(addTurnRightNodeAction);
+
     addToolBar(Qt::LeftToolBarArea,aToolBar);
+
+    bToolBar = addToolBar(tr("b"));
+    bToolBar->addAction(addIfAction);
+    bToolBar->addAction(addElseAction);
+    bToolBar->addAction(addWhileAction);
+    bToolBar->addAction(addVarNodeAction);
+    bToolBar->addAction(addComputeNodeAction);
+    bToolBar->addAction(addCompareNodeAction);
+    bToolBar->addAction(addIONodeAction);
+
+    addToolBar(Qt::LeftToolBarArea,bToolBar);
+
+    cToolBar = addToolBar(tr("c"));
+    //cToolBar->addAction(cutAction);
+    cToolBar->addAction(deleteAction);
+    //cToolBar->addAction(copyAction);
+    //cToolBar->addAction(pasteAction);
+    cToolBar->addAction(bringToFrontAction);
+    cToolBar->addAction(sendToBackAction);
+    cToolBar->addAction(viewZoomInAction);
+    cToolBar->addAction(viewZoomOutAction);
+
+    addToolBar(Qt::LeftToolBarArea,cToolBar);
 }
 
 /*******************************************************************
@@ -2395,18 +2482,28 @@ void DiagramWindow::createDockWidgets()
     colorDockWidget->setFeatures(features);
     colorDockWidget->setWidget(colorWidget);
     addDockWidget(Qt::RightDockWidgetArea,colorDockWidget);
+    colorDockWidget->setVisible(false);
 
     positionWidget = new PositionWidget;
     QDockWidget *positionDockWidget = new QDockWidget(
                 tr("Position"),this);
     positionDockWidget->setWidget(positionWidget);
-    addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+    //addDockWidget(Qt::RightDockWidgetArea,positionDockWidget);
+    positionDockWidget->setVisible(false);
 
     mutableWidget = new MutableWidget;
     QDockWidget *mutableDockWidget = new QDockWidget(
                 tr("Mutable"),this);
     mutableDockWidget->setWidget(mutableWidget);
     addDockWidget(Qt::RightDockWidgetArea,mutableDockWidget);
+    mutableDockWidget->setVisible(false);
+
+    processWidget = new ProcessOutputWidget;
+    QDockWidget *processDockWidget = new QDockWidget(
+                tr("upload and run"),this);
+    processDockWidget->setWidget(processWidget);
+    addDockWidget(Qt::RightDockWidgetArea,processDockWidget);
+    processDockWidget->setVisible(false);
 }
 
 /*******************************************************************

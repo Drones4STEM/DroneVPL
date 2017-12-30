@@ -56,7 +56,8 @@ class IoSmallNode:public Node
     Q_OBJECT
 public:
     enum {Type = IoSmallNodeType};
-    IoSmallNode();
+    IoSmallNode(int sizeFlag=1,QGraphicsItem *parent = 0);//根据这个flag来设置node的outlineRect大小
+                                                      //当flag=1时，80*26，flag=2时，80*46
 
     int type() const { return Type; }
 
@@ -74,6 +75,7 @@ public:
 private:
     QString myIoType;
     QString myVar;
+    int sizeFlag;
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
@@ -120,6 +122,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -159,6 +162,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -201,6 +205,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -261,6 +266,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 /*******************************************************************
@@ -298,6 +304,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // IONODE_H

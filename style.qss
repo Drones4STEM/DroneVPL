@@ -1,0 +1,17 @@
+QMenuBar{
+    color:rgba(230,230,230,255;
+}
+
+QMenuBar::item{
+    spacing:52px;
+    background-color:rgba(230,230,230,255);
+    border:rgba(230,230,230,255);
+}
+
+QMenu{
+    background-color:rgba(230,230,230,255);
+}
+QMenu::item{
+    background-color: transparent;
+}
+

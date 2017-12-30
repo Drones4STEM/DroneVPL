@@ -34,6 +34,7 @@ class WidgetCondition;
 class ColorWidget;
 class PositionWidget;
 class MutableWidget;
+class ProcessOutputWidget;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
@@ -62,7 +63,7 @@ public:
     int varNodeNum;  //计数varNode,命名每个varNode,下同
     int takeoffNodeNum;
     int landonNodeNum;
-    int vardefNodeNum;
+    int VarInstanceNodeNum;
     int computeNodeNum;
     int ioNodeNum;
     int recNodeNum;
@@ -116,8 +117,9 @@ private slots:
     void addDelayNode();
 
     void addVarNode();
-    void addVardefNode();
+    void addVarInstanceNode();
     void addComputeNode();
+    void addCompareNode();
     void addAddNode();
     void addSubNode();
     void addMulNode();
@@ -138,6 +140,9 @@ private slots:
     void addRangeFinderNode();
     void addLink();
     void addRec();
+    void addIf();
+    void addElse();
+    void addWhile();
     void upload();
     void run();
     void del();
@@ -148,7 +153,7 @@ private slots:
     void sendToBack();
     void properties();
     void updateActions();
-    void showEditToolBar();
+    //void showEditToolBar();
     void showNodeBar();
     void showNodeStatusBar();
     void viewShowGrid(bool on);   //显示网格
@@ -203,14 +208,19 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *actionMenu;
+    QMenu *computeMenu;
     QMenu *viewMenu;
     QMenu *compileMenu;
     QMenu *helpMenu;
+    QMenu *sceneMenu;   //右键呼出菜单
 
 
-    QToolBar *editToolBar;
+    //QToolBar *editToolBar;
     QToolBar *actionToolBar;
     QToolBar *aToolBar;
+    QToolBar *bToolBar;
+    QToolBar *cToolBar;
 
 
     QAction *fileNewAction;
@@ -246,9 +256,10 @@ private:
     QAction *addDelayNodeAction;
 
     QAction *addVarNodeAction;
-    QAction *addVardefNodeAction;
+    QAction *addVarInstanceNodeAction;
 
     QAction *addComputeNodeAction;
+    QAction *addCompareNodeAction;
     QAction *addAddNodeAction;
     QAction *addSubNodeAction;
     QAction *addMulNodeAction;
@@ -273,6 +284,9 @@ private:
 
     QAction *addLinkAction;
     QAction *addRecAction;
+    QAction *addIfAction;
+    QAction *addElseAction;
+    QAction *addWhileAction;
 
     QAction *uploadAction;
     QAction *runAction;
@@ -284,7 +298,7 @@ private:
     QAction *bringToFrontAction;
     QAction *sendToBackAction;
     QAction *propertiesAction;
-    QAction *showEditToolBarAction;
+    //QAction *showEditToolBarAction;
     QAction *showNodeBarAction;
     QAction *showNodeStatusBarAction;
     QAction *canvasAction;
@@ -302,6 +316,7 @@ private:
     ColorWidget *colorWidget;
     PositionWidget *positionWidget;
     MutableWidget *mutableWidget;
+    ProcessOutputWidget *processWidget;
 
 
     QPrinter *printer;

@@ -161,8 +161,8 @@ void PositionWidget::setPosition(const QPoint pos)
     {
         m_pos.setX(pos.x());
         m_pos.setY(pos.y());
-        xLineEdit->setText(QString::number(pos.x()));
-        yLineEdit->setText(QString::number(pos.y()));
+        //xLineEdit->setText(QString::number(m_pos.x()));
+        //yLineEdit->setText(QString::number(m_pos.y()));
     }
 }
 
@@ -282,4 +282,22 @@ void MutableWidget::updateGroundSpeed(QString str)
 {
     m_groundSpeed=str.toDouble();
     emit groundSpeedChanged(m_groundSpeed);
+}
+
+
+
+/*//////////////////////ProcessOutputWidget////////////////*/
+ProcessOutputWidget::ProcessOutputWidget(QWidget *parent)
+{
+    textEdit = new QTextEdit;
+    textEdit->setBaseSize(100,100);
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(textEdit);
+    setLayout(layout);
+}
+
+void ProcessOutputWidget::setTextEdit(QString str)
+{
+    textEdit->clear();
+    textEdit->setText(str);
 }

@@ -12,7 +12,8 @@
 #include "yuan.h"
 #include "node.h"
 
-Yuan::Yuan()
+Yuan::Yuan(QGraphicsItem *parent)
+    :QGraphicsObject(parent)
 {
     myOutlineColor = Qt::darkBlue;
     myBackgroundColor = Qt::red;
@@ -138,10 +139,11 @@ void Yuan::setInout(int mode)
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-triYuan::triYuan()
+triYuan::triYuan(QGraphicsItem *parent)
+    :Yuan(parent)
 {
     setOutlineColor(Qt::darkBlue);
-    setBackgroundColor(Qt::red);
+    setBackgroundColor(Qt::yellow);
 
     setFlags(ItemIsSelectable);
     setInout(0);
@@ -187,8 +189,8 @@ void triYuan::paint(QPainter *painter,
 
 specialYuan::specialYuan()
 {
-    setOutlineColor(Qt::white);
-    setBackgroundColor(Qt::white);
+    setOutlineColor(Qt::transparent);
+    setBackgroundColor(Qt::transparent);
 
     setInout(0);
 }

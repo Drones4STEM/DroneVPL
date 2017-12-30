@@ -1,117 +1,196 @@
 /*******************************************************************
  * File:varnode.cpp
  * Author: Ryan Feng
- * Description: This file includes the realization of class 
- *        VarNode. VarNode represents variables read and written 
+ * Description: This file includes the realization of class
+ *        VarNode. VarNode represents variables read and written
  *        by other actions.
 ******************************************************************/
 
 
 #include "varnode.h"
 #include "diagramwindow.h"
-//#include "colordlg.h"
-
 #include "rec.h"
 
-VarNode::VarNode()
+VarNode::VarNode(QGraphicsItem *parent)
+    :QGraphicsObject(parent)
 {
-    box=new QComboBox;
-    num=-1;
-    for(int i=0;i<6;i++)
+    varnum=1;              //初始产生一个变量
+    button0 = new QPushButton;
+    button0->setFixedSize(20,20);
+    button0->setIcon(QIcon(":/images/icon/add.png"));
+
+    int i=0;
+    for(i=0;i<4;i++)
     {
-        flags[i]=false;
-        array[i]=new VardefNode;
-        array[i]->setFlag(ItemIsMovable,false);
+        typeBox[i]=new QComboBox;
+        typeBox[i]->setFixedSize(86,28);
+        nameEdit[i]=new QLineEdit;
+        nameEdit[i]->setFixedSize(46,25);
+        valueEdit[i]=new QLineEdit;
+        valueEdit[i]->setFixedSize(48,25);
+        button[i] = new QPushButton;
+        button[i]->setFixedSize(20,20);
+        button[i]->setIcon(QIcon(":/images/icon/generate.png"));
     }
 
-    identifier="VarNode";
-    rank = 0;
-    sethw();
+    setFlags(ItemIsMovable|ItemIsSelectable|ItemSendsGeometryChanges);
+
+    connect(button0,SIGNAL(clicked()),this,SLOT(addVarType()));
+    for(int i=0;i<4;i++)
+    {
+        connect(button[i],SIGNAL(clicked()),this,SLOT(emitSignal()));
+        connect(nameEdit[i],SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+        connect(valueEdit[i],SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+        connect(typeBox[i],SIGNAL(textChanged(QString)),this,SIGNAL(dirty()));
+    }
 }
+
 
 VarNode::~VarNode()
-{/*
-    for(int i=0;i<6;i++)
-        delete array[i];*/
-    ;
-}
-
-/*******************************************************************
- * Function name: outlineRect()
- * Description: return a rect
- * Callee:
- * Inputs:
- * Outputs:QRectF
-******************************************************************/
-QPolygonF VarNode::outlineRect() const
 {
-    QPolygonF poly;
-    poly<<QPointF(10,16)<<QPointF(20,0)<<QPointF(10,-16)
-       <<QPointF(-10,-16)<<QPointF(-20,0)<<QPointF(-10,16);
-
-    return poly;
+    /*delete button0;
+    delete typeBox1;
+    delete nameEdit1;
+    delete valueEdit1;
+    delete button1;*/
+    delete button0;
+    int i=0;
+    for(i=0;i<4;i++)
+    {
+        delete typeBox[i];
+        delete nameEdit[i];
+        delete valueEdit[i];
+        delete button[i];
+    }
 }
+
+QRectF VarNode::outlineRect() const
+{
+    QRectF rect1(0,0,230,70);
+    rect1.translate(-rect1.center());
+    QRectF rect2(0,0,230,100);
+    rect2.translate(-rect2.center());
+    QRectF rect3(0,0,230,130);
+    rect3.translate(-rect3.center());
+    QRectF rect4(0,0,230,160);
+    rect4.translate(-rect4.center());
+    switch (varnum) {
+    case 1:
+        return rect1;
+        break;
+    case 2:
+        return rect2;
+        break;
+    case 3:
+        return rect3;
+        break;
+    case 4:
+        return rect4;
+    default:
+        break;
+    }
+}
+
 
 QRectF VarNode::boundingRect() const
 {
-    return QRectF(-20,-20,40,40);
+//    this->high = outlineRect().height();
+//    this->wide = outlineRect().width();
+    return outlineRect();
 }
 
-QPainterPath VarNode::shape()  const
+QPainterPath VarNode::shape() const
 {
-    QPolygonF poly=outlineRect();
+    QRectF rect = outlineRect();
+
     QPainterPath path;
-    path.addPolygon(poly);
+    path.addRoundRect(rect,roundness(rect.width()),
+                      roundness(rect.height()));
     return path;
 }
 
 void VarNode::paint(QPainter *painter,
-                    const QStyleOptionGraphicsItem *option, QWidget *widget)
+                         const QStyleOptionGraphicsItem *option,
+                         QWidget *widget)
 {
-    QPen pen(outlineColor());
-    if (option->state & QStyle::State_Selected) {
+    QPen pen(Qt::darkBlue);
+    if(option->state&QStyle::State_Selected)
+    {
         pen.setStyle(Qt::DotLine);
         pen.setWidth(2);
     }
     painter->setPen(pen);
-    painter->setBrush(backgroundColor());
+    painter->setBrush(QColor(230,230,230));
 
-    QPolygonF poly = outlineRect();
-    painter->drawPolygon(poly);
-    QRectF rect=boundingRect();
+    QRectF rect = outlineRect();
+    painter->drawRoundedRect(rect,roundness(rect.width()),
+                             roundness(rect.height()));
 
-    painter->setPen(textColor());
-    painter->drawText(rect, Qt::AlignCenter, text());
+    pen.setColor(Qt::black);
+    painter->setPen(pen);
+    QFont font("MicrosoftYaHei");
+    font.setPixelSize(14);
+    painter->setFont(font);
+    QString str1("增加变量");
+    QString str2("名称");
+    QString str3("初始值");
+    painter->drawText(rect.topLeft().x()+33,rect.topLeft().y()+15,str1);
+    painter->drawText(rect.topLeft().x()+104,rect.topLeft().y()+15,str2);
+    painter->drawText(rect.topLeft().x()+157,rect.topLeft().y()+15,str3);
+
+    pen.setColor(QColor(151,151,151,255));
+    pen.setStyle(Qt::SolidLine);
+    painter->setPen(pen);
+    painter->drawLine(rect.topLeft().x()+5,rect.topLeft().y()+29,
+                      rect.topRight().x()-5,rect.topRight().y()+29);
+
 }
 
-QVariant VarNode::itemChange(GraphicsItemChange change,
-                    const QVariant &value)
-{ if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
-            int a=0;
-            for(;a<6;a++)
-            {
-                if(flags[a])
-                {
-                    int i=a%3;
-                    int j;
-                    if(a==0||a==2)j=-17;
-                    else if(a==3||a==5)j=17;
-                    else if(a==1)j=-35;
-                    else j=35;
-                    array[a]->setPos(pos().x() + (1-i)*30,
-                                     pos().y() + j);
-                }
-            }
-       }
-        else{
-            if(flags[0])
-            {
-                int i=0%3;
-                int j=-17;
-                setPos(array[0]->x()- (1-i)*30,array[0]->y()-j);
-            }
-        }}
-    return QGraphicsItem::itemChange(change, value);
+
+int VarNode::roundness(double size) const
+{
+    const int Diameter = 12;
+    return 100 * Diameter / (abs(int(size))+1);
 }
+
+void VarNode::addVarType()
+{
+    if(varnum==4)
+        return;
+    varnum++;
+
+    QRectF rect = outlineRect();
+    button0Item->setPos(-108,rect.topLeft().y() + 5);
+    for(int i=0;i<4;i++)
+    {
+        typeItem[i]->setPos(-110,rect.topLeft().y() + 34 + 32*i);
+        nameItem[i]->setPos(-15,rect.topLeft().y() + 34 +32*i);
+        valueItem[i]->setPos(41,rect.topLeft().y() + 34 + 32*i);
+        buttonItem[i]->setPos(92,rect.topLeft().y() + 34 + 32*i);
+    }
+
+    typeItem[varnum-1]->setVisible(true);
+    nameItem[varnum-1]->setVisible(true);
+    valueItem[varnum-1]->setVisible(true);
+    buttonItem[varnum-1]->setVisible(true);
+
+    update();
+}
+
+void VarNode::emitSignal()
+{
+    int i;
+    QPushButton *pushButton = dynamic_cast<QPushButton*>(sender());
+    for(i = 0;i<4;i++)
+    {
+        if(pushButton == button[i])
+            break;
+    }
+    emit addVarSignal(this,typeBox[i]->currentText(),nameEdit[i]->text(),valueEdit[i]->text());
+}
+
+
+
+
+
+

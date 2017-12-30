@@ -31,7 +31,7 @@ class Node : public QGraphicsObject
     Q_PROPERTY(QString myIdentifier READ myIdentifier)
 
 public:
-    Node();
+    Node(QGraphicsItem *parent = 0);
     ~Node();
 
     void setText(const QString &text);

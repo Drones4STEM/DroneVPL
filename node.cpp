@@ -21,11 +21,12 @@
  * Inputs:
  * Outputs:
 ******************************************************************/
-Node::Node()
+Node::Node(QGraphicsItem *parent)
+    :QGraphicsObject(parent)
 {
     myTextColor = Qt::darkGreen;
     myOutlineColor = Qt::darkBlue;
-    myBackgroundColor = Qt::white;
+    myBackgroundColor = QColor(230,230,230);
 
     //QGraphicsItem* p=dynamic_cast<QGraphicsItem*>(this);
     //yuan=new triYuan(p);
@@ -230,6 +231,9 @@ void Node::paint(QPainter *painter,
 
     painter->setPen(textColor());
     painter->drawText(rect, Qt::AlignCenter, myText);
+    /*QString text1 = QString(tr("takeoff"));
+    painter->drawText(-30,5,text1);
+    painter->drawText(0,5,text1);*/
 }
 
 /*******************************************************************
@@ -242,11 +246,7 @@ void Node::paint(QPainter *painter,
 ******************************************************************/
 void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    QString text = QInputDialog::getText(event->widget(),
-                           tr("Edit Text"), tr("Enter new text:"),
-                           QLineEdit::Normal, myText);
-    if (!text.isEmpty())
-        setText(text);
+    ;
 }
 
 /*******************************************************************
@@ -264,17 +264,17 @@ QVariant Node::itemChange(GraphicsItemChange change,
 {
 
     if (change & ItemPositionHasChanged){
-        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
-       {
+        //if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       //{
             yuan->setPos(pos().x(),
                          pos().y()+ outlineRect().height()/2 +yuan->boundingRect().height()/2);
             foreach (Link *link, yuan->myLinks)
             {link->trackYuans();update();}
-       }
-        else{
+       //}
+        /*else{
             setPos(yuan->pos().x(),
-                          yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);
-        }
+                          yuan->pos().y()-outlineRect().height()/2 -yuan->boundingRect().height()/2);*/
+        //}
     }
     return QGraphicsItem::itemChange(change, value);
 }
