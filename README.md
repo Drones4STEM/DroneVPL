@@ -1,8 +1,11 @@
 # DroneVPL
 A software of Visual Programming Language for Drones. Developed with QT4.8, avaliable on windows only.
 # Demo
-
-
+Drag widgets
+![drag_widgets](doc/demo_(1).gif)
+![drag_widgets_2](doc/demo_(2).gif)
+Save and compile
+![save_compile](doc/demo_(3).gif)
 
 # Front-end
 
